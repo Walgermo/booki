@@ -1,4 +1,4 @@
-import { handleAgentRequest } from "../server/agent-handler";
+import { handleAgentRequest } from "../server/agent-handler.js";
 
 // Serverless entry (Vercel Functions, Web-standard handlers).
 export const GET = (request: Request) => handleAgentRequest(request);

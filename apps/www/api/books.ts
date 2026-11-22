@@ -1,4 +1,4 @@
-import { handleBooksRequest } from "../server/books-handler";
+import { handleBooksRequest } from "../server/books-handler.js";
 
 // Serverless entry (Vercel Functions, Web-standard handlers): the demo company's guarded write API.
 export const POST = (request: Request) => handleBooksRequest(request);
