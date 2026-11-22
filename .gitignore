@@ -15,3 +15,4 @@ coverage
 # Benchmark runs: raw tool calls, kept locally
 benchmarks/agent/results/
 apps/www/public/sitemap.xml
+.packed

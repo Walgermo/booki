@@ -52,7 +52,8 @@ export function toItems(codes: TaxCode[]): AgentItem[] {
 export function pickInitial(codes: TaxCode[], value?: string, defaultValue?: string): TaxCode | undefined {
   // A controlled value is the owner's: "" (or an unknown code) is no selection, never the first code.
   if (value !== undefined) return value === "" ? undefined : resolveCode(codes, value);
-  if (defaultValue) return resolveCode(codes, defaultValue) ?? codes[0];
+  // A default the list lacks is no selection either: never another rate.
+  if (defaultValue) return resolveCode(codes, defaultValue);
   return codes[0];
 }
 
@@ -133,13 +134,14 @@ export const taxCodeSelect = definePrimitive({
         }
         return apply(selected, "set-tax-code", asEvent(event));
       },
-      /** Same as setTaxCode: history and staging restore `value` through set<Key>. */
-      setValue: (raw: string, event?: unknown): boolean => methods.setTaxCode(raw, event),
-      clear: () => {
-        const { codes } = context.store.get();
-        const first = codes[0];
-        if (!first) return change("value", "", { reason: "clear" });
-        return apply(first, "clear");
+      /** Same as setTaxCode, and "" empties it: history and staging restore `value` through set<Key>. */
+      setValue: (raw: string, event?: unknown): boolean =>
+        raw === "" ? methods.clear() : methods.setTaxCode(raw, event),
+      /** No tax code: never another one. */
+      clear: (): boolean => {
+        const ok = change("value", "", { reason: "clear" });
+        if (ok) context.store.set({ percent: 0, codeLabel: "" });
+        return ok;
       },
       allItems: () => context.store.get().items,
     };

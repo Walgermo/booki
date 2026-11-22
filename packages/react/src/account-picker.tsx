@@ -26,7 +26,7 @@ const AccountPickerControl = parts.Select;
 export type AccountPickerProps = {
   accounts: AccountOption[];
   value?: string;
-  /** Starting account when uncontrolled. Defaults to the first account. */
+  /** Starting account when uncontrolled. Without one, no account is chosen. */
   defaultValue?: string;
   onValueChange?: (accountNumber: string) => void;
   className?: string;
@@ -80,6 +80,7 @@ function AccountPicker({
             {profile.locale.startsWith("nb") ? "Ingen kontoer passer søket" : "No accounts match"}
           </AccountPickerEmpty>
           <AccountPickerControl tabIndex={-1}>
+            {state.value === "" ? <option value="" /> : null}
             {accounts.map((account) => (
               <option key={account.number} value={account.number}>
                 {account.number} — {account.name}

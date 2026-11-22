@@ -13,28 +13,31 @@ const NEEDS = [
   ],
   [
     { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.14", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.14" },
-    { en: "Peer dependencies, pinned to this version.", nb: "Peer-avhengigheter, låst til denne versjonen." },
+    {
+      en: "Peer dependencies; pnpm and npm install them for you.",
+      nb: "Peer-avhengigheter; pnpm og npm installerer dem for deg.",
+    },
   ],
   [
     { en: "pnpm", nb: "pnpm" },
-    { en: "Used to build the packages from the repo.", nb: "Brukes til å bygge pakkene fra repoet." },
+    { en: "Used to pack the packages from the repo.", nb: "Brukes til å pakke pakkene fra repoet." },
   ],
 ] as const;
 
 const BUILD = `git clone ${REPO_URL}.git
 cd booki
 pnpm install
-pnpm build:packages`;
+pnpm pack:local --out ../your-product/vendor/booki`;
 
-const LINK = `pnpm add link:../booki/packages/core \\
-  link:../booki/packages/react \\
-  link:../booki/packages/styles \\
-  @ui-sdk/core@0.1.0-beta.14 @ui-sdk/react@0.1.0-beta.14`;
+const ADD = `# pnpm-workspace.yaml
+overrides:
+  "@booki/core": "file:./vendor/booki/booki-core-0.1.0.tgz"
+  "@booki/primitives": "file:./vendor/booki/booki-primitives-0.1.0.tgz"
+  "@booki/react": "file:./vendor/booki/booki-react-0.1.0.tgz"
+  "@booki/styles": "file:./vendor/booki/booki-styles-0.1.0.tgz"
 
-const DEDUPE = `// vite.config.ts
-export default defineConfig({
-  resolve: { dedupe: ["react", "react-dom"] },
-})`;
+# then
+pnpm add @booki/core @booki/react @booki/styles`;
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki/react"
 import "@booki/styles"
@@ -137,8 +140,8 @@ export function InstallationPage() {
       </h1>
       <p className="mt-4 mb-10 max-w-prose text-lg leading-relaxed text-muted-foreground text-pretty">
         {t(
-          "Five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. About five minutes once the packages are built.",
-          "Fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med dine godkjenningsregler. Omtrent fem minutter når pakkene er bygget.",
+          "Five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. About five minutes once the packages are packed.",
+          "Fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med dine godkjenningsregler. Omtrent fem minutter når pakkene er pakket.",
         )}
       </p>
 
@@ -146,8 +149,8 @@ export function InstallationPage() {
         id="install"
         title={t("Install", "Installer")}
         note={t(
-          "The packages are not on npm yet. For now you build them from the repo.",
-          "Pakkene er ikke på npm ennå. Foreløpig bygger du dem fra repoet.",
+          "The packages are not on npm yet. For now you pack them from the repo.",
+          "Pakkene er ikke på npm ennå. Foreløpig pakker du dem fra repoet.",
         )}
       >
         <ul className="site-rows mb-6">
@@ -164,25 +167,18 @@ export function InstallationPage() {
             {t("the repo", "repoet")}
           </a>{" "}
           {t(
-            "next to your product and build the three packages.",
-            "ved siden av produktet ditt og bygg de tre pakkene.",
+            "next to your product and pack it into your product, as npm would deliver it.",
+            "ved siden av produktet ditt, og pakk det inn i produktet ditt slik npm ville levert det.",
           )}
         </p>
         <InstallBlock label={t("Next to your product", "Ved siden av produktet ditt")} command={BUILD} />
         <p className={p}>
           {t(
-            "Then link them into your product, with their peer dependencies.",
-            "Lenk dem så inn i produktet ditt, med peer-avhengighetene deres.",
+            "Then add the packages. The command above prints this block with your own paths, and one line for npm.",
+            "Legg så til pakkene. Kommandoen over skriver ut denne blokken med dine egne stier, og én linje for npm.",
           )}
         </p>
-        <InstallBlock label={t("In your product", "I produktet ditt")} command={LINK} />
-        <p className={p}>
-          {t(
-            "A linked package resolves React from the clone. Tell your bundler to use your copy, or hooks will fail with two Reacts on the page.",
-            "En lenket pakke henter React fra klonen. Be bundleren bruke din kopi, ellers feiler hooks med to React på siden.",
-          )}
-        </p>
-        <InstallBlock label="Vite" command={DEDUPE} />
+        <InstallBlock label={t("In your product", "I produktet ditt")} command={ADD} />
         <p className={p}>
           {t("When the packages are published this becomes one ", "Når pakkene er publisert, blir dette én ")}
           <code>pnpm add @booki/core @booki/react @booki/styles</code>.

@@ -70,7 +70,7 @@ function TaxCodeSelect({
       {(state: { value: string }) => (
         <>
           <TaxCodeSelectTrigger id={id} aria-required={required || undefined}>
-            {(trigger: { text: string }) => <span data-slot="tax-code-select-value">{trigger.text}</span>}
+            {(trigger: { text: string }) => <span data-slot="tax-code-select-value">{trigger.text || "–"}</span>}
           </TaxCodeSelectTrigger>
           <TaxCodeSelectList>
             {codes.map((code) => (
@@ -80,6 +80,7 @@ function TaxCodeSelect({
             ))}
           </TaxCodeSelectList>
           <TaxCodeSelectControl tabIndex={-1}>
+            {state.value === "" ? <option value="">–</option> : null}
             {codes.map((code) => (
               <option key={code.code} value={code.code}>
                 {code.label}

@@ -22,7 +22,8 @@
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm generate:frameworks && pnpm format",
     "release": "pnpm build:packages && changeset publish",
-    "release:plan": "changeset publish-plan"
+    "release:plan": "changeset publish-plan",
+    "pack:local": "node scripts/pack-local.mjs"
   },
   "engines": {
     "node": ">=26.0.0"

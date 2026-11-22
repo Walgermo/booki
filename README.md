@@ -36,7 +36,14 @@ and stop where a person has to decide. Your server checks the same rules again.
 ## Quick start
 
 Booki is not on npm yet: it is published once v1 has run in a real product.
-Try it now:
+Until then, the skill packs it from a clone. Give it to your coding agent:
+
+- **In your app, with a coding agent:** load the skill, or copy the full setup
+  prompt with the button on [booki.dev](https://booki.dev).
+
+```bash
+npx skills add Walgermo/booki --skill booki
+```
 
 - **In the browser:** [booki.dev/demo](https://booki.dev/demo) is a small
   accounting product built only from these controls, with an agent working
@@ -56,9 +63,10 @@ Open http://localhost:5173 for the docs and the demo.
 `pnpm --filter @booki/example-ap-flow dev` runs [the accounts-payable example](examples/ap-flow)
 at http://localhost:3100.
 
-- **In your app:** link the packages from a clone, as
-  [the installation page](https://booki.dev/docs/installation) shows. Fitting
-  Booki into an existing Next.js and shadcn/ui product: [docs/drop-in.md](docs/drop-in.md).
+- **In your app, by hand:** `pnpm pack:local` in a clone packs Booki as npm
+  would deliver it and prints how to add it
+  ([installation](https://booki.dev/docs/installation)). An existing Next.js
+  and shadcn/ui product: [docs/drop-in.md](docs/drop-in.md).
 
 ## How it works
 

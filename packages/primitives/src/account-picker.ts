@@ -60,10 +60,9 @@ export function pickInitial(
   value?: string,
   defaultValue?: string,
 ): AccountOption | undefined {
-  // A controlled value is the owner's: "" (or an unknown account) is no selection, never the first account.
-  if (value !== undefined) return value === "" ? undefined : resolveAccount(accounts, value);
-  if (defaultValue) return resolveAccount(accounts, defaultValue) ?? accounts[0];
-  return accounts[0];
+  // No value, or one the chart lacks, is no selection. An account nobody chose would be posted to.
+  const wanted = value ?? defaultValue;
+  return wanted ? resolveAccount(accounts, wanted) : undefined;
 }
 
 /**
@@ -144,13 +143,14 @@ export const accountPicker = definePrimitive({
         }
         return apply(selected, "set-account", asEvent(event));
       },
-      /** Same as setAccount: history and staging restore `value` through set<Key>. */
-      setValue: (raw: string, event?: unknown): boolean => methods.setAccount(raw, event),
-      clear: () => {
-        const { accounts } = context.store.get();
-        const first = accounts[0];
-        if (!first) return change("value", "", { reason: "clear" });
-        return apply(first, "clear");
+      /** Same as setAccount, and "" empties it: history and staging restore `value` through set<Key>. */
+      setValue: (raw: string, event?: unknown): boolean =>
+        raw === "" ? methods.clear() : methods.setAccount(raw, event),
+      /** No account: never another one. */
+      clear: (): boolean => {
+        const ok = change("value", "", { reason: "clear" });
+        if (ok) context.store.set({ name: "" });
+        return ok;
       },
       allItems: () => context.store.get().items,
     };

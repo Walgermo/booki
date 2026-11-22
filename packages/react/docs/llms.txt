@@ -23,7 +23,7 @@ import {
   proposeChanges,
   createBookiHistory,
   registerTools,
-} from "@booki/react/acc-agent"
+} from "@booki/react"
 
 const agent = createBookiAgent({
   agentId: "bookkeeper",
