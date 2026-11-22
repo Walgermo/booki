@@ -5,11 +5,11 @@ npm until v1 has run in a real product.
 
 ## Set up
 
-You need Node 22.13 or later (`.nvmrc`) and pnpm 11 (Corepack picks the
-version from `package.json`).
+You need Node 26 (`.nvmrc`) and pnpm 11.13.1, the version in `packageManager`
+in `package.json`:
 
 ```bash
-corepack enable
+npm install --global pnpm@11.13.1
 ```
 
 ```bash
