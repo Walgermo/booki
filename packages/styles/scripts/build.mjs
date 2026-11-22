@@ -54,7 +54,11 @@ if (/:where\(\[data-slot\][ )]/.test(css)) throw new Error("an unscoped :where([
 writeFileSync(join(root, "dist/booki.css"), css);
 // The same rules inside @layer booki, for apps whose own utilities (Tailwind's
 // @layer utilities) should win over Booki's defaults.
-writeFileSync(join(root, "dist/layered.css"), `@layer booki {\n${css}\n}\n`);
+// The order comes first: Tailwind 4's reset (base) below Booki, its utilities above.
+writeFileSync(
+  join(root, "dist/layered.css"),
+  `@layer theme, base, booki, components, utilities;\n@layer booki {\n${css}\n}\n`,
+);
 writeFileSync(join(root, "dist/shadcn.css"), readFileSync(join(root, "src/shadcn.css"), "utf8"));
 console.log(
   `Built @booki/styles → dist/booki.css, layered.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,

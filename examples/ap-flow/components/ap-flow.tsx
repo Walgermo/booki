@@ -120,17 +120,13 @@ export function ApFlow({ initial }: { initial: Books }) {
                   aria-label="Betalingsforslag"
                 />
               ) : (
-                <div className="grid justify-items-start gap-2">
+                <div data-booki="" className="grid justify-items-start gap-2">
                   <p className="text-sm text-[color:var(--bk-muted-fg)]">
                     {approved === 0
                       ? "Ingen fakturaer er attestert ennå. Betalingsforslaget lages av de attesterte."
                       : `${approved} attesterte fakturaer venter på et betalingsforslag.`}
                   </p>
-                  <Button
-                    data-booki=""
-                    disabled={approved === 0}
-                    onClick={() => void send({ action: "prepare-batch" })}
-                  >
+                  <Button disabled={approved === 0} onClick={() => void send({ action: "prepare-batch" })}>
                     Lag betalingsforslag
                   </Button>
                 </div>

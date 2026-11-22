@@ -19,12 +19,16 @@ their parts, so a plain `[data-slot]` scope would restyle every button in your
 app; the build scopes those rules to Booki's component names instead.
 
 ```css
-/* app/globals.css: Booki under your utilities, in your colours */
+/* app/globals.css: Booki over Tailwind's reset and under your utilities, in your colours */
+@layer theme, base, booki, components, utilities;
 @import "@booki/styles" layer(booki);
 @import "@booki/styles/shadcn.css" layer(booki);
 @import "tailwindcss";
 ```
 
+- The first line sets the order. Leave it out and Booki's layer comes before
+  Tailwind's `base`, whose reset then strips the padding and borders off every
+  field and button.
 - `layer(booki)` (or `@booki/styles/layered.css`) puts Booki in a cascade
   layer, so your Tailwind utilities win wherever both apply.
 - `shadcn.css` sets each `--bk-*` token from the shadcn variable that does the

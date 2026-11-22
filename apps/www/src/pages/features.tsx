@@ -45,6 +45,7 @@ const advice = advise({ actor, scope: engagementId }, "audit.conclude", () => as
 const { status, body } = toHttp(verdict)`;
 
 const STYLES = `/* app/globals.css: under your utilities, in your colours */
+@layer theme, base, booki, components, utilities;
 @import "@booki/styles" layer(booki);
 @import "@booki/styles/shadcn.css" layer(booki);`;
 

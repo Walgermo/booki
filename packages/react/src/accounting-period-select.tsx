@@ -75,7 +75,7 @@ function AccountingPeriodSelect({
             {profile.copy.period}
           </span>
           <AccountingPeriodTrigger id={id} aria-required={required || undefined} aria-labelledby={labelId}>
-            {(trigger: { text: string }) => <span data-slot="accounting-period-value">{trigger.text}</span>}
+            {(trigger: { text: string }) => <span data-slot="accounting-period-value">{trigger.text || "–"}</span>}
           </AccountingPeriodTrigger>
           <AccountingPeriodList>
             {items.map((item) => (
@@ -85,6 +85,7 @@ function AccountingPeriodSelect({
             ))}
           </AccountingPeriodList>
           <AccountingPeriodControl tabIndex={-1}>
+            {state.value === "" ? <option value="">–</option> : null}
             {items.map((item) => (
               <option key={item.value} value={item.value}>
                 {item.label}
