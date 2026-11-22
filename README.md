@@ -1,13 +1,70 @@
+<div align="center">
+
+<a href="https://booki.dev"><img src=".github/readme/mark.svg" alt="Booki" width="72" height="72"></a>
+
 # Booki
 
-Build agent-first web apps for accounting and auditing: React controls that an
-agent can operate, and cannot misuse.
+### Agent-first UI for accounting and auditing.
+
+<a href="https://github.com/Walgermo/booki/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Walgermo/booki/ci.yml?branch=main&label=CI&labelColor=0d1117" alt="CI"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-d4ee40?labelColor=0d1117" alt="License: MIT"></a>
+<img src="https://img.shields.io/badge/status-pre--1.0-d4ee40?labelColor=0d1117" alt="Status: pre-1.0">
+<img src="https://img.shields.io/badge/React_%C2%B7_Vue_%C2%B7_Svelte_%C2%B7_Solid_%C2%B7_Web_Components-0d1117" alt="React, Vue, Svelte, Solid and Web Components">
+
+**[Website](https://booki.dev)** · **[Docs](https://booki.dev/docs)** · **[Live demo](https://booki.dev/demo)** · **[Example app](examples/ap-flow)** · **[Agent Contract](spec/agent-contract.md)**
+
+</div>
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/agent-at-work-dark.png">
+  <img alt="A supplier invoice in an accounting product built with Booki. The agent's cursor checks that the voucher balances, then posts it under the company's rule; a person sees each step." src=".github/readme/agent-at-work-light.png">
+</picture>
+
+<br>
+
+**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work, for React, Vue, Svelte, Solid and plain HTML.**
 
 Agents already work in accounting software by reading the screen and typing
-into text boxes. Booki replaces those fields with controls that hand an agent
-typed state and named accounting actions over Booki's agent bridge, enforce
-the bookkeeping rules
-whatever the agent sends, and stop where a person has to decide.
+into text boxes. They guess which field is which, type `1.250,00` where the
+system wanted øre, and press buttons that were meant for a person. Booki
+replaces those fields with controls that give an agent typed state and named
+accounting actions, enforce the bookkeeping rules whatever the agent sends,
+and stop where a person has to decide. Your server checks the same rules again.
+
+## Quick start
+
+Booki is not on npm yet: it is published once v1 has run in a real product.
+Try it now:
+
+- **In the browser:** [booki.dev/demo](https://booki.dev/demo) is a small
+  accounting product built only from these controls, with an agent working
+  each screen. [booki.dev/docs](https://booki.dev/docs) has every control with
+  its live agent snapshot.
+- **Locally**, with Node 26 and pnpm 11:
+
+```bash
+git clone https://github.com/Walgermo/booki.git && cd booki
+```
+
+```bash
+pnpm install && pnpm dev
+```
+
+Open http://localhost:5173 for the docs and the demo.
+`pnpm --filter @booki/example-ap-flow dev` runs [the accounts-payable example](examples/ap-flow)
+at http://localhost:3100.
+
+- **In your app:** link the packages from a clone, as
+  [the installation page](https://booki.dev/docs/installation) shows. Fitting
+  Booki into an existing Next.js and shadcn/ui product: [docs/drop-in.md](docs/drop-in.md).
+
+## How it works
+
+An agent never types into a field. It reads a snapshot of the screen and calls
+named actions; the control enforces the rules, the page decides what needs a
+person, and the server checks everything again.
 
 ```tsx
 import { AmountField, VoucherComposer, createBookiAgent } from "@booki/react"
@@ -23,25 +80,20 @@ await agent.act({
 })
 ```
 
-## What it guarantees
+```mermaid
+flowchart LR
+  agent["Agent<br/>(any model)"] -- "snapshot · act" --> bridge["Agent bridge<br/>in the page"]
+  person["Person"] -- clicks --> controls
+  bridge --> controls["Booki controls<br/>rules · redaction · audit"]
+  controls -- "a person's decision?" --> stop["Refused for agents"]
+  controls -- "every write" --> server["@booki/core/server<br/>guard: role · duties · books"]
+```
 
-| Rule | How |
-| --- | --- |
-| Money is whole minor units | A fraction is refused at the action, before it reaches a voucher. |
-| A voucher balances or it is not posted | `assertPostable` names the difference and any missing dimension. |
-| Codes come from closed lists | Accounts, VAT codes, departments and projects. The error lists valid ones. |
-| People approve what leaves the account | Posting, paying and approving are marked for a person. |
-| Bank details stay unread | Account numbers, IBAN and KID read as `[redacted]` to an agent. |
-| The agent's work is visible | Presence, proposals a person keeps or reverts, and a mark on what it set. |
-| Closed periods stay closed | A voucher dated in a closed period is not postable; a locked period never reopens. |
-| Approval takes the right people | Levels, amount limits and substitutes. The requester cannot approve; a payment run needs two people who did not prepare it. |
-| A fixed invoice stays fixed | Totals come from the lines. After finalizing, corrections are credit notes. |
-
-
-The rules run twice: on screen for speed and clarity, and on your server as the
-gate. `@booki/core/server` checks the caller your sign-in established (a person
-or an agent with its own credential), its role, separation of duties and the
-books, and answers with a status and the same sentence the control showed:
+The rules run twice: on screen for speed and clarity, and on your server as
+the gate. `@booki/core/server` checks the caller your sign-in established (a
+person, or an agent with its own credential), its role, separation of duties
+and the books, and answers with a status and the same sentence the control
+showed:
 
 ```ts
 import { guardPostVoucher, toHttp } from "@booki/core/server"
@@ -50,99 +102,77 @@ const verdict = guardPostVoucher({ actor, locale: "nb" }, { lines, date, rules: 
 const { status, body } = toHttp(verdict) // 200, or 401/403/409/422 with a reason
 ```
 
+## What it guarantees
+
+| Rule | How |
+| --- | --- |
+| Money is whole minor units | A fraction is refused at the action, before it reaches a voucher. |
+| A voucher balances or it is not posted | `assertPostable` names the difference and any missing dimension. |
+| Codes come from closed lists | Accounts, VAT codes, departments and projects. The error lists valid ones. |
+| People approve what leaves the account | Approving, signing off, releasing and confirming are a person's, whatever the app allows. |
+| Bank details stay unread | Account numbers, IBAN and KID read as `[redacted]` to an agent. |
+| The agent's work is visible | A cursor, presence, proposals a person keeps or reverts, and a mark on what it set. |
+| Closed periods stay closed | A voucher dated in a closed period is not postable; a locked period never reopens. |
+| Approval takes the right people | Levels, amount limits and substitutes. The requester cannot approve; who approves a payment cannot release it. |
+| A fixed invoice stays fixed | Totals come from the lines. After finalizing, corrections are credit notes. |
 
 Booki implements an open specification, [the Agent Contract for Accounting
 UIs](spec/agent-contract.md): what a screen gives an agent, what stays with a
-person, how every step is recorded and how the server checks it again. Any ERP
-can implement it; one agent then works across products.
-
-Trying it in a product? [A one-screen pilot](docs/pilot.md) takes two weeks and
-measures your own screen before and after. `pnpm proof` runs the real-model
-numbers with your key.
+person, how every step is recorded and how the server checks it again. Any
+ERP can implement it; one agent then works across products.
 
 ## Packages
 
-| Package | Role |
+Every control is defined once, without a framework, and generated for each
+one, so a control has the same name, state, actions and rules everywhere and
+one agent operates them all.
+
+| Package | For |
 | --- | --- |
-| `@booki/core` | Rules with no framework: money, vouchers, bank reconciliation, approval chains, period locks, close checklists, invoices, payment batches, supplier invoices, attachments, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles. |
-| `@booki/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. The packages below render these. |
-| `@booki/react` | The controls for React, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
-| `@booki/web` | The controls as custom elements (`<booki-amount-field>`), for Angular, server-rendered pages and plain HTML. |
-| `@booki/vue`, `@booki/svelte`, `@booki/solid` | The same controls as parts for each framework (`AmountField.Root`, `AmountField.Input`). |
-| `@booki/styles` | Optional default look, "Paper and Ink", as CSS variables. See `DESIGN.md`. |
+| `@booki/react` | React 19: the controls, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
+| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML. |
+| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`). |
+| `@booki/core` | The rules, with no framework: money, vouchers, reconciliation, approvals, period locks, close, invoices, payment batches, supplier invoices, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles, and the server guard. |
+| `@booki/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. |
+| `@booki/styles` | The optional default look, "Paper and Ink", as CSS variables (`DESIGN.md`). |
 
-Every framework package is generated from the same definitions, so a control
-has the same name, state, actions and rules in each, and one agent operates
-them all. Which to use:
+Country profiles for Norway, the United States, Sweden, Denmark, the United
+Kingdom and Germany; define your own for the rest. No ERP connectors: your
+backend stays yours.
 
-| Your product | Package |
-| --- | --- |
-| React | `@booki/react` |
-| Angular, or pages rendered on the server (jQuery, Rails, .NET) | `@booki/web` |
-| Vue 3, Nuxt | `@booki/vue` |
-| Svelte 5 | `@booki/svelte` |
-| Solid 2 | `@booki/solid` |
+## Examples
 
-Not on npm yet. Until it is, use it from this repo.
-
-## Run it
-
-Node 26 (`.nvmrc`) and pnpm 11.13.1 (`packageManager` in `package.json`).
-
-```bash
-pnpm install
-```
-
-```bash
-pnpm dev
-```
-
-Open http://localhost:5173. `/demo` is a small accounting product built only
-from these controls, with an agent working each screen; `/close` is one
-month-end; `/docs` has every control with its live agent snapshot.
-
-`examples/ap-flow` is a whole accounts-payable flow in Next.js, from the
-supplier inbox to a reconciled bank line: four people, an agent with its own
-credential, and a server guard on every write. Run it with
-`pnpm --filter @booki/example-ap-flow dev` (http://localhost:3100).
-
-The "ask it yourself" box on `/close` uses a real Claude model. It needs a key
-on the server: copy `apps/www/.env.example` to `apps/www/.env.local` and fill in `ANTHROPIC_API_KEY`. Everything
-else works without one.
-
-## Checks
-
-```bash
-pnpm check
-```
-
-Formatting, lint, typecheck and every test, as CI runs them. They build the packages first
-when `dist` is missing or stale. How to contribute, and which rules a review
-checks: `CONTRIBUTING.md`. Versions and release notes: `RELEASING.md`.
-
-A benchmark that runs the same task with a real model through browser tools
-and through the bridge is in `benchmarks/agent`.
+- **[Supplier invoice to payment](examples/ap-flow)** (Next.js): inbox,
+  approval, payment batch, release and bank reconciliation. Four people, an
+  agent with its own credential, and a server guard on every write.
+- **[The demo company](https://booki.dev/demo)**: an accounting product built
+  only from Booki controls, with an agent on each screen (`apps/www`).
+- **[A one-screen pilot](docs/pilot.md)**: two weeks to measure an agent on
+  your own screen, before and after. `pnpm proof` runs the real-model numbers.
 
 ## For coding agents
 
-- `AGENTS.md`: how this repo works.
-- `DESIGN.md`: tokens, layout rules and what does not exist.
-- `packages/react/docs/llms.txt`: every control and its agent actions.
-- `skills/booki/SKILL.md`: install with
-  `npx skills add Walgermo/booki --skill booki`.
+- [`AGENTS.md`](AGENTS.md): how this repo works.
+- [`DESIGN.md`](DESIGN.md): tokens, layout rules and what does not exist.
+- [`packages/react/docs/llms.txt`](packages/react/docs/llms.txt): every control and its agent actions.
+- The Booki skill: `npx skills add Walgermo/booki --skill booki`.
 
 ## Not covered yet
 
-- Outside React, the controls come as parts: you write the markup around them (rows, options). The agent cursor is `<booki-agent-cursor>` in `@booki/web`, usable from any framework; `AgentPresence` is React-only for now.
-- Refusals and issues are English and Norwegian. Role names and permission ids in them are your data and stay as you wrote them. A few messages raised in the React layer are English only.
+- Outside React, the controls come as parts: you write the markup around them. `AgentPresence` is React-only for now.
+- Refusals are in English and Norwegian; a few messages from the React layer are English only.
 - Sweden, Denmark, the UK and Germany are starter profiles with English labels.
 - The VAT return ships example schemas only. You supply the real box layout.
 - Intercompany eliminations, consolidation, budgets, payroll and dunning.
 - Nothing connects to a bank, a tax authority or a document scanner: the host does.
 
-## Scope
+## Contributing
 
-React 19, Vue 3.5, Svelte 5.33, Solid 2 or any browser with custom elements (peer dependencies: `@ui-sdk/core` and the `@ui-sdk` package for your framework, `0.1.0-beta.14`). Profiles for Norway, the United States, Sweden, Denmark, the United Kingdom and Germany; define your own for the rest. No ERP
-connectors: your backend stays yours.
+Issues and pull requests are welcome. [`CONTRIBUTING.md`](CONTRIBUTING.md) has
+the setup and the rules a review checks; `pnpm check` runs what CI runs.
+Versions and release notes come from Changesets ([`RELEASING.md`](RELEASING.md)).
+Found a security problem? Report it privately ([`SECURITY.md`](SECURITY.md)).
 
-MIT.
+## License
+
+[MIT](LICENSE)
