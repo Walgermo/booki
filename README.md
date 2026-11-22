@@ -87,7 +87,7 @@ Not on npm yet. Until it is, use it from this repo.
 
 ## Run it
 
-Node 22.13 or later and pnpm 11 (`corepack enable` picks the version).
+Node 26 (`.nvmrc`) and pnpm 11.13.1 (`packageManager` in `package.json`).
 
 ```bash
 pnpm install

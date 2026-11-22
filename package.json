@@ -14,7 +14,7 @@
     "readiness": "pnpm --filter @booki/readiness check",
     "build:frameworks": "pnpm --filter @booki/web --filter @booki/vue --filter @booki/svelte --filter @booki/solid build",
     "generate:frameworks": "node packages/web/scripts/generate.mjs && node scripts/generate-frameworks.mjs",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
+    "check": "node scripts/check-pnpm-pin.mjs && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
     "ensure-built": "node scripts/ensure-built.mjs",
     "lint": "oxlint .",
     "format": "biome format --write .",
@@ -25,7 +25,7 @@
     "release:plan": "changeset publish-plan"
   },
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=26.0.0"
   },
   "packageManager": "pnpm@11.13.1",
   "devDependencies": {
