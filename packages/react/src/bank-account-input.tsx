@@ -1,0 +1,169 @@
+import { digitsOnly, isValidKontonummer } from "@booki/core/kontonummer";
+import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki/core/routing-number";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
+import { createParts } from "@ui-sdk/react/primitive";
+import type { ComponentProps } from "react";
+import { FormValue, type BookiFormProps } from "./form-props.js";
+import { IbanInput } from "./iban-input.js";
+import { useBookiLocaleOptional } from "./locale.js";
+import { type BankAccountValue, bankAccount } from "@booki/primitives/bank-account-input";
+
+const parts = createParts(bankAccount, {
+  root: "div",
+  kontonummer: "input",
+  routing: "input",
+  account: "input",
+});
+
+const BankAccountRoot = parts.Root;
+const BankAccountKontonummer = parts.Kontonummer;
+const BankAccountRouting = parts.Routing;
+const BankAccountAccount = parts.Account;
+
+export type BankAccountInputProps = {
+  /** For profiles whose bank account is an IBAN. */
+  iban?: string;
+  kontonummer?: string;
+  routingNumber?: string;
+  accountNumber?: string;
+  onValueChange?: (value: BankAccountValue) => void;
+  required?: boolean;
+  className?: string;
+} & Omit<BookiFormProps, "required"> &
+  Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
+
+type BankDigits = {
+  digits: string;
+  routingNumber: string;
+  accountNumber: string;
+};
+
+/**
+ * Form fields: `name` submits the 11 kontonummer digits in Norway. In the US
+ * it submits `${name}.routingNumber` and `${name}.accountNumber`; `id` goes to
+ * the routing input and `${id}-account` to the account input.
+ */
+function BankAccountInput({
+  iban,
+  kontonummer,
+  routingNumber,
+  accountNumber,
+  onValueChange,
+  required,
+  name,
+  id,
+  disabled,
+  readOnly,
+  className,
+  ...props
+}: BankAccountInputProps) {
+  const { profile } = useBookiLocaleOptional();
+  const kind = profile.bankAccount.kind;
+
+  if (kind === "iban") {
+    return (
+      <IbanInput
+        {...(iban !== undefined ? { value: iban } : {})}
+        onValueChange={(value) => onValueChange?.({ kind: "iban", iban: value })}
+        label={profile.bankAccount.label}
+        description={profile.bankAccount.description}
+        required={required}
+        name={name}
+        id={id}
+        disabled={disabled}
+        readOnly={readOnly}
+        className={className}
+        {...props}
+      />
+    );
+  }
+
+  if (kind === "routing-account") {
+    const routing = digitsOnly(routingNumber ?? "");
+    const account = digitsOnly(accountNumber ?? "");
+    const routingInvalid = routing.length > 0 && !isValidRoutingNumber(routing);
+    const accountInvalid = account.length > 0 && !isValidUsAccountNumber(account);
+
+    return (
+      <BankAccountRoot
+        kind="routing-account"
+        routingNumber={routingNumber}
+        accountNumber={accountNumber}
+        label={profile.bankAccount.label}
+        description={profile.bankAccount.description}
+        onValueChange={onValueChange}
+        disabled={disabled}
+        readOnly={readOnly}
+        className={className}
+        aria-label={profile.bankAccount.label}
+        {...props}
+      >
+        {(state: BankDigits) => (
+          <>
+            <Field invalid={routingInvalid}>
+              <FieldLabel>Routing number</FieldLabel>
+              <FieldDescription>9-digit ABA routing number</FieldDescription>
+              <BankAccountRouting id={id} required={required} placeholder="021000021" />
+              {routingInvalid ? <FieldError>Invalid routing number</FieldError> : null}
+            </Field>
+            <Field invalid={accountInvalid}>
+              <FieldLabel>Account number</FieldLabel>
+              <FieldDescription>4–17 digits</FieldDescription>
+              <BankAccountAccount id={id ? `${id}-account` : undefined} required={required} placeholder="123456789" />
+              {accountInvalid ? <FieldError>Invalid account number</FieldError> : null}
+            </Field>
+            <FormValue
+              name={name ? `${name}.routingNumber` : undefined}
+              value={state.routingNumber}
+              disabled={disabled}
+            />
+            <FormValue
+              name={name ? `${name}.accountNumber` : undefined}
+              value={state.accountNumber}
+              disabled={disabled}
+            />
+          </>
+        )}
+      </BankAccountRoot>
+    );
+  }
+
+  const digits = digitsOnly(kontonummer ?? "");
+  const invalid = digits.length > 0 && !isValidKontonummer(digits);
+
+  return (
+    <BankAccountRoot
+      kind="kontonummer"
+      kontonummer={kontonummer}
+      label={profile.bankAccount.label}
+      description={profile.bankAccount.description}
+      onValueChange={onValueChange}
+      disabled={disabled}
+      readOnly={readOnly}
+      className={className}
+      aria-label={profile.bankAccount.label}
+      {...props}
+    >
+      {(state: BankDigits) => (
+        <Field invalid={invalid}>
+          <FieldLabel>{profile.bankAccount.label}</FieldLabel>
+          <FieldDescription>{profile.bankAccount.description}</FieldDescription>
+          <BankAccountKontonummer id={id} required={required} placeholder="1234 56 78903" />
+          {invalid ? <FieldError>Ugyldig kontonummer (mod11)</FieldError> : null}
+          <FormValue name={name} value={state.digits} disabled={disabled} />
+        </Field>
+      )}
+    </BankAccountRoot>
+  );
+}
+
+export {
+  BankAccountInput,
+  BankAccountRoot,
+  BankAccountKontonummer,
+  BankAccountRouting,
+  BankAccountAccount,
+  bankAccount,
+};
+
+export { type BankAccountValue } from "@booki/primitives/bank-account-input";

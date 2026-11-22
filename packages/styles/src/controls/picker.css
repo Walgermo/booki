@@ -1,0 +1,327 @@
+/* ── Closed pickers: AccountPicker, TaxCodeSelect, CurrencySelect, AccountingPeriodSelect ──
+   One shared look, because the four share one behaviour (primitives/src/picker.ts):
+   a trigger (or AccountPicker's search input), a listbox below it, its options,
+   and the native <select> fallback, which shows instead on a touch screen. */
+
+[data-slot="tax-code-select"],
+[data-slot="account-picker"],
+[data-slot="currency-select"],
+[data-slot="accounting-period-select"] {
+  position: relative;
+  display: grid;
+  gap: 0.35rem;
+  min-width: 11rem;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="accounting-period-label"] {
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: -0.01em;
+}
+
+/* The trigger reads as a field, not a button: paper, a hairline, a chevron. */
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+) {
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  padding: 0.4rem 2rem 0.4rem var(--bk-control-px);
+  border-color: var(--bk-border);
+  border-radius: var(--bk-radius);
+  box-shadow: var(--bk-shadow-recess), var(--bk-shadow-xs);
+  position: relative;
+  background-color: var(--bk-card);
+  color: var(--bk-fg);
+  font-size: 1rem;
+  font-weight: 400;
+  text-align: start;
+  box-shadow: var(--bk-shadow-xs);
+}
+
+@media (pointer: fine) {
+  :is(
+    [data-slot="tax-code-select-trigger"],
+    [data-slot="currency-select-trigger"],
+    [data-slot="accounting-period-trigger"]
+  ) {
+    font-size: 0.875rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(
+    [data-slot="tax-code-select-trigger"],
+    [data-slot="currency-select-trigger"],
+    [data-slot="accounting-period-trigger"]
+  ):hover:not(:disabled) {
+    background-color: var(--bk-card);
+    border-color: var(--bk-border-strong);
+  }
+}
+
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+):focus-visible,
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+)[data-open] {
+  outline: none;
+  border-color: var(--bk-fg);
+  box-shadow:
+    var(--bk-shadow-xs),
+    0 0 0 3px color-mix(in srgb, var(--bk-ring) 12%, transparent);
+}
+
+/* The chevron, drawn in the muted ink. */
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+)::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: 0.85rem;
+  top: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+  border: solid var(--bk-muted-fg);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-70%) rotate(45deg);
+  transition: transform var(--bk-duration) var(--bk-ease-out);
+}
+
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+)[data-open]::after {
+  transform: translateY(-20%) rotate(225deg);
+}
+
+/* A field does not squash when pressed. */
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+):active:not(:disabled) {
+  transform: none;
+}
+
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+)[data-readonly] {
+  background-color: var(--bk-muted);
+  cursor: default;
+}
+
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"]
+)[data-readonly]::after {
+  content: none;
+}
+
+:is([data-slot="tax-code-select-value"], [data-slot="currency-select-value"], [data-slot="accounting-period-value"]) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="currency-select-value"] {
+  font-family: var(--bk-mono);
+  letter-spacing: 0.02em;
+}
+
+/* AccountPicker's search field takes the shared field look from booki.css. */
+[data-slot="account-picker-input"] {
+  text-overflow: ellipsis;
+}
+
+/* ── The list ─────────────────────────────────────────────────────────── */
+
+:is(
+  [data-slot="account-picker-list"],
+  [data-slot="tax-code-select-list"],
+  [data-slot="currency-select-list"],
+  [data-slot="accounting-period-list"]
+):not([hidden]) {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 40;
+  display: grid;
+  gap: 1px;
+  box-sizing: border-box;
+  min-width: max(100%, 12rem);
+  max-height: min(18rem, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.25rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  animation: bk-picker-in var(--bk-duration) var(--bk-ease-out);
+}
+
+@keyframes bk-picker-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+:is(
+  [data-slot="account-picker-option"],
+  [data-slot="tax-code-select-option"],
+  [data-slot="currency-select-option"],
+  [data-slot="accounting-period-option"]
+) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.45rem 1.75rem 0.45rem 0.6rem;
+  border-radius: var(--bk-radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.3;
+  cursor: default;
+  user-select: none;
+  position: relative;
+}
+
+:is(
+  [data-slot="account-picker-option"],
+  [data-slot="tax-code-select-option"],
+  [data-slot="currency-select-option"],
+  [data-slot="accounting-period-option"]
+)[data-highlighted] {
+  background: var(--bk-muted);
+}
+
+:is(
+  [data-slot="account-picker-option"],
+  [data-slot="tax-code-select-option"],
+  [data-slot="currency-select-option"],
+  [data-slot="accounting-period-option"]
+)[data-selected] {
+  font-weight: var(--bk-font-weight-medium);
+}
+
+/* The chosen option carries a tick, in ink. */
+:is(
+  [data-slot="account-picker-option"],
+  [data-slot="tax-code-select-option"],
+  [data-slot="currency-select-option"],
+  [data-slot="accounting-period-option"]
+)[data-selected]::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset-inline-end: 0.6rem;
+  top: 50%;
+  width: 0.35rem;
+  height: 0.6rem;
+  border: solid var(--bk-fg);
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-65%) rotate(45deg);
+}
+
+:is(
+  [data-slot="account-picker-option"],
+  [data-slot="tax-code-select-option"],
+  [data-slot="currency-select-option"],
+  [data-slot="accounting-period-option"]
+)[aria-disabled="true"] {
+  opacity: 0.5;
+}
+
+[data-slot="account-picker-number"] {
+  flex: none;
+  min-width: 3.25rem;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="account-picker-option"][data-selected] [data-slot="account-picker-number"] {
+  color: var(--bk-fg);
+}
+
+[data-slot="account-picker-name"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-slot="currency-select-option"] {
+  font-family: var(--bk-mono);
+  letter-spacing: 0.02em;
+}
+
+[data-slot="account-picker-empty"] {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 40;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+}
+
+/* ── Touch: the platform's own picker ─────────────────────────────────────
+   On a finger the primitive (createPointerKind) hides the trigger and shows the
+   native <select> fallback, the better picker for a short list. AccountPicker
+   keeps its search. The field rules above set display, so `hidden` needs help. */
+
+:is(
+  [data-slot="tax-code-select-trigger"],
+  [data-slot="currency-select-trigger"],
+  [data-slot="accounting-period-trigger"],
+  [data-slot="account-picker-control"],
+  [data-slot="tax-code-select-control"],
+  [data-slot="currency-select-control"],
+  [data-slot="accounting-period-control"]
+)[hidden] {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  :is(
+    [data-slot="account-picker-option"],
+    [data-slot="tax-code-select-option"],
+    [data-slot="currency-select-option"],
+    [data-slot="accounting-period-option"]
+  ) {
+    min-height: 2.75rem;
+    align-items: center;
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+    [data-slot="account-picker-list"],
+    [data-slot="tax-code-select-list"],
+    [data-slot="currency-select-list"],
+    [data-slot="accounting-period-list"]
+  ) {
+    animation: none;
+  }
+}

@@ -1,0 +1,122 @@
+/* ── Payment batch: the payment list's search, sortable headers, pages and CSV.
+   The batch's own look (table, approvals, actions) is in booki.css. ── */
+
+/* ── Table behaviour, as in data-table.css: search, sortable headers, pages, CSV ── */
+
+[data-slot="payment-batch-search"] {
+  width: 100%;
+  min-height: var(--bk-control-h);
+  padding: 0 var(--bk-control-px);
+  border: 1px solid var(--bk-border-strong);
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  font: inherit;
+}
+
+/* The sort button fills the header cell, so the whole header is the target. */
+[data-slot="payment-batch-sort"] {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+
+[data-slot="payment-batch-sort"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+[data-slot="payment-batch-sort-mark"] {
+  opacity: 0.35;
+}
+
+[data-slot="payment-batch-sort"][data-sorted] {
+  color: var(--bk-fg);
+}
+
+[data-slot="payment-batch-sort"][data-sorted] [data-slot="payment-batch-sort-mark"] {
+  opacity: 1;
+}
+
+[data-slot="payment-batch-export"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--bk-control-h);
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  color: var(--bk-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+[data-slot="payment-batch-toolbar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap);
+}
+
+[data-slot="payment-batch-spacer"] {
+  flex: 1 1 auto;
+}
+
+[data-slot="payment-batch-pagination"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="payment-batch-range"] {
+  margin-right: auto;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+:is([data-slot="payment-batch-prev"], [data-slot="payment-batch-next"]) {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  color: var(--bk-fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+:is([data-slot="payment-batch-prev"], [data-slot="payment-batch-next"]):disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+[data-slot="payment-batch-search-label"] {
+  flex: 1 1 14rem;
+  max-width: 22rem;
+}
+
+[data-slot="payment-batch-table"] th[data-align="end"] [data-slot="payment-batch-sort"] {
+  justify-content: flex-end;
+}
+
+/* What the search shows, above the whole batch's total. */
+[data-slot="payment-batch-matching"] :is(th, td) {
+  color: var(--bk-muted-fg);
+  font-weight: normal;
+}
+
+[data-slot="payment-batch-empty"] {
+  padding-block: 2rem;
+  text-align: center;
+  color: var(--bk-muted-fg);
+}

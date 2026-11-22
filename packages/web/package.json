@@ -1,0 +1,74 @@
+{
+  "name": "@booki/web",
+  "version": "0.1.0",
+  "description": "Booki for Web Components — agent-first accounting controls as custom elements, for any framework or none: Angular, server-rendered pages, plain HTML.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/web"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "keywords": [
+    "accounting",
+    "agents",
+    "web-components",
+    "custom-elements",
+    "angular",
+    "voucher",
+    "invoice"
+  ],
+  "sideEffects": [
+    "./dist/*.js"
+  ],
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./agent": {
+      "types": "./dist/agent.d.ts",
+      "default": "./dist/agent.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    },
+    "./agent-cursor": {
+      "types": "./dist/agent-cursor.d.ts",
+      "default": "./dist/agent-cursor.js"
+    }
+  },
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "node scripts/generate.mjs && tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*",
+    "@booki/primitives": "workspace:*"
+  },
+  "peerDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/web": "0.1.0-beta.14"
+  },
+  "devDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/web": "0.1.0-beta.14",
+    "jsdom": "^31.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,6 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Large</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "input", label: "Fixture", actions: ["setValue"] }] };</script></head>
+<body><main><ul id="list"></ul>
+<script>
+const list = document.getElementById("list");
+for (let i = 0; i < 1500; i++) { const li = document.createElement("li"); li.textContent = "Konto " + (1000 + i) + " Beskrivelse av kontoen"; list.append(li); }
+</script></main></body></html>

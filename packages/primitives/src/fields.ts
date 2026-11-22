@@ -1,0 +1,93 @@
+import { BookiError } from "@booki/core/msg";
+import { dispatch } from "@ui-sdk/core";
+
+/**
+ * Checks an object argument of an agent action against the fields it takes.
+ * An unknown field is refused with the list of the ones that exist, so the
+ * agent's next try is right; a missing object is refused with an example.
+ */
+export function checkFields(
+  action: string,
+  input: unknown,
+  fields: readonly string[],
+  example: string,
+): Record<string, unknown> {
+  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+    throw new BookiError("agent.not-an-object", { action, example });
+  }
+  for (const key of Object.keys(input)) {
+    if (!fields.includes(key)) {
+      throw new BookiError("agent.unknown-field", { action, field: key, fields: fields.join(", ") });
+    }
+  }
+  return input as Record<string, unknown>;
+}
+
+/**
+ * The format hint every list control with a query carries in its snapshot:
+ * what setSort and setFilter take, and that pages count from 1.
+ */
+export const QUERY_FORMAT = 'setSort(column, "asc"|"desc"); setFilter(column, text); setPage(1) is the first page';
+
+/**
+ * The DOM event behind a person's edit, when a setter was called from a slot
+ * handler. An agent's call passes plain values, never an Event, so its change
+ * still reports `source: "agent"`.
+ */
+export function asEvent(value: unknown): Event | undefined {
+  return typeof Event !== "undefined" && value instanceof Event ? value : undefined;
+}
+
+/**
+ * The key of a person-only button on one record, such as "F-1#confirm". ui-sdk
+ * asks a person for an agent step on a key whose part carries
+ * `data-agent-confirm`, so the button gets a key of its own: the mark guards
+ * the button without stopping an agent's actions on the record itself.
+ */
+/** A text argument from the agent: a string or a number, never an object read as "[object Object]". */
+export function textOf(raw: unknown, action: string): string {
+  if (raw === undefined || raw === null) return "";
+  if (typeof raw !== "string" && typeof raw !== "number") {
+    throw new BookiError("agent.not-text", { action, got: Array.isArray(raw) ? "a list" : typeof raw });
+  }
+  return String(raw);
+}
+
+export const buttonKey = (id: string, verb: string) => `${id}#${verb}`;
+
+/** The record id in a button key; a bare id is taken as it is. */
+export function recordOf(key: unknown): string {
+  const text = String(key);
+  const at = text.lastIndexOf("#");
+  return at < 0 ? text : text.slice(0, at);
+}
+
+type SecretContext = {
+  options: () => Record<string, unknown>;
+  store: { get: () => Record<string, unknown>; set: (patch: Record<string, unknown>) => void };
+};
+
+/**
+ * Commit a value that carries secrets (account numbers, KID) without handing
+ * them to the agent bridge. ui-sdk reports every change to `agent.subscribe`
+ * with its full value unless the whole component is secret, so the change is
+ * reported on `<key>Shown`, a copy with the secrets taken out. The owner still
+ * hears the full value on `on<Key>Change`, with details, and may cancel it.
+ * Returns false when nothing changed or the owner canceled.
+ */
+export function commitSecret<T>(
+  context: SecretContext,
+  change: (key: string, value: unknown, details: { reason: string; event?: Event }) => boolean,
+  key: string,
+  next: T,
+  shown: unknown,
+  details: { reason: string; event?: Event },
+): boolean {
+  if (Object.is(context.store.get()[key], next)) return false;
+  const callback = `on${key[0]!.toUpperCase()}${key.slice(1)}Change` as const;
+  if (dispatch(context as never, callback, next, details)) return false;
+  change(`${key}Shown`, shown, details);
+  // A controlled value waits for the owner to pass it back.
+  if (context.options()[key] === undefined) context.store.set({ [key]: next });
+  return true;
+}

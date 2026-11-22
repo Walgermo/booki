@@ -1,0 +1,63 @@
+{
+  "name": "@booki/solid",
+  "version": "0.1.0",
+  "description": "Booki for Solid — agent-first accounting controls as Solid components: the same rules, state and agent actions as @booki/react.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/solid"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "keywords": [
+    "accounting",
+    "agents",
+    "solid",
+    "solidjs",
+    "voucher",
+    "invoice"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*",
+    "@booki/primitives": "workspace:*"
+  },
+  "peerDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/solid": "0.1.0-beta.14",
+    "solid-js": "^2.0.0",
+    "@solidjs/web": "^2.0.0"
+  },
+  "devDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/solid": "0.1.0-beta.14",
+    "solid-js": "^2.0.0",
+    "@solidjs/web": "^2.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

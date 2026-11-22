@@ -1,0 +1,77 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "jsx-a11y", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/no-array-reverse": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "eslint/no-underscore-dangle": "off",
+    "eslint/no-shadow": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "vitest/valid-expect": [
+      "error",
+      {
+        "maxArgs": 2
+      }
+    ],
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "eslint/no-unmodified-loop-condition": "off",
+    "jsx-a11y/control-has-associated-label": "off",
+    "unicorn/require-module-specifiers": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "apps/www/src/components/bench/*-raw.tsx",
+        "apps/www/src/components/bench/raw-*.tsx",
+        "apps/www/src/components/bench/*-grid.tsx",
+        "apps/www/src/components/bench/grid-*.tsx"
+      ],
+      "rules": {
+        "jsx-a11y/control-has-associated-label": "off",
+        "jsx-a11y/label-has-associated-control": "off",
+        "jsx-a11y/no-static-element-interactions": "off",
+        "jsx-a11y/no-noninteractive-element-interactions": "off",
+        "jsx-a11y/no-autofocus": "off",
+        "jsx-a11y/prefer-tag-over-role": "off",
+        "jsx-a11y/anchor-is-valid": "off",
+        "jsx-a11y/role-has-required-aria-props": "off",
+        "jsx-a11y/tabindex-no-positive": "off",
+        "jsx-a11y/no-noninteractive-tabindex": "off"
+      }
+    },
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/test/**"],
+      "rules": {
+        "vitest/expect-expect": "off",
+        "vitest/valid-title": "off",
+        "vitest/no-conditional-expect": "off",
+        "vitest/no-conditional-tests": "off",
+        "vitest/require-to-throw-message": "off",
+        "react/jsx-key": "off"
+      }
+    },
+    {
+      "files": ["apps/**", "benchmarks/**"],
+      "rules": {
+        "react/immutability": "warn",
+        "react/refs": "warn",
+        "react/purity": "warn",
+        "react/set-state-in-effect": "warn"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "**/dist/**",
+    "packages/web/src/**",
+    "packages/vue/**",
+    "packages/svelte/**",
+    "packages/solid/**",
+    "benchmarks/agent/results/**"
+  ]
+}

@@ -1,0 +1,92 @@
+/* ── KPI stat: one figure against a previous period ──────────────────── */
+
+[data-slot="kpi-stat"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label spark"
+    "value spark"
+    "delta delta";
+  align-items: end;
+  gap: 0.2rem var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+:where([data-slot="kpi-stat"]) [data-slot="kpi-stat-label"] {
+  grid-area: label;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+/* A big standalone figure keeps proportional digits. */
+:where([data-slot="kpi-stat"]) {
+  container-type: inline-size;
+}
+
+:where([data-slot="kpi-stat"]) [data-slot="kpi-stat-value"] {
+  grid-area: value;
+  margin: 0;
+  /* Sized by the card, not the window, so a figure fits a narrow column on one line. */
+  font-size: clamp(1.25rem, 9cqi, 2rem);
+  font-weight: var(--bk-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--bk-fg);
+  white-space: nowrap;
+}
+
+:where([data-slot="kpi-stat"]) [data-slot="kpi-stat-delta"] {
+  grid-area: delta;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.3rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="kpi-stat-change"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-fg);
+}
+
+[data-slot="kpi-stat-arrow"] {
+  font-size: 0.625rem;
+}
+
+/* Colour follows whether the move is good news, and the arrow carries the direction. */
+[data-slot="kpi-stat-delta"][data-favourable="true"] :is([data-slot="kpi-stat-arrow"], [data-slot="kpi-stat-change"]) {
+  color: var(--bk-success);
+}
+
+[data-slot="kpi-stat-delta"][data-favourable="false"] :is([data-slot="kpi-stat-arrow"], [data-slot="kpi-stat-change"]) {
+  color: var(--bk-danger);
+}
+
+[data-slot="kpi-stat-spark"] {
+  grid-area: spark;
+  display: block;
+  max-width: 30vw;
+  height: auto;
+  overflow: visible;
+}
+
+[data-slot="kpi-stat-spark-line"] {
+  fill: none;
+  stroke: var(--bk-border-strong);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-slot="kpi-stat-spark-end"] {
+  fill: var(--bk-series-1);
+  stroke: var(--bk-bg);
+  stroke-width: 2;
+}

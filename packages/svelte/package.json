@@ -1,0 +1,61 @@
+{
+  "name": "@booki/svelte",
+  "version": "0.1.0",
+  "description": "Booki for Svelte — agent-first accounting controls as Svelte components: the same rules, state and agent actions as @booki/react.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/svelte"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "keywords": [
+    "accounting",
+    "agents",
+    "svelte",
+    "svelte5",
+    "voucher",
+    "invoice"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*",
+    "@booki/primitives": "workspace:*"
+  },
+  "peerDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/svelte": "0.1.0-beta.14",
+    "svelte": "^5.33.0"
+  },
+  "devDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/svelte": "0.1.0-beta.14",
+    "svelte": "^5.33.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

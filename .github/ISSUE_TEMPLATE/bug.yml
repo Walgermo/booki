@@ -1,0 +1,32 @@
+name: Bug
+description: A control, a rule or the agent bridge does something wrong
+labels: [bug]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The package and control, like "@booki/react VoucherComposer".
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: What you did, by a person or through the agent bridge (the action and its arguments).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Booki commit, framework and version, browser.
+  - type: markdown
+    attributes:
+      value: Never paste real account numbers, KIDs or company data. A security problem goes to SECURITY.md, not here.

@@ -1,0 +1,51 @@
+name: Release
+
+# On every push to main, Changesets keeps a "Version Packages" pull request
+# open with the next versions and their CHANGELOG entries. Merging it
+# releases: with the repository variable NPM_PUBLISH set to "true", the
+# packages go to npm with provenance, get git tags and a GitHub Release whose
+# notes are the CHANGELOG entry. Without it, nothing is published.
+#
+# Needs: Settings → Actions → General → "Allow GitHub Actions to create and
+# approve pull requests"; for publishing, an NPM_TOKEN secret with publish
+# rights to the @booki scope. See RELEASING.md.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+
+      - name: Version pull request, or release
+        uses: changesets/action@v2.1.2
+        with:
+          version-script: pnpm version-packages
+          publish-script: ${{ vars.NPM_PUBLISH == 'true' && 'pnpm release' || '' }}
+          commit-message: "Version Packages"
+          pr-title: "Version Packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"

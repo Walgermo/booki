@@ -1,0 +1,42 @@
+{
+  "name": "@booki/styles",
+  "version": "0.1.0",
+  "description": "Booki default look — Paper and Ink tokens and data-slot styles, with the agent cursor. Optional.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/styles"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "bugs": {
+    "url": "https://github.com/Walgermo/booki/issues"
+  },
+  "keywords": [
+    "accounting",
+    "css",
+    "design-tokens",
+    "nordic"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": "./dist/booki.css",
+    "./booki.css": "./dist/booki.css",
+    "./layered.css": "./dist/layered.css",
+    "./shadcn.css": "./dist/shadcn.css"
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

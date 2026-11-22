@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Changesets compares the pull request with main.
+          fetch-depth: 0
+
+      # Reads the pnpm version from "packageManager" in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: A changeset for every package change
+        if: github.event_name == 'pull_request'
+        run: pnpm changeset status --since=origin/${{ github.base_ref }}
+
+      - name: Format
+        run: pnpm format:check
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build packages
+        run: pnpm build:packages
+      - name: Generated framework packages are up to date
+        # The generators also write each package's package.json, README and LICENSE.
+        run: pnpm generate:frameworks && git diff --exit-code -- packages/web/src packages/vue packages/svelte packages/solid
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build docs site
+        run: pnpm --filter @booki/www build
+      - name: Build examples
+        run: pnpm --filter "./examples/*" build

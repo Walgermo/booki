@@ -1,0 +1,82 @@
+/*
+ * DocumentSignoff: the sign-off line that ends a working paper. A hairline
+ * band, one row per level. A mark is words, not colour alone: "Changed after
+ * sign-off" reads the same in any theme.
+ */
+[data-slot="document-signoff"] {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--bk-border-strong);
+}
+
+[data-slot="document-signoff-levels"] {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-slot="document-signoff-levels"] > li {
+  display: grid;
+  grid-template-columns: 8rem 12rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-block: 0.5rem;
+  border-bottom: 1px solid var(--bk-border);
+}
+
+@media (max-width: 720px) {
+  [data-slot="document-signoff-levels"] > li {
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-slot="document-signoff-level"] {
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="document-signoff-mark"] {
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-signoff-mark"][data-mark="signed"] {
+  color: var(--bk-fg);
+}
+
+[data-slot="document-signoff-mark"][data-mark="changed-after"],
+[data-slot="document-signoff-mark"][data-mark="basis-changed"] {
+  color: var(--bk-warning);
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="document-signoff-by"],
+[data-slot="document-signoff-wait"],
+[data-slot="document-signoff-hint"],
+[data-slot="document-signoff-open"] {
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-signoff-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+[data-slot="document-signoff-withdraw"] {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 16rem;
+}
+
+[data-slot="document-signoff-obstacles"] {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+  color: var(--bk-fg);
+}

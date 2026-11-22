@@ -1,0 +1,9 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Bridge problems</title>
+<script>
+window.agent = { snapshot: () => [
+  { ref: "c1", component: "input", label: "", actions: ["setValue"] },
+  { ref: "c2", component: "approval-chain", label: "Godkjenning", actions: ["assertApproved", "approve"] },
+  { ref: "c3", component: "payment-reference", label: "KID", actions: ["setReference"], value: "10012342" },
+] };
+</script></head>
+<body><main><label>Beløp <input type="text"></label></main></body></html>

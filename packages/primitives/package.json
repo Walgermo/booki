@@ -1,0 +1,234 @@
+{
+  "name": "@booki/primitives",
+  "version": "0.1.0",
+  "description": "Booki primitives — every Booki control as a framework-free ui-sdk definition: options, state, agent actions and parts. Render them with React, Web Components, Vue, Svelte or Solid.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/primitives"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "bugs": {
+    "url": "https://github.com/Walgermo/booki/issues"
+  },
+  "keywords": [
+    "accounting",
+    "agents",
+    "ui-sdk",
+    "web-components",
+    "vue",
+    "svelte",
+    "solid",
+    "voucher",
+    "bank-reconciliation"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./account-picker": {
+      "types": "./dist/account-picker.d.ts",
+      "default": "./dist/account-picker.js"
+    },
+    "./accounting-period-select": {
+      "types": "./dist/accounting-period-select.d.ts",
+      "default": "./dist/accounting-period-select.js"
+    },
+    "./aged-balances": {
+      "types": "./dist/aged-balances.d.ts",
+      "default": "./dist/aged-balances.js"
+    },
+    "./aging-chart": {
+      "types": "./dist/aging-chart.d.ts",
+      "default": "./dist/aging-chart.js"
+    },
+    "./amount-field": {
+      "types": "./dist/amount-field.d.ts",
+      "default": "./dist/amount-field.js"
+    },
+    "./approval-chain": {
+      "types": "./dist/approval-chain.d.ts",
+      "default": "./dist/approval-chain.js"
+    },
+    "./attestation-status": {
+      "types": "./dist/attestation-status.d.ts",
+      "default": "./dist/attestation-status.js"
+    },
+    "./audit-findings": {
+      "types": "./dist/audit-findings.d.ts",
+      "default": "./dist/audit-findings.js"
+    },
+    "./audit-workpaper": {
+      "types": "./dist/audit-workpaper.d.ts",
+      "default": "./dist/audit-workpaper.js"
+    },
+    "./bank-account-input": {
+      "types": "./dist/bank-account-input.d.ts",
+      "default": "./dist/bank-account-input.js"
+    },
+    "./bank-reconciliation": {
+      "types": "./dist/bank-reconciliation.d.ts",
+      "default": "./dist/bank-reconciliation.js"
+    },
+    "./bar-chart": {
+      "types": "./dist/bar-chart.d.ts",
+      "default": "./dist/bar-chart.js"
+    },
+    "./cashflow-waterfall": {
+      "types": "./dist/cashflow-waterfall.d.ts",
+      "default": "./dist/cashflow-waterfall.js"
+    },
+    "./client-requests": {
+      "types": "./dist/client-requests.d.ts",
+      "default": "./dist/client-requests.js"
+    },
+    "./close-checklist": {
+      "types": "./dist/close-checklist.d.ts",
+      "default": "./dist/close-checklist.js"
+    },
+    "./currency-select": {
+      "types": "./dist/currency-select.d.ts",
+      "default": "./dist/currency-select.js"
+    },
+    "./data-table": {
+      "types": "./dist/data-table.d.ts",
+      "default": "./dist/data-table.js"
+    },
+    "./evidence-list": {
+      "types": "./dist/evidence-list.d.ts",
+      "default": "./dist/evidence-list.js"
+    },
+    "./expense-claim": {
+      "types": "./dist/expense-claim.d.ts",
+      "default": "./dist/expense-claim.js"
+    },
+    "./financial-date-field": {
+      "types": "./dist/financial-date-field.d.ts",
+      "default": "./dist/financial-date-field.js"
+    },
+    "./fixed-asset-register": {
+      "types": "./dist/fixed-asset-register.d.ts",
+      "default": "./dist/fixed-asset-register.js"
+    },
+    "./iban-input": {
+      "types": "./dist/iban-input.d.ts",
+      "default": "./dist/iban-input.js"
+    },
+    "./invoice-editor": {
+      "types": "./dist/invoice-editor.d.ts",
+      "default": "./dist/invoice-editor.js"
+    },
+    "./invoice-number-input": {
+      "types": "./dist/invoice-number-input.d.ts",
+      "default": "./dist/invoice-number-input.js"
+    },
+    "./kpi-stat": {
+      "types": "./dist/kpi-stat.d.ts",
+      "default": "./dist/kpi-stat.js"
+    },
+    "./ledger-table": {
+      "types": "./dist/ledger-table.d.ts",
+      "default": "./dist/ledger-table.js"
+    },
+    "./organization-number-input": {
+      "types": "./dist/organization-number-input.d.ts",
+      "default": "./dist/organization-number-input.js"
+    },
+    "./payment-batch": {
+      "types": "./dist/payment-batch.d.ts",
+      "default": "./dist/payment-batch.js"
+    },
+    "./payment-reference-input": {
+      "types": "./dist/payment-reference-input.d.ts",
+      "default": "./dist/payment-reference-input.js"
+    },
+    "./period-lock": {
+      "types": "./dist/period-lock.d.ts",
+      "default": "./dist/period-lock.js"
+    },
+    "./supplier-invoice-inbox": {
+      "types": "./dist/supplier-invoice-inbox.d.ts",
+      "default": "./dist/supplier-invoice-inbox.js"
+    },
+    "./tax-code-select": {
+      "types": "./dist/tax-code-select.d.ts",
+      "default": "./dist/tax-code-select.js"
+    },
+    "./trend-chart": {
+      "types": "./dist/trend-chart.d.ts",
+      "default": "./dist/trend-chart.js"
+    },
+    "./vat-return": {
+      "types": "./dist/vat-return.d.ts",
+      "default": "./dist/vat-return.js"
+    },
+    "./voucher-composer": {
+      "types": "./dist/voucher-composer.d.ts",
+      "default": "./dist/voucher-composer.js"
+    },
+    "./lock": {
+      "types": "./dist/lock.d.ts",
+      "default": "./dist/lock.js"
+    },
+    "./picker": {
+      "types": "./dist/picker.d.ts",
+      "default": "./dist/picker.js"
+    },
+    "./access": {
+      "types": "./dist/access.d.ts",
+      "default": "./dist/access.js"
+    },
+    "./chart-math": {
+      "types": "./dist/chart-math.d.ts",
+      "default": "./dist/chart-math.js"
+    },
+    "./agent-cursor": {
+      "types": "./dist/agent-cursor.d.ts",
+      "default": "./dist/agent-cursor.js"
+    },
+    "./document-signoff": {
+      "types": "./dist/document-signoff.d.ts",
+      "default": "./dist/document-signoff.js"
+    },
+    "./sheet-stack": {
+      "types": "./dist/sheet-stack.d.ts",
+      "default": "./dist/sheet-stack.js"
+    },
+    "./table-query": {
+      "types": "./dist/table-query.d.ts",
+      "default": "./dist/table-query.js"
+    },
+    "./person-only": {
+      "types": "./dist/person-only.d.ts",
+      "default": "./dist/person-only.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && node ../../scripts/vendor-ui-sdk-types.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14"
+  },
+  "devDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

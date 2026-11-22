@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    // Read the definitions' types from source: their inferred types name
+    // ui-sdk internals that a built .d.ts can only copy, not import.
+    "paths": {
+      "@booki/primitives": ["../primitives/src/index.ts"],
+      "@booki/primitives/*": ["../primitives/src/*.ts"]
+    }
+  },
+  "include": ["src"]
+}

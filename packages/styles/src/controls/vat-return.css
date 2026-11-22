@@ -1,0 +1,177 @@
+/* ── VAT return: boxes, their vouchers, and what blocks it ───────────── */
+
+[data-slot="vat-return"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="vat-return-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="vat-return"][data-status="submitted"] [data-slot="vat-return-status"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+/* Each table scrolls inside its own box, never the page. */
+[data-slot="vat-return-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+:is([data-slot="vat-return-boxes"], [data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"]) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="vat-return-boxes"] {
+  min-width: 26rem;
+}
+
+:is([data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"]) {
+  min-width: 34rem;
+}
+
+:is([data-slot="vat-return-boxes"], [data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"]) thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+:is([data-slot="vat-return-boxes"], [data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"])
+  thead
+  th[data-align="end"] {
+  text-align: end;
+}
+
+:is([data-slot="vat-return-boxes"], [data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"])
+  :is(td, tbody th, tfoot th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+:is([data-slot="vat-return-boxes"], [data-slot="vat-return-vouchers"], [data-slot="vat-return-unmapped"])
+  td[data-slot="vat-return-amount"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:is([data-slot="vat-return-date"], [data-slot="vat-return-code"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* A total box and a table's footer carry the sum. */
+[data-slot="vat-return-boxes"] tr[data-kind="total"] :is(th, td),
+[data-slot="vat-return-vouchers"] tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="vat-return-boxes"] tr[data-kind="total"] th {
+  padding-block: 0.55rem;
+}
+
+[data-slot="vat-return-unmapped"] caption {
+  padding: 0.5rem 0.75rem;
+  text-align: start;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-fg);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-card));
+}
+
+/* The box label opens its vouchers: it reads as a link, not a button. */
+[data-slot="vat-return-box"] {
+  justify-content: flex-start;
+  min-height: 2rem;
+  padding: 0 0.25rem;
+  margin-inline: -0.25rem;
+  background: transparent;
+  color: var(--bk-brand);
+  text-align: start;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--bk-brand) 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="vat-return-box"]:hover:not(:disabled) {
+    background: var(--bk-accent);
+    text-decoration-color: currentColor;
+  }
+}
+
+[data-slot="vat-return-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="vat-return-heading"] h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+/* What must be fixed before the return can be marked ready. */
+[data-slot="vat-return-issues"] {
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+}
+
+[data-slot="vat-return-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+[data-slot="vat-return-empty"] {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="vat-return-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* A finger needs 44px to press a box. */
+@media (pointer: coarse) {
+  [data-slot="vat-return-box"] {
+    min-height: var(--bk-control-h);
+  }
+}

@@ -1,0 +1,291 @@
+/* ── Fixed asset register: the register, a schedule, a proposed run ──── */
+
+[data-slot="fixed-asset-register"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+:is([data-slot="fixed-asset-register-asset"], [data-slot="fixed-asset-register-run"]) {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+}
+
+[data-slot="fixed-asset-register-run"] {
+  padding-top: var(--bk-gap-lg);
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="fixed-asset-register-bar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="fixed-asset-register-period"] {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-period"] input {
+  width: 9rem;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="fixed-asset-register-status"] {
+  flex: 1 1 14rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="fixed-asset-register-status"][data-run] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="fixed-asset-register-heading"] {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+/* Tables scroll inside their own frame, never the page. */
+[data-slot="fixed-asset-register-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+/* A schedule can run to hundreds of months. */
+[data-slot="fixed-asset-register-scroll"][data-tall] {
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
+[data-slot="fixed-asset-register-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="fixed-asset-register-table"] thead th {
+  position: sticky;
+  top: 0;
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="fixed-asset-register-table"] :is(tbody, tfoot) :is(td, th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="fixed-asset-register-table"] tfoot :is(td, th) {
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="fixed-asset-register-table"] [data-align="end"] {
+  text-align: end;
+}
+
+:is([data-slot="fixed-asset-register-amount"], [data-slot="fixed-asset-register-code"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The months of the period being looked at. */
+[data-slot="fixed-asset-register-table"] tr[aria-current="true"] {
+  background: var(--bk-accent);
+}
+
+[data-slot="fixed-asset-register-table"] tr[data-disposed] [data-slot="fixed-asset-register-amount"] {
+  color: var(--bk-muted-fg);
+}
+
+/* An asset's name opens its schedule: it reads as a link, not a button. */
+[data-slot="fixed-asset-register-open"] {
+  min-height: var(--bk-control-h);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bk-brand);
+  font-weight: var(--bk-font-weight-medium);
+  text-align: start;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="fixed-asset-register-open"]:hover:not(:disabled) {
+    background: none;
+    text-decoration-color: currentColor;
+  }
+}
+
+[data-slot="fixed-asset-register-open"]:active:not(:disabled) {
+  transform: none;
+}
+
+:is([data-slot="fixed-asset-register-note"], [data-slot="fixed-asset-register-issue"]) {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-issue"] {
+  margin: 0;
+  color: var(--bk-danger);
+}
+
+[data-slot="fixed-asset-register-facts"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap) calc(var(--bk-gap-lg) * 2);
+  margin: 0;
+}
+
+[data-slot="fixed-asset-register-facts"] > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+[data-slot="fixed-asset-register-facts"] dt {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-facts"] dd {
+  margin: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="fixed-asset-register-facts"] dd[data-text] {
+  font-family: inherit;
+}
+
+[data-slot="fixed-asset-register-disposal"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+  color: var(--bk-fg);
+}
+
+[data-slot="fixed-asset-register-disposal"][data-outcome="loss"] {
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+}
+
+[data-slot="fixed-asset-register-disposal"] span {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="fixed-asset-register-dispose"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  min-width: 0;
+  margin: 0;
+  padding: var(--bk-gap-lg) 0 0;
+  border: 0;
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="fixed-asset-register-dispose"] legend {
+  float: inline-start;
+  width: 100%;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="fixed-asset-register-dispose"] label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-dispose"] input {
+  width: 11rem;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="fixed-asset-register-dispose"] input[data-align="end"] {
+  text-align: end;
+}
+
+[data-slot="fixed-asset-register-skipped"] {
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+[data-slot="fixed-asset-register-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* An empty register: a headline and where assets come from, or the app's action. */
+[data-slot="fixed-asset-register-empty"] {
+  padding: 1.5rem 0.75rem;
+  text-align: start;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="fixed-asset-register-empty"] strong {
+  display: block;
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="fixed-asset-register-empty"] p {
+  margin: 0.25rem 0 0.75rem;
+  max-width: 60ch;
+}

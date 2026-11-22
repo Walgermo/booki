@@ -1,0 +1,204 @@
+/* ── Expense claim ───────────────────────────────────────────────────── */
+
+[data-slot="expense-claim"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="expense-claim-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="expense-claim"][data-status="approved"] [data-slot="expense-claim-status"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="expense-claim"][data-status="rejected"] [data-slot="expense-claim-status"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+/* The table scrolls inside its own box, never the page. */
+[data-slot="expense-claim-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="expense-claim-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="expense-claim-table"] thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="expense-claim-table"] :is(td, tfoot th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="expense-claim-table"] [data-align="end"] {
+  text-align: end;
+}
+
+/* Cells a person types in sit flush in the table. */
+[data-slot="expense-claim-table"] td:has(> :is(input, select)) {
+  padding: 0.2rem 0.3rem;
+}
+
+[data-slot="expense-claim-table"] :is(input, select) {
+  width: 100%;
+  min-width: 6rem;
+}
+
+[data-slot="expense-claim-table"] td:nth-child(3) input {
+  min-width: 10rem;
+}
+
+[data-slot="expense-claim"] input[data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="expense-claim"] input[aria-readonly="true"] {
+  background: var(--bk-muted);
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="expense-claim-amount"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="expense-claim-table"] tr[data-exception] [data-slot="expense-claim-amount"] {
+  color: var(--bk-warning);
+}
+
+[data-slot="expense-claim-total"] :is(th, td) {
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+/* The row a person fills in to add a line. */
+[data-slot="expense-claim-new"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  gap: var(--bk-gap);
+  align-items: end;
+}
+
+[data-slot="expense-claim-new"] label {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="expense-claim-new"] :is(input, select) {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Lines that break the policy, each with its reason and Accept. */
+[data-slot="expense-claim-exceptions"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+}
+
+[data-slot="expense-claim-exceptions"] > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  min-height: var(--bk-control-h);
+  padding: 0.4rem 0.75rem;
+}
+
+[data-slot="expense-claim-exceptions"] > li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="expense-claim-exception"] {
+  flex: 0 1 16rem;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="expense-claim-exceptions"] input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+[data-slot="expense-claim-accepted"] {
+  flex: 1 1 12rem;
+  color: var(--bk-success);
+}
+
+[data-slot="expense-claim-issues"] {
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+}
+
+[data-slot="expense-claim-note"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="expense-claim-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap);
+}
+
+[data-slot="expense-claim-actions"] label {
+  flex: 1 1 12rem;
+  max-width: 24rem;
+}
+
+[data-slot="expense-claim-actions"] input {
+  width: 100%;
+}
+
+[data-slot="expense-claim-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}

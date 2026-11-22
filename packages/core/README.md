@@ -1,0 +1,11 @@
+# @booki/core
+
+Framework-free accounting rules for Booki: integer money, voucher lines with VAT codes and dimensions, bank reconciliation, and validators for Norwegian and US identifiers (kontonummer, KID, organisasjonsnummer, IBAN, ABA routing, EIN).
+
+```ts
+import { parseToMinor, voucherIssues, validateMatch } from "@booki/core"
+```
+
+Every amount is an integer in minor units. Every rule either passes or throws an error that names what was wrong and what is allowed, so a person or an agent can repair it.
+
+Docs and source: https://github.com/Walgermo/booki

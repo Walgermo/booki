@@ -1,0 +1,43 @@
+/*
+ * Booki in a shadcn/ui app: Booki's tokens from your theme.
+ *
+ * Load after the Booki stylesheet. Each --bk-* token reads the shadcn variable
+ * that does the same job, so Booki's controls take your colours, radius and
+ * fonts, and follow your dark mode wherever your theme redefines them. The
+ * agent's signal (--bk-signal*) is left alone: it means "an agent did this",
+ * and your theme has no variable for that.
+ *
+ *   @import "@booki/styles" layer(booki);
+ *   @import "@booki/styles/shadcn.css" layer(booki);
+ */
+:root {
+  --bk-bg: var(--background);
+  --bk-card: var(--card);
+  --bk-muted: var(--muted);
+  --bk-wood: var(--muted);
+  --bk-accent: var(--accent);
+  --bk-fg: var(--foreground);
+  --bk-muted-fg: var(--muted-foreground);
+  --bk-border: var(--border);
+  --bk-border-strong: var(--input);
+  --bk-primary: var(--primary);
+  --bk-primary-fg: var(--primary-foreground);
+  --bk-brand: var(--primary);
+  --bk-danger: var(--destructive);
+  --bk-ring: var(--ring);
+  --bk-radius: var(--radius);
+  --bk-radius-sm: calc(var(--radius) - 2px);
+  --bk-radius-lg: calc(var(--radius) + 2px);
+  --bk-font: var(--font-sans);
+  --bk-mono: var(--font-mono);
+  --bk-series-1: var(--chart-1);
+  --bk-series-2: var(--chart-2);
+  --bk-series-3: var(--chart-3);
+  --bk-series-4: var(--chart-4);
+  --bk-series-5: var(--chart-5);
+  /* shadcn themes define five chart colours. A sixth series takes your
+     --chart-6 when your theme has one; otherwise a neutral, read as "other".
+     Booki's own teal is not mixed in: unvalidated against your five, it can
+     sit next to one of them (shadcn's default --chart-2 is a teal). */
+  --bk-series-6: var(--chart-6, var(--muted-foreground));
+}

@@ -1,0 +1,285 @@
+{
+  "name": "@booki/react",
+  "version": "0.1.0",
+  "description": "Booki React — agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. Unstyled by default.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "bugs": {
+    "url": "https://github.com/Walgermo/booki/issues"
+  },
+  "keywords": [
+    "accounting",
+    "react",
+    "agents",
+    "ui-sdk",
+    "webmcp",
+    "voucher",
+    "bank-reconciliation"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "docs",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./money-amount": {
+      "types": "./dist/money-amount.d.ts",
+      "default": "./dist/money-amount.js"
+    },
+    "./text-link": {
+      "types": "./dist/text-link.d.ts",
+      "default": "./dist/text-link.js"
+    },
+    "./amount-field": {
+      "types": "./dist/amount-field.d.ts",
+      "default": "./dist/amount-field.js"
+    },
+    "./amount-input": {
+      "types": "./dist/amount-input.d.ts",
+      "default": "./dist/amount-input.js"
+    },
+    "./currency-select": {
+      "types": "./dist/currency-select.d.ts",
+      "default": "./dist/currency-select.js"
+    },
+    "./tax-code-select": {
+      "types": "./dist/tax-code-select.d.ts",
+      "default": "./dist/tax-code-select.js"
+    },
+    "./booki-agent": {
+      "types": "./dist/booki-agent.d.ts",
+      "default": "./dist/booki-agent.js"
+    },
+    "./agent-cursor": {
+      "types": "./dist/agent-cursor.d.ts",
+      "default": "./dist/agent-cursor.js"
+    },
+    "./agent-presence": {
+      "types": "./dist/agent-presence.d.ts",
+      "default": "./dist/agent-presence.js"
+    },
+    "./bank-account-input": {
+      "types": "./dist/bank-account-input.d.ts",
+      "default": "./dist/bank-account-input.js"
+    },
+    "./payment-reference-input": {
+      "types": "./dist/payment-reference-input.d.ts",
+      "default": "./dist/payment-reference-input.js"
+    },
+    "./organization-number-input": {
+      "types": "./dist/organization-number-input.d.ts",
+      "default": "./dist/organization-number-input.js"
+    },
+    "./iban-input": {
+      "types": "./dist/iban-input.d.ts",
+      "default": "./dist/iban-input.js"
+    },
+    "./financial-date-field": {
+      "types": "./dist/financial-date-field.d.ts",
+      "default": "./dist/financial-date-field.js"
+    },
+    "./accounting-period-select": {
+      "types": "./dist/accounting-period-select.d.ts",
+      "default": "./dist/accounting-period-select.js"
+    },
+    "./invoice-number-input": {
+      "types": "./dist/invoice-number-input.d.ts",
+      "default": "./dist/invoice-number-input.js"
+    },
+    "./attestation-status": {
+      "types": "./dist/attestation-status.d.ts",
+      "default": "./dist/attestation-status.js"
+    },
+    "./voucher-lines": {
+      "types": "./dist/voucher-lines.d.ts",
+      "default": "./dist/voucher-lines.js"
+    },
+    "./voucher-composer": {
+      "types": "./dist/voucher-composer.d.ts",
+      "default": "./dist/voucher-composer.js"
+    },
+    "./bank-reconciliation": {
+      "types": "./dist/bank-reconciliation.d.ts",
+      "default": "./dist/bank-reconciliation.js"
+    },
+    "./account-picker": {
+      "types": "./dist/account-picker.d.ts",
+      "default": "./dist/account-picker.js"
+    },
+    "./payment-confirm": {
+      "types": "./dist/payment-confirm.d.ts",
+      "default": "./dist/payment-confirm.js"
+    },
+    "./sca-prompt": {
+      "types": "./dist/sca-prompt.d.ts",
+      "default": "./dist/sca-prompt.js"
+    },
+    "./approval-gate": {
+      "types": "./dist/approval-gate.d.ts",
+      "default": "./dist/approval-gate.js"
+    },
+    "./exception-banner": {
+      "types": "./dist/exception-banner.d.ts",
+      "default": "./dist/exception-banner.js"
+    },
+    "./audit-trail": {
+      "types": "./dist/audit-trail.d.ts",
+      "default": "./dist/audit-trail.js"
+    },
+    "./country-toggle": {
+      "types": "./dist/country-toggle.d.ts",
+      "default": "./dist/country-toggle.js"
+    },
+    "./locale": {
+      "types": "./dist/locale.d.ts",
+      "default": "./dist/locale.js"
+    },
+    "./approval-chain": {
+      "types": "./dist/approval-chain.d.ts",
+      "default": "./dist/approval-chain.js"
+    },
+    "./period-lock": {
+      "types": "./dist/period-lock.d.ts",
+      "default": "./dist/period-lock.js"
+    },
+    "./close-checklist": {
+      "types": "./dist/close-checklist.d.ts",
+      "default": "./dist/close-checklist.js"
+    },
+    "./invoice-editor": {
+      "types": "./dist/invoice-editor.d.ts",
+      "default": "./dist/invoice-editor.js"
+    },
+    "./payment-batch": {
+      "types": "./dist/payment-batch.d.ts",
+      "default": "./dist/payment-batch.js"
+    },
+    "./supplier-invoice-inbox": {
+      "types": "./dist/supplier-invoice-inbox.d.ts",
+      "default": "./dist/supplier-invoice-inbox.js"
+    },
+    "./evidence-list": {
+      "types": "./dist/evidence-list.d.ts",
+      "default": "./dist/evidence-list.js"
+    },
+    "./expense-claim": {
+      "types": "./dist/expense-claim.d.ts",
+      "default": "./dist/expense-claim.js"
+    },
+    "./ledger-table": {
+      "types": "./dist/ledger-table.d.ts",
+      "default": "./dist/ledger-table.js"
+    },
+    "./aged-balances": {
+      "types": "./dist/aged-balances.d.ts",
+      "default": "./dist/aged-balances.js"
+    },
+    "./vat-return": {
+      "types": "./dist/vat-return.d.ts",
+      "default": "./dist/vat-return.js"
+    },
+    "./audit-workpaper": {
+      "types": "./dist/audit-workpaper.d.ts",
+      "default": "./dist/audit-workpaper.js"
+    },
+    "./audit-findings": {
+      "types": "./dist/audit-findings.d.ts",
+      "default": "./dist/audit-findings.js"
+    },
+    "./client-requests": {
+      "types": "./dist/client-requests.d.ts",
+      "default": "./dist/client-requests.js"
+    },
+    "./fixed-asset-register": {
+      "types": "./dist/fixed-asset-register.d.ts",
+      "default": "./dist/fixed-asset-register.js"
+    },
+    "./access": {
+      "types": "./dist/access.d.ts",
+      "default": "./dist/access.js"
+    },
+    "./data-table": {
+      "types": "./dist/data-table.d.ts",
+      "default": "./dist/data-table.js"
+    },
+    "./trend-chart": {
+      "types": "./dist/trend-chart.d.ts",
+      "default": "./dist/trend-chart.js"
+    },
+    "./bar-chart": {
+      "types": "./dist/bar-chart.d.ts",
+      "default": "./dist/bar-chart.js"
+    },
+    "./kpi-stat": {
+      "types": "./dist/kpi-stat.d.ts",
+      "default": "./dist/kpi-stat.js"
+    },
+    "./aging-chart": {
+      "types": "./dist/aging-chart.d.ts",
+      "default": "./dist/aging-chart.js"
+    },
+    "./cashflow-waterfall": {
+      "types": "./dist/cashflow-waterfall.d.ts",
+      "default": "./dist/cashflow-waterfall.js"
+    },
+    "./document-signoff": {
+      "types": "./dist/document-signoff.d.ts",
+      "default": "./dist/document-signoff.js"
+    },
+    "./sheet-stack": {
+      "types": "./dist/sheet-stack.d.ts",
+      "default": "./dist/sheet-stack.js"
+    },
+    "./confirm-dialog": {
+      "types": "./dist/confirm-dialog.d.ts",
+      "default": "./dist/confirm-dialog.js"
+    },
+    "./toasts": {
+      "types": "./dist/toasts.d.ts",
+      "default": "./dist/toasts.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup && node ../../scripts/vendor-ui-sdk-types.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*",
+    "@booki/primitives": "workspace:*"
+  },
+  "peerDependencies": {
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/react": "0.1.0-beta.14",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@ui-sdk/core": "0.1.0-beta.14",
+    "@ui-sdk/react": "0.1.0-beta.14",
+    "jsdom": "^31.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

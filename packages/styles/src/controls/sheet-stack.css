@@ -1,0 +1,151 @@
+/*
+ * SheetStack: a page and the sheets opened from it. The top sheet is raised
+ * and takes input; sheets behind it are dimmed to a readable strip, or a
+ * spine with the title set vertically, that goes back to them. Only
+ * transform moves, so a sheet slides in without the layout jumping.
+ */
+[data-slot="sheet-stack-frame"] {
+  min-width: 0;
+}
+
+[data-slot="sheet-stack"] {
+  display: grid;
+  gap: 0.5rem;
+}
+
+[data-slot="sheet-stack-trail"] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  border-bottom: 1px solid var(--bk-border);
+}
+
+[data-slot="sheet-stack-trail"] ol {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="sheet-stack-trail"] li + li::before {
+  content: "/";
+  margin-right: 0.5rem;
+  color: var(--bk-border-strong);
+}
+
+[data-slot="sheet-stack-trail"] li[aria-current] {
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-medium);
+}
+
+:where([data-slot="sheet-stack-trail"]) button[data-slot="sheet-stack-crumb"] {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  color: var(--bk-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+:where([data-slot="sheet-stack-trail"]) button[data-slot="sheet-stack-close"] {
+  min-height: 2rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--bk-card);
+  color: var(--bk-muted-fg);
+  border: 1px solid var(--bk-border);
+}
+
+[data-slot="sheet-stack-stage"] {
+  position: relative;
+  min-height: 70vh;
+  overflow: hidden;
+}
+
+[data-slot="sheet-stack-sheet"] {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  transition: transform 220ms var(--bk-ease-out);
+  will-change: transform;
+}
+
+[data-slot="sheet-stack-sheet"][data-top] {
+  box-shadow: var(--bk-shadow-md);
+}
+
+[data-slot="sheet-stack-content"] {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 1.25rem;
+}
+
+[data-slot="sheet-stack-content"][inert] {
+  opacity: 0.55;
+}
+
+[data-slot="sheet-stack-sheet"][data-covered] [data-slot="sheet-stack-content"] {
+  opacity: 0;
+}
+
+[data-slot="sheet-stack-title"] {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="sheet-stack-title"]:focus {
+  outline: none;
+}
+
+/* The strip or spine behind the top: the whole visible part goes back to it. */
+:where([data-slot="sheet-stack-sheet"]) button[data-slot="sheet-stack-back"] {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--bk-fg);
+  cursor: pointer;
+}
+
+:where([data-slot="sheet-stack-sheet"]) button[data-slot="sheet-stack-back"][data-spine] {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0.75rem 0.6rem;
+  background: var(--bk-muted);
+}
+
+[data-slot="sheet-stack-spine-title"] {
+  writing-mode: vertical-rl;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  white-space: nowrap;
+}
+
+:where([data-slot="sheet-stack-sheet"]) button[data-slot="sheet-stack-back"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sheet-stack-sheet"] {
+    transition: none;
+  }
+}

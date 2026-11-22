@@ -1,0 +1,16 @@
+name: Idea
+description: A control, a rule or an agent action Booki should have
+labels: [idea]
+body:
+  - type: textarea
+    id: job
+    attributes:
+      label: The job
+      description: What a person or an agent needs to get done, and where Booki stops them today.
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: What it could look like
+      description: Optional. A control, an action, a rule.

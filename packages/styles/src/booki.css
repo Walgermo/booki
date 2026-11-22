@@ -1,0 +1,1552 @@
+/*
+ * Booki default look — Paper and Ink.
+ *
+ * Two readers use every screen: a person and an agent. People work on
+ * paper: near-white, ink-black type, hairlines, sharp small radii. What the
+ * machine reads (code, snapshots, tool calls, the agent's log) sits on ink.
+ * One signal colour, lime, means "an agent did this" and nothing else.
+ * Every colour is a token in OKLCH. Components never use a literal colour.
+ */
+
+:root,
+[data-bk-theme="light"] {
+  color-scheme: light;
+
+  /* Paper */
+  --bk-bg: oklch(0.973 0.003 100);
+  --bk-card: oklch(0.996 0.001 100);
+  --bk-muted: oklch(0.948 0.004 100);
+  --bk-wood: oklch(0.93 0.006 110); /* structure: table headers, captions, tags */
+  --bk-accent: oklch(0.948 0.008 262); /* selected row, hover, current step */
+
+  /* Type */
+  --bk-fg: oklch(0.19 0.012 262);
+  --bk-muted-fg: oklch(0.47 0.01 262);
+
+  /* Lines */
+  --bk-border: oklch(0.895 0.004 262);
+  --bk-border-strong: oklch(0.78 0.006 262);
+
+  /* Actions */
+  --bk-primary: oklch(0.19 0.012 262);
+  --bk-primary-fg: oklch(0.985 0.002 100);
+  --bk-brand: oklch(0.44 0.1 262); /* links and data marks */
+
+  /* The agent's colour. Fill only on paper; text on paper uses --bk-signal-ink. */
+  --bk-signal: oklch(0.9 0.19 118);
+  --bk-signal-fg: oklch(0.22 0.04 125);
+  --bk-signal-ink: oklch(0.45 0.13 128);
+  --bk-signal-tint: oklch(0.965 0.05 118); /* background of an agent proposal on paper */
+
+  /* Ink: what the machine reads */
+  --bk-ink: oklch(0.175 0.014 262);
+  --bk-ink-raised: oklch(0.215 0.016 262);
+  --bk-ink-fg: oklch(0.935 0.006 262);
+  --bk-ink-muted: oklch(0.69 0.012 262);
+  --bk-ink-border: oklch(0.3 0.014 262);
+  --bk-ink-danger: oklch(0.75 0.15 25);
+
+  /* Series on ink. Validated as a set against --bk-ink: lightness band,
+     chroma floor, colour-blind separation for every pair, contrast. */
+  --bk-chart-1: #4c82c6;
+  --bk-chart-2: #c95a8b;
+  --bk-chart-3: #8c9f13;
+
+  /* Series on paper, for the chart controls: blue, ochre, violet, rose,
+     rust, teal. Validated as a set (all pairs) against paper #f6f6f4 and
+     card #fefefd: lightness band, chroma floor, colour-blind and normal
+     separation for every pair, 3:1 contrast. Lime is the agent's and never
+     a series; gains and losses use --bk-success and --bk-danger. */
+  --bk-series-1: #4d83f8;
+  --bk-series-2: #a8881c;
+  --bk-series-3: #7240ae;
+  --bk-series-4: #c570a0;
+  --bk-series-5: #bd4213;
+  --bk-series-6: #12916b;
+  /* Past six series: one neutral "Other", never a repeated hue. */
+  --bk-series-other: var(--bk-muted-fg);
+
+  /* Meaning (kept apart from brand and signal) */
+  --bk-success: oklch(0.47 0.1 162);
+  --bk-danger: oklch(0.52 0.17 25);
+  --bk-danger-fg: oklch(0.97 0.012 25);
+  --bk-warning: oklch(0.64 0.14 65);
+
+  --bk-ring: var(--bk-fg);
+  --bk-selection: oklch(0.9 0.19 118 / 0.45);
+
+  /* Sharp and small. Nested radii: outer minus padding. */
+  --bk-radius-sm: 0.25rem;
+  --bk-radius: 0.375rem;
+  --bk-radius-lg: 0.5rem;
+
+  /* 40px with a mouse, 44px on touch (set below). */
+  --bk-control-h: 2.5rem;
+  --bk-control-px: 0.75rem;
+  --bk-gap: 0.5rem;
+  --bk-gap-lg: 0.875rem;
+
+  /* Depth: a ring and a breath of shadow. */
+  --bk-shadow-xs: 0 1px 1px oklch(0.19 0.012 262 / 0.03);
+  /* A field is a recess in the paper: a breath of shade along its top edge. */
+  --bk-shadow-recess: inset 0 1px 1.5px oklch(0.19 0.012 262 / 0.05);
+  /* Lift for small things that float over any content: the agent's pointer and label. */
+  --bk-shadow-float: 0 1px 2px oklch(0 0 0 / 0.2);
+  --bk-shadow-pointer: 0 1px 1.5px oklch(0 0 0 / 0.35);
+  --bk-shadow-sm: 0 0 0 1px oklch(0.19 0.012 262 / 0.08), 0 1px 2px oklch(0.19 0.012 262 / 0.04);
+  --bk-shadow-md:
+    0 0 0 1px oklch(0.19 0.012 262 / 0.08), 0 2px 4px oklch(0.19 0.012 262 / 0.04),
+    0 16px 32px -16px oklch(0.19 0.012 262 / 0.18);
+
+  --bk-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --bk-duration: 150ms;
+
+  --bk-font: "Albert Sans Variable", "Albert Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bk-mono: "Geist Mono", "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  --bk-font-weight-medium: 500;
+  --bk-font-weight-semibold: 600;
+}
+
+/*
+ * Night theme, a person's dark mode. Opt in on any element:
+ * <div data-bk-theme="dark">. Built from the ink palette; the signal stays
+ * the agent's colour.
+ */
+[data-bk-theme="dark"] {
+  color-scheme: dark;
+
+  --bk-bg: oklch(0.175 0.014 262);
+  --bk-card: oklch(0.215 0.016 262);
+  --bk-muted: oklch(0.245 0.016 262);
+  --bk-wood: oklch(0.27 0.016 262);
+  --bk-accent: oklch(0.27 0.018 262);
+  --bk-signal-tint: oklch(0.28 0.05 125);
+
+  --bk-fg: oklch(0.935 0.006 262);
+  --bk-muted-fg: oklch(0.71 0.012 262);
+
+  --bk-border: oklch(0.3 0.014 262);
+  --bk-border-strong: oklch(0.4 0.014 262);
+
+  --bk-primary: oklch(0.935 0.006 262);
+  --bk-primary-fg: oklch(0.175 0.014 262);
+  --bk-brand: oklch(0.76 0.09 262);
+  --bk-signal-ink: oklch(0.88 0.18 118);
+
+  /* Machine panels sit deeper than a Night page, so they still read as ink. */
+  --bk-ink: oklch(0.135 0.014 262);
+  --bk-ink-raised: oklch(0.185 0.016 262);
+
+  /* The same six series stepped for Night, validated as a set (all pairs)
+     against #0d1117 and the Night card #151a21. */
+  --bk-series-1: #6190f5;
+  --bk-series-2: #af9133;
+  --bk-series-3: #8a51d0;
+  --bk-series-4: #cf6fa6;
+  --bk-series-5: #c34d23;
+  --bk-series-6: #26926e;
+
+  --bk-success: oklch(0.74 0.12 162);
+  --bk-danger: oklch(0.72 0.15 25);
+  --bk-danger-fg: oklch(0.28 0.05 25);
+  --bk-warning: oklch(0.8 0.13 70);
+
+  --bk-selection: oklch(0.9 0.19 118 / 0.3);
+
+  /* Shadows cannot be seen on ink: collapse to a ring. */
+  --bk-shadow-xs: 0 0 0 0 transparent;
+  --bk-shadow-recess: inset 0 1px 1.5px oklch(0 0 0 / 0.3);
+  --bk-shadow-sm: 0 0 0 1px oklch(1 0 0 / 0.09);
+  --bk-shadow-md: 0 0 0 1px oklch(1 0 0 / 0.13);
+}
+
+/* ── Base text inside FIN surfaces ───────────────────────────────────── */
+
+:where(
+  [data-slot^="amount"],
+  [data-slot^="bank"],
+  [data-slot^="payment"],
+  [data-slot^="voucher"],
+  [data-slot^="tax"],
+  [data-slot^="account"],
+  [data-slot^="currency"],
+  [data-slot^="organization"],
+  [data-slot^="iban"],
+  [data-slot^="financial"],
+  [data-slot^="invoice"],
+  [data-slot^="accounting"],
+  [data-slot^="attestation"],
+  [data-slot^="exception"],
+  [data-slot^="sca"],
+  [data-slot^="audit"],
+  [data-slot^="approval"],
+  [data-slot^="country"],
+  [data-slot^="money"]
+) {
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Shared form chrome ──────────────────────────────────────────────── */
+
+:where([data-slot]) :is(label) {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: -0.01em;
+  color: var(--bk-fg);
+}
+
+:where([data-slot]) :is(label) > :is(input, select, textarea, button) {
+  font-weight: 400;
+}
+
+/* :where keeps this rule at zero specificity. With :is, the long input:not()
+   chain outranked the select rule below and wiped its chevron and padding. */
+:where([data-slot])
+  :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not(
+      [type="reset"]
+    ),
+    select,
+    textarea
+  ) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--bk-control-h);
+  margin: 0;
+  padding: 0.4rem var(--bk-control-px);
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  font: inherit;
+  /* 16px so iOS does not zoom the page on focus; smaller only with a mouse. */
+  font-size: 1rem;
+  line-height: 1.25;
+  /* A field is a recess in the paper: a breath of shade along its top edge. */
+  box-shadow: var(--bk-shadow-recess), var(--bk-shadow-xs);
+  outline: none;
+  transition:
+    border-color var(--bk-duration) var(--bk-ease-out),
+    box-shadow var(--bk-duration) var(--bk-ease-out),
+    background-color var(--bk-duration) var(--bk-ease-out);
+}
+
+@media (pointer: fine) {
+  :where([data-slot])
+    :where(
+      input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not(
+        [type="submit"]
+      ):not([type="reset"]),
+      select,
+      textarea
+    ) {
+    font-size: 0.875rem;
+  }
+}
+
+@media (pointer: coarse) {
+  :root {
+    --bk-control-h: 2.75rem;
+  }
+}
+
+:where([data-slot]) select {
+  appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 1rem;
+}
+
+:where([data-slot]) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea)::placeholder {
+  color: color-mix(in srgb, var(--bk-muted-fg) 75%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot]) :is(input, select, textarea):hover:not(:disabled):not(:focus-visible) {
+    border-color: var(--bk-border-strong);
+  }
+}
+
+:where([data-slot]) :is(input, select, textarea):focus-visible {
+  border-color: var(--bk-fg);
+  box-shadow:
+    var(--bk-shadow-recess),
+    0 0 0 3px color-mix(in srgb, var(--bk-ring) 10%, transparent);
+}
+
+/* The native date picker's icon: quiet until wanted. */
+:where([data-slot]) input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity var(--bk-duration) var(--bk-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot]) input[type="date"]:hover::-webkit-calendar-picker-indicator {
+    opacity: 0.9;
+  }
+}
+
+:where([data-slot]) :is(input, select, textarea)[aria-invalid="true"] {
+  border-color: color-mix(in srgb, var(--bk-danger) 55%, var(--bk-border));
+}
+
+:where([data-slot]) :is(input, select, textarea)[aria-invalid="true"]:focus-visible {
+  box-shadow:
+    var(--bk-shadow-xs),
+    0 0 0 3px color-mix(in srgb, var(--bk-danger) 16%, transparent);
+}
+
+:where([data-slot]) :is(input, select, textarea, button):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+:where([data-slot]) button,
+:where([data-slot="payment-confirm-actions"]) button,
+:where([data-slot="sca-prompt-actions"]) button,
+:where([data-slot="exception-banner-actions"]) button,
+:where([data-slot="approval-gate-actions"]) button,
+:where([data-slot="attestation-status-actions"]) button,
+:where([data-slot="attestation-status-approve"]),
+:where([data-slot="attestation-status-reject"]),
+:where([data-slot="attestation-status-escalate"]),
+:where([data-slot="country-toggle"]) button {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--bk-control-h);
+  padding: 0.4rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-primary);
+  color: var(--bk-primary-fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color var(--bk-duration) var(--bk-ease-out),
+    border-color var(--bk-duration) var(--bk-ease-out),
+    color var(--bk-duration) var(--bk-ease-out),
+    box-shadow var(--bk-duration) var(--bk-ease-out),
+    transform var(--bk-duration) ease-out;
+}
+
+:where([data-slot]) button:focus-visible,
+:where([data-slot="attestation-status-approve"]):focus-visible,
+:where([data-slot="attestation-status-reject"]):focus-visible,
+:where([data-slot="attestation-status-escalate"]):focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+/* Zero specificity, like the base rule: a button that carries its own class
+   (a ui-sdk part, the host's own) keeps its look on hover. With plain
+   :where([data-slot]) button:hover this outranked every class and turned such
+   buttons into dark primaries with dark text. */
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot] button:hover:not(:disabled)),
+  :where([data-slot="attestation-status-approve"]:hover:not(:disabled)) {
+    background: color-mix(in srgb, var(--bk-primary) 88%, var(--bk-primary-fg));
+  }
+}
+
+:where([data-slot] button:active:not(:disabled)),
+:where([data-slot="attestation-status-approve"]:active:not(:disabled)),
+:where([data-slot="attestation-status-reject"]:active:not(:disabled)),
+:where([data-slot="attestation-status-escalate"]:active:not(:disabled)) {
+  transform: scale(0.97);
+}
+
+:where([data-slot]) button[data-variant="secondary"],
+:where([data-slot="attestation-status-reject"]),
+:where([data-slot="attestation-status-escalate"]) {
+  background: var(--bk-card);
+  border-color: var(--bk-border);
+  color: var(--bk-fg);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot]) button[data-variant="secondary"]:hover:not(:disabled),
+  :where([data-slot="attestation-status-reject"]):hover:not(:disabled),
+  :where([data-slot="attestation-status-escalate"]):hover:not(:disabled) {
+    background: var(--bk-muted);
+    border-color: var(--bk-border-strong);
+  }
+}
+
+/* A field: label, then the control, then its help line and error. The help
+   sits under the control, so fields side by side line up on label and box
+   whether or not they have help text. */
+:where([data-slot="field"]) {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+:where([data-slot="field"]) > [data-slot="field-description"] {
+  order: 2;
+}
+
+:where([data-slot="field"]) > [data-slot="field-error"] {
+  order: 3;
+}
+
+/* Field description / error (ui-sdk Field children) */
+:where([data-slot]) p {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--bk-muted-fg);
+}
+
+:where([data-slot]) [data-slot$="-error"],
+:where([data-slot]) [role="alert"]:not([data-slot="exception-banner"]) {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* ── Text link ───────────────────────────────────────────────────────── */
+
+[data-slot="text-link"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--bk-fg);
+  font-family: var(--bk-font);
+  font-weight: var(--bk-font-weight-medium);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--bk-border-strong);
+  transition:
+    text-decoration-color var(--bk-duration) var(--bk-ease-out),
+    color var(--bk-duration) var(--bk-ease-out);
+}
+
+/* With an icon the underline sits under the words only. */
+[data-slot="text-link"][data-variant="icon"] {
+  text-decoration: none;
+}
+
+[data-slot="text-link"][data-variant="icon"] [data-slot="text-link-label"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--bk-border-strong);
+  transition: text-decoration-color var(--bk-duration) var(--bk-ease-out);
+}
+
+[data-slot="text-link-icon"] {
+  flex: none;
+  color: var(--bk-muted-fg);
+  transition: color var(--bk-duration) var(--bk-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="text-link"]:hover,
+  [data-slot="text-link"]:hover [data-slot="text-link-label"] {
+    text-decoration-color: var(--bk-fg);
+  }
+
+  [data-slot="text-link"]:hover [data-slot="text-link-icon"] {
+    color: var(--bk-fg);
+  }
+}
+
+[data-slot="text-link"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 3px;
+  border-radius: var(--bk-radius-sm);
+}
+
+/* ── Money / amounts ─────────────────────────────────────────────────── */
+
+[data-slot="money-amount"] {
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+[data-slot="money-amount"][data-size="lg"] {
+  font-size: 1.75rem;
+  letter-spacing: -0.03em;
+}
+
+[data-slot="amount-input"],
+[data-slot="amount-field"] {
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  padding: 0.15rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+[data-slot="amount-input-currency"],
+[data-slot="amount-field-currency"] {
+  margin-left: 0.55rem;
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="amount-input"] input,
+[data-slot="amount-field-input"],
+[data-slot="amount-field"] input {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  min-height: 2.5rem;
+  font-family: var(--bk-mono);
+  font-size: 1.0625rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+[data-slot="amount-input"] input:focus-visible,
+[data-slot="amount-field-input"]:focus-visible,
+[data-slot="amount-field"] input:focus-visible {
+  box-shadow: none !important;
+}
+
+[data-slot="amount-input"]:focus-within,
+[data-slot="amount-field"]:focus-within {
+  border-color: var(--bk-fg);
+  box-shadow:
+    var(--bk-shadow-xs),
+    0 0 0 3px color-mix(in srgb, var(--bk-ring) 12%, transparent);
+}
+
+[data-slot="amount-input-error"] {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0 0.55rem 0.45rem;
+  color: var(--bk-danger);
+  font-size: 0.8125rem;
+}
+
+/* Closed pickers: see controls/picker.css. */
+
+/* ── Bank / refs / ids ───────────────────────────────────────────────── */
+
+[data-slot="bank-account-input"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+}
+
+@media (min-width: 640px) {
+  /* Two columns only for routing + account; one kontonummer takes the row. */
+  [data-slot="bank-account-input"][data-kind="routing-account"] {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+[data-slot="organization-number-input"],
+[data-slot="iban-input"],
+[data-slot="financial-date-field"],
+[data-slot="invoice-number-input"],
+[data-slot="payment-reference-input"] {
+  display: grid;
+  gap: 0.35rem;
+}
+
+[data-slot="organization-number-field"],
+[data-slot="iban-field"],
+[data-slot="invoice-number-field"],
+[data-slot="payment-reference-field"],
+[data-slot="bank-account-kontonummer"],
+[data-slot="bank-account-routing"],
+[data-slot="bank-account-account"],
+[data-slot="financial-date-control"],
+[data-slot="accounting-period-control"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ── Voucher ─────────────────────────────────────────────────────────── */
+
+[data-slot="voucher-composer"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+}
+
+[data-slot="voucher-composer-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-muted-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="voucher-composer-issues"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem 0.55rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  color: var(--bk-fg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+[data-slot="voucher-composer"][data-balanced="true"] [data-slot="voucher-composer-status"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="voucher-composer"][data-balanced="false"] [data-slot="voucher-composer-status"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+[data-slot="voucher-lines"] {
+  overflow: hidden;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="voucher-lines-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+[data-slot="voucher-lines-table"] th {
+  text-align: left;
+  padding: 0.65rem 0.9rem;
+  background: var(--bk-wood);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+[data-slot="voucher-lines-table"] td {
+  padding: 0.8rem 0.9rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+}
+
+[data-slot="voucher-lines-table"] tbody tr {
+  transition: background-color var(--bk-duration) ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="voucher-lines-table"] tbody tr:hover {
+    background: color-mix(in srgb, var(--bk-muted) 55%, transparent);
+  }
+}
+
+[data-slot="voucher-lines-table"] [data-align="end"] {
+  text-align: right;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+[data-slot="voucher-account"] {
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="voucher-dims"] {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="voucher-lines"][data-editable="true"] tfoot td[data-align="end"] {
+  padding-right: calc(0.375rem + var(--bk-control-px) + 1px);
+}
+
+[data-slot="voucher-lines-table"] tfoot td {
+  background: color-mix(in srgb, var(--bk-muted) 70%, transparent);
+  font-weight: var(--bk-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Panels: payment / SCA / exception / approval ────────────────────── */
+
+[data-slot="payment-confirm"],
+[data-slot="sca-prompt"],
+[data-slot="exception-banner"],
+[data-slot="approval-gate-dialog"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  padding: 1.25rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+}
+
+[data-slot="approval-gate"] {
+  display: inline-flex;
+}
+
+[data-slot="payment-confirm-label"] {
+  margin: 0 0 0.15rem;
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="payment-confirm-details"] {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-muted);
+  font-size: 0.875rem;
+}
+
+[data-slot="payment-confirm-details"] div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+[data-slot="payment-confirm-details"] dt {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="payment-confirm-details"] dd {
+  margin: 0;
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="payment-confirm-type"],
+[data-slot="approval-gate-type"] {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+}
+
+[data-slot="payment-confirm-actions"],
+[data-slot="sca-prompt-actions"],
+[data-slot="exception-banner-actions"],
+[data-slot="approval-gate-actions"] {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+[data-slot="sca-prompt"] {
+  text-align: center;
+  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--bk-muted) 80%, transparent), var(--bk-card));
+}
+
+[data-slot="sca-prompt-brand"] {
+  justify-self: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: var(--bk-fg);
+  color: var(--bk-primary-fg);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--bk-mono);
+}
+
+[data-slot="sca-prompt-title"] {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: -0.02em;
+}
+
+[data-slot="sca-prompt-description"] {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+  line-height: 1.45;
+}
+
+[data-slot="sca-prompt-done"] {
+  margin: 0;
+  font-weight: var(--bk-font-weight-semibold);
+  color: var(--bk-success);
+}
+
+[data-slot="exception-banner"] {
+  border-color: color-mix(in srgb, var(--bk-danger) 28%, var(--bk-border));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bk-danger) 7%, var(--bk-card)), var(--bk-card));
+}
+
+[data-slot="exception-banner-title"] {
+  font-size: 0.9375rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--bk-danger);
+}
+
+[data-slot="exception-banner-reason"] {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--bk-fg);
+}
+
+[data-slot="approval-gate-summary"] {
+  padding: 0.85rem 1rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* ── Audit trail ─────────────────────────────────────────────────────── */
+
+[data-slot="audit-trail"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+[data-slot="audit-event"] {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+[data-slot="audit-event-header"] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+[data-slot="audit-event-header"] time {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--bk-muted-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="audit-event-body"] {
+  margin-top: 0.3rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--bk-muted-fg);
+}
+
+/* ── Country toggle ──────────────────────────────────────────────────── */
+
+[data-slot="country-toggle"] {
+  display: inline-flex;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-muted);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+[data-slot="country-toggle"] button {
+  min-height: 2rem;
+  padding: 0.35rem 0.7rem;
+  background: transparent;
+  color: var(--bk-muted-fg);
+  box-shadow: none;
+  transform: none;
+}
+
+[data-slot="country-toggle"] button:active:not(:disabled) {
+  transform: none;
+}
+
+[data-slot="country-toggle"] button[data-selected="true"] {
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+[data-slot="country-toggle-code"] {
+  margin-right: 0.35rem;
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Attestation ─────────────────────────────────────────────────────── */
+
+[data-slot="attestation-status"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+[data-slot="attestation-status-badge"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--bk-muted);
+  color: var(--bk-muted-fg);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: 0.01em;
+}
+
+[data-slot="attestation-status-badge"][data-status="pending"] {
+  border-color: var(--bk-border);
+}
+
+[data-slot="attestation-status-badge"][data-status="approved"] {
+  background: color-mix(in srgb, var(--bk-success) 12%, var(--bk-card));
+  color: var(--bk-success);
+  border-color: color-mix(in srgb, var(--bk-success) 22%, var(--bk-card));
+}
+
+[data-slot="attestation-status-badge"][data-status="rejected"],
+[data-slot="attestation-status-badge"][data-status="escalated"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-card));
+  color: var(--bk-danger);
+  border-color: color-mix(in srgb, var(--bk-danger) 20%, var(--bk-card));
+}
+
+[data-slot="attestation-status-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+[data-slot="attestation-status-approve"] {
+  background: var(--bk-primary);
+  border-color: var(--bk-primary);
+  color: var(--bk-primary-fg);
+}
+
+/* ── Bank reconciliation ─────────────────────────────────────────────── */
+
+[data-slot="bank-reconciliation"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+}
+
+[data-slot="bank-reconciliation-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-fg);
+}
+
+[data-slot="bank-reconciliation"][data-reconciled="true"] [data-slot="bank-reconciliation-status"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="bank-reconciliation-tables"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+}
+
+@media (min-width: 768px) {
+  [data-slot="bank-reconciliation-tables"] {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+[data-slot="bank-reconciliation-bank"],
+[data-slot="bank-reconciliation-ledger"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="bank-reconciliation-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="bank-reconciliation-table"] caption {
+  padding: 0.6rem 0.75rem;
+  text-align: start;
+  font-weight: var(--bk-font-weight-semibold);
+  background: var(--bk-wood);
+}
+
+[data-slot="bank-reconciliation-table"] th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="bank-reconciliation-table"] td {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+}
+
+[data-slot="bank-reconciliation-table"] [data-align="end"] {
+  text-align: end;
+}
+
+[data-slot="bank-reconciliation-table"] tr[data-selected="true"] {
+  background: var(--bk-accent);
+}
+
+/* The checkbox is small; its cell is the 44px target. */
+[data-slot="bank-reconciliation-table"] td:first-child {
+  width: 2.75rem;
+  padding: 0;
+}
+
+[data-slot="bank-reconciliation-check"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  cursor: pointer;
+}
+
+[data-slot="bank-reconciliation-check"] input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--bk-primary);
+  cursor: pointer;
+}
+
+[data-slot="bank-reconciliation-date"],
+[data-slot="bank-reconciliation-amount"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="bank-reconciliation-empty"] {
+  margin: 0;
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="bank-reconciliation-bar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap-lg);
+}
+
+[data-slot="bank-reconciliation-difference"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="bank-reconciliation-suggestions"] {
+  display: grid;
+  gap: var(--bk-gap);
+}
+
+[data-slot="bank-reconciliation-suggestions"] h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="bank-reconciliation-suggestions"] ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="bank-reconciliation-suggestions"] li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+[data-slot="bank-reconciliation-suggestions"] li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="bank-reconciliation-pair"] {
+  display: flex;
+  flex: 1 1 14rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-slot="bank-reconciliation-actions"] {
+  display: flex;
+  gap: var(--bk-gap);
+}
+
+[data-slot="visually-hidden"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Editable voucher and form states ── */
+
+/* A wide table scrolls inside its frame instead of pushing the page. */
+[data-slot="voucher-lines"][data-editable="true"] {
+  overflow-x: auto;
+}
+
+[data-slot="voucher-lines"][data-editable="true"] td {
+  padding: 0.4rem 0.375rem;
+}
+
+[data-slot="voucher-lines"][data-editable="true"] :is(th, td):first-child {
+  padding-left: 0.9rem;
+}
+
+[data-slot="voucher-lines"][data-editable="true"] :is(th, td):last-child {
+  padding-right: 0.9rem;
+}
+
+/* Cells keep a usable width; the table scrolls before they collapse. */
+[data-slot="voucher-lines"][data-editable="true"] td > select {
+  min-width: 7rem;
+}
+
+[data-slot="voucher-lines"][data-editable="true"] td > select[data-slot="voucher-line-account"] {
+  min-width: 10rem;
+}
+
+[data-slot="voucher-lines"][data-editable="true"] td > input {
+  min-width: 5.5rem;
+}
+
+/* A ledger, not a form: cells read as the grid's text until a row is
+   pointed at or a cell is focused; then the field shows its edge. */
+[data-slot="voucher-lines"][data-editable="true"] td > :is(input, select) {
+  min-height: 2.25rem;
+  border-color: transparent;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="voucher-lines"][data-editable="true"] tr:hover td > :is(input, select):not(:focus-visible) {
+    border-color: var(--bk-border);
+    background-color: var(--bk-card);
+  }
+}
+
+[data-slot="voucher-lines"][data-editable="true"] td > :is(input, select):focus-visible {
+  border-color: var(--bk-fg);
+  background-color: var(--bk-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bk-ring) 10%, transparent);
+}
+
+/* On touch there is no hover: keep a hairline so a cell still reads as editable. */
+@media (hover: none) {
+  [data-slot="voucher-lines"][data-editable="true"] td > :is(input, select) {
+    border-color: var(--bk-border);
+  }
+}
+
+[data-slot="voucher-line-debit"],
+[data-slot="voucher-line-credit"] {
+  text-align: right;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* The refusal belongs to the row above it: no rule between them. */
+[data-slot="voucher-lines-table"] tr[data-slot="voucher-line-error"] td {
+  padding: 0 0.9rem 0.6rem;
+  border-top: 0;
+  line-height: 1.4;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="voucher-lines-table"] tbody tr[data-slot="voucher-line-error"]:hover {
+    background: transparent;
+  }
+}
+
+[data-slot="voucher-composer-add"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap);
+  padding: 0.6rem 0.9rem;
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="voucher-composer-add"] :is(select, input) {
+  flex: 1 1 12rem;
+  width: auto;
+  max-width: 22rem;
+}
+
+[data-slot="voucher-composer-add"] [data-slot="voucher-line-error"] {
+  flex-basis: 100%;
+}
+
+/* Quiet until wanted: a row of solid buttons would outweigh the figures. */
+:where([data-slot]) button[data-slot="voucher-line-remove"] {
+  padding-inline: 0.6rem;
+  background: transparent;
+  border-color: transparent;
+  color: var(--bk-muted-fg);
+  /* The cell is right-aligned figures; the button is a word. */
+  font-family: var(--bk-font);
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot]) button[data-slot="voucher-line-remove"]:hover:not(:disabled) {
+    background: var(--bk-muted);
+    color: var(--bk-fg);
+  }
+}
+
+/* Read-only: recessed, still legible, still focusable. */
+:where([data-slot]) :is(input, textarea)[readonly],
+:where([data-slot]) select[data-readonly] {
+  background-color: var(--bk-muted);
+  border-color: var(--bk-border);
+  cursor: default;
+}
+
+:where([data-slot]) select[data-readonly] {
+  background-image: none;
+}
+
+/* AmountField draws its own frame, so the frame carries the state. */
+[data-slot="amount-field"][data-readonly] {
+  background: var(--bk-muted);
+}
+
+[data-slot="amount-field"][data-disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+[data-slot="amount-field"][data-disabled] input:disabled {
+  opacity: 1;
+}
+
+/* ── Workflow controls: approval, periods, close, invoice, payments ──── */
+
+:is(
+  [data-slot="approval-chain"],
+  [data-slot="period-lock"],
+  [data-slot="close-checklist"],
+  [data-slot="invoice-editor"],
+  [data-slot="payment-batch"]
+) {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+:is(
+  [data-slot="approval-chain-status"],
+  [data-slot="close-checklist-status"],
+  [data-slot="invoice-editor-status"],
+  [data-slot="payment-batch-approvals"]
+) {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="approval-chain"][data-status="approved"] [data-slot="approval-chain-status"],
+[data-slot="close-checklist"][data-ready] [data-slot="close-checklist-status"],
+[data-slot="payment-batch"][data-status="released"] [data-slot="payment-batch-approvals"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="approval-chain"][data-status="rejected"] [data-slot="approval-chain-status"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+/* Lists of rows: levels and tasks. */
+:is([data-slot="approval-chain-levels"], [data-slot="close-checklist-tasks"]) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+:is([data-slot="approval-chain-levels"], [data-slot="close-checklist-tasks"]) > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  min-height: var(--bk-control-h);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+:is([data-slot="approval-chain-levels"], [data-slot="close-checklist-tasks"]) > li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+:is([data-slot="approval-chain-level"], [data-slot="close-checklist-title"]) {
+  flex: 0 1 14rem;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+:is([data-slot="approval-chain-detail"], [data-slot="close-checklist-detail"]) {
+  flex: 1 1 12rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="approval-chain-levels"] > li[data-stage="approved"] [data-slot="approval-chain-detail"],
+[data-slot="close-checklist-tasks"] > li[data-status="signed"] [data-slot="close-checklist-detail"] {
+  color: var(--bk-success);
+}
+
+[data-slot="approval-chain-levels"] > li[data-stage="rejected"] [data-slot="approval-chain-detail"] {
+  color: var(--bk-danger);
+}
+
+[data-slot="approval-chain-levels"] > li[aria-current="step"] {
+  background: var(--bk-accent);
+}
+
+[data-slot="close-checklist-tasks"] > li[data-blocked] [data-slot="close-checklist-title"] {
+  color: var(--bk-muted-fg);
+}
+
+:is(
+  [data-slot="approval-chain-actions"],
+  [data-slot="close-checklist-actions"],
+  [data-slot="period-lock-actions"],
+  [data-slot="invoice-editor-actions"],
+  [data-slot="payment-batch-actions"]
+) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+/* Tables. */
+:is([data-slot="period-lock-table"], [data-slot="invoice-editor-table"], [data-slot="payment-batch-table"]) {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  font-size: 0.8125rem;
+}
+
+:is([data-slot="period-lock-table"], [data-slot="invoice-editor-table"], [data-slot="payment-batch-table"]) thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+:is([data-slot="period-lock-table"], [data-slot="invoice-editor-table"], [data-slot="payment-batch-table"])
+  :is(td, tfoot th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+:is([data-slot="period-lock-table"], [data-slot="invoice-editor-table"], [data-slot="payment-batch-table"])
+  [data-align="end"] {
+  text-align: end;
+}
+
+:is(
+  [data-slot="invoice-editor-amount"],
+  [data-slot="payment-batch-amount"],
+  [data-slot="payment-batch-account"],
+  [data-slot="payment-batch-reference"]
+) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="invoice-editor-total"] :is(th, td) {
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="period-lock-table"] tr[data-status="hard-closed"] [data-slot="period-lock-status"] {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="period-lock-table"] tr[data-status="soft-closed"] [data-slot="period-lock-status"] {
+  color: var(--bk-warning);
+}
+
+/* Cells a person types in sit flush in the table. */
+[data-slot="invoice-editor-table"] td:has(> :is(input, select)) {
+  padding: 0.2rem 0.3rem;
+}
+
+[data-slot="invoice-editor-table"] :is(input, select) {
+  width: 100%;
+  min-width: 4.5rem;
+}
+
+[data-slot="invoice-editor-table"] td:first-child input {
+  min-width: 10rem;
+}
+
+[data-slot="invoice-editor-table"] td:nth-child(3) input {
+  min-width: 7rem;
+}
+
+[data-slot="invoice-editor-table"] input[data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="invoice-editor-tax-id"] {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 20rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+:is([data-slot="invoice-editor"], [data-slot="payment-batch"], [data-slot="period-lock"]) {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* What must be fixed, and why a person was refused. */
+:is([data-slot="invoice-editor-issues"], [data-slot="payment-batch-issues"]) {
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+}
+
+:is(
+  [data-slot="approval-chain-error"],
+  [data-slot="period-lock-error"],
+  [data-slot="close-checklist-error"],
+  [data-slot="invoice-editor-error"],
+  [data-slot="payment-batch-error"]
+) {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  :where([data-slot]) :is(input, select, textarea, button),
+  :where([data-slot="attestation-status-approve"]),
+  :where([data-slot="attestation-status-reject"]),
+  :where([data-slot="attestation-status-escalate"]),
+  :where([data-slot="country-toggle"]) button,
+  [data-slot="voucher-lines-table"] tbody tr {
+    transition: none;
+  }
+
+  :where([data-slot]) button:active:not(:disabled),
+  :where([data-slot="attestation-status-approve"]):active:not(:disabled),
+  :where([data-slot="attestation-status-reject"]):active:not(:disabled),
+  :where([data-slot="attestation-status-escalate"]):active:not(:disabled) {
+    transform: none;
+  }
+}
