@@ -45,6 +45,11 @@ secret field is never the agent's to confirm.
   may not approve.
 - **`lib/rule.ts`: one rule, two places.** The inbox's `rule` option previews
   it; the server runs it again and decides.
+- **Whose write it is comes from the change.** `components/ap-flow.tsx` reads
+  `source` from each `on…Change` and sends the agent's credential only for the
+  agent's own changes. A person's click while an agent step waits stays theirs.
+- **The agent does no more than the person it works for.** `personOf` in
+  `lib/books.ts`: working for Kari, it may not prepare a payment batch.
 - **`lib/agent.ts`: the bridge.** `createBookiAgent` with a visible cursor.
   Approving, rejecting and releasing are a person's in Booki; the agent can't
   press those buttons, whatever `allow` says.

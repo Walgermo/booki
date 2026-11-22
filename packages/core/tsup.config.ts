@@ -35,6 +35,7 @@ export default defineConfig({
     "src/permissions.ts",
     "src/server.ts",
     "src/messages.ts",
+    "src/closest.ts",
     "src/msg.ts",
     "src/table.ts",
   ],

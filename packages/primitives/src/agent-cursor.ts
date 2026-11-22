@@ -1,4 +1,5 @@
 import { elementOf } from "@ui-sdk/core/observe";
+import { isAllowed, type AgentDecision } from "./agent-policy.js";
 
 /**
  * A visible agent cursor: before each step the agent asks the bridge to run,
@@ -57,7 +58,7 @@ export type AgentCursorOptions = {
   scroll?: boolean;
 };
 
-type Allow<S> = (step: S, context: { signal: AbortSignal }) => boolean | Promise<boolean>;
+type Allow<S, D> = (step: S, context: { signal: AbortSignal }) => D | Promise<D>;
 
 export type AgentCursorController = {
   /** Move to the step's control and press. Resolves when the step may run. */
@@ -73,7 +74,7 @@ export type AgentCursorController = {
    * Wrap your `allow`: the cursor leads, then your function decides. Pass the
    * result to `createBookiAgent({ allow })` and `registerTools`.
    */
-  wrap: <S extends AgentCursorStep>(allow: Allow<S>) => Allow<S>;
+  wrap: <S extends AgentCursorStep, D extends AgentDecision = boolean>(allow: Allow<S, D>) => Allow<S, D>;
   /** Turn it off and on, for pages that should run at full speed. */
   setEnabled: (on: boolean) => void;
   enabled: () => boolean;
@@ -107,6 +108,21 @@ function targetOf(step: AgentCursorStep): Element | null {
   if (READING.test(step.action)) return root;
   if (root.matches("button, input, select, textarea")) return root;
   return root.querySelector("input:not([type=hidden]), select, textarea, [role=combobox], button") ?? root;
+}
+
+/**
+ * Whether a sticky or fixed bar lies over the point: on screen by its box, but
+ * the person cannot see it. Only such bars count, so an icon drawn inside a
+ * field does not; and not one the target is itself part of.
+ */
+function isCovered(el: Element, point: { x: number; y: number }): boolean {
+  const hit = document.elementFromPoint?.(point.x, point.y);
+  if (!hit || el.contains(hit)) return false;
+  for (let node: Element | null = hit; node && !node.contains(el); node = node.parentElement) {
+    const { position } = getComputedStyle(node);
+    if (position === "sticky" || position === "fixed") return true;
+  }
+  return false;
 }
 
 /** Plain words for an action, so the label reads like a person narrating. */
@@ -205,7 +221,7 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
     if (scroll && !theirs) {
       const r = el.getBoundingClientRect();
       const off = r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > window.innerWidth;
-      if (off) {
+      if (off || isCovered(el, measure(el).point)) {
         el.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
         await wait(still ? 0 : 320);
       }
@@ -251,11 +267,12 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
       await lead(step);
       let ok = false;
       try {
-        ok = await allow(step, context);
+        const decision = await allow(step, context);
+        ok = isAllowed(decision);
+        return decision;
       } finally {
         settle(ok);
       }
-      return ok;
     },
     setEnabled: (next) => {
       on = next;

@@ -1,8 +1,8 @@
 import type { TaxCode } from "@booki/core/locale";
-import { BookiError } from "@booki/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";
+import { itemsHint, refuseUnknown, shownItems } from "./offered.js";
 import {
   createPicker,
   fallbackAttrs,
@@ -30,6 +30,7 @@ export type TaxCodeSelectState = {
   percent: number;
   codeLabel: string;
   items: AgentItem[];
+  itemsHint: string;
   codes: TaxCode[];
   label: string;
   disabled: boolean;
@@ -71,7 +72,7 @@ export const taxCodeSelect = definePrimitive({
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["value", "percent", "codeLabel", "items"],
+  controlled: ["value", "percent", "codeLabel", "items", "itemsHint"],
   state: (options: TaxCodeSelectOptions): TaxCodeSelectState => {
     const codes = options.codes ?? [];
     const selected = pickInitial(codes, options.value, options.defaultValue);
@@ -79,7 +80,8 @@ export const taxCodeSelect = definePrimitive({
       value: selected?.code ?? "",
       percent: selected?.percent ?? 0,
       codeLabel: selected?.label ?? "",
-      items: toItems(codes),
+      items: shownItems(toItems(codes)),
+      itemsHint: itemsHint(toItems(codes)),
       codes,
       label: options.label ?? "Tax",
       ...lockState(options),
@@ -91,7 +93,8 @@ export const taxCodeSelect = definePrimitive({
     if (options.label !== undefined) partial.label = options.label;
     if (options.codes !== undefined) {
       partial.codes = options.codes;
-      partial.items = toItems(options.codes);
+      partial.items = shownItems(toItems(options.codes));
+      partial.itemsHint = itemsHint(toItems(options.codes));
     }
     if (options.value !== undefined) {
       const codes = options.codes ?? [];
@@ -126,12 +129,9 @@ export const taxCodeSelect = definePrimitive({
     const methods = {
       picker,
       setTaxCode: (raw: string, event?: unknown) => {
-        const { codes, items } = context.store.get();
+        const { codes } = context.store.get();
         const selected = resolveCode(codes, String(raw));
-        if (!selected) {
-          const listed = items.map((i) => i.label).join(", ");
-          throw new BookiError("select.unknown-tax-code", { value: String(raw), items: listed || "(none)" });
-        }
+        if (!selected) refuseUnknown("select.unknown-tax-code", toItems(codes), raw);
         return apply(selected, "set-tax-code", asEvent(event));
       },
       /** Same as setTaxCode, and "" empties it: history and staging restore `value` through set<Key>. */
@@ -143,7 +143,7 @@ export const taxCodeSelect = definePrimitive({
         if (ok) context.store.set({ percent: 0, codeLabel: "" });
         return ok;
       },
-      allItems: () => context.store.get().items,
+      allItems: () => toItems(context.store.get().codes),
     };
     return methods;
   },

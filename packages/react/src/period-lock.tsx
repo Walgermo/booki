@@ -1,4 +1,5 @@
 import { formatPeriod } from "@booki/core/period";
+import type { BookiChangeDetails } from "./change-details.js";
 import { type PeriodState, type PeriodStatus } from "@booki/core/period-lock";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
@@ -16,7 +17,7 @@ export type PeriodLockProps = {
   codes: string[];
   periods?: PeriodState[];
   defaultPeriods?: PeriodState[];
-  onPeriodsChange?: (periods: PeriodState[]) => void;
+  onPeriodsChange?: (periods: PeriodState[], details: BookiChangeDetails) => void;
   className?: string;
   "aria-label"?: string;
 };

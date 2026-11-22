@@ -57,6 +57,45 @@ describe("AgentCursor", () => {
     }
   });
 
+  it("scrolls to a control that a sticky bar covers, and not to one with its own icon on top", async () => {
+    const cursor = createAgentCursor({ travel: 0, press: 0, linger: 10_000 });
+    const agent = createBookiAgent({ agentId: "test", allow: cursor.wrap(() => true) });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <div style={{ position: "sticky", top: 0 }}>
+          <span id="bar">Toolbar</span>
+        </div>
+        <div>
+          <AmountField aria-label="Beløp" />
+          <span id="icon">kr</span>
+        </div>
+      </BookiLocaleProvider>,
+    );
+    const scrolled = vi.fn();
+    const proto = Element.prototype as Element & { scrollIntoView: () => void };
+    const before = proto.scrollIntoView;
+    proto.scrollIntoView = scrolled;
+    const page = document as unknown as { elementFromPoint?: (x: number, y: number) => Element | null };
+    const pointed = page.elementFromPoint;
+    const ref = agent.snapshot().find((c) => c.component === "amount-field")!.ref;
+    const step = async (minor: number) => {
+      await act(async () => {
+        await agent.act({ steps: [{ ref, action: "setMinor", args: [minor] }] });
+      });
+    };
+    try {
+      page.elementFromPoint = () => document.querySelector("#icon");
+      await step(1);
+      expect(scrolled).not.toHaveBeenCalled();
+      page.elementFromPoint = () => document.querySelector("#bar");
+      await step(2);
+      expect(scrolled).toHaveBeenCalledTimes(1);
+    } finally {
+      proto.scrollIntoView = before;
+      page.elementFromPoint = pointed;
+    }
+  });
+
   it("goes to the control and presses before the step runs, then your allow decides", async () => {
     const cursor = createAgentCursor({ travel: 0, press: 0, linger: 10_000 });
     const phases: AgentCursorPhase[] = [];

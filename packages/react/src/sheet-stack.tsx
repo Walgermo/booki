@@ -1,4 +1,5 @@
 import type { SheetPlacement, StackSheet } from "@booki/core/sheet-stack";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -23,7 +24,7 @@ const COPY = {
 export type SheetStackProps = {
   sheets?: StackSheet[];
   defaultSheets?: StackSheet[];
-  onSheetsChange?: (sheets: StackSheet[]) => void;
+  onSheetsChange?: (sheets: StackSheet[], details: BookiChangeDetails) => void;
   /** The person's choice for a sheet that may dock. Default "beside". */
   dock?: "beside" | "over";
   /** What each sheet shows. Only the top sheet takes input; the rest are inert. */

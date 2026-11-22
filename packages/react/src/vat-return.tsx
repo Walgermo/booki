@@ -1,4 +1,5 @@
 import { formatMoney, money } from "@booki/core/money";
+import type { BookiChangeDetails } from "./change-details.js";
 import { formatPeriod } from "@booki/core/period";
 import {
   type VatReturnComputation,
@@ -89,10 +90,10 @@ export type VatReturnProps = {
   requireSecondPerson?: boolean;
   filing?: VatReturnFiling;
   defaultFiling?: VatReturnFiling;
-  onFilingChange?: (filing: VatReturnFiling) => void;
+  onFilingChange?: (filing: VatReturnFiling, details: BookiChangeDetails) => void;
   box?: string | null;
   defaultBox?: string | null;
-  onBoxChange?: (box: string | null) => void;
+  onBoxChange?: (box: string | null, details: BookiChangeDetails) => void;
   /** Most rows an agent's snapshot carries. Defaults to 50. */
   snapshotRows?: number;
   /** A person submitted the return: file it. The library only changes the status. */

@@ -1,4 +1,5 @@
 import type { ClientRecipient, ClientRequest, ClientRequestStatus } from "@booki/core/client-request";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -81,7 +82,7 @@ export type ClientRequestsProps = {
   today?: string;
   actor?: string;
   agentActor?: string;
-  onRequestsChange?: (requests: ClientRequest[]) => void;
+  onRequestsChange?: (requests: ClientRequest[], details: BookiChangeDetails) => void;
   nameOf?: (id: string) => ReactNode;
   className?: string;
   "aria-label"?: string;

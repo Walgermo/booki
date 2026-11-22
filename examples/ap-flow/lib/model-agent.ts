@@ -2,7 +2,6 @@
 
 import type Anthropic from "@anthropic-ai/sdk";
 import type { AgentBridge } from "@booki/react";
-import { runAsAgent } from "./agent";
 import { settled, takeRefusals } from "./writes";
 
 type Block = Anthropic.Beta.BetaContentBlock;
@@ -53,7 +52,7 @@ async function runTool(agent: AgentBridge, use: ToolUse): Promise<{ content: str
         };
       }
       takeRefusals();
-      const result = (await runAsAgent(() => agent.act({ steps } as never))) as {
+      const result = (await agent.act({ steps } as never)) as {
         ok: boolean;
         error?: { message: string };
       };

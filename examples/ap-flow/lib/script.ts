@@ -1,7 +1,6 @@
 "use client";
 
 import type { AgentBridge } from "@booki/react";
-import { runAsAgent } from "./agent";
 import { settled, takeRefusals } from "./writes";
 
 /**
@@ -42,7 +41,7 @@ const snapshot = (agent: AgentBridge) => agent.snapshot() as unknown as Entry[];
 async function each(agent: AgentBridge, steps: { step: Step; done: string }[], report: Report) {
   for (const { step, done } of steps) {
     takeRefusals();
-    const result = (await runAsAgent(() => agent.act({ steps: [step] } as never))) as ActResult;
+    const result = (await agent.act({ steps: [step] } as never)) as ActResult;
     // The control proposed; the server decides. Read its answer before the next step.
     await settled();
     const [refused] = takeRefusals();

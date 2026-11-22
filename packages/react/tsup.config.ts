@@ -118,6 +118,7 @@ export default defineConfig({
     "@booki/primitives/audit-findings",
     "@booki/primitives/document-signoff",
     "@booki/primitives/sheet-stack",
+    "@booki/primitives/agent-policy",
     "@booki/primitives/person-only",
     "@booki/primitives/audit-workpaper",
     "@booki/primitives/bank-account-input",

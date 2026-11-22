@@ -139,6 +139,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "reconciliation.match-decided": 'Avstemmingen "{id}" er allerede {status}.',
   "reconciliation.match-not-suggested": 'Avstemmingen "{id}" er {status}. Bare et forslag kan trekkes tilbake.',
   "agent.not-text": '{action} tar tekst, som "12345678903"; fikk {got}.',
+  "agent.needs-person": 'Krever en person: "{confirm}". Be dem gjøre det selv.',
   "agent.person-only":
     "Dette er en persons beslutning, og en agent kan ikke ta den, uansett hva appen tillater: {confirm}.",
   "attestation.person-only":
@@ -223,6 +224,11 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     "Kvalitetskontrolløren kan ikke ha utført, gjennomgått eller konkludert arbeid på oppdraget.",
   "server.reason-required": "Oppgi en begrunnelse på minst {min} tegn: den lagres med beslutningen.",
   "server.unknown-kind": 'Aktørens type "{kind}" er verken en person eller en agent, så ingenting er tillatt.',
+  "server.delegation":
+    '"{agent}" arbeider for "{person}", som ikke har lov til "{permission}". Det krever en av disse rollene: {roles}.',
+  "server.delegation-entity": '"{agent}" arbeider for "{person}", som ikke har tilgang til selskapet "{entity}".',
+  "server.delegation-unknown":
+    '"{agent}" arbeider for "{person}", som ikke er en kjent person, så ingenting er tillatt.',
   "server.person-only":
     'En agent kan ikke gjøre "{permission}": det er en persons beslutning. Spør noen med en av disse rollene: {roles}.',
   "permissions.signed-out": 'Ingen er logget inn, så "{permission}" avvises.',
@@ -513,8 +519,14 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "agent.unknown-field": '{action}: ingen felt som heter "{field}". Felt: {fields}.',
   "agent.not-an-object": "{action} tar ett objekt, for eksempel {example}.",
   "select.unknown-account": 'Ingen konto "{value}". Valg: {items}.',
+  "select.unknown-account-more":
+    'Ingen konto "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på nummer eller helt ord.',
   "select.unknown-tax-code": 'Ingen mva-kode "{value}". Valg: {items}.',
+  "select.unknown-tax-code-more":
+    'Ingen mva-kode "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',
   "select.unknown-currency": 'Ingen valuta "{value}". Valg: {items}.',
+  "select.unknown-currency-more":
+    'Ingen valuta "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en.',
   "select.unknown-period": 'Ingen periode "{value}". Valg: {items}.',
   "select.unknown-attestation": 'Ingen attestasjonsstatus "{value}". Valg: {items}.',
   "amount.not-minor":

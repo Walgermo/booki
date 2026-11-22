@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import "./amount-field.js";
+import { personOnly } from "@booki/primitives/person-only";
 import "./voucher-composer.js";
 import { createBookiAgent } from "./agent.js";
 import { createAgentCursor, type BookiAgentCursorElement } from "./agent-cursor.js";
@@ -38,6 +39,26 @@ describe("@booki/web", () => {
     const ref = agent.snapshot().find((c) => c.component === "amount-field")!.ref;
     const refused = (await agent.act({ steps: [{ ref, action: "setMinor", args: [12.5] }] })) as { ok: boolean };
     expect(refused.ok).toBe(false);
+  });
+
+  it("keeps a person's decision from an agent, whatever the app's allow says", async () => {
+    const rows: { action: string }[] = [];
+    const agent = createBookiAgent({ allow: () => true, audit: (row) => rows.push(row) });
+    document.body.innerHTML = `
+      <booki-amount-field aria-label="Beløp" data-agent-confirm="${personOnly("Setting the limit needs a person")}">
+        <booki-amount-field-input><input /></booki-amount-field-input>
+      </booki-amount-field>`;
+    await settle();
+    const entry = () => agent.snapshot().find((c) => c.component === "amount-field") as unknown as Entry;
+    const before = entry().minor;
+    const result = (await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [100] }] })) as {
+      ok: boolean;
+      error?: { message: string };
+    };
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toMatch(/person's decision/);
+    expect(entry().minor).toBe(before);
+    expect(rows.map((row) => row.action)).toEqual(["agent.person-only"]);
   });
 
   it("emits change events a page listens to, like a native input", async () => {

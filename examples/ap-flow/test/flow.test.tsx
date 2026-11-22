@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 import { ApFlow } from "@/components/ap-flow";
-import { pageAgent, runAsAgent } from "@/lib/agent";
+import { cursor, pageAgent } from "@/lib/agent";
 import { runScriptedAgent } from "@/lib/script";
 import { books } from "@/lib/store";
 import { settled } from "@/lib/writes";
@@ -27,9 +27,9 @@ const ref = (component: string) =>
     (entry) => entry.component === component,
   )!.ref;
 const press = (component: string, label: string) =>
-  runAsAgent(() =>
-    pageAgent().act({ steps: [{ ref: ref(component), action: "press", args: [label] }] } as never),
-  ) as Promise<{ ok: boolean }>;
+  pageAgent().act({ steps: [{ ref: ref(component), action: "press", args: [label] }] } as never) as Promise<{
+    ok: boolean;
+  }>;
 
 describe("supplier invoice to payment, with four people and an agent", () => {
   it("runs from the inbox to a reconciled bank line, each decision by the person who may make it", async () => {
@@ -119,5 +119,29 @@ describe("supplier invoice to payment, with four people and an agent", () => {
     );
     // Bank details never reach the agent.
     expect(JSON.stringify(pageAgent().snapshot())).not.toMatch(/15034134623|20261101008/);
+  });
+
+  it("keeps a person's click the person's while the agent's step is still running", async () => {
+    render(<ApFlow initial={structuredClone(books())} />);
+    const propose = (id: string, account: string) =>
+      pageAgent().act({
+        steps: [{ ref: ref("supplier-invoice-inbox"), action: "proposeCoding", args: [id, account] }],
+      } as never) as Promise<{ ok: boolean }>;
+    expect((await propose("si-2", "6340")).ok).toBe(true);
+    await settled();
+    await as(/Kari/);
+    await openInvoice(1);
+
+    // The agent's step waits for its pointer to arrive; Kari approves in the meantime.
+    cursor.setEnabled(true);
+    onTestFinished(() => cursor.setEnabled(false));
+    const step = propose("si-1", "6800");
+    await click(slot("supplier-invoice-inbox-approve")!);
+    expect(invoice("si-2")).toMatchObject({ status: "approved", approvedBy: "kari" });
+    expect(invoice("si-1").coding?.account).toBeUndefined();
+
+    expect((await step).ok).toBe(true);
+    await settled();
+    expect(books().audit.some((row) => row.actor === "agent:bookkeeper" && row.target === "si-1")).toBe(true);
   });
 });

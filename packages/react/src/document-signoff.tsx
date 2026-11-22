@@ -1,4 +1,5 @@
 import type { SignableDocument, SignoffLevel, SignoffMark } from "@booki/core/document-signoff";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -77,7 +78,7 @@ const PERMISSION = { performed: "audit.prepare", reviewed: "audit.review", appro
 export type DocumentSignoffProps = {
   document?: SignableDocument;
   defaultDocument?: SignableDocument;
-  onDocumentChange?: (document: SignableDocument) => void;
+  onDocumentChange?: (document: SignableDocument, details: BookiChangeDetails) => void;
   /** The levels this document uses, in order. Default all three. */
   levels?: SignoffLevel[];
   actor?: string;

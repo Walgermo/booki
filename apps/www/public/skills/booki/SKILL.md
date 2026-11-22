@@ -20,6 +20,12 @@ Install into the agent:
 npx skills add Walgermo/booki --skill booki
 ```
 
+The skills CLI rewrites its lock file. Look at the diff afterwards and keep only
+Booki's entry: it can change the entries of skills you already had.
+
+Into an existing Next.js and shadcn/ui product, also read
+https://raw.githubusercontent.com/Walgermo/booki/main/docs/drop-in.md
+
 ## Goal
 
 Fully implement Booki in the user's app: packages, locale provider, styles,
@@ -50,6 +56,8 @@ Requires React 19+ for `@booki/react`. Other stacks: `@booki/web` (custom elemen
 server-rendered pages), `@booki/vue`, `@booki/svelte`, `@booki/solid`, all with the same
 controls and actions. Peer dependencies (`@ui-sdk/core` and the `@ui-sdk` package for the framework, 0.1.0-beta.14)
 are installed with the packages; add them by hand only if your package manager does not.
+TypeScript and `import "@booki/styles"`: the package ships its types, so the side-effect
+import checks. With Tailwind, import it from CSS instead (section 2).
 If the app's release-age rule refuses that version, stop and say so; never add an exception yourself.
 
 ## 2. Provider + styles
@@ -106,12 +114,18 @@ import {
 
 // The company's rules for marked steps (data-agent-confirm): return true to let
 // the agent do it alone, false to refuse, undefined to ask the person.
-const policy = (step: { confirm?: string }) => undefined
+const policy = (_step: { confirm?: string }): boolean | undefined => undefined
 
 const allow = async (step: { confirm?: string }) => {
   if (!step.confirm) return true
-  return policy(step) ?? window.confirm(step.confirm) // swap for the app's own dialog
+  const decided = policy(step)
+  // `by` goes in the audit row: the rule, or the person who answered.
+  if (decided !== undefined) return { allow: decided, by: "rule:posting-1" }
+  return { allow: window.confirm(step.confirm), by: currentUserId() } // swap for the app's own dialog
 }
+
+// Your own audit trail: the agent's changes, the steps it was refused, and who confirmed the rest.
+const audit = (event: object) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) })
 
 // A visible agent pointer: it goes to each control and presses before the step runs.
 export const cursor = createAgentCursor()
@@ -120,22 +134,56 @@ export const agent = createBookiAgent({
   agentId: "bookkeeper",
   ruleVersion: "posting-1",
   allow: cursor.wrap(allow),
+  audit,
 })
 
 export const history = createBookiHistory(agent)
 
 if (typeof window !== "undefined") {
-  // Send each event to your own audit trail.
-  attachAudit(agent, (event) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) }), {
-    agentId: "bookkeeper",
-    ruleVersion: "posting-1",
-  })
-  // Browser agents (WebMCP) get the same tools, cursor and rules.
-  registerTools(agent, { allow: cursor.wrap(allow) })
-  // Console and devtools: window.agent.snapshot()
-  Object.assign(window, { agent })
+  attachAudit(agent, audit, { agentId: "bookkeeper", ruleVersion: "posting-1" })
+  // Browser agents (WebMCP) get the same tools, cursor and rules. A person's own
+  // browser agent acts in their session: turn this on when the server can tell it apart.
+  if (process.env.NEXT_PUBLIC_BOOKI_WEBMCP === "on") {
+    registerTools(agent, { allow: cursor.wrap(allow), audit, agentId: "browser" })
+  }
+  // Console and devtools: window.agent.snapshot(). Not in production.
+  if (process.env.NODE_ENV !== "production") Object.assign(window, { agent })
 }
 ```
+
+(In Vite: `import.meta.env.DEV` and `import.meta.env.VITE_BOOKI_WEBMCP`.)
+
+### Whose write it is
+
+The agent runs in the person's page, so the page decides which credential a write
+carries, and it must come from the change itself:
+
+```tsx
+<SupplierInvoiceInbox
+  invoices={invoices}
+  onInvoicesChange={(next, { source }) => save(next, source === "agent" ? "agent" : "person")}
+/>
+```
+
+Every `on…Change` gets `{ reason, source }`, and a `Button` from `@ui-sdk/react/button`
+gives `onClick(event, { source })`. Don't keep an "agent is running" flag: the person can
+click while the agent's step waits for its pointer or for `allow`, and their click would
+be recorded as the agent's. `save` sends the agent's writes with a token your server
+issued for the agent (short-lived, naming the person as `onBehalfOf`); the server never
+takes the actor from the body.
+
+### When a step is done
+
+`act` answers when the control has accepted the step, not when your server has. Two things follow:
+
+- A control you keep controlled shows the change once the server has answered. Count the
+  writes in flight and wait for them before the agent's next `snapshot`, and give the
+  server's refusal back to the model with the result.
+- A press that starts something async answers `ok: true` when it has started. Read the
+  outcome from the next snapshot.
+
+`examples/ap-flow` does both (`lib/writes.ts`, `lib/script.ts`, `lib/model-agent.ts`):
+https://github.com/Walgermo/booki/tree/main/examples/ap-flow
 
 At the app root, once, in a client file of its own (`src/booki-root.tsx`). A server
 layout must not import `agent` or `cursor`; it renders this and passes the person:
@@ -177,7 +225,9 @@ it follows `prefers-reduced-motion` on its own.
 Screens the product already has stay. You don't wrap components: give a control
 a primitive (`definePrimitive` and `createChange` from `@booki/react`: named
 actions, `controlled` state, `data-agent-confirm` on irreversible buttons), then
-create its parts with `createParts`, with your own tags and names. The same
+create its parts with `createParts`, with your own tags and names, or keep the control
+you have inside a root made with `usePrimitive` and `usePart`. A whole example:
+https://raw.githubusercontent.com/Walgermo/booki/main/docs/own-controls.md The same
 primitive renders in React, Vue, Svelte, Solid and Web Components. A Booki
 control under your own names: `createParts` with its definition from
 `@booki/primitives`.
@@ -241,7 +291,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 | InvoiceNumberInput | `@booki/react` | document / invoice number |
 | AttestationStatus | `@booki/react` | `setStatus`; approve/reject via confirm press |
 | TaxCodeSelect | `@booki/react` | closed `items` |
-| AccountPicker | `@booki/react` | closed chart `items` |
+| AccountPicker | `@booki/react` | closed chart; over 30 accounts are not in the snapshot: `query({ within, text })` finds one by number or whole word |
 | CurrencySelect | `@booki/react` | closed NOK/USD |
 
 Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
@@ -276,12 +326,24 @@ import { guardPostVoucher, toHttp } from "@booki/core/server"
 export async function POST(request: Request) {
   const actor = await session(request) // { id, kind: "person" | "agent", roles }
   const { lines, date } = await request.json()
-  const verdict = guardPostVoucher({ actor, entity, locale: "nb" }, { lines, date, rules: { periods, accounts } })
+  const verdict = guardPostVoucher(
+    { actor, entity, locale: "nb", personOf }, // personOf(id): the person an agent acts for, with their roles now
+    { lines, date, rules: { periods, accounts } },
+  )
   if (verdict.ok) await books.post(lines, date, verdict.actor) // "agent:bookkeeper" or the person's id
   const { status, body } = toHttp(verdict) // 401, 403, 409 or 422 with the control's own sentence
   return Response.json(body, { status })
 }
 ```
+
+`toHttp`'s body is `{ ok, code, message, issues? }`. If your API has an error shape of its
+own, map it there and keep `code` and `message`: the agent acts on them.
+
+**Delegation.** With `personOf` an agent may only do what both its own role and the person
+it acts for (`onBehalfOf`) allow, and an unknown person is refused. Permissions the agent
+has by the company's rule go in `agentOwn`. Without `personOf` the person is only recorded.
+
+**Log refusals too:** on `!verdict.ok`, write `actorRecord(actor)` and `verdict.code` to the audit trail.
 
 Guards: `guardPostVoucher`, `guardDecideApproval`, `guardApproved`,
 `guardReleasePayments`, `guardClosePeriod`, `guardFinalizeInvoice`,
