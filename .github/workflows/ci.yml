@@ -36,9 +36,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: pnpm changeset status --since=origin/${{ github.base_ref }}
 
-      - name: pnpm on Vercel matches packageManager
-        run: node scripts/check-pnpm-pin.mjs
-
       - name: Format
         run: pnpm format:check
       - name: Lint

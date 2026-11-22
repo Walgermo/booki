@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "installCommand": "npx --yes pnpm@11.13.1 install --frozen-lockfile",
-  "buildCommand": "npx --yes pnpm@11.13.1 --dir ../.. --filter @booki/core --filter @booki/primitives --filter @booki/react --filter @booki/styles build && npx --yes pnpm@11.13.1 build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --dir ../.. --filter @booki/core --filter @booki/primitives --filter @booki/react --filter @booki/styles build && pnpm build",
   "outputDirectory": "dist",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../../packages ../../pnpm-lock.yaml ../../package.json",
   "rewrites": [
