@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Paper or Night before the first paint: the stored choice, else the system.
+      // Language before the first paint: the visitor's pick, else Norwegian for a Norwegian browser.
+      try {
+        var l = localStorage.getItem("booki-lang");
+        var first = (navigator.languages && navigator.languages[0]) || navigator.language || "";
+        document.documentElement.lang = l || (/^(nb|nn|no)\b/i.test(first) ? "nb" : "en");
+      } catch (e) {}
+      try {
+        var t = localStorage.getItem("booki-theme");
+        var dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) document.documentElement.setAttribute("data-bk-theme", "dark");
+      } catch (e) {}
+    </script>
+    <link rel="preload" href="/fonts/albert-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f4" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Booki: agent-first UI for accounting and auditing" />
+    <meta
+      property="og:description"
+      content="Build agent-first web apps for accounting and auditing. React controls an agent operates by name, under your rules, with a visible agent cursor and every step in the audit trail."
+    />
+    <meta property="og:url" content="https://booki.dev/" />
+    <meta property="og:image" content="https://booki.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Booki: get agentic UI for your ERP. A voucher posted by an agent under the company's rule." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://booki.dev/og.png" />
+    <title>Booki: agent-first UI for accounting and auditing</title>
+    <meta
+      name="description"
+      content="Build agent-first web apps for accounting and auditing. React controls an agent operates by name, under your rules, with a visible agent cursor and every step in the audit trail."
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

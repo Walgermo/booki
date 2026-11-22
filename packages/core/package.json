@@ -1,0 +1,188 @@
+{
+  "name": "@booki/core",
+  "version": "0.1.0",
+  "description": "Booki core — the accounting rules behind agent-first apps: integer money, locale profiles, validators, ledger and table logic. Framework-agnostic.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/Walgermo/booki#readme",
+  "bugs": {
+    "url": "https://github.com/Walgermo/booki/issues"
+  },
+  "keywords": [
+    "accounting",
+    "money",
+    "voucher",
+    "bank-reconciliation",
+    "kid",
+    "iban",
+    "norway",
+    "approval",
+    "invoice",
+    "period-close"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./money": {
+      "types": "./dist/money.d.ts",
+      "default": "./dist/money.js"
+    },
+    "./locale": {
+      "types": "./dist/locale/index.d.ts",
+      "default": "./dist/locale/index.js"
+    },
+    "./kontonummer": {
+      "types": "./dist/kontonummer.d.ts",
+      "default": "./dist/kontonummer.js"
+    },
+    "./routing-number": {
+      "types": "./dist/routing-number.d.ts",
+      "default": "./dist/routing-number.js"
+    },
+    "./kid": {
+      "types": "./dist/kid.d.ts",
+      "default": "./dist/kid.js"
+    },
+    "./iban": {
+      "types": "./dist/iban.d.ts",
+      "default": "./dist/iban.js"
+    },
+    "./organization-number": {
+      "types": "./dist/organization-number.d.ts",
+      "default": "./dist/organization-number.js"
+    },
+    "./financial-date": {
+      "types": "./dist/financial-date.d.ts",
+      "default": "./dist/financial-date.js"
+    },
+    "./period": {
+      "types": "./dist/period.d.ts",
+      "default": "./dist/period.js"
+    },
+    "./voucher": {
+      "types": "./dist/voucher.d.ts",
+      "default": "./dist/voucher.js"
+    },
+    "./reconciliation": {
+      "types": "./dist/reconciliation.d.ts",
+      "default": "./dist/reconciliation.js"
+    },
+    "./period-lock": {
+      "types": "./dist/period-lock.d.ts",
+      "default": "./dist/period-lock.js"
+    },
+    "./close": {
+      "types": "./dist/close.d.ts",
+      "default": "./dist/close.js"
+    },
+    "./approval": {
+      "types": "./dist/approval.d.ts",
+      "default": "./dist/approval.js"
+    },
+    "./invoice": {
+      "types": "./dist/invoice.d.ts",
+      "default": "./dist/invoice.js"
+    },
+    "./payment-batch": {
+      "types": "./dist/payment-batch.d.ts",
+      "default": "./dist/payment-batch.js"
+    },
+    "./supplier-invoice": {
+      "types": "./dist/supplier-invoice.d.ts",
+      "default": "./dist/supplier-invoice.js"
+    },
+    "./attachments": {
+      "types": "./dist/attachments.d.ts",
+      "default": "./dist/attachments.js"
+    },
+    "./expense": {
+      "types": "./dist/expense.d.ts",
+      "default": "./dist/expense.js"
+    },
+    "./ledger": {
+      "types": "./dist/ledger.d.ts",
+      "default": "./dist/ledger.js"
+    },
+    "./aging": {
+      "types": "./dist/aging.d.ts",
+      "default": "./dist/aging.js"
+    },
+    "./vat-return": {
+      "types": "./dist/vat-return.d.ts",
+      "default": "./dist/vat-return.js"
+    },
+    "./audit": {
+      "types": "./dist/audit.d.ts",
+      "default": "./dist/audit.js"
+    },
+    "./findings": {
+      "types": "./dist/findings.d.ts",
+      "default": "./dist/findings.js"
+    },
+    "./client-request": {
+      "types": "./dist/client-request.d.ts",
+      "default": "./dist/client-request.js"
+    },
+    "./fixed-assets": {
+      "types": "./dist/fixed-assets.d.ts",
+      "default": "./dist/fixed-assets.js"
+    },
+    "./fx": {
+      "types": "./dist/fx.d.ts",
+      "default": "./dist/fx.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    },
+    "./permissions": {
+      "types": "./dist/permissions.d.ts",
+      "default": "./dist/permissions.js"
+    },
+    "./msg": {
+      "types": "./dist/msg.d.ts",
+      "default": "./dist/msg.js"
+    },
+    "./messages": {
+      "types": "./dist/messages.d.ts",
+      "default": "./dist/messages.js"
+    },
+    "./table": {
+      "types": "./dist/table.d.ts",
+      "default": "./dist/table.js"
+    },
+    "./sheet-stack": {
+      "types": "./dist/sheet-stack.d.ts",
+      "default": "./dist/sheet-stack.js"
+    },
+    "./document-signoff": {
+      "types": "./dist/document-signoff.d.ts",
+      "default": "./dist/document-signoff.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

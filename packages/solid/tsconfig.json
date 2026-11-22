@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": true,
+    "paths": {
+      "@booki/primitives": [
+        "../primitives/src/index.ts"
+      ],
+      "@booki/primitives/*": [
+        "../primitives/src/*.ts"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

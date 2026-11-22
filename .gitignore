@@ -1,0 +1,17 @@
+node_modules
+dist
+storybook-static
+*.local
+.DS_Store
+.env
+.env.*
+!.env.example
+coverage
+*.tsbuildinfo
+.turbo
+.vite
+.pnpm-store
+
+# Benchmark runs: raw tool calls, kept locally
+benchmarks/agent/results/
+apps/www/public/sitemap.xml

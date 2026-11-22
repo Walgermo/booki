@@ -1,0 +1,71 @@
+import { isValidIban } from "@booki/core/iban";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
+import { createParts } from "@ui-sdk/react/primitive";
+import type { ComponentProps } from "react";
+import { FormValue, type BookiFormProps } from "./form-props.js";
+import { ibanInput } from "@booki/primitives/iban-input";
+
+const parts = createParts(ibanInput, {
+  root: "div",
+  input: "input",
+});
+
+const IbanRoot = parts.Root;
+const IbanField = parts.Input;
+
+export type IbanInputProps = {
+  /** Controlled value. Omit it (and use `defaultValue`) to let the field hold its own state. */
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  label?: string;
+  description?: string;
+  required?: boolean;
+  className?: string;
+} & Omit<BookiFormProps, "required"> &
+  Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
+
+function IbanInput({
+  value,
+  defaultValue,
+  onValueChange,
+  label = "IBAN",
+  description = "International bank account number",
+  required,
+  name,
+  id,
+  disabled,
+  readOnly,
+  className,
+  ...props
+}: IbanInputProps) {
+  return (
+    <IbanRoot
+      {...(value !== undefined ? { value } : { defaultValue })}
+      label={label}
+      description={description}
+      onValueChange={onValueChange}
+      disabled={disabled}
+      readOnly={readOnly}
+      className={className}
+      aria-label={label}
+      {...props}
+    >
+      {(state: { value: string }) => {
+        const invalid = state.value.length > 0 && !isValidIban(state.value);
+        return (
+          <Field invalid={invalid}>
+            <FieldLabel>{label}</FieldLabel>
+            <FieldDescription>{description}</FieldDescription>
+            <IbanField id={id} required={required} placeholder="NO93 8601 1117 947" />
+            {/* The IBAN without spaces. */}
+            <FormValue name={name} value={state.value} disabled={disabled} />
+            {invalid ? <FieldError>Invalid IBAN</FieldError> : null}
+          </Field>
+        );
+      }}
+    </IbanRoot>
+  );
+}
+
+export { IbanInput, IbanRoot, IbanField, ibanInput };

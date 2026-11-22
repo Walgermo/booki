@@ -1,0 +1,93 @@
+/* ── Evidence list (attachments) ─────────────────────────────────────── */
+
+[data-slot="evidence-list"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="evidence-list-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-warning);
+}
+
+[data-slot="evidence-list"][data-evidenced] [data-slot="evidence-list-status"] {
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+}
+
+[data-slot="evidence-list-empty"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+/* Rows divided by hairlines: the linked files, then the files that can be linked. */
+:is([data-slot="evidence-list-items"], [data-slot="evidence-list-pool"]) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-slot="evidence-list-items"] {
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+:is([data-slot="evidence-list-items"], [data-slot="evidence-list-pool"]) > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  min-height: var(--bk-control-h);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+:is([data-slot="evidence-list-items"], [data-slot="evidence-list-pool"]) > li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="evidence-list-pool"] > li {
+  padding-inline: 0;
+}
+
+[data-slot="evidence-list-name"] {
+  flex: 0 1 14rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="evidence-list-meta"] {
+  flex: 1 1 14rem;
+  min-width: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+:is([data-slot="evidence-list-added"], [data-slot="evidence-list-kind-text"]) {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="evidence-list-items"] select {
+  flex: 0 1 11rem;
+  min-width: 8rem;
+}
+
+[data-slot="evidence-list-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}

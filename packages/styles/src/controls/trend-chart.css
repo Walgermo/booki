@@ -1,0 +1,292 @@
+/* ── Trend chart: series over months ─────────────────────────────────── */
+
+[data-slot="trend-chart"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="trend-chart-header"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="trend-chart-title"] {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+/* The ranges read as one segmented control. */
+[data-slot="trend-chart-ranges"] {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--bk-radius);
+  background: var(--bk-muted);
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-range"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.65rem;
+  background: transparent;
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-range"][aria-pressed="true"] {
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot="trend-chart"]) button[data-slot="trend-chart-range"]:hover:not([aria-pressed="true"]) {
+    background: var(--bk-accent);
+    color: var(--bk-fg);
+  }
+}
+
+/* Legend: a short line key beside each name. Text never wears the series colour. */
+[data-slot="trend-chart-legend"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="trend-chart-legend"] li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+[data-slot="trend-chart-key"] {
+  display: inline-block;
+  flex: none;
+  width: 0.875rem;
+  height: 2px;
+  border-radius: 1px;
+}
+
+[data-slot="trend-chart-frame"] {
+  position: relative;
+  min-width: 0;
+}
+
+[data-slot="trend-chart-svg"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--bk-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="trend-chart-grid"] line {
+  stroke: var(--bk-border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+[data-slot="trend-chart-grid"] line[data-zero] {
+  stroke: var(--bk-border-strong);
+}
+
+:is([data-slot="trend-chart-grid"], [data-slot="trend-chart-axis"]) text {
+  fill: var(--bk-muted-fg);
+}
+
+[data-slot="trend-chart-line"] {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-slot="trend-chart-end"] circle,
+[data-slot="trend-chart-marker"] {
+  stroke: var(--bk-bg);
+  stroke-width: 2;
+}
+
+[data-slot="trend-chart-end"] line {
+  stroke: var(--bk-border-strong);
+  stroke-width: 1;
+}
+
+[data-slot="trend-chart-end"] text {
+  fill: var(--bk-fg);
+  font-family: var(--bk-font);
+  font-size: 12px;
+}
+
+[data-slot="trend-chart-cursor"] {
+  stroke: var(--bk-border-strong);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+/* One invisible button per month over the plot: click, Enter or Space drills in. */
+[data-slot="trend-chart-hits"] {
+  position: absolute;
+  inset: 0;
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-point"] {
+  position: absolute;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: transparent;
+  box-shadow: none;
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-point"]:focus-visible {
+  outline-offset: -2px;
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-point"][aria-pressed="true"] {
+  background: color-mix(in srgb, var(--bk-accent) 60%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot="trend-chart"]) button[data-slot="trend-chart-point"]:hover:not(:disabled) {
+    background: transparent;
+  }
+}
+
+:where([data-slot="trend-chart"]) button[data-slot="trend-chart-point"]:active:not(:disabled) {
+  transform: none;
+}
+
+[data-slot="trend-chart-tooltip"] {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 10rem;
+  max-width: 12rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+[data-slot="trend-chart-tooltip"] strong {
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="trend-chart-tooltip-row"] {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="trend-chart-value"] {
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The same figures as a table, behind a disclosure. */
+[data-slot="trend-chart-table"] summary {
+  width: fit-content;
+  font-size: 0.8125rem;
+  color: var(--bk-brand);
+  cursor: pointer;
+}
+
+[data-slot="trend-chart-scroll"] {
+  min-width: 0;
+  margin-top: var(--bk-gap);
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="trend-chart-table"] table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="trend-chart-table"] :is(th, td) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  text-align: start;
+  font-weight: inherit;
+  white-space: nowrap;
+}
+
+[data-slot="trend-chart-table"] thead th {
+  border-top: 0;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="trend-chart-table"] [data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="trend-chart-table"] tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="trend-chart-table"] tr[data-drilled] {
+  background: var(--bk-accent);
+}
+
+:is([data-slot="trend-chart-empty"], [data-slot="trend-chart-error"]) {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="trend-chart-error"] {
+  color: var(--bk-danger);
+}
+
+@media (pointer: coarse) {
+  :where([data-slot="trend-chart"]) button[data-slot="trend-chart-range"] {
+    min-height: var(--bk-control-h);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="trend-chart-tooltip"] {
+    animation: acc-trend-chart-tip var(--bk-duration) var(--bk-ease-out);
+  }
+}
+
+@keyframes acc-trend-chart-tip {
+  from {
+    opacity: 0;
+  }
+}

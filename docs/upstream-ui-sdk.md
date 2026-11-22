@@ -1,0 +1,35 @@
+# Upstream: ui-sdk issues Booki works around
+
+Two gaps in `@ui-sdk/*`, present in 0.1.0-beta.13 and still in beta.14. Both
+are reported. When one is fixed upstream, remove the workaround named under it.
+
+## 1. `SlotProps` and the types it rests on are not exported from `@ui-sdk/core`
+
+Reported: [vercel-labs/ui#1017](https://github.com/vercel-labs/ui/issues/1017)
+(the bundled-declarations part is in [this comment](https://github.com/vercel-labs/ui/issues/1017#issuecomment-7083870679)).
+
+**What happens.** A library that calls `definePrimitive` and emits declarations
+gets an inferred type that names `SlotProps` (`foundation/kernel/primitive-types`).
+`@ui-sdk/core` does not export it, and its `exports` map blocks the deep path,
+so TypeScript cannot write an importable reference. Bundled declarations
+(tsup / rollup-plugin-dts) copy `primitive-types.d.ts` into the library's
+`dist` with four relative imports to files the library does not have:
+`./live.js`, `./roles.js`, `./selects.js`, `./store.js`. A consumer with
+`skipLibCheck: false` gets `TS2307` for each.
+
+**Booki's workaround.** `scripts/vendor-ui-sdk-types.mjs` copies the four
+files into `dist` after `tsup` in `@booki/primitives` and `@booki/react`.
+
+## 2. `@ui-sdk/svelte` imports `./create-parts` without an extension
+
+Reported: [vercel-labs/ui#1027](https://github.com/vercel-labs/ui/issues/1027).
+
+**What happens.** `dist/primitive.js` has `export { createParts } from "./create-parts"`.
+`dist` holds both `create-parts.js` and a folder `create-parts/`, so Node's ESM
+loader resolves the folder and throws `ERR_UNSUPPORTED_DIR_IMPORT`. Importing
+`@ui-sdk/svelte` from plain Node fails, and so does Vite SSR when the package
+is left external (the default for dependencies). A bundled client build works.
+
+**Booki's workaround.** `@booki/svelte`'s README (written by
+`scripts/generate-frameworks.mjs`) says to load it through Vite with the Svelte
+plugin and to keep both packages in the SSR bundle with `ssr.noExternal`.

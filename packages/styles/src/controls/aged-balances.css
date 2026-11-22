@@ -1,0 +1,260 @@
+/* ── Aged balances: receivables or payables by age ───────────────────── */
+
+[data-slot="aged-balances"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="aged-balances-field"] {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 11rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aged-balances-date"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The table scrolls inside its own box, never the page. */
+[data-slot="aged-balances-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="aged-balances-table"] {
+  min-width: 44rem;
+}
+
+[data-slot="aged-balances-items"] {
+  min-width: 32rem;
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) thead th[data-align="end"] {
+  text-align: end;
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) :is(td, tbody th, tfoot th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"]) td[data-slot="aged-balances-amount"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+:is([data-slot="aged-balances-document"], [data-slot="aged-balances-due"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The oldest column is the one that needs attention. */
+[data-slot="aged-balances-table"] tbody td[data-bucket^="over-"]:not([data-empty]),
+[data-slot="aged-balances-items"] tr[data-bucket^="over-"] td[data-slot="aged-balances-amount"]:last-child {
+  color: var(--bk-danger);
+}
+
+[data-slot="aged-balances-items"] tr[data-credit] td[data-slot="aged-balances-amount"]:last-child {
+  color: var(--bk-success);
+}
+
+/* The party's name opens its items: it reads as a link, not a button. */
+[data-slot="aged-balances-party"] {
+  justify-content: flex-start;
+  min-height: 2rem;
+  padding: 0 0.25rem;
+  margin-inline: -0.25rem;
+  background: transparent;
+  color: var(--bk-brand);
+  text-align: start;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--bk-brand) 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="aged-balances-party"]:hover:not(:disabled) {
+    background: var(--bk-accent);
+    text-decoration-color: currentColor;
+  }
+}
+
+[data-slot="aged-balances-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="aged-balances-heading"] h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="aged-balances-empty"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aged-balances-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* A finger needs 44px to press a party. */
+@media (pointer: coarse) {
+  [data-slot="aged-balances-party"] {
+    min-height: var(--bk-control-h);
+  }
+}
+
+/* ── Table behaviour, as in data-table.css: search, sortable headers, pages, CSV ── */
+
+[data-slot="aged-balances-search"] {
+  width: 100%;
+  min-height: var(--bk-control-h);
+  padding: 0 var(--bk-control-px);
+  border: 1px solid var(--bk-border-strong);
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  font: inherit;
+}
+
+/* The sort button fills the header cell, so the whole header is the target. */
+[data-slot="aged-balances-sort"] {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+
+[data-slot="aged-balances-sort"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+[data-slot="aged-balances-sort-mark"] {
+  opacity: 0.35;
+}
+
+[data-slot="aged-balances-sort"][data-sorted] {
+  color: var(--bk-fg);
+}
+
+[data-slot="aged-balances-sort"][data-sorted] [data-slot="aged-balances-sort-mark"] {
+  opacity: 1;
+}
+
+[data-slot="aged-balances-export"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--bk-control-h);
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  color: var(--bk-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+[data-slot="aged-balances-toolbar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap);
+}
+
+[data-slot="aged-balances-spacer"] {
+  flex: 1 1 auto;
+}
+
+[data-slot="aged-balances-pagination"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aged-balances-range"] {
+  margin-right: auto;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+:is([data-slot="aged-balances-prev"], [data-slot="aged-balances-next"]) {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  color: var(--bk-fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+:is([data-slot="aged-balances-prev"], [data-slot="aged-balances-next"]):disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+[data-slot="aged-balances-bucket"] {
+  min-height: var(--bk-control-h);
+}
+
+:is([data-slot="aged-balances-table"], [data-slot="aged-balances-items"])
+  th[data-align="end"]
+  [data-slot="aged-balances-sort"] {
+  justify-content: flex-end;
+}

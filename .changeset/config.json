@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@4.0.1/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "Walgermo/booki" }],
+  "commit": false,
+  "fixed": [
+    [
+      "@booki/core",
+      "@booki/primitives",
+      "@booki/react",
+      "@booki/styles",
+      "@booki/web",
+      "@booki/vue",
+      "@booki/svelte",
+      "@booki/solid"
+    ]
+  ],
+  "linked": [],
+  "access": "public",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [],
+  "privatePackages": { "version": false, "tag": false },
+  "format": false
+}

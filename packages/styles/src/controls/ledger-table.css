@@ -1,0 +1,413 @@
+/* ── Ledger table: trial balance and account entries ─────────────────── */
+
+[data-slot="ledger-table"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+/* Range and balance status on one line; wraps on a narrow screen. */
+[data-slot="ledger-table-bar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="ledger-table-field"] {
+  display: grid;
+  gap: 0.3rem;
+  flex: 0 1 11rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+:is([data-slot="ledger-table-from"], [data-slot="ledger-table-to"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="ledger-table-status"] {
+  flex: 1 1 14rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="ledger-table"][data-balanced="false"] [data-slot="ledger-table-status"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+/* Both views scroll inside this box, never the page. */
+[data-slot="ledger-table-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+/* The trial balance is a list of rows on one shared set of columns. */
+[data-slot="ledger-table-grid"] {
+  min-width: 38rem;
+  font-size: 0.8125rem;
+}
+
+:is([data-slot="ledger-table-head"], [data-slot="ledger-table-row"], [data-slot="ledger-table-total"]) {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) repeat(4, minmax(6.5rem, 9rem));
+  align-items: center;
+  column-gap: var(--bk-gap-lg);
+  padding: 0 0.75rem;
+}
+
+[data-slot="ledger-table-head"] {
+  padding-block: 0.45rem;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="ledger-table-head"] [data-align="end"] {
+  text-align: end;
+}
+
+[data-slot="ledger-table-row"] {
+  min-height: 2rem;
+  border-top: 1px solid var(--bk-border);
+  cursor: pointer;
+  outline: none;
+  transition: background-color var(--bk-duration) var(--bk-ease-out);
+}
+
+[data-slot="ledger-table-row"][aria-selected="true"] {
+  background: var(--bk-accent);
+}
+
+[data-slot="ledger-table-row"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: -2px;
+  border-radius: var(--bk-radius-sm);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="ledger-table-row"]:hover {
+    background: var(--bk-accent);
+  }
+}
+
+[data-slot="ledger-table-total"] {
+  min-height: 2.25rem;
+  border-top: 1px solid var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="ledger-table-account"] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is([data-slot="ledger-table-number"], [data-slot="ledger-table-date"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="ledger-table-number"] {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-amount"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* One account: back, its name, and its entries. */
+[data-slot="ledger-table-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="ledger-table-heading"] h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="ledger-table-entries"] {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="ledger-table-entries"] thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="ledger-table-entries"] thead th[data-align="end"] {
+  text-align: end;
+}
+
+[data-slot="ledger-table-entries"] :is(td, tbody th, tfoot th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="ledger-table-entries"] td[data-slot="ledger-table-amount"] {
+  text-align: end;
+}
+
+[data-slot="ledger-table-opening"] :is(th, td) {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-entries"] tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+/* The voucher number opens the voucher: it reads as a link, not a button. */
+[data-slot="ledger-table-voucher"] {
+  min-height: 2rem;
+  padding: 0 0.25rem;
+  margin-inline: -0.25rem;
+  background: transparent;
+  color: var(--bk-brand);
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--bk-brand) 35%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="ledger-table-voucher"]:hover:not(:disabled) {
+    background: var(--bk-accent);
+    text-decoration-color: currentColor;
+  }
+}
+
+[data-slot="ledger-table-pages"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="ledger-table-range"] {
+  margin: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-empty"] {
+  margin: 0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* A finger needs 44px to press a row or a voucher. */
+@media (pointer: coarse) {
+  :is([data-slot="ledger-table-row"], [data-slot="ledger-table-voucher"]) {
+    min-height: var(--bk-control-h);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="ledger-table-row"] {
+    transition: none;
+  }
+}
+
+/* ── Drill-down: breadcrumbs, the voucher view and the document ───────── */
+
+[data-slot="ledger-table-crumbs"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-crumb"] {
+  all: unset;
+  cursor: pointer;
+  color: var(--bk-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, var(--bk-brand) 35%, transparent);
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+[data-slot="ledger-table-crumb"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+[data-slot="ledger-table-crumbs"] [aria-current="page"] {
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="ledger-table-voucher-meta"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="ledger-table-voucher-meta"] [data-slot="ledger-table-status"][data-balanced="false"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+[data-slot="ledger-table-document-row"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="ledger-table-document-name"] {
+  font-family: var(--bk-mono);
+  color: var(--bk-fg);
+}
+
+[data-slot="ledger-table-lineaccount"] {
+  all: unset;
+  cursor: pointer;
+  color: var(--bk-brand);
+}
+
+[data-slot="ledger-table-lineaccount"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="ledger-table-lineaccount"]:hover,
+  [data-slot="ledger-table-crumb"]:hover {
+    text-decoration-color: var(--bk-brand);
+  }
+
+  [data-slot="ledger-table-lineaccount"]:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ── Table behaviour, as in data-table.css: search, sortable headers, pages, CSV ── */
+
+[data-slot="ledger-table-search"] {
+  width: 100%;
+  min-height: var(--bk-control-h);
+  padding: 0 var(--bk-control-px);
+  border: 1px solid var(--bk-border-strong);
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  font: inherit;
+}
+
+/* The sort button fills the header cell, so the whole header is the target. */
+[data-slot="ledger-table-sort"] {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+}
+
+[data-slot="ledger-table-sort"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+[data-slot="ledger-table-sort-mark"] {
+  opacity: 0.35;
+}
+
+[data-slot="ledger-table-sort"][data-sorted] {
+  color: var(--bk-fg);
+}
+
+[data-slot="ledger-table-sort"][data-sorted] [data-slot="ledger-table-sort-mark"] {
+  opacity: 1;
+}
+
+[data-slot="ledger-table-export"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--bk-control-h);
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  color: var(--bk-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* In the trial balance the headers are grid cells; end-aligned ones keep their figures' edge. */
+[data-slot="ledger-table-head"] [role="columnheader"][data-align="end"] {
+  justify-self: end;
+}
+
+[data-slot="ledger-table-entries"] th[data-align="end"] [data-slot="ledger-table-sort"] {
+  justify-content: flex-end;
+}
+
+[data-slot="ledger-table-export"] {
+  margin-left: auto;
+}

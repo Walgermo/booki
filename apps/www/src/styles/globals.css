@@ -1,0 +1,3755 @@
+@import "tailwindcss";
+@import "@booki/styles";
+
+@source "../";
+
+/*
+  Fonts are served from /fonts at fixed paths, so index.html can preload the
+  two the first screen needs and text never reflows when they land.
+  Albert Sans for text (latin covers æ, ø, å), Geist Mono for figures and code.
+*/
+@font-face {
+  font-family: "Albert Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/albert-sans-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Albert Sans Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("/fonts/albert-sans-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+  The site wears the library's own Paper and Ink tokens (packages/styles). Tailwind
+  colours point at --bk-* so there is one palette, and a scoped
+  data-bk-theme="dark" restyles site chrome inside it too. See DESIGN.md.
+*/
+@theme inline {
+  --font-sans: var(--bk-font);
+  --font-mono: var(--bk-mono);
+  --font-display: var(--bk-font);
+
+  --color-background: var(--bk-bg);
+  --color-foreground: var(--bk-fg);
+  --color-card: var(--bk-card);
+  --color-card-foreground: var(--bk-fg);
+  --color-muted: var(--bk-muted);
+  --color-muted-foreground: var(--bk-muted-fg);
+  --color-wood: var(--bk-wood);
+  --color-brand: var(--bk-brand);
+  --color-border: var(--bk-border);
+  --color-input: var(--bk-border-strong);
+  --color-ring: var(--bk-ring);
+  --color-primary: var(--bk-primary);
+  --color-primary-foreground: var(--bk-primary-fg);
+  --color-secondary: var(--bk-card);
+  --color-secondary-foreground: var(--bk-fg);
+  --color-accent: var(--bk-accent);
+  --color-accent-foreground: var(--bk-fg);
+  --color-destructive: var(--bk-danger);
+  --color-destructive-foreground: var(--bk-danger-fg);
+  --color-success: var(--bk-success);
+  --color-success-foreground: var(--bk-primary-fg);
+  --color-warning: var(--bk-warning);
+  --color-signal: var(--bk-signal);
+  --color-signal-foreground: var(--bk-signal-fg);
+  --color-signal-ink: var(--bk-signal-ink);
+  --color-ink: var(--bk-ink);
+  --color-ink-foreground: var(--bk-ink-fg);
+  --color-ink-muted: var(--bk-ink-muted);
+  --radius-sm: var(--bk-radius-sm);
+  --radius-md: var(--bk-radius-sm);
+  --radius-lg: var(--bk-radius);
+}
+
+:root {
+  --primary-hover: color-mix(in oklch, var(--bk-primary) 86%, var(--bk-bg));
+  --ink-soft: var(--bk-muted-fg);
+  --hairline: 1px;
+  /* Matte surfaces: the library's ring-and-breath shadows. */
+  --elevation-raised: var(--bk-shadow-sm);
+  --elevation-raised-hover: var(--bk-shadow-md);
+  --elevation-sunken: inset 0 0 0 1px oklch(0.19 0.012 262 / 0.07);
+  --elevation-ring: 0 0 0 1px oklch(0.19 0.012 262 / 0.12);
+  --radius-surface: var(--bk-radius-lg); /* 8px panels */
+  --radius-surface-inner: 0.25rem; /* 8 − 4 nest */
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-modal: 300;
+  --scrollbar-thumb: oklch(0.19 0.012 262 / 0.2);
+  --scrollbar-thumb-ink: oklch(1 0 0 / 0.2);
+  --signal-edge: oklch(0.19 0.012 262 / 0.18); /* keeps a signal fill crisp on paper */
+
+  --text-display: clamp(3rem, 7.4vw, 6.5rem);
+  --text-title: clamp(1.875rem, 3.4vw, 3rem);
+  --text-lede: clamp(1.125rem, 1.6vw, 1.3125rem);
+  --text-body: 1rem;
+  --text-ui: 0.875rem;
+  --text-caption: 0.75rem;
+  --leading-display: 0.96;
+  --leading-title: 1.05;
+  --leading-lede: 1.5;
+  --leading-body: 1.6;
+  --tracking-display: -0.048em;
+  --tracking-title: -0.035em;
+  --tracking-caption: 0.08em;
+  --section-y: clamp(5rem, 10vw, 7.5rem);
+}
+
+@media (min-resolution: 2dppx) {
+  :root {
+    --hairline: 0.5px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    margin: 0;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    font-synthesis: none;
+  }
+
+  ::selection {
+    background: var(--bk-selection);
+    color: var(--color-foreground);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  [id] {
+    scroll-margin-top: 4.5rem;
+  }
+
+  a:not([class]) {
+    color: var(--color-primary);
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.2em;
+    text-decoration-skip-ink: auto;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:not([class]):hover {
+      color: var(--primary-hover);
+    }
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-slot="dialog-trigger"],
+  [data-slot="approval-gate-trigger"],
+  [data-slot="country-toggle"] button,
+  [data-slot="amount-input"] input,
+  [data-slot="bank-account-input"] input,
+  [data-slot="payment-reference-input"] input,
+  [data-slot="payment-confirm"] input,
+  [data-slot="approval-gate"] input,
+  [data-slot="sca-prompt"] button,
+  [data-slot="exception-banner"] button,
+  [data-slot="payment-confirm"] button,
+  [data-slot="approval-gate-actions"] button {
+    font: inherit;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font: inherit;
+    font-size: 1rem;
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius-md);
+    padding: 0.55rem 0.75rem;
+    background: var(--color-card);
+    color: var(--color-foreground);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  @media (pointer: fine) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 0.875rem;
+    }
+  }
+
+  button:not([data-slot="country-toggle"] button) {
+    appearance: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 0.55rem 0.95rem;
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+    cursor: pointer;
+    font-size: var(--text-ui);
+    font-weight: 500;
+    transition:
+      color 150ms ease-out,
+      background-color 150ms ease-out,
+      box-shadow 150ms ease-out,
+      transform 150ms ease-out;
+  }
+
+  button:not([data-slot="country-toggle"] button):active {
+    transform: scale(0.97);
+  }
+
+  button[data-variant="secondary"] {
+    background: var(--color-secondary);
+    color: var(--color-secondary-foreground);
+    box-shadow: var(--elevation-ring);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* —— Landing —— */
+.landing-hero {
+  background: var(--color-background);
+}
+
+.landing-hero__title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.5rem, 5.4vw, 4.75rem);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  font-weight: 620;
+  color: var(--color-foreground);
+}
+
+/* Hero title: the words arrive one after another, once per session. */
+.hero-words__word {
+  display: inline-block;
+}
+
+/* Sized to fill the width: one line, no wrapping, until the minimum size. */
+.hero-words[data-fits] {
+  white-space: nowrap;
+}
+
+.hero-words[data-play] .hero-words__word {
+  animation: hero-word 560ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation-delay: calc(var(--i) * 70ms + 80ms);
+  will-change: transform, opacity, filter;
+}
+
+@keyframes hero-word {
+  from {
+    opacity: 0;
+    transform: translateY(0.28em);
+    filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes hero-word {
+    from {
+      opacity: 0;
+    }
+  }
+  .hero-words[data-play] .hero-words__word {
+    animation-duration: 200ms;
+    animation-delay: 0ms;
+  }
+}
+
+/* The hook under the hero title: light and quiet, one or two lines. */
+.landing-hero__hook {
+  max-width: 62ch;
+  margin: 1.25rem 0 0;
+  color: var(--bk-muted-fg);
+  font-size: clamp(1.0625rem, 1.6vw, 1.3125rem);
+  font-weight: 400;
+  line-height: 1.45;
+  text-wrap: balance;
+}
+
+.landing-hero__lede {
+  max-width: 34rem;
+  font-size: var(--text-lede);
+  line-height: var(--leading-lede);
+  color: var(--color-muted-foreground);
+}
+
+.landing-section-title {
+  font-family: var(--font-sans);
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-title);
+  font-weight: 600;
+}
+
+.landing-journal {
+  border-radius: var(--radius-surface);
+  border: none;
+  box-shadow: var(--elevation-raised);
+  background: var(--color-card);
+  transition: box-shadow 150ms ease-out;
+}
+
+.landing-journal [data-slot="voucher-lines"] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.landing-journal [data-slot="voucher-lines-table"] {
+  font-size: var(--text-ui);
+}
+
+.landing-journal [data-slot="voucher-lines-table"] th {
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--color-muted-foreground);
+  border-bottom: var(--hairline) solid var(--color-border);
+  padding-block: 0.5rem 0.65rem;
+}
+
+.landing-journal [data-slot="voucher-lines-table"] td {
+  border-top: var(--hairline) solid var(--color-border);
+  padding-block: 0.7rem;
+}
+
+.landing-journal [data-slot="voucher-lines-table"] tfoot td {
+  background: transparent;
+  border-top: 1.5px solid var(--color-foreground);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-code {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* Voucher panel: staggered row enter after rebuild */
+.landing-journal[data-agent-pulse="voucher"] [data-slot="hero-voucher"] [data-slot="voucher-lines-table"] tbody tr {
+  animation: landing-row-flash 240ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.landing-journal[data-agent-pulse="voucher"]
+  [data-slot="hero-voucher"]
+  [data-slot="voucher-lines-table"]
+  tbody
+  tr:nth-child(1) {
+  animation-delay: 0ms;
+}
+.landing-journal[data-agent-pulse="voucher"]
+  [data-slot="hero-voucher"]
+  [data-slot="voucher-lines-table"]
+  tbody
+  tr:nth-child(2) {
+  animation-delay: 35ms;
+}
+.landing-journal[data-agent-pulse="voucher"]
+  [data-slot="hero-voucher"]
+  [data-slot="voucher-lines-table"]
+  tbody
+  tr:nth-child(3) {
+  animation-delay: 70ms;
+}
+
+@keyframes landing-row-flash {
+  from {
+    opacity: 0.4;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-journal[data-agent-pulse="voucher"] [data-slot="voucher-composer-status"] {
+  animation: landing-amount-flash 240ms ease-out;
+}
+
+@keyframes landing-amount-flash {
+  0%,
+  100% {
+    background-color: var(--color-card);
+  }
+  40% {
+    background-color: var(--bk-accent);
+  }
+}
+
+@keyframes landing-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-journal[data-agent-pulse="voucher"] [data-slot="hero-voucher"] [data-slot="voucher-lines-table"] tbody tr,
+  .landing-journal[data-agent-pulse="voucher"] [data-slot="voucher-composer-status"] {
+    animation: landing-fade 140ms ease-out both;
+  }
+}
+
+/* —— Landing surfaces: comparison columns, bridge list, handoff —— */
+.landing-sheet {
+  border-radius: var(--radius-surface);
+  background: var(--color-card);
+  box-shadow: var(--elevation-raised);
+  overflow: hidden;
+}
+
+.landing-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-log li + li {
+  border-top: var(--hairline) solid var(--color-border);
+}
+
+.landing-snippet {
+  margin: 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  line-height: 1.6;
+  color: var(--bk-ink-muted);
+  white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.landing-tag {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: var(--bk-radius-sm);
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--color-muted);
+  color: var(--color-muted-foreground);
+  box-shadow: var(--elevation-ring);
+}
+
+.landing-tag[data-tone="refused"] {
+  color: var(--bk-danger);
+  background: color-mix(in oklch, var(--bk-danger) 10%, var(--bk-card));
+}
+
+.landing-tag[data-tone="allowed"] {
+  color: var(--bk-success);
+  background: color-mix(in oklch, var(--bk-success) 10%, var(--bk-card));
+}
+
+.landing-tag[data-tone="redacted"] {
+  color: var(--bk-fg);
+  background: var(--bk-wood);
+}
+
+.landing-tag[data-tone="good"] {
+  color: var(--bk-success);
+  background: color-mix(in oklch, var(--bk-success) 10%, var(--bk-card));
+}
+
+.landing-tag[data-tone="bad"] {
+  color: var(--bk-danger);
+  background: color-mix(in oklch, var(--bk-danger) 10%, var(--bk-card));
+}
+
+.landing-excerpt {
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-surface-inner);
+  background: var(--color-muted);
+  box-shadow: var(--elevation-sunken);
+  color: var(--color-foreground);
+}
+
+.landing-figure {
+  font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 560;
+}
+
+.landing-figure span {
+  font-size: var(--text-ui);
+  letter-spacing: 0;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+}
+
+.landing-figure--hero {
+  font-family: var(--bk-mono);
+  font-size: clamp(4rem, 9vw, 7rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+  min-height: 0.9em;
+  color: var(--bk-signal);
+}
+
+.landing-figure--hero span {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--bk-font);
+  font-size: var(--text-lede);
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  color: var(--bk-ink-fg);
+}
+
+/* A link that is really a button (no navigation). */
+.site-text-button {
+  all: unset;
+  cursor: pointer;
+  color: var(--bk-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--bk-border-strong);
+}
+
+.site-text-button:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+.site-text-button:disabled {
+  cursor: default;
+  color: var(--bk-muted-fg);
+  text-decoration: none;
+}
+
+.landing-bar {
+  height: 0.375rem;
+  background: var(--bk-ink-border);
+  overflow: hidden;
+}
+
+.landing-bar > div {
+  height: 100%;
+  background: var(--bk-ink-muted);
+  transition: width 400ms var(--bk-ease-out);
+}
+
+.landing-bar[data-mine] > div {
+  background: var(--bk-signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-bar > div {
+    transition: none;
+  }
+}
+
+.landing-details summary {
+  cursor: pointer;
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  font-size: var(--text-ui);
+  color: var(--color-muted-foreground);
+}
+
+/* Both invoice forms share one plain layout, so neither looks better dressed. */
+.landing-form form,
+.landing-form .acc-invoice {
+  display: grid;
+  gap: 1rem;
+}
+
+.landing-form label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: var(--text-ui);
+  font-weight: 500;
+}
+
+.landing-form table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-ui);
+}
+
+.landing-form form th {
+  text-align: start;
+  font-weight: 500;
+  color: var(--color-muted-foreground);
+  padding-bottom: 0.25rem;
+}
+
+.landing-form form td {
+  padding: 0.125rem 0.25rem 0.125rem 0;
+}
+
+.landing-form output {
+  font-size: var(--text-ui);
+  color: var(--color-muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-form button {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+
+.landing-scroll {
+  overflow-x: auto;
+}
+
+.landing-stage [data-slot="voucher-lines"] {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* —— Site layout: things sit on the wall, separated by air and shelf lines —— */
+
+/*
+  A section: a numbered header (index, big title, note) over full-width
+  content. Pages count their own sections, so the index needs no prop.
+*/
+main {
+  counter-reset: site-section;
+}
+
+.site-section {
+  counter-increment: site-section;
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  padding-block: clamp(3.5rem, 8vw, 6.5rem);
+  border-top: var(--hairline) solid var(--bk-border-strong);
+}
+
+.site-section > :first-child {
+  display: grid;
+  gap: 1rem 4rem;
+  align-items: end;
+}
+
+@media (min-width: 1024px) {
+  .site-section > :first-child {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+.site-section__title {
+  margin: 0;
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  font-weight: 600;
+  letter-spacing: var(--tracking-title);
+}
+
+.site-section > :first-child .site-section__title::before {
+  content: counter(site-section, decimal-leading-zero);
+  display: block;
+  margin-bottom: 1rem;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  color: var(--bk-muted-fg);
+}
+
+.site-section__note {
+  margin: 0;
+  max-width: 34rem;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: var(--bk-muted-fg);
+}
+
+/* A mono kicker: the one place uppercase mono is used outside tables. */
+.site-kicker {
+  margin: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+/* Ledger paper: faint ruled lines behind a hero, fading out. Decoration that is the product's own material. */
+.site-ledger {
+  position: relative;
+  isolation: isolate;
+}
+
+.site-ledger::before {
+  content: none;
+}
+
+@media (min-width: 1024px) {
+  .site-ledger::before {
+    content: "";
+    position: absolute;
+    inset: 0 calc(50% - 50vw);
+    z-index: -1;
+    pointer-events: none;
+    /* Ledger paper: the horizontal ruling. */
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(2rem - 1px),
+      color-mix(in oklch, var(--bk-border) 55%, transparent) calc(2rem - 1px),
+      color-mix(in oklch, var(--bk-border) 55%, transparent) 2rem
+    );
+    mask-image: linear-gradient(to bottom, transparent 0, black 5rem, black 35%, transparent 95%);
+  }
+}
+
+/*
+  Ink: what the machine reads. Code, snapshots, tool calls, the agent's log
+  and the live measurement sit here, and nothing a person works on does.
+*/
+.site-machine {
+  /* Inside ink, the paper tokens point at ink, and the primary action is the agent's: signal. */
+  --bk-bg: var(--bk-ink);
+  --bk-card: var(--bk-ink-raised);
+  --bk-muted: var(--bk-ink-raised);
+  --bk-fg: var(--bk-ink-fg);
+  --bk-muted-fg: var(--bk-ink-muted);
+  --bk-border: var(--bk-ink-border);
+  --bk-border-strong: var(--bk-ink-border);
+  --bk-primary: var(--bk-signal);
+  --bk-primary-fg: var(--bk-signal-fg);
+  --primary-hover: color-mix(in oklch, var(--bk-signal) 88%, white);
+  --elevation-ring: 0 0 0 1px var(--bk-ink-border);
+  --elevation-raised: 0 0 0 1px var(--bk-ink-border);
+  --elevation-raised-hover: 0 0 0 1px var(--bk-ink-muted);
+
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-ink);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-fg);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  scrollbar-color: var(--scrollbar-thumb-ink) transparent;
+}
+
+/* A disabled button on ink is quiet ink, not faded lime. */
+.site-machine button:disabled {
+  opacity: 1;
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-muted);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+}
+
+.site-machine .site-kicker,
+.site-machine .site-label {
+  color: var(--bk-ink-muted);
+}
+
+.site-machine .text-muted-foreground {
+  color: var(--bk-ink-muted);
+}
+
+.site-machine .site-text-button,
+.site-machine .site-link {
+  color: var(--bk-ink-fg);
+  text-decoration-color: var(--bk-ink-muted);
+}
+
+.site-machine .site-text-button:disabled {
+  color: var(--bk-ink-muted);
+}
+
+/* The option we recommend in a comparison: a sheet with a signal edge on top. */
+.site-pick {
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow:
+    inset 0 3px 0 0 var(--bk-signal),
+    var(--bk-shadow-sm);
+  padding: 1.25rem 1.25rem 0.25rem;
+  margin: -1.25rem -1.25rem 0;
+}
+
+@media (max-width: 767px) {
+  .site-pick {
+    margin: 0;
+  }
+}
+
+/* Rows and tags on ink. */
+.site-rows--ink > * {
+  border-color: var(--bk-ink-border);
+}
+
+.site-rows--ink > *:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.site-rows--ink > *:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.site-machine .landing-tag {
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-muted);
+  box-shadow: none;
+}
+
+.site-machine .landing-tag:is([data-tone="good"], [data-tone="allowed"]) {
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+}
+
+.site-machine .landing-tag:is([data-tone="bad"], [data-tone="refused"]) {
+  background: transparent;
+  color: var(--bk-ink-danger);
+  box-shadow: inset 0 0 0 1px var(--bk-ink-danger);
+}
+
+/* A page title on docs pages: smaller than the display, same voice. */
+.site-page-title {
+  font-size: clamp(2.25rem, 4.6vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.042em;
+  font-weight: 620;
+  text-wrap: balance;
+}
+
+@media (min-width: 1024px) {
+  .site-docnav-link {
+    padding-left: 0.75rem;
+  }
+
+  .site-docnav-link[aria-current="page"] {
+    box-shadow: inset 2px 0 0 0 var(--bk-fg);
+  }
+}
+
+/* Two readers: paper on the left, ink on the right. */
+.site-readers {
+  display: grid;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (min-width: 900px) {
+  .site-readers {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+.site-readers__json {
+  margin: 0;
+  max-height: 22rem;
+  overflow: auto;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--bk-ink-fg);
+  white-space: pre;
+  scrollbar-width: thin;
+}
+
+/* Code, calls and other detail behind a disclosure. */
+.site-disclosure > summary,
+.site-disclosure__trigger {
+  width: 100%;
+  border: 0;
+  color: inherit;
+  font-family: inherit;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding-inline: 0.875rem;
+  border-radius: var(--bk-radius);
+  box-shadow: var(--elevation-ring);
+  background: var(--bk-card);
+  font-size: var(--text-ui);
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+  transition: box-shadow 150ms ease-out;
+}
+
+.site-disclosure > summary:focus-visible,
+.site-disclosure__trigger:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+.site-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-disclosure > summary::after,
+.site-disclosure__trigger::after {
+  content: "+";
+  font-family: var(--bk-mono);
+  color: var(--bk-muted-fg);
+}
+
+.site-disclosure[open] > summary::after,
+.site-disclosure__trigger[data-open]::after {
+  content: "−";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-disclosure > summary:hover,
+  .site-disclosure__trigger:hover {
+    box-shadow: 0 0 0 1px var(--bk-border-strong);
+  }
+}
+
+.site-disclosure > summary > span:first-child,
+.site-disclosure__trigger > span:first-child {
+  margin-right: auto;
+}
+
+/* On ink (the race chart), the disclosure stays quiet: a text row, no card. */
+.site-disclosure--ink .site-disclosure__trigger {
+  min-height: 2.75rem;
+  padding-inline: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--bk-ink-muted);
+  font-size: 0.875rem;
+}
+
+/* A ui-sdk SegmentedControl: one value, an indicator that slides to it. */
+.site-segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.125rem;
+  justify-self: start;
+  padding: 0.1875rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-wood);
+  box-shadow: var(--elevation-ring);
+}
+
+.site-segmented [data-slot="segmented-control-item"] {
+  min-height: 2.5rem;
+  padding-inline: 0.875rem;
+  border: 0;
+  border-radius: calc(var(--bk-radius) - 0.1875rem);
+  background: transparent;
+  color: var(--bk-muted-fg);
+  font: inherit;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 150ms ease-out;
+  touch-action: manipulation;
+}
+
+.site-segmented [data-slot="segmented-control-item"][data-checked] {
+  color: var(--bk-fg);
+}
+
+.site-segmented [data-slot="segmented-control-item"]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+.site-segmented [data-slot="segmented-control-indicator"] {
+  position: absolute;
+  z-index: -1;
+  top: var(--segmented-control-indicator-top);
+  left: var(--segmented-control-indicator-left);
+  width: var(--segmented-control-indicator-width);
+  height: var(--segmented-control-indicator-height);
+  border-radius: calc(var(--bk-radius) - 0.1875rem);
+  background: var(--bk-card);
+  box-shadow: var(--elevation-raised);
+  transition-property: top, left, width, height;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.site-segmented [data-slot="segmented-control-indicator"][data-activation-direction="none"] {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-segmented [data-slot="segmented-control-indicator"] {
+    transition: none;
+  }
+}
+
+/* A disclosure never grows wider than its column: long code scrolls inside it. */
+.site-disclosure,
+.site-disclosure [data-slot="collapsible-panel"],
+.site-code-block {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* A code block with its copy button in the top corner, over the ink. */
+.site-code-block {
+  position: relative;
+}
+
+.site-code-block__copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-fg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-code-block__copy:hover {
+    background: var(--bk-ink-border);
+  }
+}
+
+.site-code-block .site-code {
+  padding-right: 5rem;
+}
+
+/* The server's answer to a live request: status first, then its sentence. */
+.site-server-answer {
+  font-family: var(--bk-mono);
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+  overflow-wrap: anywhere;
+}
+
+.site-server-answer[data-ok] {
+  color: var(--bk-success);
+}
+
+.site-server-answer__status {
+  display: inline-block;
+  min-width: 2.5rem;
+  font-weight: 600;
+}
+
+/* An outcome line: what happened when the agent was done. */
+.site-outcome {
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 560;
+  letter-spacing: -0.015em;
+}
+
+.site-outcome::before {
+  content: "";
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 1px;
+  transform: translateY(-0.05em);
+}
+
+.site-outcome:not([data-tone]) {
+  color: var(--bk-muted-fg);
+}
+
+.site-outcome:not([data-tone])::before {
+  display: none;
+}
+
+.site-outcome[data-tone="series"]::before {
+  background: var(--series);
+}
+
+.site-outcome[data-tone="bad"]::before {
+  background: var(--bk-danger);
+}
+
+.site-outcome[data-tone="agent"]::before {
+  background: var(--bk-signal);
+  box-shadow: inset 0 0 0 1px var(--signal-edge);
+}
+
+/* The closing band: an ink panel that spans the column, the last thing on a page. */
+.site-band {
+  display: grid;
+  gap: 2rem;
+  margin-block: 0 clamp(3rem, 6vw, 5rem);
+  padding: clamp(2rem, 6vw, 4.5rem);
+}
+
+@media (min-width: 1024px) {
+  .site-band {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+  }
+}
+
+.site-band__title {
+  margin: 0;
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-title);
+  font-weight: 600;
+  color: var(--bk-ink-fg);
+}
+
+/* Three figures with their sources, in a row divided by hairlines. Not tiles: no boxes. */
+.site-figures {
+  display: grid;
+  margin: 0 0 clamp(1rem, 3vw, 2rem);
+  border-top: var(--hairline) solid var(--bk-border-strong);
+}
+
+.site-figures > div {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: 1.5rem;
+  border-bottom: var(--hairline) solid var(--bk-border);
+}
+
+@media (min-width: 768px) {
+  .site-figures {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-figures > div {
+    padding-inline: 0 2rem;
+    border-bottom: 0;
+  }
+
+  .site-figures > div + div {
+    padding-left: 2rem;
+    border-left: var(--hairline) solid var(--bk-border);
+  }
+}
+
+.site-figures__figure {
+  font-family: var(--bk-mono);
+  font-size: clamp(2.75rem, 5vw, 4rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A small comparison table: rows are the options, the last row we recommend. */
+.site-compare {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: var(--text-body);
+}
+
+.site-compare :is(th, td) {
+  padding: 0.875rem 1rem 0.875rem 0;
+  text-align: start;
+  vertical-align: baseline;
+  border-bottom: var(--hairline) solid var(--bk-border);
+}
+
+.site-compare thead th {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+.site-compare tbody th {
+  font-weight: 500;
+}
+
+.site-compare [data-num] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.125rem;
+}
+
+@media (max-width: 639px) {
+  .site-compare {
+    min-width: 0;
+  }
+
+  .site-compare thead {
+    display: none;
+  }
+
+  .site-compare tbody tr {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem 1rem;
+    padding-block: 1rem;
+    border-bottom: var(--hairline) solid var(--bk-border);
+  }
+
+  .site-compare tbody :is(th, td) {
+    padding: 0;
+    border: 0;
+  }
+
+  .site-compare tbody th,
+  .site-compare tbody td:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .site-compare td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--bk-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-caption);
+    text-transform: uppercase;
+    color: var(--bk-muted-fg);
+  }
+}
+
+.site-compare tbody tr:last-child [data-num] {
+  color: var(--bk-fg);
+  box-shadow: inset 0 -3px 0 var(--bk-signal);
+}
+
+/* The race chart: tokens per tool call, drawn on ink. */
+.site-figures--tight {
+  margin: 0;
+}
+
+/* Four figures: two by two on a tablet, one row on a wide screen. */
+@media (min-width: 768px) {
+  .site-figures--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-figures--four > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .site-figures--four > div:nth-child(n + 3) {
+    border-top: var(--hairline) solid var(--bk-border);
+  }
+}
+
+@media (min-width: 1200px) {
+  .site-figures--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .site-figures--four > div:nth-child(3) {
+    padding-left: 2rem;
+    border-left: var(--hairline) solid var(--bk-border);
+  }
+
+  .site-figures--four > div:nth-child(n + 3) {
+    border-top: 0;
+  }
+}
+
+/* Big figures keep their size and break at the arrow when a column is narrow
+   ("4,1 s →" / "214 ms"); a number never splits from its unit. */
+.site-figures--four > div {
+  min-width: 0;
+}
+
+.site-figures--four .site-figures__figure {
+  font-size: clamp(2.25rem, 3.6vw, 3.25rem);
+  text-wrap: balance;
+}
+
+/* Real-model runs: the Booki rows stand out, all-right and none-right are marked. */
+.site-real :is(th, td) {
+  padding-block: 0.5rem;
+  vertical-align: top;
+}
+
+.site-real :is(th, td)[data-ours] {
+  color: var(--bk-ink-fg);
+  font-weight: 600;
+}
+
+.site-real__right,
+.site-real__detail {
+  display: block;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.site-real__right[data-all] {
+  color: var(--bk-signal);
+}
+
+.site-real__right[data-none] {
+  color: var(--bk-ink-danger);
+}
+
+.site-real__detail {
+  color: var(--bk-ink-muted);
+  font-weight: 400;
+}
+
+/* Under the race: the screenshot route, shown for honesty, never counted as done. */
+.site-shot-note {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--bk-radius);
+  box-shadow: inset 3px 0 0 var(--bk-ink-muted);
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-fg);
+}
+
+.site-figures__to {
+  color: var(--bk-muted-fg);
+  font-size: 0.6em;
+}
+
+.site-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+.site-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.site-legend__swatch {
+  flex: none;
+  width: 0.75rem;
+  height: 0.1875rem;
+  border-radius: 1px;
+}
+
+.site-race {
+  position: relative;
+  min-width: 0;
+}
+
+.site-race svg {
+  display: block;
+  overflow: visible;
+}
+
+.site-race__grid {
+  stroke: var(--bk-ink-border);
+  stroke-width: 1;
+}
+
+.site-race__tick {
+  fill: var(--bk-ink-muted);
+  font-family: var(--bk-mono);
+  font-size: 11px;
+}
+
+.site-race__cross {
+  stroke: var(--bk-ink-muted);
+  stroke-dasharray: 2 3;
+}
+
+.site-race__dot {
+  stroke: var(--bk-ink);
+  stroke-width: 2;
+}
+
+.site-race__posted {
+  fill: var(--bk-ink-danger);
+}
+
+.site-race__stop {
+  fill: var(--bk-signal);
+}
+
+.site-race__end {
+  animation: site-race-pop 360ms var(--bk-ease-out) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes site-race-pop {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.site-rule-card {
+  position: absolute;
+  display: grid;
+  gap: 0.375rem;
+  width: 15rem;
+  max-width: calc(100% - 4rem);
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-ink-raised);
+  box-shadow:
+    inset 3px 0 0 var(--bk-signal),
+    0 0 0 1px var(--bk-ink-border);
+  animation: site-race-fade 360ms var(--bk-ease-out) both;
+  pointer-events: none;
+}
+
+.site-rule-card li,
+.site-rule-card > p:last-child {
+  animation: site-race-fade 300ms ease-out both;
+}
+
+@media (max-width: 639px) {
+  .site-rule-card {
+    position: static;
+    width: auto;
+    max-width: none;
+    margin-top: 0.75rem;
+  }
+}
+
+.site-rule-card__tick {
+  color: var(--bk-signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-rule-card,
+  .site-rule-card li,
+  .site-rule-card > p:last-child {
+    animation: none;
+  }
+}
+
+.site-bench-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bk-ink-border);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+}
+
+.site-bench-meta dt {
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--bk-ink-muted);
+}
+
+.site-bench-meta dd {
+  margin: 0.125rem 0 0;
+  color: var(--bk-ink-fg);
+  overflow-wrap: anywhere;
+}
+
+.site-race__label {
+  position: absolute;
+  white-space: nowrap;
+  padding: 0.125rem 0.4rem;
+  border-radius: var(--bk-radius-sm);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  pointer-events: none;
+  animation: site-race-fade 360ms ease-out both;
+}
+
+.site-race__label[data-tone="agent"] {
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+}
+
+.site-race__label[data-tone="bad"] {
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-danger);
+  box-shadow: inset 0 0 0 1px var(--bk-ink-danger);
+}
+
+@keyframes site-race-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.site-race__tip {
+  position: absolute;
+  top: 0.5rem;
+  display: grid;
+  gap: 0.25rem;
+  width: 11rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-ink-raised);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  pointer-events: none;
+}
+
+.site-race__table {
+  margin-top: 0.75rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+}
+
+.site-race__table :is(th, td) {
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  text-align: end;
+  border-bottom: 1px solid var(--bk-ink-border);
+}
+
+.site-race__table :is(th:first-child) {
+  text-align: start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-race__end,
+  .site-race__label {
+    animation: none;
+  }
+}
+
+/* The wordmark: a signal block, like a cursor waiting for input. */
+.site-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--bk-mono);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--bk-fg);
+  text-decoration: none;
+}
+
+/* The logo: the ledger mark and the wordmark. */
+.booki-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.booki-logo__word {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.booki-mark {
+  flex: none;
+}
+
+/* A quiet sentence-case label. Replaces shouting mono caps. */
+.site-label {
+  margin: 0;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--bk-muted-fg);
+}
+
+/* The agent's state. Lime while it works or when it is done; quiet when idle. */
+.site-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.125rem 0.4rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.site-signal[data-state="idle"] {
+  background: transparent;
+  color: var(--bk-ink-muted);
+  box-shadow: inset 0 0 0 1px var(--bk-ink-border);
+}
+
+/* While the agent works, a cursor block blinks after the word. */
+.site-signal[data-state="working"]::after {
+  content: "";
+  width: 0.45em;
+  height: 0.9em;
+  background: currentColor;
+  animation: site-cursor 1s steps(1) infinite;
+}
+
+@keyframes site-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-signal[data-state="working"]::after {
+    animation: none;
+  }
+}
+
+/* The one object on the table: a sheet of paper holding a live form. */
+.site-sheet {
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  padding: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .site-sheet {
+    padding: 1.5rem;
+  }
+}
+
+/* Code is machine text: it sits on ink. */
+.site-code {
+  margin: 0;
+  padding: 1.125rem 1.25rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-ink);
+  font-family: var(--bk-mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--bk-ink-fg);
+  overflow-x: auto;
+  white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-ink) transparent;
+}
+
+.site-code::selection,
+.site-code *::selection,
+.site-machine ::selection {
+  background: oklch(0.9 0.19 118 / 0.35);
+  color: var(--bk-ink-fg);
+}
+
+/* A plain list separated by hairlines. */
+.site-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-rows > * {
+  padding-block: 0.875rem;
+  border-top: var(--hairline) solid var(--bk-border);
+}
+
+.site-rows > *:last-child {
+  border-bottom: var(--hairline) solid var(--bk-border);
+}
+
+.site-link {
+  color: var(--bk-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--bk-border-strong);
+  transition: text-decoration-color 150ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-link:hover {
+    text-decoration-color: var(--bk-fg);
+  }
+}
+
+.site-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: var(--text-ui);
+  font-weight: 500;
+  color: var(--bk-muted-fg);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+
+.site-nav-link {
+  white-space: nowrap;
+}
+
+/* Phones: keep the links that lead into the product; GitHub and Month-end stay in reach from the pages. */
+@media (max-width: 40rem) {
+  .site-nav-link[data-wide] {
+    display: none;
+  }
+}
+
+.site-nav-link[aria-current="page"] {
+  color: var(--bk-fg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-nav-link:hover {
+    color: var(--bk-fg);
+  }
+}
+
+/* In a narrow column the voucher scrolls inside its sheet and tightens up. */
+.landing-form [data-slot="voucher-lines"] {
+  overflow-x: auto;
+}
+
+.landing-form [data-slot="voucher-lines-table"] :is(th, td) {
+  padding-inline: 0.6rem;
+}
+
+/* ── The ERP demo shell ──────────────────────────────────────────────── */
+
+.erp-nav {
+  display: flex;
+  gap: 0 1.5rem;
+  overflow-x: auto;
+  padding-block: 0.5rem;
+}
+
+.erp-nav__group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0 1.25rem;
+}
+
+.erp-nav__label {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+.erp-nav button {
+  flex: none;
+  justify-content: flex-start;
+}
+
+.erp-nav button[aria-current="page"] {
+  color: var(--bk-fg);
+  box-shadow: inset 0 -2px 0 0 var(--bk-fg);
+}
+
+@media (min-width: 1024px) {
+  .erp-nav button {
+    padding-left: 0.75rem;
+  }
+
+  .erp-nav button[aria-current="page"] {
+    box-shadow: inset 2px 0 0 0 var(--bk-fg);
+  }
+
+  .erp-nav__label {
+    padding-left: 0.75rem;
+  }
+}
+
+.erp-agent {
+  margin-block: 1.5rem;
+}
+
+/* The overview: what waits for a person, one row per item, the whole row opens it. */
+.erp-queue {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--hairline) solid var(--bk-border);
+}
+
+.erp-queue > li {
+  border-bottom: var(--hairline) solid var(--bk-border);
+}
+
+.erp-queue__row {
+  all: unset;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 0.5rem minmax(0, 1fr) auto 1.5rem;
+  align-items: center;
+  gap: 0.25rem 0.875rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.625rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.erp-queue__row::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 1px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--bk-border-strong);
+}
+
+.erp-queue__row[data-open]::before {
+  background: var(--bk-fg);
+  box-shadow: none;
+}
+
+.erp-queue__text {
+  font-weight: 500;
+}
+
+.erp-queue__row:not([data-open]) .erp-queue__text {
+  color: var(--bk-muted-fg);
+  font-weight: 500;
+}
+
+.erp-queue__detail {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+  text-align: end;
+}
+
+.erp-queue__go {
+  color: var(--bk-muted-fg);
+  text-align: end;
+  transition:
+    transform 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.erp-queue__row:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: -2px;
+}
+
+.erp-queue__row:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .erp-queue__row:not(:disabled):hover {
+    background: var(--bk-accent);
+  }
+
+  .erp-queue__row:not(:disabled):hover .erp-queue__go {
+    color: var(--bk-fg);
+    transform: translateX(2px);
+  }
+}
+
+@media (max-width: 639px) {
+  .erp-queue__row {
+    grid-template-columns: 0.5rem minmax(0, 1fr) 1.5rem;
+  }
+
+  .erp-queue__detail {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: start;
+  }
+
+  .erp-queue__go {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .erp-nav {
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow: visible;
+    padding-block: 1.5rem;
+  }
+
+  .erp-nav__group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .erp-nav__label {
+    padding-bottom: 0.25rem;
+  }
+
+  .erp-nav button {
+    min-height: 2.25rem;
+  }
+
+  .erp-agent {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    max-height: calc(100svh - 2rem);
+    overflow-y: auto;
+  }
+}
+
+/* ── Benchmark: a voucher screen built the way large ERP products build it ── */
+.raw-voucher {
+  display: grid;
+  gap: 1rem;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+.raw-voucher h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+.raw-voucher h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.raw-voucher section {
+  padding: 1rem;
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+.raw-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+}
+.raw-voucher label {
+  display: grid;
+  gap: 0.25rem;
+}
+.raw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 9rem 9rem 4rem;
+  gap: 0.5rem;
+  align-items: start;
+  padding-block: 0.25rem;
+}
+.raw-head {
+  color: var(--bk-muted-fg);
+  font-size: 0.75rem;
+}
+.raw-stack {
+  display: grid;
+  gap: 0.25rem;
+}
+.raw-picker {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0.375rem;
+  border-bottom: 1px solid var(--bk-border-strong);
+  cursor: pointer;
+  color: var(--bk-brand);
+}
+.raw-amount {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+.raw-icon {
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  padding: 0.25rem 0.375rem;
+}
+.raw-voucher .raw-link {
+  all: unset;
+  color: var(--bk-brand);
+  cursor: pointer;
+}
+.raw-check {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+.raw-footer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.raw-dialog {
+  position: absolute;
+  top: 14rem;
+  left: 1rem;
+  width: 34rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.75rem;
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  display: grid;
+  gap: 0.5rem;
+  z-index: 10;
+}
+.raw-list {
+  max-height: 14rem;
+  overflow-y: auto;
+}
+.raw-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.raw-table td,
+.raw-table th {
+  text-align: start;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--bk-border);
+}
+.raw-table tbody tr {
+  cursor: pointer;
+}
+
+/* ── Benchmark: voucher entry as an editable spreadsheet grid ── */
+.grid-voucher {
+  display: grid;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+.grid-voucher__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+}
+.grid-voucher__head h1 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 500;
+}
+.grid-voucher__crumb {
+  font-size: 0.75rem;
+  color: var(--bk-brand);
+}
+.grid-voucher__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+.grid-voucher__table th {
+  text-align: start;
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+  padding: 0.5rem;
+  border: 1px solid var(--bk-border);
+}
+.grid-voucher__table td {
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--bk-border);
+  cursor: cell;
+  position: relative;
+}
+.grid-voucher__editor {
+  position: absolute;
+  inset: -1px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bk-card);
+  box-shadow: 0 0 0 2px var(--bk-brand);
+  padding-inline: 0.25rem;
+  z-index: 2;
+}
+.grid-voucher__editor input {
+  border: 0 !important;
+  padding: 0 0.25rem !important;
+  background: transparent !important;
+  min-width: 0;
+}
+.grid-voucher__editor > span {
+  font-family: var(--bk-mono);
+  font-size: 0.625rem;
+  color: var(--bk-muted-fg);
+}
+.grid-voucher__lookup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 16rem;
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+}
+.grid-voucher__lookup > div {
+  padding: 0.375rem 0.5rem;
+  cursor: pointer;
+}
+.grid-voucher__sums {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--bk-wood);
+}
+.grid-voucher__sums > div {
+  display: grid;
+  padding: 0.5rem 0.75rem;
+}
+.grid-voucher__sums span {
+  font-size: 0.75rem;
+}
+
+/* The demo overview: key figures, the trend, and two charts side by side. */
+.erp-dashboard {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.erp-dashboard__kpis {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .erp-dashboard__kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .erp-dashboard__pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.erp-dashboard__pair {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* "Agentify your ERP": an ERP screen in a browser window, the agent working in it. */
+.erp-window {
+  overflow: hidden;
+  border-radius: calc(var(--bk-radius) * 2);
+  background: var(--bk-card);
+  box-shadow:
+    0 0 0 1px var(--bk-border),
+    0 1px 3px rgb(0 0 0 / 0.05),
+    0 18px 40px -18px rgb(0 0 0 / 0.18);
+}
+
+/* The stage behind the hero's browser window: a backdrop of soft colour
+   mixed from Booki's own tokens (brand blue at one corner, the agent's lime
+   at the other), so the window reads as a product shot, not a page section.
+   Each glow fades through several stops, so it never bands. */
+.erp-stage {
+  display: grid;
+  padding: clamp(1.25rem, 5vw, 4.5rem) clamp(0.75rem, 5vw, 4.5rem);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(
+      60% 45% at 50% 0%,
+      color-mix(in oklch, var(--bk-card) 70%, transparent) 0%,
+      color-mix(in oklch, var(--bk-card) 35%, transparent) 40%,
+      color-mix(in oklch, var(--bk-card) 10%, transparent) 70%,
+      transparent 100%
+    ),
+    radial-gradient(
+      70% 90% at 12% 8%,
+      color-mix(in oklch, var(--bk-brand) 26%, transparent) 0%,
+      color-mix(in oklch, var(--bk-brand) 14%, transparent) 35%,
+      color-mix(in oklch, var(--bk-brand) 5%, transparent) 60%,
+      transparent 80%
+    ),
+    radial-gradient(
+      60% 80% at 92% 96%,
+      color-mix(in oklch, var(--bk-signal) 40%, transparent) 0%,
+      color-mix(in oklch, var(--bk-signal) 20%, transparent) 35%,
+      color-mix(in oklch, var(--bk-signal) 7%, transparent) 60%,
+      transparent 80%
+    ),
+    var(--bk-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bk-border) 60%, transparent);
+}
+
+/* On the stage the window lifts off the backdrop. */
+.erp-stage .erp-window {
+  box-shadow:
+    0 0 0 1px var(--bk-border),
+    0 2px 4px rgb(0 0 0 / 0.06),
+    0 32px 64px -24px rgb(0 0 0 / 0.32);
+}
+
+[data-bk-theme="dark"] .erp-stage .erp-window {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.12),
+    0 32px 64px -24px rgb(0 0 0 / 0.6);
+}
+
+@media (max-width: 40rem) {
+  .erp-stage {
+    border-radius: 1rem;
+  }
+}
+
+/* Kvadruptex's logo blue, like the Norwegian ERPs it parodies, from Booki's
+   brand token: deep in both themes, so the light ticks read on it. */
+.erp-window {
+  /* Smaller than the page: a picture of a product, not the page itself. */
+  justify-self: center;
+  width: 100%;
+  /* laid out at 68rem, the width the voucher table needs, then shown at 84 % */
+  max-width: 68rem;
+  zoom: 0.84;
+  --kvx-blue: var(--bk-brand);
+  --kvx-on-blue: var(--bk-ink-fg);
+}
+
+[data-bk-theme="dark"] .erp-window {
+  --kvx-blue: color-mix(in oklch, var(--bk-brand) 42%, var(--bk-ink));
+}
+
+/* Browser chrome: Chrome on macOS, drawn with tokens. */
+.erp-chrome {
+  background: var(--bk-muted);
+  border-bottom: 1px solid var(--bk-border);
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.erp-chrome__tabs {
+  display: flex;
+  align-items: end;
+  gap: 0.125rem;
+  padding: 0.5rem 0.75rem 0;
+}
+
+.erp-chrome__lights {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-self: center;
+  margin: 0 0.875rem 0.375rem 0.125rem;
+}
+
+.erp-chrome__lights i {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.18);
+}
+
+.erp-chrome__lights [data-light="close"] {
+  background: var(--bk-danger);
+}
+.erp-chrome__lights [data-light="min"] {
+  background: var(--bk-warning);
+}
+.erp-chrome__lights [data-light="max"] {
+  background: var(--bk-success);
+}
+
+.erp-chrome__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 13.5rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.625rem 0.625rem 0 0;
+  color: var(--bk-muted-fg);
+}
+
+.erp-chrome__tab[data-active] {
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  box-shadow: 0 0 0 1px var(--bk-border);
+  clip-path: inset(-1px -1px 0 -1px);
+}
+
+.erp-chrome__favicon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.erp-chrome__favicon[data-muted] {
+  opacity: 0.55;
+}
+
+.erp-chrome__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.erp-chrome__close {
+  color: var(--bk-muted-fg);
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.erp-chrome__new {
+  align-self: center;
+  margin: 0 0 0.375rem 0.375rem;
+  color: var(--bk-muted-fg);
+  font-size: 1rem;
+}
+
+.erp-chrome__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--bk-card);
+  border-top: 1px solid var(--bk-border);
+}
+
+.erp-chrome__nav {
+  display: inline-flex;
+  gap: 0.625rem;
+  color: var(--bk-fg);
+}
+
+.erp-chrome__nav [data-muted] {
+  opacity: 0.35;
+}
+
+.erp-chrome__omnibox {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.3125rem 0.875rem;
+  border-radius: 999px;
+  background: var(--bk-muted);
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.erp-chrome__omnibox > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.erp-chrome__host {
+  color: var(--bk-fg);
+}
+
+.erp-chrome__profile {
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--bk-accent);
+  color: var(--bk-fg);
+  font-size: 0.625rem;
+  font-weight: 600;
+}
+
+/* The ERP app inside the window. */
+.erp-app__top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.625rem 1.25rem;
+  border-bottom: 1px solid var(--bk-border);
+  background: var(--bk-card);
+  font-size: 0.8125rem;
+}
+
+.erp-app__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: calc(9rem - 1.25rem);
+  font-weight: 650;
+}
+
+.erp-app__mark {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.erp-app__word {
+  color: var(--bk-brand);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* "tex", lighter: the nod to the screen it parodies. */
+.erp-app__word span {
+  color: var(--bk-muted-fg);
+  font-weight: 450;
+}
+
+.erp-app__search {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 22rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-bg);
+  box-shadow: inset 0 0 0 1px var(--bk-border);
+  color: var(--bk-muted-fg);
+}
+
+.erp-app__search kbd {
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+}
+
+.erp-app__company {
+  display: grid;
+  margin-left: auto;
+  text-align: right;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.erp-app__company span {
+  color: var(--bk-muted-fg);
+  font-size: 0.6875rem;
+  font-weight: 400;
+}
+
+.erp-app__avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--bk-wood);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.erp-window__state {
+  margin-left: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: var(--bk-muted);
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  vertical-align: 0.2em;
+}
+
+.erp-window__state:is([data-phase="running"], [data-phase="waiting"]) {
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+}
+
+.erp-window__count {
+  min-width: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: 999px;
+  background: var(--bk-accent);
+  color: var(--bk-fg);
+  font-size: 0.6875rem;
+  text-align: center;
+}
+
+.erp-window__body {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  min-height: 26rem;
+}
+
+.erp-window__nav {
+  padding: 1rem 0.75rem;
+  border-right: 1px solid var(--bk-border);
+  background: var(--bk-bg);
+  font-size: 0.875rem;
+}
+
+.erp-window__nav ul {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.erp-window__nav li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: var(--bk-radius);
+  color: var(--bk-muted-fg);
+}
+
+.erp-window__nav li[data-active] {
+  background: var(--bk-accent);
+  color: var(--bk-fg);
+  font-weight: 500;
+}
+
+.erp-window__main {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.erp-window__crumb {
+  margin: 0;
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+}
+
+.erp-window__posted {
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-signal-tint);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--bk-signal) 60%, transparent);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 64rem) {
+  .erp-window__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .erp-window__nav {
+    display: none;
+  }
+}
+
+@media (max-width: 40rem) {
+  .erp-chrome__tab:not([data-active]),
+  .erp-chrome__nav,
+  .erp-app__search,
+  .erp-app__company span {
+    display: none;
+  }
+}
+
+/* The hero's copy button and the receipt it prints. */
+.prompt-button {
+  position: relative;
+  display: inline-grid;
+  justify-items: center;
+}
+
+.prompt-button__trigger {
+  position: relative;
+  display: inline-grid;
+  min-width: 11rem;
+  min-height: 3rem;
+  padding: 0 1rem 0 0.875rem;
+  border: 0;
+  border-radius: var(--bk-radius);
+  background: var(--bk-ink);
+  color: var(--bk-ink-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  /* a lit top edge and a hairline, so it reads as a raised key, not a flat block */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 0 0 1px var(--bk-ink),
+    0 1px 2px rgb(0 0 0 / 0.18),
+    0 8px 20px -10px rgb(0 0 0 / 0.45);
+  transition:
+    scale 150ms ease-out,
+    background-color 200ms ease-out,
+    color 200ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+/* Hover and focus wear the agent cursor's ring: this is where the agent starts. */
+@media (hover: hover) and (pointer: fine) {
+  .prompt-button__trigger:not([data-done]):hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.12),
+      0 0 0 2px var(--bk-signal),
+      0 0 0 6px color-mix(in oklch, var(--bk-signal) 28%, transparent),
+      0 8px 20px -10px rgb(0 0 0 / 0.45);
+  }
+}
+
+.prompt-button__trigger:not([data-done]):focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.12),
+    0 0 0 2px var(--bk-signal),
+    0 0 0 6px color-mix(in oklch, var(--bk-signal) 28%, transparent);
+}
+
+.prompt-button__face[data-face="idle"] {
+  gap: 0.75rem;
+}
+
+/* The Booki mark as a caret: it blinks a few times once the hero has landed, then holds. */
+.prompt-button__caret {
+  width: 0.5rem;
+  height: 1.05rem;
+  border-radius: 1px;
+  background: var(--bk-signal);
+  animation: prompt-caret 1.1s steps(1, end) 1.2s 4;
+}
+
+@keyframes prompt-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.prompt-button__label {
+  flex: 1;
+  text-align: left;
+}
+
+.prompt-button__copy {
+  display: inline-grid;
+  place-items: center;
+  margin-left: 0.25rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--bk-ink-border);
+  color: var(--bk-ink-muted);
+  transition: color 150ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .prompt-button__trigger:hover .prompt-button__copy {
+    color: var(--bk-ink-fg);
+  }
+}
+
+.prompt-button__trigger:active {
+  scale: 0.97;
+}
+
+/* Done: the button takes the agent's colour, because what happens next is the agent's. */
+.prompt-button__trigger[data-done] {
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    0 0 0 1px color-mix(in oklch, var(--bk-signal) 70%, black),
+    0 8px 20px -10px rgb(0 0 0 / 0.3);
+}
+
+.prompt-button__face {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out,
+    filter 200ms ease-out;
+}
+
+.prompt-button__face[aria-hidden="true"] {
+  opacity: 0;
+  transform: translateY(0.35rem) scale(0.96);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.prompt-button__face[data-face="idle"][aria-hidden="true"] {
+  transform: translateY(-0.35rem) scale(0.96);
+}
+
+.prompt-button__tick {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.prompt-button__trigger[data-done] .prompt-button__tick {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 260ms cubic-bezier(0.23, 1, 0.32, 1) 80ms;
+}
+
+/* The slip unrolls from under the button, like a receipt from a printer. */
+.prompt-slip {
+  position: absolute;
+  top: calc(100% + 0.625rem);
+  left: 50%;
+  z-index: 30;
+  width: min(23rem, calc(100vw - 2rem));
+  translate: -50% 0;
+}
+
+.prompt-slip__paper {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem 1.25rem;
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  text-align: left;
+  box-shadow:
+    0 0 0 1px var(--bk-border),
+    0 1px 3px rgb(0 0 0 / 0.06),
+    0 18px 36px -16px rgb(0 0 0 / 0.22);
+  /* the torn bottom edge of a receipt */
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 6px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / 12px 6px repeat-x;
+  transform-origin: top center;
+  animation: prompt-slip-print 620ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes prompt-slip-print {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(-6px);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+.prompt-slip__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px dashed var(--bk-border-strong);
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.prompt-slip__head span:first-child {
+  color: var(--bk-signal-ink);
+  font-weight: 600;
+}
+
+.prompt-slip__preview {
+  max-height: 5.5rem;
+  overflow: hidden;
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--bk-muted-fg);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent);
+}
+
+.prompt-slip__preview p {
+  margin: 0 0 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prompt-slip__lead {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.prompt-slip__manual {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  background: var(--bk-bg);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 16px;
+  resize: vertical;
+}
+
+.prompt-slip__cut {
+  height: 0;
+  border-top: 1px dashed var(--bk-border-strong);
+}
+
+.prompt-slip__step {
+  display: flex;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.prompt-slip__num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-size: 0.8125rem;
+}
+
+.prompt-slip__keys {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  vertical-align: 0.1em;
+}
+
+.prompt-slip kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 0.375rem;
+  border-radius: calc(var(--bk-radius) - 1px);
+  background: var(--bk-muted);
+  box-shadow:
+    0 0 0 1px var(--bk-border-strong),
+    0 1px 0 1px var(--bk-border-strong);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  animation: prompt-key-press 900ms ease-out 700ms both;
+}
+
+.prompt-slip kbd + kbd {
+  animation-delay: 820ms;
+}
+
+/* The keys press themselves once, to show the move. */
+@keyframes prompt-key-press {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(1px);
+    box-shadow: 0 0 0 1px var(--bk-border-strong);
+    background: var(--bk-signal-tint);
+  }
+}
+
+.prompt-slip__then {
+  margin: 0 0 0 2.125rem;
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.prompt-slip__agents {
+  margin: 0 0 0 2.125rem;
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes prompt-slip-print {
+    from {
+      opacity: 0;
+    }
+  }
+  .prompt-slip kbd,
+  .prompt-button__caret {
+    animation: none;
+  }
+  .prompt-button__face,
+  .prompt-button__face[aria-hidden="true"] {
+    transform: none;
+    filter: none;
+  }
+  .prompt-button__trigger:active {
+    scale: 1;
+  }
+}
+
+/* The race's four figures, short: the number and its label; the sentence behind each sits in the details. */
+.site-figures-compact dd > span + span {
+  display: none;
+}
+
+/* The hero's proof: each figure travels from before to Booki's result. */
+.site-proof__label {
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.site-proof__bars {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.site-proof__row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) 4.75rem;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.75rem;
+}
+
+.site-proof__name {
+  color: var(--bk-muted-fg);
+}
+
+.site-proof__track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--bk-muted);
+  overflow: hidden;
+}
+
+/* Booki's bar: transform only, set per frame, so it never lays out. */
+.site-proof__bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bk-signal);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.site-proof__bar[data-before] {
+  background: var(--bk-border-strong);
+}
+
+.site-proof__value {
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  text-align: right;
+}
+
+.site-proof__note {
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+}
+
+/* Kvadruptex's voucher page, built from Booki controls. */
+.erp-doc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.erp-doc__title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.erp-doc__party {
+  margin: 0;
+  color: var(--bk-muted-fg);
+  font-size: 0.875rem;
+}
+
+.erp-doc__total {
+  display: grid;
+  justify-items: end;
+  gap: 0.125rem;
+}
+
+.erp-doc__total > span:first-child {
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.erp-doc__fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: 0 0 0 1px var(--bk-border);
+}
+
+.erp-doc__fields > * {
+  min-width: 0;
+}
+
+.erp-doc__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--bk-border);
+}
+
+@media (max-width: 48rem) {
+  .erp-doc__fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Paper grain: a faint fibre over the paper, behind every element, so the
+   page reads as a sheet and not a flat colour. Static; night swaps the blend. */
+.landing {
+  position: relative;
+  isolation: isolate;
+}
+
+.landing::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+}
+
+[data-bk-theme="dark"] .landing::before {
+  opacity: 0.06;
+  mix-blend-mode: screen;
+}
+
+/* FAQ: one question per row, the answer in reading measure. */
+.site-faq {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.site-faq__answer {
+  max-width: 68ch;
+  margin: 0;
+  padding: 0.875rem 0.875rem 1.25rem;
+  color: var(--bk-muted-fg);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* A text toggle with an icon before its word (language, theme). */
+.site-icon-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.site-icon-toggle__icon {
+  flex: none;
+  color: var(--bk-muted-fg);
+}
+
+/* A paper panel for what used to sit on ink: the ink tokens point back at
+   paper, so everything drawn in ink inside (labels, cards, rules, muted text)
+   reads on paper. The chart series swap to the ones validated against paper,
+   and Booki's line takes the agent's ink, since bare lime is too faint here. */
+.site-panel {
+  --bk-ink: var(--bk-card);
+  --bk-ink-raised: var(--bk-muted);
+  --bk-ink-fg: var(--bk-fg);
+  --bk-ink-muted: var(--bk-muted-fg);
+  --bk-ink-border: var(--bk-border);
+  --bk-ink-danger: var(--bk-danger);
+  --bk-chart-1: var(--bk-series-1);
+  --bk-chart-2: var(--bk-series-4);
+  --bk-chart-3: var(--bk-signal-ink);
+
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--elevation-raised, 0 0 0 1px var(--bk-border));
+  color: var(--bk-fg);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+/* Lime text and marks need the agent's ink on paper to be read. */
+.site-panel .site-rule-card__tick {
+  color: var(--bk-signal-ink);
+}
+
+/* The Tripletex/DNB test as receipts: one per screen, a printed line per model
+   turn, a square per 1 000 tokens that turn. Prints once; reduced motion shows
+   it printed. */
+.receipt-race {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  /* every receipt as tall as the longest, so the totals sit on one line */
+  align-items: stretch;
+  gap: 1.5rem;
+  /* the counter the slips lie on */
+  padding: 1.5rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-muted);
+}
+
+/* The panel's headline: what the receipts show, said before they are read. */
+.receipt-race__intro {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.receipt-race__intro h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.receipt-race__intro p {
+  margin: 0;
+  color: var(--bk-muted-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The mask tears the paper; the shadow sits on the wrapper so the mask can't clip it. */
+.receipt-race > * {
+  filter: drop-shadow(0 1px 0 var(--bk-border)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.08));
+}
+
+.receipt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  padding: 1.25rem 1.125rem 1.5rem;
+  background: var(--bk-card);
+  /* set here, not inherited: the slip carries its own (paper) theme */
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  /* torn at both ends, like a slip off the roll */
+  --tear: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg);
+  mask:
+    linear-gradient(#000 0 0) center / 100% calc(100% - 12px) no-repeat,
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / 12px 6px repeat-x,
+    var(--tear) bottom / 12px 6px repeat-x;
+}
+
+.receipt__head {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--bk-border-strong);
+  text-align: center;
+}
+
+.receipt__head span {
+  color: var(--bk-muted-fg);
+  font-size: 0.6875rem;
+}
+
+/* The letterhead: logo and name on one line, the same height on every slip. */
+.receipt__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  height: 1.75rem;
+  font-family: var(--bk-font);
+  font-size: 1rem;
+}
+
+.receipt__brand img {
+  display: block;
+  width: auto;
+  height: 1.5rem;
+}
+
+/* DNB's mark is a monogram; it reads at the same size as a word mark a little taller. */
+.receipt__brand img[src$="dnb.svg"] {
+  height: 1.625rem;
+}
+
+.receipt__head .receipt__brand span {
+  color: var(--bk-fg);
+  font-size: inherit;
+}
+
+.receipt__head .receipt__brand .receipt__plus {
+  color: var(--bk-muted-fg);
+  font-weight: 500;
+}
+
+.receipt__lines {
+  display: grid;
+  align-content: start;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--bk-muted-fg);
+}
+
+.receipt__lines li {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr) 3.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.375rem;
+  margin: 0 -0.375rem;
+  animation: receipt-print 180ms ease-out both;
+}
+
+/* every other line faintly shaded, like ruled till paper */
+.receipt__lines li:nth-child(even):not(.receipt__more) {
+  background: color-mix(in oklch, var(--bk-fg) 4%, transparent);
+}
+
+.receipt__tool {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.receipt__squares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.receipt__squares i {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--c);
+  animation: receipt-print 140ms ease-out both;
+}
+
+.receipt__n {
+  color: var(--bk-fg);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt__more {
+  display: block !important;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* The total is what the eye should land on: big, tabular, set off by a double rule. */
+.receipt__total {
+  display: grid;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 3px double var(--bk-border-strong);
+  animation: receipt-print 180ms ease-out both;
+}
+
+.receipt__sum,
+.receipt__sub {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.receipt__sum span {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.receipt__sum b {
+  font-size: 1.375rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.receipt__ratio[data-best],
+.receipt[data-ours] .receipt__sum b {
+  color: var(--bk-signal-ink);
+}
+
+.receipt__sub {
+  color: var(--bk-muted-fg);
+}
+
+.receipt__ratio {
+  white-space: nowrap;
+  color: var(--bk-danger);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+@keyframes receipt-print {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt__lines li,
+  .receipt__squares i,
+  .receipt__total {
+    animation: none;
+  }
+}
+
+/* The race's figures, under the receipts: the slips' tally. A label in mono
+   caps over each figure, the screen's value struck through and faded, Booki's
+   value in full ink, so the eye reads the result and sees what it replaced. */
+.race-figures .site-figures {
+  gap: 1px;
+  margin: 0;
+  border: 0;
+  border-radius: var(--bk-radius);
+  overflow: hidden;
+  background: var(--bk-border);
+  box-shadow: 0 0 0 1px var(--bk-border);
+}
+
+.race-figures .site-figures > div,
+.race-figures .site-figures > div + div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.25rem 1.375rem;
+  border: 0;
+  background: var(--bk-card);
+}
+
+/* label first, then the figure */
+.race-figures dd {
+  display: contents;
+}
+
+.race-figures dd > span:first-child {
+  order: -1;
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.race-figures .site-figures__figure {
+  /* labels may wrap; the figures still sit on one line at the foot */
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.375rem;
+  font-size: clamp(1.75rem, 2.6vw, 2.25rem);
+  letter-spacing: -0.03em;
+}
+
+.race-figures .site-figures__from {
+  color: var(--bk-muted-fg);
+  font-size: 0.55em;
+  letter-spacing: 0;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.race-figures .site-figures__to {
+  font-size: 0.45em;
+}
+
+@media (min-width: 768px) {
+  .race-figures .site-figures--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .race-figures .site-figures--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .race-figures .site-figures--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* The site's own ui-sdk controls (segmented control, disclosures) once took
+   Booki's base button and text metrics through any [data-slot] ancestor.
+   @booki/styles now keeps those rules to Booki's components, so the site sets
+   the same metrics itself. Zero specificity, like Booki's. */
+:where([data-slot="segmented-control"], [data-slot="collapsible"]) button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding-block: 0.4rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+:where([data-slot="collapsible-panel"]) p {
+  line-height: 1.4;
+}
+
+/*
+  The news line under the logo: a quiet link to the launch post. A "new" tag
+  is not agent work, so it stays wood and ink, never signal (DESIGN.md).
+*/
+.site-news {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  min-height: 2rem;
+  padding: 0.25rem 0.625rem 0.25rem 0.25rem;
+  border-radius: var(--bk-radius);
+  box-shadow: inset 0 0 0 var(--hairline) var(--bk-border-strong);
+  color: var(--bk-muted-fg);
+  font-size: var(--text-ui);
+  line-height: 1.3;
+  text-decoration: none;
+  transition:
+    color 150ms ease-out,
+    box-shadow 150ms ease-out;
+}
+
+@media (pointer: coarse) {
+  .site-news {
+    min-height: 2.75rem;
+  }
+}
+
+.site-news:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-news:hover {
+    color: var(--bk-fg);
+    box-shadow: inset 0 0 0 var(--hairline) var(--bk-fg);
+  }
+}
+
+.site-news__tag {
+  flex: none;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-wood);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.site-news__text {
+  min-width: 0;
+  text-wrap: balance;
+}
+
+.site-news__arrow {
+  flex: none;
+  transition: transform 150ms ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .site-news:hover .site-news__arrow {
+    transform: translateX(2px);
+  }
+}
+
+/* The launch post (/announcing-agent-first-ui-with-booki). */
+.site-post__prose {
+  display: grid;
+  gap: 1rem;
+  max-width: 66ch;
+  font-size: 1.0625rem;
+}
+
+.site-post__prose p {
+  margin: 0;
+}
+
+.site-post__form {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.site-post__field {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.site-post__value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: var(--bk-control-h);
+  padding-inline: var(--bk-control-px);
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: inset 0 0 0 1px var(--bk-border-strong);
+  font-family: var(--bk-mono);
+  font-size: var(--text-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A value the agent set: the signal edge, as on the library's own fields. */
+.site-post__value[data-agent] {
+  box-shadow:
+    inset 3px 0 0 var(--bk-signal),
+    inset 0 0 0 1px var(--bk-border-strong);
+}
+
+.site-post__by {
+  font-family: var(--bk-font);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--bk-signal-ink);
+}
+
+.site-post__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.site-post__table :is(th, td) {
+  padding: 0.75rem 1rem 0.75rem 0;
+  border-bottom: var(--hairline) solid var(--bk-border);
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.site-post__table thead th {
+  border-bottom-color: var(--bk-border-strong);
+  color: var(--bk-muted-fg);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.site-post__table tbody th {
+  font-weight: 500;
+}
+
+.site-post__table [data-num] {
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Package and control names as small mono tags. */
+.site-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.45rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-wood);
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+a.site-chip {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color 150ms ease-out;
+}
+
+a.site-chip:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a.site-chip:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+.site-machine .site-chip {
+  background: var(--bk-ink-raised);
+  color: var(--bk-ink-fg);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+}
+
+/* Booki's layers: a stack on paper, the agent's side on ink, the server under both. */
+.site-layers {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 960px) {
+  .site-layers {
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  }
+
+  .site-layers__server {
+    grid-column: 1 / -1;
+  }
+}
+
+.site-layers__stack {
+  display: grid;
+  min-width: 0;
+}
+
+.site-layers__split {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .site-layers__split {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.site-layers__layer {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+.site-layers__layer[data-optional] {
+  background: transparent;
+  box-shadow: none;
+  outline: 1px dashed var(--bk-border-strong);
+  outline-offset: -1px;
+}
+
+.site-layers__name {
+  margin: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.site-layers__text {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--bk-muted-fg);
+}
+
+/* The join between two layers: a short rule and what flows along it. */
+.site-layers__link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.375rem 0 0.375rem 1.25rem;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+.site-layers__link::before {
+  content: "↑";
+  color: var(--bk-border-strong);
+}
+
+.site-layers__agent {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* A docs preview holds its height before the control mounts and while the agent works on it. */
+.doc-sheet {
+  min-height: var(--reserve-sm, 0);
+  /* A wide table scrolls inside its sheet, never the page. */
+  overflow-x: auto;
+}
+
+/* The agent's cursor label may rest near the right edge: it must not widen the page. */
+body:has([data-slot="agent-cursor"]) {
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .doc-sheet {
+    min-height: var(--reserve, 0);
+  }
+}

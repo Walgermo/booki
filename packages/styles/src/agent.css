@@ -1,0 +1,317 @@
+/* ── The agent, made visible ─────────────────────────────────────────────
+   Presence: a marker on the control the agent is changing.
+   Attribution: a control the agent changed, until a person edits or reviews.
+   Proposal: a suggested value that is not committed yet. */
+
+/* A signal line on the leading edge. Drawn outside the box: no layout shift. */
+[data-agent-set] {
+  border-radius: var(--bk-radius-sm);
+  box-shadow: -3px 0 0 0 var(--bk-signal);
+}
+
+/* A proposed value reads as provisional: dashed outline, fjord tint. */
+[data-agent-proposed] {
+  border-radius: var(--bk-radius-sm);
+  outline: 1.5px dashed var(--bk-signal-ink);
+  outline-offset: 4px;
+  background: var(--bk-signal-tint);
+}
+
+[data-slot="agent-presence"] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -1.75rem 0 0 -0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    transform 240ms var(--bk-ease-out),
+    opacity 150ms ease-out;
+}
+
+[data-slot="agent-presence"][data-active="true"] {
+  opacity: 1;
+}
+
+[data-slot="agent-presence-dot"] {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+[data-slot="agent-presence-target"] {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+[data-slot="agent-proposal"] {
+  display: grid;
+  gap: var(--bk-gap);
+  padding: 0.875rem 1rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-signal-tint);
+  box-shadow: inset 3px 0 0 0 var(--bk-signal);
+  color: var(--bk-fg);
+  font-family: var(--bk-font);
+  font-size: 0.875rem;
+}
+
+[data-slot="agent-proposal-title"] {
+  margin: 0;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="agent-proposal-changes"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+[data-slot="agent-proposal-changes"] li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+[data-slot="agent-proposal-target"] {
+  font-weight: var(--bk-font-weight-medium);
+  margin-inline-end: auto;
+}
+
+[data-slot="agent-proposal-before"] {
+  color: var(--bk-muted-fg);
+  text-decoration: line-through;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="agent-proposal-after"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="agent-proposal-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+[data-slot="agent-proposal-actions"] button {
+  appearance: none;
+  min-height: var(--bk-control-h);
+  padding: 0.4rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-primary);
+  color: var(--bk-primary-fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  cursor: pointer;
+  transition: transform var(--bk-duration) ease-out;
+}
+
+[data-slot="agent-proposal-actions"] button[data-variant="secondary"] {
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="agent-proposal-actions"] button:active {
+  transform: scale(0.97);
+}
+
+[data-slot="agent-proposal-actions"] button:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="agent-presence"] {
+    transition: none;
+  }
+
+  [data-slot="agent-proposal-actions"] button:active {
+    transform: none;
+  }
+}
+
+/* ── Agent cursor: the agent's pointer, ring and narration ───────────── */
+
+[data-slot="agent-cursor"] {
+  position: fixed;
+  inset: 0;
+  z-index: 450;
+  pointer-events: none;
+  user-select: none;
+  --agent-cursor-travel: 420ms;
+}
+
+[data-slot="agent-cursor-ring"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: calc(var(--bk-radius-sm) + 4px);
+  box-shadow:
+    0 0 0 2px var(--bk-signal),
+    0 0 0 6px color-mix(in oklch, var(--bk-signal) 28%, transparent);
+  opacity: 0;
+  transition:
+    transform var(--agent-cursor-travel) cubic-bezier(0.32, 0.72, 0, 1),
+    width var(--agent-cursor-travel) cubic-bezier(0.32, 0.72, 0, 1),
+    height var(--agent-cursor-travel) cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 180ms ease-out,
+    box-shadow 180ms ease-out;
+}
+
+[data-slot="agent-cursor-pointer"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition:
+    transform var(--agent-cursor-travel) cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 180ms ease-out;
+}
+
+[data-slot="agent-cursor-arrow"] {
+  display: block;
+  margin: -2px 0 0 -2px;
+  overflow: visible;
+  filter: drop-shadow(var(--bk-shadow-pointer));
+  transform-origin: 2px 2px;
+  transition: transform 140ms ease-out;
+}
+
+[data-slot="agent-cursor-arrow"] path {
+  fill: var(--bk-signal);
+  stroke: var(--bk-ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+/* A press: the arrow dips and a pulse spreads from the tip. */
+[data-slot="agent-cursor-ripple"] {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bk-signal);
+  opacity: 0;
+  transform: scale(0.2);
+}
+
+[data-slot="agent-cursor-label"] {
+  position: absolute;
+  top: 20px;
+  left: 14px;
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--bk-shadow-float);
+}
+
+[data-slot="agent-cursor-action"] {
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+[data-slot="agent-cursor"]:not([data-phase="idle"]) [data-slot="agent-cursor-pointer"],
+[data-slot="agent-cursor"]:not([data-phase="idle"]) [data-slot="agent-cursor-ring"] {
+  opacity: 1;
+}
+
+/* The target moved under it (scroll, layout): stick to it, no glide. */
+[data-slot="agent-cursor"][data-follow] :is([data-slot="agent-cursor-ring"], [data-slot="agent-cursor-pointer"]) {
+  transition-property: opacity, box-shadow;
+}
+
+[data-slot="agent-cursor"][data-phase="move"] [data-slot="agent-cursor-ring"] {
+  opacity: 0.55;
+}
+
+[data-slot="agent-cursor"][data-phase="press"] [data-slot="agent-cursor-arrow"] {
+  transform: scale(0.86);
+}
+
+[data-slot="agent-cursor"][data-phase="press"] [data-slot="agent-cursor-ripple"] {
+  animation: agent-cursor-press 420ms ease-out;
+}
+
+[data-slot="agent-cursor"][data-phase="refused"] [data-slot="agent-cursor-ring"] {
+  box-shadow:
+    0 0 0 2px var(--bk-danger),
+    0 0 0 6px color-mix(in oklch, var(--bk-danger) 22%, transparent);
+}
+
+[data-slot="agent-cursor"][data-phase="refused"] [data-slot="agent-cursor-label"] {
+  background: var(--bk-danger);
+  color: var(--bk-danger-fg);
+}
+
+/* Its first appearance jumps to the control instead of flying in from the corner. */
+[data-slot="agent-cursor"][data-first] :is([data-slot="agent-cursor-pointer"], [data-slot="agent-cursor-ring"]) {
+  transition-property: opacity;
+}
+
+@keyframes agent-cursor-press {
+  from {
+    opacity: 0.55;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="agent-cursor"] :is([data-slot="agent-cursor-pointer"], [data-slot="agent-cursor-ring"]) {
+    transition: opacity 120ms ease-out;
+  }
+
+  [data-slot="agent-cursor"][data-phase="press"] [data-slot="agent-cursor-ripple"] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-slot="agent-cursor-ring"] {
+    outline: 2px solid Highlight;
+  }
+}
+
+/* With a cursor on the page, the presence marker steps aside: the cursor's
+   label already says who is working. It stays in the tree for screen readers. */
+:root:has([data-slot="agent-cursor"]:not([data-phase="idle"])) [data-slot="agent-presence"] {
+  opacity: 0;
+}

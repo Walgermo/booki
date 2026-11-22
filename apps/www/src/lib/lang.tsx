@@ -1,0 +1,112 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+/**
+ * The site's language: Norwegian when the browser asks for Norwegian (nb, nn
+ * or no), English otherwise. A visitor's own pick (the EN/NO switch) wins and
+ * is kept in this browser. index.html sets <html lang> before the first paint
+ * with the same rule, so the page never flashes the other language's lang.
+ */
+export type Lang = "en" | "nb";
+
+const KEY = "booki-lang";
+
+/** Norwegian in any of its codes: nb (Bokmål), nn (Nynorsk), no. */
+const NORWEGIAN = /^(nb|nn|no)\b/i;
+
+export function browserLang(): Lang {
+  if (typeof navigator === "undefined") return "en";
+  const asked = navigator.languages?.length ? navigator.languages : [navigator.language];
+  // The browser's first preference decides; a Norwegian second choice behind English does not.
+  return NORWEGIAN.test(asked[0] ?? "") ? "nb" : "en";
+}
+
+function storedLang(): Lang | null {
+  try {
+    const value = window.localStorage.getItem(KEY);
+    return value === "nb" || value === "en" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+type LangContextValue = {
+  lang: Lang;
+  setLang: (next: Lang) => void;
+  /** Pick the text for the current language: t("Post a voucher", "Før et bilag"). */
+  t: <T>(en: T, nb: T) => T;
+};
+
+const LangContext = createContext<LangContextValue>({ lang: "en", setLang: () => {}, t: (en) => en });
+
+/** A page's own tab title and description, in both languages. */
+export type PageMeta = { title: { en: string; nb: string }; description: { en: string; nb: string } };
+
+const SITE_META: PageMeta = {
+  title: {
+    en: "Booki: agent-first UI for accounting and auditing",
+    nb: "Booki: agent-first UI for regnskap og revisjon",
+  },
+  description: {
+    en: "Build agent-first web apps for accounting and auditing. React controls an agent operates by name, under your rules, with a visible agent cursor and every step in the audit trail.",
+    nb: "Bygg agent-first webapper for regnskap og revisjon. React-kontroller en agent styrer med navn, under dine regler, med synlig agentpeker og hvert steg i revisjonssporet.",
+  },
+};
+
+const PageMetaContext = createContext<(meta: PageMeta | null) => void>(() => {});
+
+export function LangProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>(() => storedLang() ?? browserLang());
+  // A page may set its own title and description (usePageMeta); the site's apply otherwise.
+  const [pageMeta, setPageMeta] = useState<PageMeta | null>(null);
+
+  // The tab title and description follow the language too.
+  useEffect(() => {
+    const meta = pageMeta ?? SITE_META;
+    const title = meta.title[lang];
+    const description = meta.description[lang];
+    document.documentElement.lang = lang === "nb" ? "nb" : "en";
+    document.title = title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+  }, [lang, pageMeta]);
+
+  // Follow the browser while the visitor has not picked one themselves.
+  useEffect(() => {
+    const follow = () => {
+      if (!storedLang()) setLangState(browserLang());
+    };
+    window.addEventListener("languagechange", follow);
+    return () => window.removeEventListener("languagechange", follow);
+  }, []);
+
+  const setLang = useCallback((next: Lang) => {
+    setLangState(next);
+    try {
+      window.localStorage.setItem(KEY, next);
+    } catch {
+      /* private mode: the pick lasts this page view */
+    }
+  }, []);
+
+  const value = useMemo<LangContextValue>(
+    () => ({ lang, setLang, t: (en, nb) => (lang === "nb" ? nb : en) }),
+    [lang, setLang],
+  );
+  return (
+    <LangContext.Provider value={value}>
+      <PageMetaContext.Provider value={setPageMeta}>{children}</PageMetaContext.Provider>
+    </LangContext.Provider>
+  );
+}
+
+export const useLang = () => useContext(LangContext);
+
+/** Give the tab this page's title and description while the page is shown, in the site's language. Pass a stable object. */
+export function usePageMeta(meta: PageMeta) {
+  const set = useContext(PageMetaContext);
+  useEffect(() => {
+    set(meta);
+    return () => set(null);
+  }, [set, meta]);
+}

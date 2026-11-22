@@ -1,0 +1,228 @@
+/* ── Cash-flow waterfall: opening, movements, closing ────────────────── */
+
+[data-slot="cashflow-waterfall"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="cashflow-waterfall-title"] {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:where([data-slot="cashflow-waterfall"]) [data-slot="cashflow-waterfall-summary"] {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="cashflow-waterfall-figure"] {
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="cashflow-waterfall-figure"][data-direction="in"] {
+  color: var(--bk-success);
+}
+
+[data-slot="cashflow-waterfall-figure"][data-direction="out"] {
+  color: var(--bk-danger);
+}
+
+[data-slot="cashflow-waterfall-frame"] {
+  position: relative;
+  min-width: 0;
+}
+
+[data-slot="cashflow-waterfall-svg"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-size: 13px;
+}
+
+[data-slot="cashflow-waterfall-label"] {
+  fill: var(--bk-fg);
+}
+
+[data-slot="cashflow-waterfall-value"] {
+  fill: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Balances are structure; movements carry meaning: in is success, out is danger. */
+[data-slot="cashflow-waterfall-bar"][data-kind="balance"] {
+  fill: var(--bk-muted-fg);
+}
+
+[data-slot="cashflow-waterfall-bar"][data-direction="in"] {
+  fill: var(--bk-success);
+}
+
+[data-slot="cashflow-waterfall-bar"][data-direction="out"] {
+  fill: var(--bk-danger);
+}
+
+:is([data-slot="cashflow-waterfall-connector"], [data-slot="cashflow-waterfall-baseline"]) {
+  stroke: var(--bk-border-strong);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+[data-slot="cashflow-waterfall-baseline"] {
+  stroke: var(--bk-border);
+}
+
+[data-slot="cashflow-waterfall-hits"] {
+  position: absolute;
+  inset: 0;
+}
+
+:where([data-slot="cashflow-waterfall"]) button[data-slot="cashflow-waterfall-step"] {
+  position: absolute;
+  inset-inline: -0.25rem;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--bk-radius-sm);
+  background: transparent;
+  box-shadow: none;
+}
+
+:where([data-slot="cashflow-waterfall"]) button[data-slot="cashflow-waterfall-step"]:focus-visible {
+  outline-offset: -2px;
+}
+
+:where([data-slot="cashflow-waterfall"]) button[data-slot="cashflow-waterfall-step"][aria-pressed="true"] {
+  background: color-mix(in srgb, var(--bk-accent) 60%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot="cashflow-waterfall"])
+    button[data-slot="cashflow-waterfall-step"]:hover:not(:disabled):not([aria-pressed="true"]) {
+    background: transparent;
+  }
+}
+
+:where([data-slot="cashflow-waterfall"]) button[data-slot="cashflow-waterfall-step"]:active:not(:disabled) {
+  transform: none;
+}
+
+[data-slot="cashflow-waterfall-tooltip"] {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 10rem;
+  max-width: min(16rem, 100%);
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+  pointer-events: none;
+}
+
+[data-slot="cashflow-waterfall-tooltip"] strong {
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:where([data-slot="cashflow-waterfall"]) [data-slot="cashflow-waterfall-check"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-success) 10%, var(--bk-muted));
+  color: var(--bk-success);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-slot="cashflow-waterfall"]) [data-slot="cashflow-waterfall-check"][data-reconciles="false"] {
+  background: color-mix(in srgb, var(--bk-danger) 10%, var(--bk-muted));
+  color: var(--bk-danger);
+}
+
+[data-slot="cashflow-waterfall-table"] summary {
+  width: fit-content;
+  font-size: 0.8125rem;
+  color: var(--bk-brand);
+  cursor: pointer;
+}
+
+[data-slot="cashflow-waterfall-scroll"] {
+  min-width: 0;
+  margin-top: var(--bk-gap);
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="cashflow-waterfall-table"] table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="cashflow-waterfall-table"] :is(th, td) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="cashflow-waterfall-table"] thead th {
+  border-top: 0;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="cashflow-waterfall-table"] [data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="cashflow-waterfall-table"] tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:is([data-slot="cashflow-waterfall-empty"], [data-slot="cashflow-waterfall-error"]) {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="cashflow-waterfall-error"] {
+  color: var(--bk-danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="cashflow-waterfall-tooltip"] {
+    animation: acc-cashflow-waterfall-tip var(--bk-duration) var(--bk-ease-out);
+  }
+}
+
+@keyframes acc-cashflow-waterfall-tip {
+  from {
+    opacity: 0;
+  }
+}

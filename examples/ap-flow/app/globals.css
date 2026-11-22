@@ -1,0 +1,16 @@
+/* Booki under your utilities: its own look in a cascade layer, Tailwind on top. */
+@import "@booki/styles" layer(booki);
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  background: var(--bk-bg);
+  color: var(--bk-fg);
+  font-family: var(--bk-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+  text-wrap: balance;
+}

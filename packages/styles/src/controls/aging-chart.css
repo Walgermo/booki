@@ -1,0 +1,249 @@
+/* ── Aging chart: open items stacked by age ──────────────────────────── */
+
+[data-slot="aging-chart"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="aging-chart-title"] {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:where([data-slot="aging-chart"]) [data-slot="aging-chart-summary"] {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aging-chart-figure"] {
+  color: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The legend is the way in: each bucket is a button that drills into it. */
+[data-slot="aging-chart-legend"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where([data-slot="aging-chart"]) button[data-slot="aging-chart-bucket"] {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "key name"
+    ". figure";
+  justify-items: start;
+  align-items: center;
+  gap: 0.1rem 0.45rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  color: var(--bk-muted-fg);
+  font-weight: 400;
+  text-align: start;
+}
+
+:where([data-slot="aging-chart"]) button[data-slot="aging-chart-bucket"][aria-pressed="true"] {
+  background: var(--bk-accent);
+  color: var(--bk-fg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where([data-slot="aging-chart"]) button[data-slot="aging-chart-bucket"]:hover:not(:disabled) {
+    background: var(--bk-accent);
+  }
+}
+
+[data-slot="aging-chart-key"] {
+  grid-area: key;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+}
+
+[data-slot="aging-chart-bucket-name"] {
+  grid-area: name;
+}
+
+[data-slot="aging-chart-bucket"] [data-slot="aging-chart-figure"] {
+  grid-area: figure;
+}
+
+[data-slot="aging-chart-frame"] {
+  position: relative;
+  min-width: 0;
+}
+
+[data-slot="aging-chart-svg"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-size: 13px;
+}
+
+/* A 2px gap in the surface colour separates the segments; no strokes. */
+[data-slot="aging-chart-track"] {
+  fill: var(--bk-muted);
+}
+
+[data-slot="aging-chart-segment"][data-active] {
+  opacity: 0.8;
+}
+
+[data-slot="aging-chart-label"] {
+  fill: var(--bk-fg);
+}
+
+[data-slot="aging-chart-value"] {
+  fill: var(--bk-fg);
+  font-family: var(--bk-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="aging-chart-tooltip"] {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 10rem;
+  max-width: min(16rem, 100%);
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+  pointer-events: none;
+}
+
+[data-slot="aging-chart-tooltip"] strong {
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="aging-chart-drilled"] {
+  display: grid;
+  gap: var(--bk-gap);
+}
+
+[data-slot="aging-chart-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bk-gap);
+}
+
+[data-slot="aging-chart-heading"] h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="aging-chart-parties"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+  font-size: 0.8125rem;
+}
+
+[data-slot="aging-chart-parties"] li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--bk-gap-lg);
+  padding: 0.35rem 0.75rem;
+}
+
+[data-slot="aging-chart-parties"] li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+[data-slot="aging-chart-table"] summary {
+  width: fit-content;
+  font-size: 0.8125rem;
+  color: var(--bk-brand);
+  cursor: pointer;
+}
+
+[data-slot="aging-chart-scroll"] {
+  min-width: 0;
+  margin-top: var(--bk-gap);
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="aging-chart-table"] table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="aging-chart-table"] :is(th, td) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="aging-chart-table"] thead th {
+  border-top: 0;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aging-chart-table"] [data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="aging-chart-table"] tfoot :is(th, td) {
+  border-top-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:is([data-slot="aging-chart-empty"], [data-slot="aging-chart-error"]) {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="aging-chart-error"] {
+  color: var(--bk-danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="aging-chart-tooltip"] {
+    animation: acc-aging-chart-tip var(--bk-duration) var(--bk-ease-out);
+  }
+}
+
+@keyframes acc-aging-chart-tip {
+  from {
+    opacity: 0;
+  }
+}

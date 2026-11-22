@@ -1,0 +1,274 @@
+/* ── Audit workpaper: materiality, sample, results, sign-offs ───────── */
+
+[data-slot="audit-workpaper"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+/* Figures in a row: materiality and the summary. */
+:is([data-slot="audit-workpaper-materiality"], [data-slot="audit-workpaper-summary"]) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap) calc(var(--bk-gap-lg) * 2);
+  margin: 0;
+  padding: 0.6rem 0 0;
+  border-top: 1px solid var(--bk-border);
+}
+
+:is(
+    [data-slot="audit-workpaper-materiality"],
+    [data-slot="audit-workpaper-summary"],
+    [data-slot="audit-workpaper-sign-offs"]
+  )
+  > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+:is(
+    [data-slot="audit-workpaper-materiality"],
+    [data-slot="audit-workpaper-summary"],
+    [data-slot="audit-workpaper-sign-offs"],
+    [data-slot="audit-workpaper-legend"]
+  )
+  :is(dt, dd) {
+  margin: 0;
+}
+
+:is(
+    [data-slot="audit-workpaper-materiality"],
+    [data-slot="audit-workpaper-summary"],
+    [data-slot="audit-workpaper-sign-offs"]
+  )
+  dt {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+:is([data-slot="audit-workpaper-materiality"], [data-slot="audit-workpaper-summary"]) dd {
+  font-family: var(--bk-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
+}
+
+[data-slot="audit-workpaper-summary"][data-exceeds] [data-slot="audit-workpaper-projected"] {
+  color: var(--bk-danger);
+}
+
+/* How the sample was drawn, so it can be drawn again. */
+[data-slot="audit-workpaper-sample"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* The table scrolls inside its own frame, never the page. */
+[data-slot="audit-workpaper-scroll"] {
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="audit-workpaper-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="audit-workpaper-table"] thead th {
+  padding: 0.45rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="audit-workpaper-table"] tbody :is(td, th) {
+  padding: 0.3rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="audit-workpaper-table"] [data-align="end"] {
+  text-align: end;
+}
+
+:is([data-slot="audit-workpaper-id"], [data-slot="audit-workpaper-amount"]) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="audit-workpaper-description"] {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+/* The draw form: method, size and seed in a row, then the button. */
+[data-slot="audit-workpaper-draw"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="audit-workpaper-draw"] label {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+/* Cells a person types in sit flush in the table. */
+[data-slot="audit-workpaper-table"] td:has(> :is(input, select)) {
+  padding: 0.2rem 0.3rem;
+}
+
+[data-slot="audit-workpaper-table"] :is(input, select) {
+  width: 100%;
+  min-width: 7rem;
+}
+
+[data-slot="audit-workpaper-tick"] {
+  min-width: 4.5rem;
+}
+
+[data-slot="audit-workpaper-table"] input[data-align="end"] {
+  text-align: end;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="audit-workpaper-table"] tr[data-result="exception"] [data-slot="audit-workpaper-id"] {
+  color: var(--bk-danger);
+}
+
+[data-slot="audit-workpaper-table"] tr[data-result="untested"] [data-slot="audit-workpaper-id"] {
+  color: var(--bk-muted-fg);
+}
+
+/* Work an agent did that no person has looked at yet. */
+[data-slot="audit-workpaper-by"] {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+[data-slot="audit-workpaper-table"] tr[data-by-agent] [data-slot="audit-workpaper-by"] {
+  color: var(--bk-signal-ink);
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="audit-workpaper-table"] tr[data-by-agent] > th {
+  box-shadow: inset 3px 0 0 var(--bk-signal);
+}
+
+[data-slot="audit-workpaper-legend"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem var(--bk-gap-lg);
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-workpaper-legend"] > div {
+  display: flex;
+  gap: 0.4rem;
+}
+
+[data-slot="audit-workpaper-legend"] dt {
+  font-family: var(--bk-mono);
+  font-weight: var(--bk-font-weight-semibold);
+  color: var(--bk-fg);
+}
+
+[data-slot="audit-workpaper-verdict"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-success);
+}
+
+[data-slot="audit-workpaper-verdict"][data-exceeds] {
+  color: var(--bk-danger);
+}
+
+[data-slot="audit-workpaper-issues"] {
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+}
+
+[data-slot="audit-workpaper-conclusion"] {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 44rem;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-workpaper-conclusion"] textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+[data-slot="audit-workpaper-sign-offs"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap) calc(var(--bk-gap-lg) * 2);
+  margin: 0;
+}
+
+[data-slot="audit-workpaper-sign-offs"] dd {
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-workpaper-sign-offs"] > div[data-signed] dd {
+  color: var(--bk-success);
+}
+
+[data-slot="audit-workpaper-sign-offs"] time {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="audit-workpaper-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+[data-slot="audit-workpaper-actions"]:empty {
+  display: none;
+}
+
+[data-slot="audit-workpaper-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}

@@ -1,0 +1,177 @@
+# Booki for agents
+
+Booki is agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. This catalog names the React package; the same controls, options and actions exist in `@booki/web` (custom elements, `<booki-amount-field>`), `@booki/vue`, `@booki/svelte` and `@booki/solid` (parts such as `AmountField.Root`), all generated from `@booki/primitives`.
+Agents should operate controls via `createBookiAgent` / `createAgent` — not DOM clicking.
+
+## Install
+
+```bash
+pnpm add @booki/core @booki/react @booki/styles
+```
+
+```ts
+import { BookiLocaleProvider } from "@booki/react/locale"
+import "@booki/styles"
+```
+
+## Agent bridge (finance-tuned)
+
+```ts
+import {
+  createBookiAgent,
+  attachAudit,
+  proposeChanges,
+  createBookiHistory,
+  registerTools,
+} from "@booki/react/acc-agent"
+
+const agent = createBookiAgent({
+  agentId: "bookkeeper",
+  ruleVersion: "posting-1",
+  allow: async (step) => {
+    if (step.confirm) return window.confirm(step.confirm)
+    return true
+  },
+})
+
+attachAudit(agent, (event) => auditLog.push(event), {
+  agentId: "bookkeeper",
+  ruleVersion: "posting-1",
+})
+const history = createBookiHistory(agent)
+registerTools(agent, { allow: (step) => !step.confirm })
+
+agent.snapshot()
+await agent.query({ kind: "amount-field" })
+await agent.act({
+  steps: [
+    { ref: "Amount excl. tax", action: "setMinor", args: [312500] },
+    { ref: "MVA", action: "setTaxCode", args: ["MVA25"] },
+    { ref: "Account", action: "setAccount", args: ["3000"] },
+    { ref: "Voucher lines", action: "assertBalance", args: [] },
+  ],
+})
+
+// Amounts stage on key "minor" (integer minor units) → setMinor; `before`
+// is read from the snapshot's `minor`, so revert restores the old amount.
+const staged = await proposeChanges(agent, [
+  { ref: "Amount excl. tax", key: "minor", value: 312500 },
+])
+await staged.revert()
+await history.undoSource("agent")
+```
+
+Prefer domain actions (`setMinor`, `setTaxCode`, `setAccount`, `setKontonummer`, `setOrganizationNumber`, `setIban`, `setDate`, `setPeriod`, `assertBalance`) over raw `setValue` strings.
+
+Amounts are always integer minor units, for reading and writing: the AmountField snapshot's `value` / `minor` is what `setMinor` takes (12500 = 125.00). AmountField has no agent `setValue`, and `setMinor` rejects decimals, text such as "125.00", unsafe integers and amounts outside `minMinor` (default 0) / `maxMinor`. Voucher amounts follow the same rule: non-negative integer minor units, and a line has a debit or a credit, not both.
+
+History: AmountField reports changes on key `minor`, VoucherComposer on `lines`, OrganizationNumberInput on `digits`. `createBookiHistory` records these by default, so `undoSource("agent")` / `seek` restore them through `setMinor` / `setLines` / `setDigits`. With a history of your own, pass `keys: BOOKI_HISTORY_KEYS`. Secret fields (bank account, IBAN, KID) are recorded as redacted and are reported as not restored, by design.
+
+## Irreversible actions
+
+Controls that move or post money carry `data-agent-confirm`. Without `allow`, those steps fail with "Needs a person".
+Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`).
+
+## Catalog
+
+### FIN `definePrimitive` (operate these)
+
+| Component | Entry | Agent actions / snapshot |
+| --- | --- | --- |
+| AmountField | `@booki/react/amount-field` | `setMinor`, `clear` — `value` / `minor` = integer minor units; `minMinor` (default 0) / `maxMinor` |
+| VoucherComposer | `@booki/react/voucher-composer` | `addLine({ account, debitMinor, vatCode })` (also `accountName`, `creditMinor`, `department`, `project`; or positional `account, name?, debit?, credit?, { vatCode?, department?, project? }?`; the snapshot's `lineFormat` shows the form, and an unknown field is refused), `setDebit`, `setCredit`, `setAccount`, `setVatCode`, `setDepartment`, `setProject`, `setDimension(lineId, key, code)` for any dimension in `dimensions`, `setForeign(lineId, currency, amountMinor, rateScaled)` to book a line in another currency, `setLines`, `removeLine`, `clear`, `assertBalance`, `assertPostable` — snapshot has `lines`, `postable`, `postings` and `lineFormat`; `assertPostable` names what blocks posting. Closed lists via `accounts`, `taxCodes`, `departments`, `projects`; an account may set `vatCodes`, `defaultVatCode`, `requiresDepartment`, `requiresProject`. `editable` gives a person the same edits (account, VAT code, department, project, debit, credit, add, remove) through these actions; a refused edit leaves the line as it was and shows the message on that row. Read-only by default |
+| BankReconciliation | `@booki/react/bank-reconciliation` | `suggestMatch(bankLineIds, postIds)`, `withdrawMatch(matchId)`, `setMatches(matches)` (a new or changed match becomes a suggestion; a status other than `suggested` on it is refused, and a match a person decided stays as it is), `assertReconciled` — snapshot has `unmatchedBankLines`, `unmatchedPosts`, `matches`, `reconciled`. A match must sum to the same amount on both sides. Approving or rejecting a suggestion is a person's button, not an agent action. Rule-based suggestions: `suggestMatches` from `@booki/core/reconciliation` |
+| ApprovalChain | `@booki/react/approval-chain` | `assertApproved` only — snapshot has `request`, `status`, `currentLevel`, `mayDecide`, `locked`. Approve, reject and escalate are a person's buttons (pass `actor`): the requester cannot approve, a limit must cover the amount, each level needs a different person, a substitute acts `onBehalfOf`. Rules: `@booki/core/approval` |
+| PeriodLock | `@booki/react/period-lock` | `assertPostingAllowed(date, mayAdjustClosed?)` — snapshot has `periods` (`open` is unlisted, `soft-closed`, `hard-closed`). Closing, locking and reopening are a person's buttons; a hard-closed period never reopens. Rules: `@booki/core/period-lock` |
+| CloseChecklist | `@booki/react/close-checklist` | `completeTask(id)`, `assertReadyToClose` — snapshot has `tasks`, `ready`, `awaitingSignOff`, `readyToClose`. A task waits for its `dependsOn`. An agent's work is recorded as `doneBy: "agent"`; signing off and reopening are a person's buttons, and nobody signs off their own task. Rules: `@booki/core/close` |
+| InvoiceEditor | `@booki/react/invoice-editor` | `addLine({ description, quantity, unitPriceMinor, taxRate })` (also `quantityMilli`, `taxRateBp`, `taxCategory`, `discountPercent`/`discountBp`; or positional `description, quantityMilli, unitPriceMinor, taxCategory?, taxRateBp?, discountBp?`; the snapshot's `lineFormat` shows the form), `setLine(lineId, patch)`, `removeLine(lineId)`, `setCustomerTaxId`, `setInvoice`, `assertFinalizable` — snapshot has `invoice`, `totals`, `issues`, `finalizable`. Quantity is in thousandths, rates and discounts in basis points, tax categories `S Z E AE K`. Totals are computed, never set. Finalizing is a person's button; a finalized invoice refuses every edit and is corrected with a credit note (`draftCreditNote` in `@booki/core/invoice`) |
+| PaymentBatch | `@booki/react/payment-batch` | `removePayment(id)`, `assertReleasable`; the payment list like a DataTable: `setSort(column, "asc"\|"desc")`, `clearSort`, `setSearch(text)`, `setFilter(column, text)`, `clearFilters`, `setPage(n)` (1-based), `setPageSize(n)` over the columns `creditorName`, `reference`, `amountMinor` (filter by creditor with `setFilter("creditorName", "Acme")`) — snapshot has `payments` (every payment, no account numbers), `totalMinor` (the whole batch), `issues` (duplicates), `approvals`, `releasable`, `query`, `view` (`total`, `matching`, `page`, `pageCount`), `rows` (the page as records) and `totals` (`amountMinor` over every match). The account number is no column: no search, sort or filter reaches it, and the CSV masks it. Approving and releasing are a person's buttons (pass `actor`): two different people, never the preparer, and any change to the batch drops the approvals. Rules: `@booki/core/payment-batch` |
+| SupplierInvoiceInbox | `@booki/react/supplier-invoice-inbox` | `correctField(invoiceId, field, value)`, `confirmField(invoiceId, field)`, `proposeCoding(invoiceId, account, vatCode?, dimensions?)`, `proposeRejection(invoiceId, reason)` (fills the person's reason; rejecting stays theirs), `approveUnderRule(invoiceId)` (only when the ERP set the `rule` option and it returns true; recorded as `rule:<ruleName>`), `assertApprovable(invoiceId)`; the invoice list like a DataTable: `setSort(column, "asc"\|"desc")`, `clearSort`, `setSearch(text)`, `setFilter(column, text)`, `clearFilters`, `setPage(n)` (1-based), `setPageSize(n)` over the columns `supplierName`, `invoiceNumber`, `dueDate`, `grossMinor`, `currency`, `status` (`setFilter("status", "coded")`) — snapshot has `inbox` (every invoice, each with `needsReview`, `duplicateOf`, `issues`, `approvable`), `approvable`, `query`, `view` (`total`, `matching`, `page`, `pageCount`), `rows` (the page as records) and `totals` (`grossMinor` per currency over every match). Net + tax must equal gross; supplier + invoice number is unique; a field under the confidence threshold must be confirmed or corrected. The payment reference and bank account are never in the snapshot. Approve and reject are a person's buttons. Rules: `@booki/core/supplier-invoice` |
+| EvidenceList | `@booki/react/evidence-list` | `linkAttachment(attachmentId, kind?)`, `setKind(attachmentId, kind)`, `assertEvidenced` — snapshot has `attachments`, `available`, `missing`, `evidenced`. Pass `requires` (kinds the entry needs) and `pool` (unlinked files). Same hash twice is refused; removing is a person's button and refused when `locked`. The host supplies metadata and hashes; nothing is uploaded. Rules: `@booki/core/attachments` |
+| ExpenseClaim | `@booki/react/expense-claim` | `addLine(line)`, `setLine(lineId, patch)`, `removeLine(lineId)`, `assertSubmittable` — snapshot has `claim`, `amounts`, `totalMinor`, `exceptions`, `issues`, `submittable`, `approvable`, `lineFormat`. An unknown field is refused, listing the fields a line takes. Line kinds `expense`, `mileage` (`distanceKm: 12.5` or `distanceMeters`), `per-diem` (`days`, `rate`); mileage and per-diem amounts come from `policy` and cannot be set. Submit, approve, reject and accepting a policy exception are a person's; the claimant cannot accept or approve their own. Rules: `@booki/core/expense` |
+| LedgerTable | `@booki/react/ledger-table` | `setRange(from, to)`, `openAccount(account)`, `showVoucher(idOrNumber)`, `back` (one step: voucher → account → trial balance), `explainVariance(account, periodA, periodB)`; the view on screen like a DataTable: `setSort(column, "asc"\|"desc")`, `clearSort`, `setSearch(text)`, `setFilter(column, text)`, `clearFilters`, `setPage(n)` (1-based), `setPageSize(n)`. Columns: trial balance `account`, `accountName`, `openingMinor`, `debitMinor`, `creditMinor`, `closingMinor`; account `date`, `voucherNumber`, `description`, `debitMinor`, `creditMinor`, `balanceMinor`; voucher `account`, `accountName`, `description`, `debitMinor`, `creditMinor`. Opening an account or voucher starts its query fresh; `back` returns to the query left, on the page holding the account — snapshot has `view` (`trial-balance`, `account`, `voucher`), `account`, `voucher`, `voucherSummary` (lines, balance, `document`), `from`, `to`, `query`, `table` (`total`, `matching`, `page`, `pageCount`), `rows` (the page, capped by `snapshotRows`, default 50, with `total` and `truncated`: fewer rows than match), `totals` (over every match), `balanced`. Pass `documents` (voucher id → file) and `onOpenDocument` to open the voucher's attachment. Read-only. Rules: `@booki/core/ledger` |
+| AgedBalances | `@booki/react/aged-balances` | `setAsOf(date)`, `openParty(partyId)`, `back`, `overdue(minDays)`; the list on screen (parties, or a party's items) like a DataTable: `setSort(column, "asc"\|"desc")`, `clearSort`, `setSearch(text)`, `setFilter(column, text)`, `clearFilters`, `setPage(n)` (1-based), `setPageSize(n)`. `setFilter("bucket", "61-90")` keeps the parties (or items) with an amount in that age column; party columns are `partyName`, one per bucket id, `totalMinor`; item columns `documentNumber`, `dueDate`, `daysOverdue`, `bucket`, `amountMinor` — snapshot has `kind`, `asOf`, `buckets`, `rows` (the page of parties, capped, with `total` and `truncated`), `totals` (over every matching party), `partyId`, `party` (with `matchingMinor`), `query`, `view` (`total`, `matching`, `page`, `pageCount`). Read-only. Rules: `@booki/core/aging` |
+| VatReturn | `@booki/react/vat-return` | `openBox(boxId)`, `back`, `assertReady` — snapshot has `period`, `status`, `boxes`, `payableMinor`, `direction`, `unmapped`, `issues`, `ready`. You supply the `schema` (boxes and the VAT codes that feed them); the two shipped schemas are examples, not a filing format. A VAT code no box takes blocks readiness. Marking ready and submitting are a person's; nothing is filed by the library. Rules: `@booki/core/vat-return` |
+| AuditWorkpaper | `@booki/react/audit-workpaper` | `drawSample(method, { size?, tolerableMinor?, seed })`, `setResult(itemId, result, misstatementMinor?)`, `setTickMark(itemId, symbol)`, `setEvidence(itemId, attachmentId)`, `setNote(itemId, text)`, `assertReadyForSignOff` — snapshot has `workpaper`, `materiality`, `tickMarks`, `population`, `summary`, `issues`, `readyForSignOff`. Sampling is reproducible from its seed. A person can draw the sample from the form (method, size, seed) until a result is recorded. An agent's results are marked `by: "agent"`. The conclusion and both sign-offs are a person's; the reviewer is a different person. Rules: `@booki/core/audit` |
+| AuditFindings | `@booki/react/audit-findings` | `draftFinding({ title, category, basis, description?, amountMinor?, currency? })` (returns `{ id }`), `editFinding(id, { title?, code?, description?, category?, amountMinor?, currency? })`, `linkSource(id, sourceId)`, `setBasis(id, basis)`, `assertConfirmable(id)` (throws with the warnings as one sentence) — snapshot has `register` (every finding, redacted), `issues` (warnings per finding), `evidence` (ids a finding may cite, when the host passes `evidence`), `findingFormat`. Categories `misstatement`, `control-deficiency`, `compliance`, `other`; basis `documented` (evidence on file), `reported` (a party said so), `hypothesis`. Warnings (documented without sources, a hypothesis, an amount without currency) never block. A confidential finding reads `"[confidential]"` with its counts only, in the snapshot and in `agent.subscribe`, and an agent cannot change it. Confirming, withdrawing (a reason of at least 20 characters) and reopening are a person's buttons; the log only grows. Rules: `@booki/core/findings` |
+| ConfirmDialog | `@booki/react/confirm-dialog` | No agent actions. The question (`title`, `description`, what is decided as children) is readable; Cancel is free; the answer and an optional `confirmWord` sit inside `data-agent-confirm`, so a press on the answer needs a person whatever the agent's role. `onConfirm` may return a Promise: the dialog stays open, the button is pending, a rejection's message shows in the dialog. `tone="danger"` for what cannot be undone |
+| BookiToasts | `@booki/react/toasts` | Receipts in a Notifications region (`BookiToasts`, `toast`, `createToaster`). `useAgentToasts(agent, { toaster?, history?, duration? })` gives a receipt for every change the agent makes, in words ("Agent set Amount to 1,250.00"), marked as the agent's, with Undo (puts the page back to just before it); redacted changes have no Undo |
+| DocumentSignoff | `@booki/react/document-signoff` | `assertSignable()` (throws with what stops a signature now: unsaved, saving, a version conflict or no content; open points never do) — snapshot has `levels` (performed, reviewed, approved: `mark` is `unsigned`, `signed`, `changed-after` or `basis-changed`, with who signed which `version` and the open points they signed with), `version`, `openPoints`, `obstacles`, `signable`. Signing and withdrawing (a reason of at least 20 characters; later levels go with it) are a person's buttons. Review needs another person than the one who performed. A later edit marks a signature, never withdraws it. Rules: `@booki/core/document-signoff` |
+| SheetStack | `@booki/react/sheet-stack` | `back(key)` (closes every sheet above it; the error lists what is open), `close()` (the top sheet; the page stays) — snapshot has `open` (each sheet's `key`, `title`, `top`, `covered`), `top`, `docked`. The app opens sheets; only the top one takes input. Layout: `layoutSheets`, `layoutStack`, `planDock` in `@booki/core/sheet-stack` |
+| ClientRequests | `@booki/react/client-requests` | `draftRequest({ title, recipientName, recipientEmail, recipientRole?, area?, dueDate? })` (returns `{ id }`), `editRequest(id, { title?, area?, dueDate?, recipientName?, recipientEmail?, recipientRole? })` (draft only), `recordAnswer(id, text)` (an answer that came in), `assertAnswered(id)` — snapshot has `tracker` (every request; the recipient's name and role, never the email), `overdue` (ids past `dueDate` against `today`), `issues`, `requestFormat`. Statuses `draft`, `sent`, `answered`, `accepted`, `rejected` (sent back, waits for the client again). Sending, reminding, and accepting or rejecting an answer (with a reason) are a person's buttons. Rules: `@booki/core/client-request` |
+| FixedAssetRegister | `@booki/react/fixed-asset-register` | `setPeriod(periodCode)`, `openAsset(assetId)`, `back`, `proposeRun(periodCode)`, `assertRunnable(periodCode)` — snapshot has `period`, `rows`, `schedule`, `proposal`, `runs`, `runnable`. Straight-line and declining balance, summing exactly to cost less residual. Confirming a run and disposing are a person's; a period is never depreciated twice. Rules: `@booki/core/fixed-assets` |
+| DataTable | `@booki/react/data-table` | `setSort(column, "asc"\|"desc")`, `clearSort`, `setSearch(text)`, `setFilter(column, text)`, `clearFilters`, `setPage(n)`, `setPageSize(n)`, `showColumns(ids)`, `hideColumns(ids)`, `selectRows(ids)`, `clearSelection` — snapshot has `query`, `view` (`total`, `matching`, `page`, `pageCount`), `columns`, `rows` (the current page as records, capped), `totals` (over every match), `selected`, `loading`, `loadError`. Columns are data (`id`, `header`, `kind`, `value`, optional `cell`); the same definitions drive the screen, the agent and the CSV. View logic: `@booki/core/table` (`tableView`, `toCsv`) |
+| Server guards | `@booki/core/server` | Not a control: the same rules for your API. `guardPostVoucher`, `guardDecideApproval`, `guardApproved`, `guardReleasePayments`, `guardClosePeriod`, `guardFinalizeInvoice`, `guardSubmitVatReturn`, `guardConfirmFinding`, `guard(context, permission, rule)` → `Verdict` (`ok`, `actor` like `agent:bookkeeper`, or `status` 401/403/409/422, `code`, `message`, `issues`); `toHttp(verdict)`. Context: `actor` from your sign-in with `kind: "person" \| "agent"`, `roles`, `entity`, `deeds`, `locale`. `PERSON_ONLY` decisions are refused for agents whatever their roles |
+| AgentCursor | `@booki/react/agent-cursor` | Not an agent target: the agent's visible pointer. `createAgentCursor({ travel, press, linger })` → `cursor.wrap(allow)` goes into `createBookiAgent({ allow })` and `registerTools`; before each step it glides to the control, rings it and presses, then your `allow` decides. Render `<AgentCursor cursor={cursor} />` once. `setEnabled(false)` for full speed; follows reduced motion; `aria-hidden` (AgentPresence announces). Without React: `createAgentCursor` from `@booki/primitives/agent-cursor` and `<booki-agent-cursor>` from `@booki/web` (set its `cursor` property) |
+| KpiStat | `@booki/react/kpi-stat` | no actions — snapshot has `valueMinor`, `previousMinor`, `deltaMinor`, `deltaPct`, `direction`, `favourable` (from `good: "up"\|"down"`), `sparkline`. Read-only figure |
+| TrendChart | `@booki/react/trend-chart` | `setRange(range)`, `drill(period)` — snapshot has `range`, `from`, `to`, `periodCount`, `series` (each period as minor units), `drilled`. Series are `{ id, name, points: { period, valueMinor }[] }` |
+| BarChart | `@booki/react/bar-chart` | `setLimit(n)`, `drill(id)` — snapshot has `rows` (largest first, the rest folded into "Other"), `totalMinor`, `count`, `otherCount`, `drilled` |
+| AgingChart | `@booki/react/aging-chart` | `drill(bucket)` — snapshot has `asOf`, `buckets` (not due, 1–30, 31–60, 61–90, 90+), `totalMinor`, `overdueMinor`, `overdueSharePct`, `topOverdue`. Rules: `@booki/core/aging` |
+| CashflowWaterfall | `@booki/react/cashflow-waterfall` | `drill(stepId)` — snapshot has opening, every step, closing, and whether they add up (`issues`). Steps are `{ id, label, amountMinor }` |
+| BankAccountInput | `@booki/react/bank-account-input` | `setKontonummer` / `setRouting` / `setAccount` / `clear` — `isValid`, secret |
+| PaymentReferenceInput | `@booki/react/payment-reference-input` | `setReference`, `generateKid`, `clear` — `isValid`; KID secret |
+| TaxCodeSelect | `@booki/react/tax-code-select` | `setTaxCode`, `clear` — closed `items`, snapshot `percent` |
+| AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart `items` |
+| CurrencySelect | `@booki/react/currency-select` | `setCurrency`, `clear` — closed NOK/USD |
+| OrganizationNumberInput | `@booki/react/organization-number-input` | `setOrganizationNumber`, `clear` — orgnr mod11 / EIN |
+| IbanInput | `@booki/react/iban-input` | `setIban`, `clear` — `isValid`, secret; NO → kontonummer |
+| FinancialDateField | `@booki/react/financial-date-field` | `setDate`, `setDaysFromToday` (due), `clear` — ISO |
+| AccountingPeriodSelect | `@booki/react/accounting-period-select` | `setPeriod`, `clear` — closed year/month/VAT term |
+| InvoiceNumberInput | `@booki/react/invoice-number-input` | `setInvoiceNumber`, `clear` |
+| AttestationStatus | `@booki/react/attestation-status` | `setStatus`; approve/reject/escalate via confirm-gated press |
+
+Form props: AmountField, the selects, the bank / reference / organization / IBAN / invoice inputs and FinancialDateField take `name`, `id`, `disabled`, `readOnly`, `required`. `name` submits the canonical value with a native `<form>` (integer minor units, digits, ISO date, or the code; US bank accounts submit `${name}.routingNumber` and `${name}.accountNumber`). A `disabled` or `readOnly` control is listed in the snapshot with `disabled: true` and no actions, and a step on it fails with "… takes no <action> now. It takes: nothing." Ask the person instead of retrying.
+
+### Display / human-gated (not domain primitives)
+
+| Component | Notes |
+| --- | --- |
+| AmountInput | Compat wrapper → AmountField |
+| MoneyAmount | Display only |
+| TextLink | Display only. `icon="docs" \| "github"` or your own element; `asChild` gives a router link the look. `DocsIcon`, `GitHubIcon` |
+| VoucherLines | Read-only table (prefer VoucherComposer) |
+| AuditTrail | Presentational; feed via `attachAudit` |
+| ApprovalGate | `data-agent-confirm` — person must approve |
+| PaymentConfirm | Typed APPROVE + confirm |
+| ScaPrompt | BankID/Passkey mock + confirm |
+| ExceptionBanner | Escalation; Review/Dismiss are confirm-gated |
+| CountryToggle | Switches BookiLocale (not in snapshot kinds) |
+| createBookiAgent | Bridge + `attachAudit` + `proposeChanges` + `createBookiHistory` |
+
+## Money rules
+
+- Source of truth: `{ minor: number, currency }` from `@booki/core/money`
+- Prefer `buildBalancedSalesVoucher` from `@booki/core/voucher` for auto-compose
+- Never store floats as canonical amounts
+- Decimal text from a database (`"1234.50"`): `minorFromDecimal(text, currency)` and `decimalFromMinor(minor, currency)`, exact; extra decimals are refused, not rounded
+- Prefer `actor: agent:…` in AuditTrail when `subscribe` reports `source: "agent"`
+
+## In an existing app
+
+`@booki/react` files are client modules (`"use client"`). `@booki/styles` scopes its base rules to Booki's components (your own control opts in with `data-booki`), ships `layered.css` and `shadcn.css`, and `@booki/core/server` has `advise` (rule findings as warnings), `minReason`, `scope` and `actorRecord`. See `docs/drop-in.md`.
+
+## Docs
+
+https://github.com/Walgermo/booki (README, skills/booki/SKILL.md)
+https://github.com/Walgermo/booki/blob/main/spec/agent-contract.md (the open Agent Contract for Accounting UIs)
+
+## Voucher rules beyond the line
+
+`VoucherComposer` takes `dimensions` (further closed lists; accounts can list `requiredDimensions`) and `periods` + `postingDate`: a voucher dated in a closed period is not postable, and `assertPostable` says which period.
+
+## A state key named `error`
+
+The bridge reads a primitive's `error` state key as "the last action failed". Name a message for the person something else (Booki uses `refusal`).
+
+Refusals and issues stay English in state and in `act` errors, which is what an agent reads. The screen shows them in the person's language through `localize(text, "nb" | "en")` from `@booki/core/messages`; core throws `BookiError` with a `code` and `params`.
+
+## Countries, currencies and roles
+
+- **Countries:** profiles for `NO`, `US`, `SE`, `DK`, `GB`, `DE`. The last four are starters with English labels. Any other: `defineProfile(base, overrides)` from `@booki/core/locale`, passed as `<BookiLocaleProvider profiles={{ FI }}>`.
+- **Currencies:** `@booki/core/fx` has `convertMinor`, `findRate`, `revalue`. Rates are whole millionths (`11.5` is `11500000`). A voucher line with `foreign` is not postable unless its base amount is exactly the converted amount.
+- **Roles:** wrap the app in `<BookiAccessProvider actor={{ id, roles }} entity={...}>`. Every workflow control (approval, payment, close, period, invoice, supplier invoice, expense, evidence, VAT return, fixed assets, audit workpaper, audit findings, client requests) then takes the actor from it and refuses a person's button their role does not allow, naming the role it takes. Permissions: `voucher.post`, `invoice.finalize`, `supplier-invoice.approve`, `expense.approve`, `evidence.remove`, `approval.decide`, `payment.approve`, `payment.release`, `reconciliation.approve`, `period.close`, `period.adjust-closed`, `close.sign-off`, `vat.prepare`, `vat.submit`, `asset.run-depreciation`, `asset.dispose`, `audit.prepare`, `audit.sign-off`, `audit.review`, `audit.conclude`, `audit.eqcr`, `audit.freeze`, `finding.raise`, `finding.confirm`, `finding.withdraw`, `request.draft`, `request.send`, `request.decide`. Roles per engagement: `actor.scopes` by id, and `scope` in the check. `@booki/core/permissions` has `can`, `assertCan`, `STANDARD_ROLES`, `STANDARD_DUTY_RULES`. The server must still check.
+
+## Two more bridge behaviours
+
+- `data-agent-secret` on any part redacts every key of that component's snapshot. Keep a secret out of `controlled` instead, and mark only a plain element that shows it.
+- A component whose inputs are all `disabled` offers an agent no actions. For a closed row use `aria-readonly` and ignore typing, not `disabled`.

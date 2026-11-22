@@ -1,0 +1,26 @@
+{
+  "name": "agent-benchmark",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bookkeeping tasks done by a Claude model through the Playwright MCP server on ERP-style screens and through the ui-sdk bridge on Booki.",
+  "scripts": {
+    "bench": "tsx src/bench.ts",
+    "typecheck": "tsc --noEmit",
+    "h2h": "tsx src/h2h.ts",
+    "proof": "tsx src/proof.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.11.0",
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@playwright/mcp": "0.0.84",
+    "@ui-sdk/react": "0.1.0-beta.14",
+    "playwright-core": "^1.56.0",
+    "@booki/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

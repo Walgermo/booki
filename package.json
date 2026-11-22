@@ -1,0 +1,41 @@
+{
+  "name": "Booki",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Booki — Agent-first Financial UI-SDK on Vercel UI SDK.",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/ensure-built.mjs && pnpm --filter @booki/www dev",
+    "build": "pnpm build:packages && pnpm --filter @booki/www build",
+    "build:packages": "pnpm --filter @booki/core build && pnpm --filter @booki/primitives build && pnpm --filter @booki/react build && pnpm --filter @booki/styles build && pnpm build:frameworks && pnpm --filter @booki/readiness build",
+    "typecheck": "node scripts/ensure-built.mjs && pnpm --filter @booki/core typecheck && pnpm --filter @booki/primitives typecheck && pnpm --filter @booki/react typecheck && pnpm --filter @booki/www typecheck && pnpm --filter @booki/web --filter @booki/vue --filter @booki/svelte --filter @booki/solid typecheck && pnpm --filter @booki/readiness typecheck && pnpm --filter @booki/example-ap-flow typecheck",
+    "test": "node scripts/ensure-built.mjs && pnpm --filter @booki/core test && pnpm --filter @booki/primitives test && pnpm --filter @booki/react test && pnpm --filter @booki/web test && pnpm --filter @booki/readiness test && pnpm --filter @booki/example-ap-flow test",
+    "proof": "pnpm --filter agent-benchmark proof",
+    "readiness": "pnpm --filter @booki/readiness check",
+    "build:frameworks": "pnpm --filter @booki/web --filter @booki/vue --filter @booki/svelte --filter @booki/solid build",
+    "generate:frameworks": "node packages/web/scripts/generate.mjs && node scripts/generate-frameworks.mjs",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test",
+    "ensure-built": "node scripts/ensure-built.mjs",
+    "lint": "oxlint .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "changeset": "changeset",
+    "version-packages": "changeset version && pnpm generate:frameworks && pnpm format",
+    "release": "pnpm build:packages && changeset publish",
+    "release:plan": "changeset publish-plan"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "packageManager": "pnpm@11.13.1",
+  "devDependencies": {
+    "@biomejs/biome": "2.6.8",
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "oxlint": "1.94.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

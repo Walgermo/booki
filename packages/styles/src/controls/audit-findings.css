@@ -1,0 +1,177 @@
+/* ── Audit findings (the engagement's register) ──────────────────────── */
+
+[data-slot="audit-findings"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="audit-findings-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="audit-findings-empty"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-items"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="audit-findings-items"] > li {
+  display: grid;
+  gap: var(--bk-gap);
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+[data-slot="audit-findings-items"] > li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+/* A withdrawn finding stays in the register, quieter. */
+[data-slot="audit-findings-items"]
+  > li[data-status="withdrawn"]
+  :is([data-slot="audit-findings-name"], [data-slot="audit-findings-amount"]) {
+  color: var(--bk-muted-fg);
+  text-decoration: line-through;
+}
+
+[data-slot="audit-findings-head"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+  min-width: 0;
+}
+
+[data-slot="audit-findings-code"] {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-name"] {
+  flex: 1 1 14rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="audit-findings-amount"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status, category and basis are words, so the state never rests on colour alone. */
+[data-slot="audit-findings-tags"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+:is([data-slot="audit-findings-state"], [data-slot="audit-findings-tag"]) {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-sm);
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-state"] {
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-fg);
+}
+
+[data-slot="audit-findings-state"][data-status="confirmed"] {
+  border-color: color-mix(in srgb, var(--bk-success) 40%, var(--bk-border));
+  color: var(--bk-success);
+}
+
+[data-slot="audit-findings-tag"][data-basis="hypothesis"] {
+  border-style: dashed;
+}
+
+[data-slot="audit-findings-tag"][data-confidential] {
+  border-color: var(--bk-border-strong);
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-fg);
+}
+
+:is([data-slot="audit-findings-text"], [data-slot="audit-findings-withdrawn"]) {
+  margin: 0;
+  max-width: 70ch;
+  line-height: 1.5;
+}
+
+[data-slot="audit-findings-withdrawn"] {
+  padding-left: 0.625rem;
+  border-left: 2px solid var(--bk-border-strong);
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-meta"] {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-issues"] {
+  margin: 0;
+  padding: 0.5rem 0.75rem 0.5rem 1.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.75rem;
+  color: var(--bk-fg);
+}
+
+[data-slot="audit-findings-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--bk-gap);
+}
+
+[data-slot="audit-findings-withdraw"] {
+  display: flex;
+  flex: 1 1 18rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.375rem var(--bk-gap);
+  min-width: 0;
+}
+
+[data-slot="audit-findings-withdraw"] textarea {
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: var(--bk-control-h);
+  resize: vertical;
+}
+
+[data-slot="audit-findings-hint"] {
+  flex-basis: 100%;
+  order: 3;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="audit-findings-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
