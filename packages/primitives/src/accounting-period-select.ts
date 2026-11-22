@@ -160,13 +160,14 @@ export const accountingPeriod = definePrimitive({
         }
         return apply(listed.value, "set-period", asEvent(event));
       },
-      /** Same as setPeriod: history and staging restore `value` through set<Key>. */
-      setValue: (raw: string, event?: unknown): boolean => methods.setPeriod(raw, event),
-      clear: () => {
-        const { items } = context.store.get();
-        const first = items[0];
-        if (!first) return change("value", "", { reason: "clear" });
-        return apply(first.value, "clear");
+      /** Same as setPeriod, and "" empties it: history and staging restore `value` through set<Key>. */
+      setValue: (raw: string, event?: unknown): boolean =>
+        raw === "" ? methods.clear() : methods.setPeriod(raw, event),
+      /** No period: never another one. */
+      clear: (): boolean => {
+        const ok = change("value", "", { reason: "clear" });
+        if (ok) context.store.set({ labelText: "" });
+        return ok;
       },
       allItems: () => context.store.get().items,
     };

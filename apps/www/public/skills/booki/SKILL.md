@@ -28,6 +28,20 @@ money movement.
 
 ## 1. Install
 
+Booki is not on npm yet, so `pnpm add @booki/react` answers 404. Pack it from a clone
+(Node 26, pnpm 11):
+
+```bash
+git clone https://github.com/Walgermo/booki.git ../booki && cd ../booki && pnpm install
+pnpm pack:local --out <your app>/vendor/booki
+```
+
+It prints what to do next, for pnpm (an `overrides` block and a `pnpm add`) and for npm
+(one `npm install`). Commit the files in `vendor/booki` if others build the app. Don't
+use `link:`: the app then loads a second React, and nobody else can install it.
+
+Once Booki is published, this is the whole step:
+
 ```bash
 pnpm add @booki/core @booki/react @booki/styles
 ```
@@ -36,6 +50,7 @@ Requires React 19+ for `@booki/react`. Other stacks: `@booki/web` (custom elemen
 server-rendered pages), `@booki/vue`, `@booki/svelte`, `@booki/solid`, all with the same
 controls and actions. Peer dependencies (`@ui-sdk/core` and the `@ui-sdk` package for the framework, 0.1.0-beta.14)
 are installed with the packages; add them by hand only if your package manager does not.
+If the app's release-age rule refuses that version, stop and say so; never add an exception yourself.
 
 ## 2. Provider + styles
 
@@ -52,6 +67,16 @@ export function App() {
 }
 ```
 
+With Tailwind 4, import the styles from CSS and put Booki's layer between Tailwind's
+reset and its utilities. Without the first line the reset wins, and fields and buttons
+come out with no padding or border:
+
+```css
+@layer theme, base, booki, components, utilities;
+@import "@booki/styles" layer(booki);
+@import "tailwindcss";
+```
+
 `useBookiLocale()` / `useBookiLocaleOptional()` → `country`, `profile`, `setCountry`.
 
 | Concern | NO | US |
@@ -65,7 +90,12 @@ export function App() {
 
 ## 3. Agent bridge (one per app, in `src/agent.ts`)
 
+The bridge lives in the browser. `"use client"` and the `window` check make the file
+safe where pages render on the server (Next.js); in Vite they do nothing.
+
 ```tsx
+"use client"
+
 import {
   createBookiAgent,
   createAgentCursor,
@@ -92,32 +122,51 @@ export const agent = createBookiAgent({
   allow: cursor.wrap(allow),
 })
 
-attachAudit(agent, (event) => auditLog.push(event), {
-  agentId: "bookkeeper",
-  ruleVersion: "posting-1",
-})
 export const history = createBookiHistory(agent)
 
-// Browser agents (WebMCP) get the same tools, cursor and rules.
-registerTools(agent, { allow: cursor.wrap(allow) })
-
-// Console and devtools: window.agent.snapshot()
-Object.assign(window, { agent })
+if (typeof window !== "undefined") {
+  // Send each event to your own audit trail.
+  attachAudit(agent, (event) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) }), {
+    agentId: "bookkeeper",
+    ruleVersion: "posting-1",
+  })
+  // Browser agents (WebMCP) get the same tools, cursor and rules.
+  registerTools(agent, { allow: cursor.wrap(allow) })
+  // Console and devtools: window.agent.snapshot()
+  Object.assign(window, { agent })
+}
 ```
 
-At the app root, once:
+At the app root, once, in a client file of its own (`src/booki-root.tsx`). A server
+layout must not import `agent` or `cursor`; it renders this and passes the person:
 
 ```tsx
+"use client"
+
+import type { ReactNode } from "react"
 import { BookiAccessProvider, BookiLocaleProvider, AgentCursor, AgentPresence } from "@booki/react"
 import { agent, cursor } from "./agent"
 
-<BookiLocaleProvider defaultCountry="NO">
-  <BookiAccessProvider actor={{ id: user.id, name: user.name, roles: user.roles }}>
-    <App />
-    <AgentPresence agent={agent} />   {/* marks what the agent changed; announces it */}
-    <AgentCursor cursor={cursor} />    {/* the agent's pointer, ring and narration */}
-  </BookiAccessProvider>
-</BookiLocaleProvider>
+type User = { id: string; name: string; roles: string[] }
+
+export function BookiRoot({ user, children }: { user: User; children: ReactNode }) {
+  return (
+    <BookiLocaleProvider defaultCountry="NO">
+      <BookiAccessProvider actor={user}>
+        {children}
+        <AgentPresence agent={agent} />   {/* marks what the agent changed; announces it */}
+        <AgentCursor cursor={cursor} />    {/* the agent's pointer, ring and narration */}
+      </BookiAccessProvider>
+    </BookiLocaleProvider>
+  )
+}
+```
+
+```tsx
+// app/layout.tsx (Next.js): a Server Component
+<body>
+  <BookiRoot user={user}>{children}</BookiRoot>
+</body>
 ```
 
 `cursor.setEnabled(false)` turns the pointer off (benchmarks, batch jobs);
@@ -243,7 +292,7 @@ submit) are refused for an agent even when its roles allow them.
 ## 7. Implementation checklist
 
 1. Detect the stack (Vite/Next, package manager, existing providers, auth).
-2. Add the packages; import `@booki/styles` once at the root if using the default look
+2. Add the packages (section 1: packed from a clone until they are on npm); import `@booki/styles` once at the root if using the default look
    (map `--bk-*` tokens to the product's own).
 3. Root: `BookiLocaleProvider`, `BookiAccessProvider` with the signed-in person,
    `AgentPresence` and `AgentCursor`.

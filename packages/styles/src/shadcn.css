@@ -7,6 +7,7 @@
  * agent's signal (--bk-signal*) is left alone: it means "an agent did this",
  * and your theme has no variable for that.
  *
+ *   @layer theme, base, booki, components, utilities;
  *   @import "@booki/styles" layer(booki);
  *   @import "@booki/styles/shadcn.css" layer(booki);
  */

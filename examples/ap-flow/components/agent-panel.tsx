@@ -68,7 +68,11 @@ export function AgentPanel({ me }: { me: string }) {
   };
 
   return (
-    <section aria-labelledby="agent" className="grid gap-3 rounded-lg border border-[color:var(--bk-border)] p-4">
+    <section
+      data-booki=""
+      aria-labelledby="agent"
+      className="grid gap-3 rounded-lg border border-[color:var(--bk-border)] p-4"
+    >
       <h2 id="agent" className="text-lg font-semibold">
         Agenten
       </h2>
@@ -76,7 +80,7 @@ export function AgentPanel({ me }: { me: string }) {
         Jobber for {nameOf(me)}, med sin egen nøkkel. Den konterer, foreslår og forbereder; attestasjon, godkjenning og
         frigivelse er personenes.
       </p>
-      <button type="button" data-booki="" onClick={() => void runScript()} disabled={busy} aria-busy={busy}>
+      <button type="button" onClick={() => void runScript()} disabled={busy} aria-busy={busy}>
         {running === "script" ? "Agenten jobber …" : "Kjør agenten"}
       </button>
 
@@ -87,7 +91,6 @@ export function AgentPanel({ me }: { me: string }) {
           </label>
           <textarea
             id="agent-prompt"
-            data-booki=""
             rows={3}
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
@@ -96,11 +99,11 @@ export function AgentPanel({ me }: { me: string }) {
             }}
           />
           <div className="flex gap-2">
-            <button type="submit" data-booki="" disabled={busy}>
+            <button type="submit" disabled={busy}>
               Spør agenten
             </button>
             {running === "model" ? (
-              <button type="button" data-booki="" data-variant="secondary" onClick={() => stop.current?.abort()}>
+              <button type="button" data-variant="secondary" onClick={() => stop.current?.abort()}>
                 Stopp
               </button>
             ) : null}
