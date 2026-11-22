@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { agentTools } from "@ui-sdk/react/agent";
+import { agentTools } from "@ui-sdk/core/agent";
 
 /**
  * The one server piece of the live agent: a thin, fixed-purpose proxy to the
