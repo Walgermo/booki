@@ -11,6 +11,7 @@ export type RuleId =
   | "field-unnamed"
   | "field-broken-name"
   | "field-ambiguous"
+  | "field-not-on-bridge"
   | "focusable-without-role"
   | "button-unnamed"
   | "button-icon-name"
@@ -102,6 +103,18 @@ export const RULES: Record<RuleId, Rule> = {
     booki: "VoucherComposer: one control, lines changed by index through named actions",
     points: 2,
     cap: 8,
+  },
+  "field-not-on-bridge": {
+    id: "field-not-on-bridge",
+    title: "Field missing from the bridge",
+    contract: "§3.1, §4.1",
+    severity: "serious",
+    why: "The page has a bridge, and a person can use this field, but the bridge's snapshot has no entry for it. An agent working through the bridge does not know the field exists; to set it, it has to fall back to the accessibility tree and click, and a page that otherwise looks ready hides the gap.",
+    fix: "Put the field on the bridge: build it from a bridge-registered control (with ui-sdk, its Select, RadioGroup, Checkbox or Input; with Booki, the matching control) instead of a plain element, so it appears in snapshot() with its label and actions. A field that should stay with the person goes inside data-agent-hidden.",
+    booki:
+      "AccountPicker, TaxCodeSelect, CurrencySelect, AccountingPeriodSelect, AmountField; ui-sdk Select, RadioGroup, Checkbox",
+    points: 5,
+    cap: 30,
   },
   "focusable-without-role": {
     id: "focusable-without-role",

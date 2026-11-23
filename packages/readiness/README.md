@@ -208,6 +208,7 @@ Each check names the Agent Contract section it enforces.
 | Field without an accessible name | §3.1, §4.1 | A textbox, searchbox, combobox, listbox, spinbutton, checkbox, radio, switch or slider with no name in the snapshot: the agent can find it only by its position. Inputs no one can reach are skipped: `aria-hidden` or `inert` on the input or an ancestor, `type="hidden"`, not rendered, or visually hidden and out of the tab order (the native input Base UI and Radix render beside a custom select, radio group or checkbox). The two checks below skip them too. | 5 / 30 |
 | Field named by a rendering bug | §3.1 | A name such as `[object Object] (Ikke valgt)`, `undefined` or `NaN`. | 5 / 15 |
 | Fields that share one name | §3.1, §4.1 | Two or more fields of one role with the same name (one finding per group): the agent has to count. | 2 / 8 |
+| Field missing from the bridge | §3.1, §4.1 | On a page whose bridge has a snapshot: a named field a person can use (textbox, searchbox, combobox, listbox, spinbutton, checkbox, radio group, switch, slider) that no bridge entry covers, so an agent on the bridge cannot operate it. A field is covered when its name equals an entry's `label`, or when it sits inside the element of a bridge component: ui-sdk marks a component's root with `data-slot="<component>"` and its other parts with `data-slot="<component>-<part>"`, so the outermost such element of each kind counts. When the page has more of those elements than the snapshot has entries of that kind, only one named by an entry's label counts. A radio is covered by its group's name and reported once, as the group. Disabled fields, fields inside `data-agent-hidden` and the hidden inputs above are skipped, and the check does not run when the snapshot was cut short (a `more` entry). | 5 / 30 |
 | Focusable element that is not a control | §3.1, §4.1 | An element with `tabindex` ≥ 0 that the tree calls a cell or plain text, such as a grid cell that opens an editor on click. | 3 / 12 |
 | Button without a name | §3.1, §4.1 | A button whose name is empty. | 3 / 12 |
 | Button named by an icon font | §3.1, §4.1 | A button whose name is an icon ligature (`close`, `content_copy`, `more_vert`, any snake_case word), or any single lowercase word drawn in an icon font. | 2 / 10 |
@@ -235,7 +236,9 @@ never goes below 0.
 | 0–59 | not ready |
 
 A page without a bridge can reach at most 75: the contract's bridge is what
-lets an agent act through named actions instead of guessing.
+lets an agent act through named actions instead of guessing. A page with a
+bridge loses 5 points for each field the bridge leaves out, up to 30, so a
+bridge that offers only part of the screen no longer scores 100.
 
 ## Reference scores
 
@@ -254,11 +257,11 @@ The Booki pages do the same tasks with Booki controls and the ui-sdk bridge.
 | `/bench/dashboard-raw` | 40 | not ready | 752 tokens | no bridge; 3 SVG charts (`role="application"`, empty title) with no figures in the DOM; an unnamed year select |
 | `/bench/dashboard-grid` | 33 | not ready | 1,266 tokens | no bridge; 4 canvas charts with no name or fallback; "Opprett huskelapp" ungated; a `refresh` icon button |
 | `/bench/semantic` | 65 | partly ready | 375 tokens | well-labelled HTML: no bridge, and "Betal faktura" ungated |
-| `/bench/voucher-acc` | 100 | ready | 319 tokens | — |
-| `/bench/supplier-invoice-acc` | 93 | ready | 752 tokens | the amount field's input has no name of its own (the label sits on the control's root); the two account pickers' inputs are both named "Konto" |
-| `/bench/sales-invoice-acc` | 100 | ready | 406 tokens | — |
-| `/bench/dashboard-acc` | 100 | ready | 1,860 tokens | — |
-| `/bench/acc` | 100 | ready | 281 tokens | — |
+| `/bench/voucher-acc` | 100 | ready | 309 tokens | — |
+| `/bench/supplier-invoice-acc` | 98 | ready | 578 tokens | the two account pickers' inputs are both named "Konto" |
+| `/bench/sales-invoice-acc` | 100 | ready | 355 tokens | — |
+| `/bench/dashboard-acc` | 100 | ready | 1,839 tokens | — |
+| `/bench/acc` | 100 | ready | 273 tokens | — |
 
 To measure them again:
 

@@ -116,6 +116,50 @@ describe("readiness checks on fixture pages", () => {
     expect(report.bridge.webmcpTools).toEqual(["post_voucher"]);
   });
 
+  it("finds a named field a person can use that the bridge does not offer", async () => {
+    const report = await run("bridge-coverage");
+    // Konto and Retning are on the bridge by label, the line inputs sit inside the
+    // voucher-composer's root under names of their own, Bokføringsdato sits in a
+    // financial-date part (no root part rendered), and the data-agent-hidden field
+    // is kept from the agent on purpose. Only the Avdeling filter is missing.
+    expect(tally(report)).toEqual({ "field-not-on-bridge": 1 });
+    expect(report.findings[0]).toMatchObject({
+      rule: "field-not-on-bridge",
+      element: { role: "combobox", name: "Avdeling" },
+    });
+    expect(report.findings[0]!.message).toContain('"Avdeling"');
+    expect(report.score).toBe(95);
+  });
+
+  it("finds nothing once that field is on the bridge", async () => {
+    const report = await run("bridge-coverage-covered");
+    expect(report.findings).toEqual([]);
+    expect(report.score).toBe(100);
+  });
+
+  it("reports an uncovered radio group once, skips disabled fields, and matches extra roots by label", async () => {
+    const report = await run("bridge-coverage-radios");
+    expect(tally(report)).toEqual({ "field-not-on-bridge": 2 });
+    expect(report.findings.map((f) => `${f.element?.role}:${f.element?.name}`)).toEqual([
+      "radiogroup:Retning",
+      "textbox:Prosjekt nr",
+    ]);
+  });
+
+  it("does not check bridge coverage without a bridge snapshot", async () => {
+    // No bridge: reported as such, not field by field.
+    expect((await run("no-bridge")).findings.some((f) => f.rule === "field-not-on-bridge")).toBe(false);
+    // WebMCP tools of the page's own but no snapshot to compare against.
+    expect((await run("webmcp")).findings.some((f) => f.rule === "field-not-on-bridge")).toBe(false);
+  });
+
+  it("lists each WebMCP tool once when a page registers it again", async () => {
+    const report = await run("webmcp-reregistered");
+    expect(report.bridge.webmcpTools).toEqual(["snapshot", "act", "query", "post_voucher"]);
+    expect(report.bridge).toMatchObject({ source: "webmcp", components: 1 });
+    expect(report.findings).toEqual([]);
+  });
+
   it("reports a large snapshot as a cost", async () => {
     const report = await run("large");
     expect(tally(report)).toEqual({ "snapshot-size": 1 });

@@ -1,4 +1,4 @@
-<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Hidden inputs</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "select", label: "Konto", actions: ["select"] }] };</script>
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Hidden inputs</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "select", label: "Konto", actions: ["select"] }, { ref: "c2", component: "checkbox", label: "Inkluder MVA", actions: ["setChecked"] }, { ref: "c3", component: "radio-group", label: "Periode", actions: ["setValue"] }, { ref: "c4", component: "input", label: "Beskrivelse", actions: ["setValue"] }] };</script>
 <style>.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); border: 0; white-space: nowrap; }</style></head>
 <body><main>
 <!-- Base UI Select: a labelled combobox, and the native input it renders for form submission. -->

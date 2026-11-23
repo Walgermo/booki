@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import { chromium, type Browser, type BrowserContext, type Page } from "playwright-core";
 
 import {
+  bridgeCoverage,
   describeElement,
   findCharts,
   findFocusableNonControls,
@@ -141,6 +142,7 @@ const READ_BRIDGE = inPage(readBridge);
 const FIND_FOCUSABLE = inPage(findFocusableNonControls);
 const FIND_CHARTS = inPage(findCharts);
 const ONLY_IN_SECRETS = inPage(onlyInSecrets);
+const BRIDGE_COVERAGE = inPage(bridgeCoverage);
 
 const BROKEN_NAME = /\[object \w+\]|\bundefined\b|\bnull\b|\bNaN\b/;
 
@@ -345,6 +347,45 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
       element: element(first.node, first.info),
       count: group.length,
     });
+  }
+
+  // Fields a person can use that the bridge does not offer. Only with a bridge
+  // snapshot to compare against: a page without one is reported as such, and a
+  // snapshot cut short ("more") leaves out entries the field may have.
+  const entries = raw.components
+    .filter((c) => !c.offPage && c.component !== "more")
+    .map((c) => ({ component: String(c.component ?? ""), label: typeof c.label === "string" ? c.label : "" }));
+  const truncated = raw.components.some((c) => c.component === "more");
+  if (hasBridge && entries.length && !truncated) {
+    const norm = (text: string) => text.replace(/\s+/g, " ").trim().toLowerCase();
+    const labels = new Set(entries.map((e) => norm(e.label)).filter(Boolean));
+    const seenGroups = new Set<string>();
+    for (const node of fields) {
+      const name = node.name.trim();
+      // Unnamed and broken names are reported above; a disabled field takes no input.
+      if (!name || BROKEN_NAME.test(name) || node.flags.includes("disabled") || !node.ref) continue;
+      if (labels.has(norm(name))) continue;
+      const coverage = await page
+        .locator(`aria-ref=${node.ref}`)
+        .evaluate(BRIDGE_COVERAGE, entries, { timeout: 2_000 })
+        .catch(() => null);
+      if (!coverage || coverage.inRoot || coverage.agentHidden || coverage.group?.covered) continue;
+      const group = coverage.group;
+      if (group) {
+        if (seenGroups.has(norm(group.name))) continue;
+        seenGroups.add(norm(group.name));
+      }
+      const info = await describe(page, node);
+      if (info?.hidden) continue;
+      const role = group ? "radiogroup" : node.role;
+      const shown = group ? group.name : name;
+      findings.push({
+        rule: "field-not-on-bridge",
+        message: `A ${role} named "${shown}" is on the page but not on the bridge: no snapshot entry has that label or contains it.`,
+        element: { ...element(node, info), role, name: shown },
+        booki: bookiControlFor(node.role, info),
+      });
+    }
   }
 
   // Things a person can focus or click that the tree does not call a control.
