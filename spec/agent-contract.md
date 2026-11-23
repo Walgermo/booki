@@ -1,14 +1,18 @@
 # The Agent Contract for Accounting UIs
 
-Version 0.1 · Draft · 21 November 2026 · MIT licence
+Version 0.1 · Draft with one implementation · 21 November 2026 · MIT licence
 
 A shared contract between accounting and auditing software and the AI agents
 that work in it. It says what a screen must give an agent, what an agent may
 never do there, and how every step is recorded, so an agent can be let into
 the books without anyone reading a pixel or guessing which field is which.
 
-Booki is the reference implementation. The contract itself is independent of
-any library, framework or model: any ERP can implement it.
+This is a draft. It has one implementation so far (Booki), so it is not yet a
+standard: sections may change, and a name only becomes stable once a second
+implementation has used it. The contract itself is independent of any library,
+framework or model: any ERP can implement it. A conformance suite and a small
+reference implementation without Booki or ui-sdk are in packages/readiness (see
+section 10).
 
 The keywords MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 
@@ -195,8 +199,17 @@ An implementation conforms when, for every control it ships:
 4. its refusals exist in each language it ships;
 5. its agent actions meet the ergonomics rules in section 12.
 
-A product MAY claim "Agent Contract 0.1" for the screens that conform, and
-SHOULD list them.
+A conformance suite for the bridge-level conditions (sections 2 to 7) ships as
+`@booki/readiness/conformance`; `runConformance` takes a bridge (snapshot, act,
+subscribe) and optional probes, and reports each check as pass, fail or skip
+with the section it enforces. `@booki/readiness/reference` is a small
+implementation of the contract without Booki or ui-sdk that the suite passes.
+The suite does not yet cover per-language refusals (10.4) or the ergonomics
+rules (12) beyond naming valid choices; passing it is necessary, not
+sufficient.
+
+A product MAY claim "Agent Contract 0.1 (draft)" for the screens that conform,
+and SHOULD list them.
 
 ## 11. Changing the contract
 

@@ -13,6 +13,7 @@ import {
   readBridge,
   type ElementInfo,
 } from "./page.js";
+import { PERSON_ACTION } from "./person-action.js";
 import { RULES, SNAPSHOT_TOKENS, type RuleId } from "./rules.js";
 import { score } from "./score.js";
 import { findSecrets, SECRET_LABEL } from "./secrets.js";
@@ -128,9 +129,6 @@ export function looksLikeIconName(name: string, iconFont: boolean): boolean {
 /** Buttons that post, pay, send, approve or otherwise cannot be taken back. */
 export const IRREVERSIBLE =
   /(^|[^\p{L}])(bokfør|opprett|godkjenn|attester|betal|send|signer|fullfør|frigi|overfør|utbetal|lukk periode|post|pay|approve|submit|finali[sz]e|release|sign[ -]?off|transfer)(e|er)?(?=$|[^\p{L}])/iu;
-
-const PERSON_ACTION =
-  /^(approve|reject|escalate|release|sign[_-]?off|finali[sz]e|submit|closePeriod|lockPeriod|dispose)/i;
 
 const BROKEN_NAME = /\[object \w+\]|\bundefined\b|\bnull\b|\bNaN\b/;
 
