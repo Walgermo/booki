@@ -474,11 +474,11 @@ describe("KpiStat", () => {
       ],
       issues: [],
     });
-    expect(document.querySelector('[data-slot="kpi-stat-value"]')?.textContent).toBe("$120.00");
-    expect(document.querySelector('[data-slot="kpi-stat-delta"]')?.textContent).toBe("▲Up +$20.00 (+20%) vs May 2026");
+    expect(document.querySelector('[data-slot="kpi-stat-value"]')?.textContent).toBe("$120");
+    expect(document.querySelector('[data-slot="kpi-stat-delta"]')?.textContent).toBe("▲Up +$20 (+20%) vs May 2026");
     expect(document.querySelector('[data-slot="kpi-stat-delta"]')?.getAttribute("data-favourable")).toBe("true");
     expect(document.querySelector('[data-slot="kpi-stat-spark"]')?.getAttribute("aria-label")).toMatch(
-      /^Trend: Apr 2026 \$90\.00/,
+      /^Trend: Apr 2026 \$90,/,
     );
   });
 
@@ -492,7 +492,20 @@ describe("KpiStat", () => {
     cleanup();
     const none = setup("kpi-stat", "Cash", <KpiStat label="Cash" valueMinor={50_00} />, "NO");
     expect(none.entry()).toMatchObject({ deltaMinor: null, direction: null, favourable: null, currency: "NOK" });
+    // No previous value: no comparison line, unless asked for.
+    expect(document.querySelector('[data-slot="kpi-stat-delta"]')).toBeNull();
+    cleanup();
+    setup("kpi-stat", "Cash", <KpiStat label="Cash" valueMinor={50_00} showNoComparison />, "NO");
     expect(document.querySelector('[data-slot="kpi-stat-delta"]')?.textContent).toBe("Ingen sammenligning");
+  });
+
+  it("says a figure nobody has entered is not set, and keeps the øre when there are some", () => {
+    const notSet = setup("kpi-stat", "Budget", <KpiStat label="Budget" />, "NO");
+    expect(notSet.entry()).toMatchObject({ set: false, valueMinor: null, issues: [] });
+    expect(document.querySelector('[data-slot="kpi-stat-value"]')?.textContent).toBe("Ikke satt");
+    cleanup();
+    setup("kpi-stat", "Cash", <KpiStat label="Cash" valueMinor={12_550} />, "NO");
+    expect(document.querySelector('[data-slot="kpi-stat-value"]')?.textContent).toMatch(/125,50/);
   });
 });
 

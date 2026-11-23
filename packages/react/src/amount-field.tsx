@@ -15,8 +15,13 @@ const AmountFieldCurrency = parts.Currency;
 const AmountFieldInput = parts.Input;
 
 export type AmountFieldProps = {
-  value?: number;
-  defaultValue?: number;
+  /** Minor units. `null` shows the field empty, with `allowEmpty`. */
+  value?: number | null;
+  defaultValue?: number | null;
+  /** The field may be empty, which is not 0: `clear` and deleting the text empty it. */
+  allowEmpty?: boolean;
+  /** Called when the field becomes empty. */
+  onEmpty?: (details: { reason: string; source?: string }) => void;
   currency?: string;
   /** Lowest accepted amount in minor units. Defaults to 0 (no negatives). */
   minMinor?: number;
@@ -34,7 +39,9 @@ export type AmountFieldProps = {
  */
 function AmountField({
   value,
-  defaultValue = 0,
+  defaultValue,
+  allowEmpty = false,
+  onEmpty,
   currency: currencyProp,
   minMinor,
   maxMinor,
@@ -56,7 +63,9 @@ function AmountField({
 
   return (
     <AmountFieldRoot
-      {...(value !== undefined ? { value } : { defaultValue })}
+      {...(value !== undefined ? { value } : { defaultValue: defaultValue ?? (allowEmpty ? null : 0) })}
+      allowEmpty={allowEmpty}
+      onEmpty={onEmpty}
       currency={currency}
       locale={profile.locale}
       minMinor={minMinor}
@@ -69,12 +78,12 @@ function AmountField({
       aria-label={label}
       {...props}
     >
-      {(state: { value: number }) => (
+      {(state: { value: number; empty: boolean }) => (
         <>
           <AmountFieldCurrency>{currency}</AmountFieldCurrency>
           <AmountFieldInput id={id} required={required} aria-label={label} />
           {/* Integer minor units, the same number the agent reads. */}
-          <FormValue name={name} value={state.value} disabled={disabled} />
+          <FormValue name={name} value={state.empty ? "" : state.value} disabled={disabled} />
         </>
       )}
     </AmountFieldRoot>

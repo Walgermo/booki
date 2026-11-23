@@ -153,6 +153,8 @@ export type FormatMoneyOptions = {
   accounting?: boolean;
   /** Show zero as this text instead, as many Nordic ledgers do: `zero: "–"`. */
   zero?: string;
+  /** Leave out the fraction when it is zero: `12 500 kr`, but still `12 500,50 kr`. For figures, not ledgers. */
+  trimZeroFraction?: boolean;
 };
 
 export function formatMoney(
@@ -163,11 +165,13 @@ export function formatMoney(
   const locale = options?.locale ?? "en-US";
   const accounting = options?.accounting ?? false;
   if (m.minor === 0 && options?.zero !== undefined) return options.zero;
+  const digits =
+    options?.trimZeroFraction && m.minor % 10 ** minorDigitsFor(m.currency) === 0 ? 0 : minorDigitsFor(m.currency);
 
   if (options?.withCurrency === false) {
     const text = new Intl.NumberFormat(locale, {
-      minimumFractionDigits: minorDigitsFor(m.currency),
-      maximumFractionDigits: minorDigitsFor(m.currency),
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
     }).format(exact(Math.abs(m.minor), m.currency));
     // Keep the sign: a minus, or the accounting parentheses.
     if (m.minor >= 0) return text;
@@ -178,8 +182,8 @@ export function formatMoney(
     style: "currency",
     currency: m.currency,
     currencySign: accounting ? "accounting" : "standard",
-    minimumFractionDigits: minorDigitsFor(m.currency),
-    maximumFractionDigits: minorDigitsFor(m.currency),
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
   }).format(exact(m.minor, m.currency));
 
   return formatted;

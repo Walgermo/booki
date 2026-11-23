@@ -115,12 +115,14 @@
   "amount-field": {
     "actions": ["clear", "setMinor"],
     "options": [
+      "allowEmpty",
       "currency",
       "defaultValue",
       "disabled",
       "locale",
       "maxMinor",
       "minMinor",
+      "onEmpty",
       "onValueChange",
       "readOnly",
       "secret",
@@ -548,6 +550,7 @@
       "fixed-asset-register-code",
       "fixed-asset-register-disposal",
       "fixed-asset-register-dispose",
+      "fixed-asset-register-empty",
       "fixed-asset-register-error",
       "fixed-asset-register-facts",
       "fixed-asset-register-heading",

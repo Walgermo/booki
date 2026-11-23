@@ -47,6 +47,16 @@
       "types": "./dist/css.d.ts",
       "style": "./dist/shadcn.css",
       "default": "./dist/shadcn.css"
+    },
+    "./base.css": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/base.css",
+      "default": "./dist/base.css"
+    },
+    "./controls/*.css": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/controls/*.css",
+      "default": "./dist/controls/*.css"
     }
   },
   "scripts": {
@@ -54,5 +64,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "lightningcss": "1.33.0"
   }
 }
