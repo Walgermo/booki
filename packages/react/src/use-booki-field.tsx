@@ -15,12 +15,15 @@ export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
  * returns; the hook keeps the value, refuses what is not allowed, and tells the
  * agent what it may set.
  *
- *   const amount = useBookiField({ kind: "amount", value, label: "Beløp", onValueChange }, ({ value, change, refusal }) => (
+ *   const field = useBookiField({ kind: "code", value, options, label: "Kostnadssted", onValueChange }, ({ value, change, refusal }) => (
  *     <>
- *       <input value={value / 100} onChange={(e) => change(Math.round(Number(e.target.value) * 100), e.nativeEvent)} />
+ *       <select value={value} onChange={(e) => change(e.target.value, e.nativeEvent)}>…</select>
  *       {refusal ? <p>{refusal}</p> : null}
  *     </>
  *   ))
+ *
+ * For an amount, keep what the person types as text and parse it with
+ * `parseToMinor` from `@booki/core/money`: the install guide has the example.
  *
  * A person's change calls `change(next, event)`, which is the same function the
  * agent's action calls: a refusal comes back as `false` and is shown as
@@ -30,11 +33,8 @@ export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
 
 type FieldDetails = { reason: string; source?: string };
 
-export type BookiFieldAmountArgs = {
+type BookiFieldAmountBase = {
   kind: "amount";
-  /** Integer minor units, like 12500 for 125.00 NOK. */
-  value: number;
-  onValueChange?: (minor: number, details: FieldDetails) => void;
   currency?: string;
   minMinor?: number;
   maxMinor?: number;
@@ -43,10 +43,30 @@ export type BookiFieldAmountArgs = {
   readOnly?: boolean;
 };
 
+/** An amount field that always holds an amount. */
+export type BookiFieldAmountFilledArgs = BookiFieldAmountBase & {
+  /** Integer minor units, like 12500 for 125.00 NOK. */
+  value: number;
+  allowEmpty?: false;
+  onValueChange?: (minor: number, details: FieldDetails) => void;
+};
+
+/** An amount field that may be empty: the snapshot reads `minor: null`, and `setMinor(null)` empties it. */
+export type BookiFieldAmountEmptyArgs = BookiFieldAmountBase & {
+  /** Integer minor units, or `null` for empty. */
+  value: number | null;
+  allowEmpty: true;
+  onValueChange?: (minor: number | null, details: FieldDetails) => void;
+};
+
+export type BookiFieldAmountArgs = BookiFieldAmountFilledArgs | BookiFieldAmountEmptyArgs;
+
 export type BookiFieldCodeArgs = {
   kind: "code";
   value: string;
   options: BookiFieldCodeItem[];
+  /** The field may hold no code: `setCode("")` or `setCode(null)` clears it to `""`. */
+  allowEmpty?: boolean;
   onValueChange?: (code: string, details: FieldDetails) => void;
   label: string;
   disabled?: boolean;
@@ -74,7 +94,7 @@ export type BookiFieldRender<T> = {
   refusal: string | null;
 };
 
-type RootState = { minor: number; code: string; date: string; refusal: string | null };
+type RootState = { minor: number | null; code: string; date: string; refusal: string | null };
 
 type Api = {
   setMinor: (minor: unknown, event?: Event) => boolean;
@@ -88,7 +108,11 @@ type Api = {
  * returns the product's own field; `change` and `refusal` are what it needs.
  */
 export function useBookiField(
-  options: BookiFieldAmountArgs,
+  options: BookiFieldAmountEmptyArgs,
+  render: (field: BookiFieldRender<number | null>) => ReactNode,
+): ReactElement;
+export function useBookiField(
+  options: BookiFieldAmountFilledArgs,
   render: (field: BookiFieldRender<number>) => ReactNode,
 ): ReactElement;
 export function useBookiField(

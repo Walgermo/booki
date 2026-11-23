@@ -13,17 +13,22 @@ import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
  */
 
 export type BookiFieldAmountOptions = {
-  value?: number;
+  /** Integer minor units; `null` is empty, with `allowEmpty`. */
+  value?: number | null;
+  /** The field may hold no amount: the snapshot reads `minor: null`, and `setMinor(null)` empties it. */
+  allowEmpty?: boolean;
   currency?: string;
   minMinor?: number;
   maxMinor?: number;
   disabled?: boolean;
   readOnly?: boolean;
-  onValueChange?: (minor: number, details: { reason: string; source?: string }) => void;
+  onValueChange?: (minor: number | null, details: { reason: string; source?: string }) => void;
 };
 
 export type BookiFieldAmountState = {
-  minor: number;
+  /** Minor units, or null while the field is empty (with `allowEmpty`). */
+  minor: number | null;
+  allowEmpty: boolean;
   currency: string;
   minMinor: number;
   maxMinor: number | undefined;
@@ -39,13 +44,15 @@ export const bookiFieldAmount = definePrimitive({
     currency: "string",
     minMinor: "number",
     maxMinor: "number",
+    allowEmpty: "boolean",
     ...lockOptions,
     onValueChange: "callback",
   },
   // The product owns the value: the snapshot shows these, the product sets them.
   controlled: ["minor", "currency", "refusal"],
   state: (options: BookiFieldAmountOptions): BookiFieldAmountState => ({
-    minor: options.value ?? 0,
+    minor: options.value ?? (options.allowEmpty ? null : 0),
+    allowEmpty: options.allowEmpty ?? false,
     currency: options.currency ?? "NOK",
     minMinor: options.minMinor ?? 0,
     maxMinor: options.maxMinor,
@@ -54,7 +61,8 @@ export const bookiFieldAmount = definePrimitive({
   }),
   sync: (options: BookiFieldAmountOptions): Partial<BookiFieldAmountState> => {
     const next: Partial<BookiFieldAmountState> = { ...lockState(options) };
-    if (options.value !== undefined) next.minor = options.value;
+    if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
+    if (options.value !== undefined) next.minor = options.value === null && !options.allowEmpty ? 0 : options.value;
     if (options.currency !== undefined) next.currency = options.currency;
     if (options.minMinor !== undefined) next.minMinor = options.minMinor;
     if (options.maxMinor !== undefined) next.maxMinor = options.maxMinor;
@@ -63,7 +71,7 @@ export const bookiFieldAmount = definePrimitive({
   api: (context) => {
     const change = createChange(context);
 
-    function commit(next: number, reason: string, event?: Event): boolean {
+    function commit(next: number | null, reason: string, event?: Event): boolean {
       const { minor } = context.store.get();
       if (next === minor) return false;
       // The product hears the change first and may cancel it.
@@ -80,7 +88,11 @@ export const bookiFieldAmount = definePrimitive({
     return {
       /** Agent and product path: integer minor units. Throws a sentence that says what is allowed. */
       setMinor: (minor: unknown, event?: Event): boolean => {
-        const { currency, minMinor, maxMinor } = context.store.get();
+        const { currency, minMinor, maxMinor, allowEmpty } = context.store.get();
+        // No amount: only where the field may be empty.
+        if (allowEmpty && (minor === null || (typeof minor === "string" && minor.trim() === ""))) {
+          return commit(null, "clear", event);
+        }
         const n = typeof minor === "string" && /^\s*-?\d+\s*$/.test(minor) ? Number(minor) : minor;
         if (typeof n !== "number" || !Number.isSafeInteger(n)) {
           throw new BookiError("amount.not-minor", {
