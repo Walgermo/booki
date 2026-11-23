@@ -83,6 +83,9 @@ on the main branch. Never add an exception yourself.
 
 `pnpm add` rewrites the lockfile, so it can stop on an unrelated package's Node `engines`
 entry. That is the app's lockfile, not Booki: fix or report that entry, don't change Node for it.
+A way through: install once with `--config.engine-strict=false`, then put the app's own edit of
+that `engines` entry back in the lockfile by hand and check that `pnpm install --frozen-lockfile`
+passes.
 
 ## 2. Provider + styles
 
@@ -124,7 +127,7 @@ instead of the whole sheet (about 9 KB gzipped against 17 KB).
 | Payment ref | KID | Memo / invoice # |
 | SCA | BankID mock | Passkey mock |
 
-## 3. Agent bridge (one per app, in `src/agent.ts`)
+## 3. Agent bridge (one per app, in `src/agent.ts` or wherever the app keeps its client-side modules)
 
 The bridge lives in the browser. `"use client"` and the `window` check make the file
 safe where pages render on the server (Next.js); in Vite they do nothing.
@@ -145,12 +148,21 @@ import {
 // the agent do it alone, false to refuse, undefined to ask the person.
 const policy = (_step: { confirm?: string }): boolean | undefined => undefined
 
+// The bridge is a module, so it can't call a hook. The app's own confirm dialog and the
+// signed-in person connect here from a component (below); until then it asks with window.confirm.
+let askPerson = async (question: string): Promise<boolean> => window.confirm(question)
+let personId = (): string => "person:unknown"
+export function connectPerson(ask: typeof askPerson, id: typeof personId) {
+  askPerson = ask
+  personId = id
+}
+
 const allow = async (step: { confirm?: string }) => {
   if (!step.confirm) return true
   const decided = policy(step)
   // `by` goes in the audit row: the rule, or the person who answered.
   if (decided !== undefined) return { allow: decided, by: "rule:posting-1" }
-  return { allow: window.confirm(step.confirm), by: currentUserId() } // swap for the app's own dialog
+  return { allow: await askPerson(step.confirm), by: personId() }
 }
 
 // Your own audit trail: the agent's changes, the steps it was refused, and who confirmed the rest.
@@ -166,6 +178,8 @@ export const agent = createBookiAgent({
   ruleVersion: "posting-1",
   allow: cursor.wrap(allow),
   audit,
+  // Booki's refusals in Norwegian for a Norwegian product (the cursor follows the profile by itself).
+  language: "nb",
 })
 
 export const history = createBookiHistory(agent)
@@ -186,6 +200,20 @@ if (typeof window !== "undefined") {
   }
 }
 ```
+
+Connect the app's dialog and the signed-in person once, from a component near the root:
+
+```tsx
+function ConnectAgent() {
+  const confirm = useConfirmDialog() // the app's own dialog: (question) => Promise<boolean>
+  const session = useSession()
+  useEffect(() => connectPerson(confirm, () => session.user.id), [confirm, session.user.id])
+  return null
+}
+```
+
+Take the first snapshot after the screen has rendered: `window.agent` exists before a screen
+has registered its controls.
 
 (In Vite: `import.meta.env.DEV` and `import.meta.env.VITE_BOOKI_WEBMCP`.)
 
@@ -277,8 +305,12 @@ rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor uni
 (`setDate`, ISO). Your field calls `change(next, event)` for a person's edit and shows
 `refusal`. See "The lower threshold: useBookiField" in own-controls.md.
 
-Keep what the person types as text and parse it exactly: "12," is not an amount yet, and
-`Number()` and `* 100` lose øre. `allowEmpty` lets the field be empty (`minor: null`). A code
+A free-text field (a description, a note) needs no Booki kind: `Input` from
+`@ui-sdk/react/input` is already on the bridge, with `setValue`, under its accessible name.
+
+Keep what the person types as text and parse it exactly; `Number()` and `* 100` lose øre.
+`parseToMinor` reads "12," as 12,00, so while the text still ends in a separator the person is
+not done: change the amount once it doesn't, and on blur. `allowEmpty` lets the field be empty (`minor: null`). A code
 field takes an option's value or its label; `allowEmpty` there lets it be cleared.
 
 ```tsx
@@ -307,6 +339,12 @@ function AmountInput(props: { value: number | null; onValueChange?: (minor: numb
           value={draft}
           onChange={(e) => {
             setDraft(e.target.value)
+            // "12," is still being typed: wait for the next digit, or for blur.
+            if (/[,.]\s*$/.test(e.target.value)) return
+            const minor = parseToMinor(e.target.value, "NOK", { locale: "nb-NO" })
+            if (minor !== null || e.target.value.trim() === "") change(minor, e.nativeEvent)
+          }}
+          onBlur={(e) => {
             const minor = parseToMinor(e.target.value, "NOK", { locale: "nb-NO" })
             if (minor !== null || e.target.value.trim() === "") change(minor, e.nativeEvent)
           }}
