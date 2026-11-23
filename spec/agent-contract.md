@@ -199,8 +199,17 @@ An implementation conforms when, for every control it ships:
 4. its refusals exist in each language it ships;
 5. its agent actions meet the ergonomics rules in section 12.
 
-A product MAY claim "Agent Contract 0.1" for the screens that conform, and
-SHOULD list them.
+A conformance suite for the bridge-level conditions (sections 2 to 7) ships as
+`@booki/readiness/conformance`; `runConformance` takes a bridge (snapshot, act,
+subscribe) and optional probes, and reports each check as pass, fail or skip
+with the section it enforces. `@booki/readiness/reference` is a small
+implementation of the contract without Booki or ui-sdk that the suite passes.
+The suite does not yet cover per-language refusals (10.4) or the ergonomics
+rules (12) beyond naming valid choices; passing it is necessary, not
+sufficient.
+
+A product MAY claim "Agent Contract 0.1 (draft)" for the screens that conform,
+and SHOULD list them.
 
 ## 11. Changing the contract
 

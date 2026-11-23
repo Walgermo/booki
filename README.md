@@ -128,7 +128,7 @@ Booki is the first implementation of a draft specification, [the Agent Contract 
 UIs](spec/agent-contract.md): what a screen gives an agent, what stays with a
 person, how every step is recorded and how the server checks it again. Any
 ERP can implement it; one agent then works across products. It is a draft with
-one implementation; the conformance suite in @booki/readiness lets you test your
+one implementation; the [conformance suite in @booki/readiness](packages/readiness/README.md#conformance-suite) lets you test your
 own screens against it.
 
 ## Packages
