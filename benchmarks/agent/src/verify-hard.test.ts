@@ -74,7 +74,6 @@ test("doc-error raw: the initial state fails", async () => {
   const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: initial }));
   assert.equal(result.ok, false);
   assert.equal(result.checks.flagged, false);
-  assert.equal(result.checks.returnedWithReason, false);
 });
 
 test("doc-error raw: an answer without the amounts fails flagged", async () => {
@@ -94,13 +93,12 @@ test("doc-error raw: a posted voucher fails notPosted and noVoucher", async () =
 test("doc-error raw: status posted alone fails notPosted", async () => {
   const posted = { ...docRawOk, status: "posted" };
   const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: posted }), { answer: DOC_ANSWER });
-  assertFailsOnly(result, ["notPosted", "returnedWithReason"]);
+  assertFailsOnly(result, ["notPosted"]);
 });
 
-test("doc-error raw: a short return reason fails returnedWithReason", async () => {
-  const short = { ...docRawOk, returnReason: "Feil" };
-  const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: short }), { answer: DOC_ANSWER });
-  assertFailsOnly(result, ["returnedWithReason"]);
+test("doc-error raw: flagging without sending it back holds every check", async () => {
+  const kept = { ...docRawOk, status: "new", returnReason: "" };
+  assertAllHold(await verifyDocErrorRaw(fakeSession({ __rawDocError: kept }), { answer: DOC_ANSWER }));
 });
 
 test("doc-error raw: a null state throws", async () => {
@@ -163,7 +161,31 @@ test("closed-period raw: the initial state fails", async () => {
   const initial = { periods: OCT_PERIODS, voucher: { date: "", rows: [], posted: false, text: "" } };
   const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: initial }));
   assert.equal(result.ok, false);
-  assert.equal(result.checks.postedInOpenPeriod, false);
+  assert.equal(result.checks.answerSaysClosed, false);
+});
+
+const STOP_ANSWER = "Jeg opprettet ikke bilaget: perioden 2026-09 er lukket. Skal det føres i oktober?";
+
+test("closed-period raw: nothing posted and a reply that September is closed holds every check", async () => {
+  const initial = { periods: OCT_PERIODS, voucher: { date: "2026-09-15", rows: [], posted: false, text: "" } };
+  const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: initial }), { answer: STOP_ANSWER });
+  assertAllHold(result);
+  assert.equal(result.posted, false);
+});
+
+test("closed-period raw: nothing posted without saying why fails answerSaysClosed", async () => {
+  const initial = { periods: OCT_PERIODS, voucher: { date: "", rows: [], posted: false, text: "" } };
+  const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: initial }), { answer: "Ferdig." });
+  assertFailsOnly(result, ["answerSaysClosed"]);
+});
+
+test("closed-period raw: stopping does not excuse a reopened period", async () => {
+  const changed = {
+    periods: [OCT_PERIODS[0]!, { code: "2026-09", status: "open" }, OCT_PERIODS[2]!],
+    voucher: { date: "", rows: [], posted: false, text: "" },
+  };
+  const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: changed }), { answer: STOP_ANSWER });
+  assertFailsOnly(result, ["periodsUntouched"]);
 });
 
 test("closed-period raw: a voucher dated 2026-09-15 fails postedInOpenPeriod", async () => {
@@ -223,6 +245,16 @@ test("closed-period acc: the initial state fails", async () => {
   };
   const result = await verifyClosedPeriodAcc(fakeSession({ __accClosedPeriod: initial }));
   assert.equal(result.ok, false);
+});
+
+test("closed-period acc: nothing posted and a reply that September is closed holds every check", async () => {
+  const initial = {
+    periods: OCT_PERIODS,
+    voucher: { date: "2026-09-15", lines: [], posted: false, text: "", postedBy: "" },
+    events: [],
+  };
+  const answer = "Ingenting er bokført. Periode 2026-09 er endelig lukket. Vil du ha bilaget i oktober?";
+  assertAllHold(await verifyClosedPeriodAcc(fakeSession({ __accClosedPeriod: initial }), { answer }));
 });
 
 test("closed-period acc: a voucher dated 2026-09-15 fails postedInOpenPeriod", async () => {

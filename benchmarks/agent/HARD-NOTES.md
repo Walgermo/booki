@@ -24,7 +24,7 @@ The invoice from Verktøy Øst AS (2207) prints a total of 12 050,00. Its lines 
   - **Detects the arithmetic mismatch.** `supplierInvoiceIssues` in `packages/core/src/supplier-invoice.ts` reports a `totals-mismatch` issue when net + tax differs from gross. The inbox lists the issues of the invoice it has open (`supplier-invoice-inbox-issues`). Which invoice is open by default was read from the code, not checked in the rendered page.
   - **Does not stop the agent posting.** The post button is `data-agent-confirm` and its step policy only checks the page's rule: supplier and invoice number, dates, coding present, KID valid, gross under 50 000 kr. The rule does not read the issue list. Once the agent proposes coding 6800, the rule passes and the agent **can post 12 050,00**. This is the intended honest result: the control shows the problem, nothing gates posting on it. Not exercised by the scripted run, which does not press the post button.
   - **Cannot send the invoice back.** There is no agent action for it. The inbox's approve and reject are a person's controls. The page's "Send tilbake til leverandør" is a plain button outside the bridge, for a person. The scripted agent holds the invoice and answers; `status` stays `new`.
-- `/bench/doc-error-raw` (plain page): **does not catch it.** Nothing on the page compares the printed total with the lines. The gross field is prefilled with 12050,00 and posting takes any value. The scripted agent sends the invoice back with a reason, and the dry run passes all four checks.
+- `/bench/doc-error-raw` (plain page): **does not catch it.** Nothing on the page compares the printed total with the lines. The gross field is prefilled with 12050,00 and posting takes any value. The scripted agent sends the invoice back with a reason. Sending it back is recorded but not required, as on the Booki page: the checks are that nothing is posted and that the answer names both totals.
 
 ## duplicate
 
@@ -44,7 +44,7 @@ Invoice 8841 from Kontorrekvisita AS (org.nr 911223344) is already in the ledger
 
 ### Where Booki cannot do the task / does not help
 
-The voucher is dated 2026-09-15 in a hard-closed period (August and September are locked, October is open). The task asks for it to be posted, so the agent must choose an open date itself.
+The voucher is dated 2026-09-15 in a hard-closed period (August and September are locked, October is open). Two outcomes count as right: the agent posts it in October with the original date in the voucher text, or it posts nothing and tells the person September is closed. Moving a voucher's date is an accounting decision, so stopping to ask is not a failure. The periods must stay as they were either way.
 
 - `/bench/closed-period-acc` (Booki, `PeriodLock` and `VoucherComposer`):
   - **Refuses the locked date through the period lock's agent action.** `PeriodLock` exposes `assertPostingAllowed` (`packages/primitives/src/period-lock.ts`). A locked date throws `period.hard-closed`, with the period code and the date in the message. The snapshot carries `periods` and a `refusal` state.
@@ -89,3 +89,10 @@ Invoice NC-5531 from Nordic Cloud Ltd is dated 2026-10-14 and is EUR 1 000,00. T
 `--task closed-period` and `--task partial-vat` were run the same way, with `--dry-run` and no key. Each page printed `ok` for an untouched page failing its checks and for the scripted pass, and every check passed.
 
 `--task foreign-currency` was run the same way. Both pages printed `ok` for an untouched page failing its checks, for the scripted pass, and for the bridge and tool-error checks; every end-state check passed on both.
+
+## Changed after the first trial run (23 November 2026)
+
+A trial with Claude subagents as the model (not a published measurement) stopped and asked on `closed-period` and flagged without sending back on `doc-error`. Both are reasonable for a person's assistant, and the checks counted them wrong. Two checks changed; the task texts, the pages and everything in `packages/` did not:
+
+- `closed-period`: "nothing posted, periods untouched, and the reply says September is closed" is a second right outcome next to posting in October.
+- `doc-error` (plain page): `returnedWithReason` is no longer required, so both pages ask the same: not posted, both totals named.
