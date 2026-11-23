@@ -289,6 +289,7 @@ export {
   type AgentDecisionRow,
   type AgentPolicyOptions,
   actAndRecord,
+  withRecordedAct,
   isAllowed,
 } from "@booki/primitives/agent-policy";
 export type { BookiChangeDetails } from "./change-details.js";
