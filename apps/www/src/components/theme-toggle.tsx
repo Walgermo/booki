@@ -22,6 +22,10 @@ function stored(): Theme | null {
 function apply(theme: Theme) {
   if (theme === "dark") document.documentElement.setAttribute("data-bk-theme", "dark");
   else document.documentElement.removeAttribute("data-bk-theme");
+  // The browser's bar (the status bar on a phone) takes the theme's colour, kept on the tags in index.html.
+  const bars = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
+  const color = [...bars].find((bar) => bar.dataset.scheme === theme)?.dataset.color;
+  if (color) for (const bar of bars) bar.content = color;
 }
 
 /**

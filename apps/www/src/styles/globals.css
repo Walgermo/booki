@@ -129,6 +129,22 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* No grey flash on a tap: every control has its own pressed state. */
+    -webkit-tap-highlight-color: transparent;
+    /* A phone turned on its side keeps the type sizes. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* A tap is a tap: no wait for a second one, since nothing here zooms on a double tap. */
+  :where(a, button, input, select, textarea, summary, label, [role="button"], [role="tab"], [role="radio"]) {
+    touch-action: manipulation;
+  }
+
+  /* Holding a finger on a control does not select its label. Text that is content stays selectable. */
+  :where(button, summary, [role="button"], [role="tab"], [role="radio"]) {
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   body {
@@ -137,6 +153,9 @@
     font-size: var(--text-body);
     line-height: var(--leading-body);
     font-synthesis: none;
+    /* The page reaches under the notch (viewport-fit=cover); on its side, the content keeps clear of it. */
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
 
   ::selection {
@@ -3173,6 +3192,28 @@ main {
   color: var(--bk-muted-fg);
   font-size: 0.9375rem;
   line-height: 1.6;
+}
+
+/* On a finger, a standalone text link or text button gets a 44px target. It looks the same: the
+   target grows through a pseudo-element, and a wrapped row of links moves apart so no two targets overlap.
+   Links inside a sentence are left alone. */
+@media (pointer: coarse) {
+  nav:has(> [data-slot="text-link"]) {
+    row-gap: 1.5rem;
+  }
+
+  /* The language and theme toggles are text buttons too, but already 44px tall. */
+  nav > [data-slot="text-link"],
+  .site-text-button:not(.site-nav-link) {
+    position: relative;
+  }
+
+  nav > [data-slot="text-link"]::before,
+  .site-text-button:not(.site-nav-link)::before {
+    content: "";
+    position: absolute;
+    inset: -12px -4px;
+  }
 }
 
 /* A text toggle with an icon before its word (language, theme). */
