@@ -124,10 +124,12 @@ const { status, body } = toHttp(verdict) // 200, or 401/403/409/422 with a reaso
 | Approval takes the right people | Levels, amount limits and substitutes. The requester cannot approve; who approves a payment cannot release it. |
 | A fixed invoice stays fixed | Totals come from the lines. After finalizing, corrections are credit notes. |
 
-Booki implements an open specification, [the Agent Contract for Accounting
+Booki is the first implementation of a draft specification, [the Agent Contract for Accounting
 UIs](spec/agent-contract.md): what a screen gives an agent, what stays with a
 person, how every step is recorded and how the server checks it again. Any
-ERP can implement it; one agent then works across products.
+ERP can implement it; one agent then works across products. It is a draft with
+one implementation; the conformance suite in @booki/readiness lets you test your
+own screens against it.
 
 ## Packages
 

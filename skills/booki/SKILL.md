@@ -407,5 +407,5 @@ ERP adapters, live BankID/WebAuthn, PCI card inputs — apps own those.
 
 ## References
 
-- Agent Contract (the open spec Booki implements): https://raw.githubusercontent.com/Walgermo/booki/main/spec/agent-contract.md
+- Agent Contract (the draft spec Booki implements; one implementation so far): https://raw.githubusercontent.com/Walgermo/booki/main/spec/agent-contract.md
 - Catalog: https://raw.githubusercontent.com/Walgermo/booki/main/packages/react/docs/llms.txt

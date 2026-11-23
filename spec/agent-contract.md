@@ -1,14 +1,18 @@
 # The Agent Contract for Accounting UIs
 
-Version 0.1 · Draft · 21 November 2026 · MIT licence
+Version 0.1 · Draft with one implementation · 21 November 2026 · MIT licence
 
 A shared contract between accounting and auditing software and the AI agents
 that work in it. It says what a screen must give an agent, what an agent may
 never do there, and how every step is recorded, so an agent can be let into
 the books without anyone reading a pixel or guessing which field is which.
 
-Booki is the reference implementation. The contract itself is independent of
-any library, framework or model: any ERP can implement it.
+This is a draft. It has one implementation so far (Booki), so it is not yet a
+standard: sections may change, and a name only becomes stable once a second
+implementation has used it. The contract itself is independent of any library,
+framework or model: any ERP can implement it. A conformance suite and a small
+reference implementation without Booki or ui-sdk are in packages/readiness (see
+section 10).
 
 The keywords MUST, MUST NOT, SHOULD and MAY are used as in RFC 2119.
 
