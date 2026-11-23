@@ -683,7 +683,14 @@ const CONTROLS: Record<string, Control> = {
         { args: ["a", "colour", "red"], names: ["region"] },
         { args: ["a", "region", "S"], names: ["N"] },
       ],
-      setForeign: { args: ["nope", "EUR", 100, 11_500_000], names: ["a"] },
+      setForeign: [
+        { args: ["nope", "EUR", 100, 11_500_000], names: ["a"] },
+        {
+          object: (extra) => ["a", { currency: "EUR", amountMinor: 100, rateScaled: 11_500_000, ...extra }],
+          fields: ["currency", "amountMinor", "rateScaled"],
+          format: "foreignFormat",
+        },
+      ],
       setLines: RESTORE,
       removeLine: { args: ["nope"], names: ["a"] },
       clear: NOTHING,
