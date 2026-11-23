@@ -1,4 +1,4 @@
-import { PERSON_ACTION } from "../audit.js";
+import { PERSON_ACTION } from "../person-action.js";
 import { findSecrets } from "../secrets.js";
 import type { ConformanceTarget } from "./run.js";
 import { PERSON_ONLY_PERMISSIONS } from "./permissions.js";
