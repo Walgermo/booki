@@ -6,6 +6,7 @@ import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } fro
 import { Section } from "@/components/section";
 import { Disclosure } from "@/components/two-readers";
 import {
+  WITHDRAWN,
   BENCH,
   RUNS,
   TASKS,
@@ -127,6 +128,20 @@ const at = (values: number[], t: number) => {
 };
 
 function Figures({ task, t, max }: { task: BenchTask; t: number; max: number }) {
+  const { t: tr } = useLang();
+  if (WITHDRAWN.includes(task)) {
+    return (
+      <div className="grid gap-3">
+        <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
+          {tr(
+            "The real-model runs of this task are withdrawn: a format hint in the Booki control held the task's answer. It will be run again. Below, the scripted best case, which knows the answer on both sides.",
+            "Kjøringene med ekte modeller for denne oppgaven er trukket tilbake: et formathint i Booki-kontrollen inneholdt svaret. Den kjøres på nytt. Under: det skriptede beste tilfellet, som kjenner svaret på begge sider.",
+          )}
+        </p>
+        <EstimateFigures task={task} t={t} max={max} />
+      </div>
+    );
+  }
   const opusRaw = realFor(task, "anthropic/", "tripletex");
   const opusAcc = realFor(task, "anthropic/", "acc");
   if (opusRaw && opusAcc) return <RealFigures task={task} raw={opusRaw} acc={opusAcc} />;
@@ -311,10 +326,13 @@ export function ErpRace() {
   return (
     <Section
       id="race-title"
-      title={tr("Tested on Tripletex and DNB Regnskap", "Testet på Tripletex og DNB Regnskap")}
+      title={tr(
+        "Tested on screens rebuilt from two Norwegian accounting systems",
+        "Testet på skjermbilder gjenskapt fra to norske regnskapssystemer",
+      )}
       note={tr(
-        "The same task, done by an agent on screens rebuilt from Tripletex and DNB Regnskap, and on Booki.",
-        "Samme oppgave, gjort av en agent på skjermbilder gjenskapt fra Tripletex og DNB Regnskap, og på Booki.",
+        "The same task, done by an agent on screens we rebuilt from Tripletex and DNB Regnskap, and on Booki. Not run against the products themselves.",
+        "Samme oppgave, gjort av en agent på skjermbilder vi har gjenskapt fra Tripletex og DNB Regnskap, og på Booki. Ikke kjørt mot selve produktene.",
       )}
     >
       <div className="grid gap-8">

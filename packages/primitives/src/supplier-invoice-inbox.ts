@@ -26,7 +26,7 @@ import { QUERY_FORMAT, commitSecret } from "./fields.js";
 
 /** How to code an invoice and correct a field, shown in the snapshot. Amount fields are minor units. */
 export const CODING_FORMAT =
-  'proposeCoding(invoiceId, "6800", "1", { department: "200" }); correctField(invoiceId, "netMinor", 125000)';
+  'proposeCoding(invoiceId, "7140", "11", { department: "200" }); correctField(invoiceId, "netMinor", 125000)';
 
 export type Options = QueryOptions & {
   invoices?: SupplierInvoice[];

@@ -128,7 +128,7 @@ describe("voucher line rules", () => {
   it("says how to give an account when none was given, and lists a short chart whole", () => {
     const chart = Array.from({ length: 11 }, (_, i) => ({ number: String(1000 + i * 500), name: `A${i}` }));
     expect(() => resolveChartAccount(chart, "")).toThrow(
-      /needs an account: addLine\("6800"\).*Accounts: 1000 A0,.*6000 A10\.$/,
+      /needs an account: addLine\("7140"\).*Accounts: 1000 A0,.*6000 A10\.$/,
     );
     expect(() => resolveChartAccount(chart, "9999")).toThrow(/6000 A10\.$/);
   });

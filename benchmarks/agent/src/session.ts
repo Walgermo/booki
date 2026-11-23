@@ -87,7 +87,7 @@ export async function openSession(options: OpenOptions): Promise<Session> {
   if (kind === "mcp") {
     // Its own working directory: the server writes snapshot and console files there.
     const workspace = mkdtempSync(path.join(os.tmpdir(), "agent-bench-mcp-"));
-    const mcp = await startPlaywrightMcp({ headed, cwd: workspace, caps });
+    const mcp = await startPlaywrightMcp({ headed, cwd: workspace, caps, origin: url });
     const close = async () => {
       await mcp.close();
       rmSync(workspace, { recursive: true, force: true });

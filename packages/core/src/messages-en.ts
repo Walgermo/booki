@@ -57,7 +57,7 @@ export const EN = {
   "voucher.debit-and-credit":
     "A voucher line takes a debit or a credit, not both (account {account}: debitMinor {debit}, creditMinor {credit}). Split it into two lines.",
   "voucher.account-needed":
-    'A line needs an account: addLine("6800") or addLine({ account: "6800", debitMinor: 1550000 }). Accounts: {sample}{more}.',
+    'A line needs an account: addLine("7140") or addLine({ account: "7140", debitMinor: 250000 }). Accounts: {sample}{more}.',
   "voucher.unknown-account": "Account {account} is not in the chart of accounts. Valid accounts include: {sample}.",
   "voucher.unknown-account-more":
     "Account {account} is not in the chart of accounts. Valid accounts include: {sample}, … ({count} accounts).",
@@ -144,13 +144,13 @@ export const EN = {
   "close.not-ready-with-ready":
     "Not ready to close: {open} task(s) open, {awaiting} waiting for sign-off. Can be done now: {ready}.",
   "invoice.line-missing":
-    "Line {id} needs {fields}. A line takes: description, quantity (12.5) or quantityMilli (12500), unitPriceMinor (145000 is 1 450,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.",
+    "Line {id} needs {fields}. A line takes: description, quantity (2.5) or quantityMilli (2500), unitPriceMinor (98000 is 980,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.",
   "invoice.line-shape":
-    'Line {id}: give the line as one object, for example with description "Rådgivning", quantity 12.5, unitPriceMinor 145000 and taxRate 25. A line takes: description, quantity (12.5) or quantityMilli (12500), unitPriceMinor (145000 is 1 450,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.',
+    'Line {id}: give the line as one object, for example with description "Kursdag", quantity 2.5, unitPriceMinor 98000 and taxRate 25. A line takes: description, quantity (2.5) or quantityMilli (2500), unitPriceMinor (98000 is 980,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.',
   "invoice.line-unknown-field":
-    'Line {id}: no field "{field}". A line takes: description, quantity (12.5) or quantityMilli (12500), unitPriceMinor (145000 is 1 450,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.',
+    'Line {id}: no field "{field}". A line takes: description, quantity (2.5) or quantityMilli (2500), unitPriceMinor (98000 is 980,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.',
   "invoice.line-not-a-number":
-    "Line {id}: {field} must be a number, got {value}. A line takes: description, quantity (12.5) or quantityMilli (12500), unitPriceMinor (145000 is 1 450,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.",
+    "Line {id}: {field} must be a number, got {value}. A line takes: description, quantity (2.5) or quantityMilli (2500), unitPriceMinor (98000 is 980,00), taxRate (25 is 25 %) or taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent or discountBp.",
   "invoice.what.quantity": "quantity (in thousandths)",
   "invoice.what.unit-price": "unit price (minor units)",
   "invoice.what.discount": "discount (basis points)",
@@ -273,7 +273,7 @@ export const EN = {
     "Invoice {id}: the company rule does not allow approving it without a person. {reason} A person approves it.",
   "supplier-invoice.not-open": "Invoice {id} is {status} and can no longer change.",
   "supplier-invoice.reason-needed":
-    'Invoice {id}: give the reason the person will read, for example "Second copy of 8841, already booked".',
+    'Invoice {id}: give the reason the person will read, for example "Second copy of 2917, already booked".',
   "supplier-invoice.what.correction": "A correction",
   "supplier-invoice.what.confirmation": "A confirmation",
   "supplier-invoice.what.approval": "An approval",
@@ -325,7 +325,7 @@ export const EN = {
   "expense.amount-computed":
     'Line "{id}": the amount of a {kind} line is computed from the policy and cannot be set. Leave amountMinor out.',
   "expense.distance":
-    'Line "{id}": distanceMeters is a whole number of metres above zero (12500 for 12.5 km), got {value}.',
+    'Line "{id}": distanceMeters is a whole number of metres above zero (8400 for 8.4 km), got {value}.',
   "expense.no-mileage-rate": 'Line "{id}": the policy has no mileage rate, so mileage cannot be claimed.',
   "expense.days": 'Line "{id}": days is a whole number above zero, got {value}.',
   "expense.unknown-per-diem-rate": 'Line "{id}": "{rate}" is not a per-diem rate in the policy. Rates: {rates}.',
@@ -537,7 +537,7 @@ export const EN = {
   "chart.month-outside-data":
     "No month {period} in the range {range} ({from} to {to}). The data runs from {earliest} to {latest}.",
   "expense.line-unknown-field":
-    'Line "{id}": no field "{field}". A line takes: {fields}. Distance as distanceKm (12.5) or distanceMeters (12500); money as amountMinor.',
+    'Line "{id}": no field "{field}". A line takes: {fields}. Distance as distanceKm (8.4) or distanceMeters (8400); money as amountMinor.',
   "finding.unknown-category": '"{value}" is not a finding category. Categories: {categories}.',
   "finding.unknown-basis": '"{value}" is not a basis for a finding. Bases: {bases}.',
   "finding.actor-required": "A change to a finding needs the id of who made it.",

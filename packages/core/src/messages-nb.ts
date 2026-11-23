@@ -60,7 +60,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "voucher.debit-and-credit":
     "En bilagslinje har enten debet eller kredit, ikke begge (konto {account}: debitMinor {debit}, creditMinor {credit}). Del den i to linjer.",
   "voucher.account-needed":
-    'En linje trenger en konto: addLine("6800") eller addLine({ account: "6800", debitMinor: 1550000 }). Kontoer: {sample}{more}.',
+    'En linje trenger en konto: addLine("7140") eller addLine({ account: "7140", debitMinor: 250000 }). Kontoer: {sample}{more}.',
   "voucher.unknown-account": "Konto {account} finnes ikke i kontoplanen. Gyldige kontoer er blant annet: {sample}.",
   "voucher.unknown-account-more":
     "Konto {account} finnes ikke i kontoplanen. Gyldige kontoer er blant annet: {sample}, … ({count} kontoer).",
@@ -155,13 +155,13 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "close.not-ready-with-ready":
     "Ikke klar til avslutning. Åpne oppgaver: {open}. Venter på kontrollsignering: {awaiting}. Kan gjøres nå: {ready}.",
   "invoice.line-missing":
-    "Linje {id} mangler {fields}. En linje tar: description, quantity (12.5) eller quantityMilli (12500), unitPriceMinor (145000 er 1 450,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.",
+    "Linje {id} mangler {fields}. En linje tar: description, quantity (2.5) eller quantityMilli (2500), unitPriceMinor (98000 er 980,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.",
   "invoice.line-shape":
-    'Linje {id}: gi linjen som ett objekt, for eksempel med description "Rådgivning", quantity 12.5, unitPriceMinor 145000 og taxRate 25. En linje tar: description, quantity (12.5) eller quantityMilli (12500), unitPriceMinor (145000 er 1 450,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.',
+    'Linje {id}: gi linjen som ett objekt, for eksempel med description "Kursdag", quantity 2.5, unitPriceMinor 98000 og taxRate 25. En linje tar: description, quantity (2.5) eller quantityMilli (2500), unitPriceMinor (98000 er 980,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.',
   "invoice.line-unknown-field":
-    'Linje {id}: ingen felt som heter "{field}". En linje tar: description, quantity (12.5) eller quantityMilli (12500), unitPriceMinor (145000 er 1 450,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.',
+    'Linje {id}: ingen felt som heter "{field}". En linje tar: description, quantity (2.5) eller quantityMilli (2500), unitPriceMinor (98000 er 980,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.',
   "invoice.line-not-a-number":
-    "Linje {id}: {field} må være et tall, fikk {value}. En linje tar: description, quantity (12.5) eller quantityMilli (12500), unitPriceMinor (145000 er 1 450,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.",
+    "Linje {id}: {field} må være et tall, fikk {value}. En linje tar: description, quantity (2.5) eller quantityMilli (2500), unitPriceMinor (98000 er 980,00), taxRate (25 er 25 %) eller taxRateBp (2500), taxCategory (S, Z, E, AE, K), discountPercent eller discountBp.",
   "invoice.what.quantity": "antallet (i tusendeler)",
   "invoice.what.unit-price": "enhetsprisen (minste myntenhet)",
   "invoice.what.discount": "rabatten (basispunkter)",
@@ -291,7 +291,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     "Faktura {id}: firmaregelen tillater ikke godkjenning uten en person. {reason} En person godkjenner den.",
   "supplier-invoice.not-open": "Faktura {id} er {status} og kan ikke lenger endres.",
   "supplier-invoice.reason-needed":
-    "Faktura {id}: gi begrunnelsen personen skal lese, for eksempel «Kopi av 8841, allerede bokført».",
+    "Faktura {id}: gi begrunnelsen personen skal lese, for eksempel «Kopi av 2917, allerede bokført».",
   "supplier-invoice.what.correction": "En korrigering",
   "supplier-invoice.what.confirmation": "En bekreftelse",
   "supplier-invoice.what.approval": "En godkjenning",
@@ -342,8 +342,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Linje "{id}": beløpet er et heltall i minste myntenhet over null (12345 for 123,45), ikke {value}.',
   "expense.amount-computed":
     'Linje "{id}": beløpet på en linje av typen {kind} beregnes ut fra reglementet og kan ikke settes. Utelat amountMinor.',
-  "expense.distance":
-    'Linje "{id}": distanceMeters er et helt antall meter over null (12500 for 12,5 km), ikke {value}.',
+  "expense.distance": 'Linje "{id}": distanceMeters er et helt antall meter over null (8400 for 8,4 km), ikke {value}.',
   "expense.no-mileage-rate": 'Linje "{id}": reglementet har ingen kilometersats, så kjøregodtgjørelse kan ikke kreves.',
   "expense.days": 'Linje "{id}": antall dager er et heltall over null, ikke {value}.',
   "expense.unknown-per-diem-rate": 'Linje "{id}": "{rate}" er ikke en diettsats i reglementet. Satser: {rates}.',
@@ -565,7 +564,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "chart.month-outside-data":
     "Ingen måned {period} i perioden {range} ({from} til {to}). Dataene går fra {earliest} til {latest}.",
   "expense.line-unknown-field":
-    'Linje "{id}": ingen felt som heter "{field}". En linje tar: {fields}. Avstand som distanceKm (12.5) eller distanceMeters (12500); beløp som amountMinor.',
+    'Linje "{id}": ingen felt som heter "{field}". En linje tar: {fields}. Avstand som distanceKm (8.4) eller distanceMeters (8400); beløp som amountMinor.',
   "finding.unknown-category": '"{value}" er ikke en kategori for funn. Kategorier: {categories}.',
   "finding.unknown-basis": '"{value}" er ikke et grunnlag for et funn. Grunnlag: {bases}.',
   "finding.actor-required": "En endring av et funn må ha id-en til den som gjorde den.",

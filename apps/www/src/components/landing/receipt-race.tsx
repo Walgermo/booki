@@ -202,8 +202,9 @@ function Receipt({ side, open, bookiCost }: { side: BenchSide; open: boolean; bo
   );
 }
 
-/** Each receipt's letterhead: the vendor's own logo, as published on its site. */
+/** Each receipt's letterhead, in plain text: these are our rebuilds, not the vendors' products. */
 function Brand({ side }: { side: string }) {
+  const { t } = useLang();
   if (side === "acc") {
     return (
       <>
@@ -213,14 +214,7 @@ function Brand({ side }: { side: string }) {
       </>
     );
   }
-  if (side === "tripletex") return <img src="/logos/tripletex.svg" alt="Tripletex" width={67} height={22} />;
-  if (side === "dnb") {
-    return (
-      <>
-        <img src="/logos/dnb.svg" alt="DNB" width={35} height={24} />
-        <span>Regnskap</span>
-      </>
-    );
-  }
+  if (side === "tripletex") return <span>{t("Tripletex (rebuilt)", "Tripletex (gjenskapt)")}</span>;
+  if (side === "dnb") return <span>{t("DNB Regnskap (rebuilt)", "DNB Regnskap (gjenskapt)")}</span>;
   return <span>{side}</span>;
 }

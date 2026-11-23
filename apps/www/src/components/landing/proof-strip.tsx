@@ -37,6 +37,9 @@ export function ProofStrip() {
 
   const pct = (share: number) => `${Math.round(share * 100)} %`;
   const times = (n: number) => `${n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 })}×`;
+  const short = (n: number) =>
+    n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: n < 10 ? 1 : 0 });
+  const range = (s: { low: number; high: number }) => `${short(s.low)}–${short(s.high)}×`;
   const right = { before: kpi.right.rebuilt / kpi.right.rebuiltRuns, after: kpi.right.booki / kpi.right.bookiRuns };
 
   const figures: Figure[] = [
@@ -61,7 +64,10 @@ export function ProofStrip() {
       share: (v) => v / kpi.cost.before,
       show: (v) => f.usd(v, 3),
       beforeText: f.usd(kpi.cost.before, 3),
-      note: t(`${times(kpi.cheaper)} cheaper, same model`, `${times(kpi.cheaper)} billigere, samme modell`),
+      note: t(
+        `median ${times(kpi.cheaper.median)} cheaper, ${range(kpi.cheaper)} over ${kpi.pairs} pairs of model and screen`,
+        `median ${times(kpi.cheaper.median)} billigere, ${range(kpi.cheaper)} over ${kpi.pairs} par av modell og skjerm`,
+      ),
     },
     {
       key: "time",
@@ -72,8 +78,8 @@ export function ProofStrip() {
       show: (v) => f.seconds(v),
       beforeText: f.seconds(kpi.wallMs.before),
       note: t(
-        `${times(kpi.faster)} faster, the model's own time included`,
-        `${times(kpi.faster)} raskere, med modellens egen tid`,
+        `median ${times(kpi.faster.median)} faster, ${range(kpi.faster)}, the model's own time included`,
+        `median ${times(kpi.faster.median)} raskere, ${range(kpi.faster)}, med modellens egen tid`,
       ),
     },
   ];
@@ -153,8 +159,8 @@ export function ProofStrip() {
       </dl>
       <p className="m-0 text-sm text-muted-foreground">
         {t(
-          `Before: screens rebuilt from Tripletex and DNB Regnskap. With Booki: the same tasks. Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs each, medians, ${f.runDate}.`,
-          `Før: skjermbilder gjenskapt fra Tripletex og DNB Regnskap. Med Booki: de samme oppgavene. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash, fem kjøringer hver, medianer, ${f.runDate}. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
+          `Before: screens we rebuilt from two Norwegian accounting systems. With Booki: the same tasks, a supplier invoice and a dashboard. Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs each, medians, ${f.runDate}. The voucher and sales invoice runs are withdrawn: a control's hint gave their answer away.`,
+          `Før: skjermbilder vi har gjenskapt fra to norske regnskapssystemer. Med Booki: de samme oppgavene, en leverandørfaktura og et dashbord. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash, fem kjøringer hver, medianer, ${f.runDate}. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen røpet svaret. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
         )}{" "}
         <a href="#race-title" className="site-link">
           {t("How we measured", "Slik målte vi")}
