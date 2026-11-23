@@ -57,12 +57,12 @@
     "@booki/primitives": "workspace:*"
   },
   "peerDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.14",
-    "@ui-sdk/web": "0.1.0-beta.14"
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/web": "0.1.0-beta.16"
   },
   "devDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.14",
-    "@ui-sdk/web": "0.1.0-beta.14",
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/web": "0.1.0-beta.16",
     "jsdom": "^31.0.1",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",

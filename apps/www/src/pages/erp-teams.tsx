@@ -394,8 +394,8 @@ const FOUND = (t: T): string[] => [
 
 const SHORTFALLS = (t: T): string[] => [
   t(
-    "The agent bridge it is built on is in beta (0.1.0-beta.14). Its API may still change.",
-    "Agentbroen den bygger på, er i beta (0.1.0-beta.14). API-et kan fortsatt endre seg.",
+    "The agent bridge it is built on is in beta (0.1.0-beta.16). Its API may still change.",
+    "Agentbroen den bygger på, er i beta (0.1.0-beta.16). API-et kan fortsatt endre seg.",
   ),
   t(
     "Outside React the controls come as parts, so you write the markup around them (rows, options). The agent cursor works everywhere through <booki-agent-cursor>.",
