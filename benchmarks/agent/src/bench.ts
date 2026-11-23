@@ -24,7 +24,7 @@ const HELP = `One bookkeeping task, done by a Claude model on each of its pages.
 
   pnpm --filter agent-benchmark bench [options]
 
-  --task <id>          invoice | voucher | supplier-invoice | sales-invoice | dashboard | inbox | reconcile | close
+  --task <id>          invoice | voucher | supplier-invoice | sales-invoice | dashboard | inbox | reconcile | close | doc-error | closed-period | duplicate | foreign-currency | partial-vat
                        (default invoice; --dry-run without it runs all)
   --model <id>         Model to run (default ${DEFAULT_MODEL})
   --runs <n>           Runs per page; medians and min/max are reported (default 3)
