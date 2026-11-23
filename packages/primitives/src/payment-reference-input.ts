@@ -14,6 +14,8 @@ export type PaymentReferenceOptions = {
   description?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  /** A memo or invoice reference reads "[redacted]" to an agent too. A KID always does. */
+  secretReference?: boolean;
   onValueChange?: (value: string) => void;
 };
 
@@ -25,7 +27,13 @@ export type PaymentReferenceState = {
   description: string;
   disabled: boolean;
   readOnly: boolean;
+  secretReference: boolean;
 };
+
+/** Whether an agent reads the reference as "[redacted]": a KID always, a memo when the app says so. */
+export function referenceIsSecret(kind: RefKind | undefined, secretReference: boolean | undefined): boolean {
+  return (kind ?? "kid") === "kid" || Boolean(secretReference);
+}
 
 export function normalizeValue(kind: RefKind, raw: string): string {
   return kind === "kid" ? formatKid(raw) : String(raw);
@@ -47,14 +55,16 @@ export function deriveState(options: PaymentReferenceOptions): PaymentReferenceS
     isValid: computeValid(kind, value),
     label: options.label ?? (kind === "kid" ? "KID" : "Payment memo"),
     description: options.description ?? (kind === "kid" ? "4–25 digits, mod 10" : "Invoice or remittance reference"),
+    secretReference: Boolean(options.secretReference),
     ...lockState(options),
   };
 }
 
 /**
  * Agent-ready payment reference: setReference / generateKid / clear.
- * A KID is secret; once marked, ui-sdk keeps the component secret (it does not
- * unmark), so kind, value and isValid all read "[redacted]" from then on.
+ * A KID is secret. A memo or invoice reference is not, unless the app sets
+ * `secretReference`. Once marked, ui-sdk keeps the component secret (it does
+ * not unmark), so kind, value and isValid all read "[redacted]" from then on.
  */
 export const paymentReference = definePrimitive({
   name: "payment-reference",
@@ -64,6 +74,7 @@ export const paymentReference = definePrimitive({
     defaultValue: "string",
     label: "string",
     description: "string",
+    secretReference: "boolean",
     ...lockOptions,
     onValueChange: "callback",
   },
@@ -73,6 +84,7 @@ export const paymentReference = definePrimitive({
     const partial: Partial<PaymentReferenceState> = { ...lockState(options) };
     if (options.kind !== undefined) partial.kind = options.kind;
     if (options.label !== undefined) partial.label = options.label;
+    if (options.secretReference !== undefined) partial.secretReference = options.secretReference;
     if (options.description !== undefined) {
       partial.description = options.description;
     }
@@ -138,7 +150,7 @@ export const paymentReference = definePrimitive({
           autoComplete: "off",
           value: state.value,
           "aria-invalid": kidInvalid ? "true" : undefined,
-          "data-agent-secret": state.kind === "kid" ? "" : undefined,
+          "data-agent-secret": referenceIsSecret(state.kind, state.secretReference) ? "" : undefined,
           "aria-label": state.label,
           ...inputLockAttrs(state),
         };

@@ -15,6 +15,7 @@ import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";
 import { QUERY_FORMAT, commitSecret } from "./fields.js";
+import { referenceIsSecret, type RefKind } from "./payment-reference-input.js";
 
 export type Options = QueryOptions & {
   batch?: Batch;
@@ -27,6 +28,10 @@ export type Options = QueryOptions & {
   requiredApprovals?: number;
   /** Payments a person sees per page. Defaults to 100. */
   pageSize?: number;
+  /** What the references are. A KID (the default) reads "[redacted]" to an agent; a memo does not, unless `secretReference`. */
+  referenceKind?: RefKind;
+  /** A memo or invoice reference reads "[redacted]" to an agent too. */
+  secretReference?: boolean;
   onBatchChange?: (batch: Batch, details: { reason: string; source?: string; cancel?: () => void }) => void;
 };
 
@@ -53,17 +58,24 @@ export const DEFAULT_PAGE_SIZE = 100;
  */
 export const paymentColumns: TableColumn<PaymentItem>[] = [
   { id: "creditorName", header: "Creditor", value: (item) => item.creditorName },
-  // A KID or payment reference is secret like the account: not searchable or filterable, so a
-  // search can't test it digit by digit. The person's table and CSV still show it.
+  // A reference may be a KID, which is secret like the account: never searchable or filterable,
+  // so a search can't test it digit by digit. The person's table and CSV still show it.
   { id: "reference", header: "Reference", filterable: false, value: (item) => item.reference ?? "" },
   { id: "amountMinor", header: "Amount", kind: "money", filterable: false, value: (item) => item.amountMinor },
 ];
+
+/** Whether an agent reads this batch's references as "[redacted]". */
+export const hidesReferences = (options: Pick<Options, "referenceKind" | "secretReference">) =>
+  referenceIsSecret(options.referenceKind, options.secretReference);
+
+const shownReference = <T extends { reference?: string }>(item: T, hidden: boolean): T =>
+  hidden && item.reference ? { ...item, reference: "[redacted]" } : item;
 
 export const wholeAbove = (value: number | undefined, fallback: number) =>
   Number.isSafeInteger(value) && (value as number) > 0 ? (value as number) : fallback;
 
 /** The list's page, counts and totals (over every match) for a query. One that does not fit shows the list fresh. */
-export function deriveList(batch: Batch, query: TableQuery) {
+export function deriveList(batch: Batch, query: TableQuery, hidden = true) {
   let fitted = query;
   try {
     normalizeQuery(paymentColumns, query);
@@ -76,7 +88,7 @@ export function deriveList(batch: Batch, query: TableQuery) {
     rows: shown.rows.map((item) => {
       const record: Record<string, unknown> = { id: item.id };
       for (const column of paymentColumns) record[column.id] = column.value(item) ?? null;
-      if (record.reference) record.reference = "[redacted]";
+      if (hidden && record.reference) record.reference = "[redacted]";
       return record;
     }),
     view: { total: shown.total, matching: shown.matching, page: shown.page, pageCount: shown.pageCount } as TablePaging,
@@ -86,14 +98,11 @@ export function deriveList(batch: Batch, query: TableQuery) {
   };
 }
 
-export function derive(batch: Batch, required: number) {
+export function derive(batch: Batch, required: number, hidden = true) {
   const issues = batchIssues(batch);
   const approvals = currentApprovals(batch).map((approval) => approval.approverId);
   return {
-    payments: batch.items.map(
-      ({ creditorAccount: _secret, ...rest }): PaymentSummary =>
-        rest.reference ? { ...rest, reference: "[redacted]" } : rest,
-    ),
+    payments: batch.items.map(({ creditorAccount: _secret, ...rest }): PaymentSummary => shownReference(rest, hidden)),
     totalMinor: batchTotalMinor(batch),
     issues,
     approvals,
@@ -123,6 +132,8 @@ export const paymentBatch = definePrimitive({
     requiredApprovals: "number",
     onBatchChange: "callback",
     pageSize: "number",
+    referenceKind: "string",
+    secretReference: "boolean",
     ...queryOptionKinds,
   },
   // `batch` itself is left out: it carries account numbers.
@@ -149,14 +160,14 @@ export const paymentBatch = definePrimitive({
       refusal: "",
       queryFormat: QUERY_FORMAT,
       query,
-      ...derive(batch, options.requiredApprovals ?? 2),
-      ...deriveList(batch, query),
+      ...derive(batch, options.requiredApprovals ?? 2, hidesReferences(options)),
+      ...deriveList(batch, query, hidesReferences(options)),
     };
   },
   sync: (options: Options) => ({
     ...(options.batch === undefined
       ? {}
-      : { batch: options.batch, ...derive(options.batch, options.requiredApprovals ?? 2) }),
+      : { batch: options.batch, ...derive(options.batch, options.requiredApprovals ?? 2, hidesReferences(options)) }),
     ...(options.query === undefined ? {} : { query: options.query }),
   }),
   api: (context) => {
@@ -165,7 +176,7 @@ export const paymentBatch = definePrimitive({
     context.onOptions((options) => {
       const state = context.store.get();
       const query = options.query ?? state.query;
-      context.store.set({ query, ...deriveList(options.batch ?? state.batch, query) });
+      context.store.set({ query, ...deriveList(options.batch ?? state.batch, query, hidesReferences(options)) });
     });
     const commit = (next: Batch, reason: string, event?: Event) => {
       // The bridge hears the batch without account numbers; the owner hears all of it.
@@ -173,12 +184,17 @@ export const paymentBatch = definePrimitive({
         ...next,
         debitAccount: next.debitAccount ? "[redacted]" : "",
         items: next.items.map(({ creditorAccount: _secret, ...rest }) =>
-          rest.reference ? { ...rest, reference: "[redacted]" } : rest,
+          shownReference(rest, hidesReferences(context.options())),
         ),
       };
       const ok = commitSecret(context as never, change as never, "batch", next, shown, { reason, event });
       if (ok && context.options().batch === undefined) {
-        context.store.set({ refusal: "", ...derive(next, required()), ...deriveList(next, context.store.get().query) });
+        const hidden = hidesReferences(context.options());
+        context.store.set({
+          refusal: "",
+          ...derive(next, required(), hidden),
+          ...deriveList(next, context.store.get().query, hidden),
+        });
       } else if (ok) context.store.set({ refusal: "" });
       return ok;
     };
@@ -190,7 +206,10 @@ export const paymentBatch = definePrimitive({
         // Throws on a bad query, before anything changes.
         normalizeQuery(paymentColumns, next);
         const ok = change("query", next, { reason, event });
-        if (ok) context.store.set(deriveList(context.store.get().batch, context.store.get().query));
+        if (ok)
+          context.store.set(
+            deriveList(context.store.get().batch, context.store.get().query, hidesReferences(context.options())),
+          );
         return ok;
       },
       refuse: (message) => {

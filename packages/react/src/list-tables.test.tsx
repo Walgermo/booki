@@ -431,7 +431,13 @@ describe("PaymentBatch's payment list as a table", () => {
   };
 
   it("lets an agent filter by creditor, sort and page, and keeps account numbers out", async () => {
-    const { entry, act } = setup("payment-batch", "Payment batch", <PaymentBatch defaultBatch={batch} actor="kari" />);
+    // A US memo is shown to an agent unless the app says it is secret (memo-reference.test.tsx);
+    // here it does, so the list's redaction is what is tested.
+    const { entry, act } = setup(
+      "payment-batch",
+      "Payment batch",
+      <PaymentBatch defaultBatch={batch} actor="kari" secretReference />,
+    );
     expect(entry().actions).toEqual(expect.arrayContaining(TABLE_ACTIONS));
     expect(entry()).toMatchObject({
       view: { total: 3, matching: 3 },
@@ -441,7 +447,7 @@ describe("PaymentBatch's payment list as a table", () => {
 
     expect((await act("setFilter", ["creditorName", "acme"])).ok).toBe(true);
     expect(entry().rows).toEqual([
-      // A payment reference (KID) is as secret as the account: redacted.
+      // A reference the app marks secret is redacted, like the account.
       { id: "p1", creditorName: "Acme", reference: "[redacted]", amountMinor: 100_00 },
       { id: "p2", creditorName: "Acme", reference: "[redacted]", amountMinor: 120_00 },
     ]);
