@@ -442,7 +442,16 @@
   },
   "document-signoff": {
     "actions": ["assertSignable"],
-    "options": ["actor", "actorName", "defaultDocument", "denied", "document", "minReason", "onDocumentChange"],
+    "options": [
+      "actor",
+      "actorName",
+      "blockOpenPoints",
+      "defaultDocument",
+      "denied",
+      "document",
+      "minReason",
+      "onDocumentChange"
+    ],
     "parts": ["reason", "root", "sign", "withdraw"],
     "dataSlots": [
       "document-signoff-actions",
