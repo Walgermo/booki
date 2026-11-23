@@ -1,0 +1,249 @@
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
+import { mount } from "@ui-sdk/core/testing";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { createBookiAgent, useBookiField } from "./index.js";
+import { bookiFieldAmount } from "./use-booki-field-amount.js";
+import { bookiFieldCode } from "./use-booki-field-code.js";
+import { bookiFieldDate } from "./use-booki-field-date.js";
+
+afterEach(() => cleanup());
+
+const drift = [
+  { value: "100", label: "Drift" },
+  { value: "200", label: "Prosjekt" },
+];
+
+type State = Record<string, unknown>;
+
+describe("the three definitions, mounted", () => {
+  it("amount: a valid minor-unit value changes the state and says why; a refusal names the unit and leaves the value", () => {
+    const onValueChange = vi.fn();
+    // Not controlled here: without a `value` the field holds what the agent sets.
+    const view = mount(bookiFieldAmount as never, { currency: "NOK", onValueChange } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(api.setMinor!(12_500)).toBe(true);
+      expect((view.state as State).minor).toBe(12_500);
+      expect(onValueChange.mock.calls[0]![0]).toBe(12_500);
+      expect(onValueChange.mock.calls[0]![1]).toMatchObject({ reason: "set-minor" });
+
+      expect(() => api.setMinor!(125.5)).toThrow(/minor units/);
+      expect(() => api.setMinor!(-1)).toThrow(/minMinor/);
+      expect((view.state as State).minor).toBe(12_500);
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+    } finally {
+      view.unmount();
+    }
+  });
+
+  it("amount: a controlled value stays held until the product passes the new one back", () => {
+    const view = mount(bookiFieldAmount as never, { value: 100, currency: "NOK" } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(api.setMinor!(900)).toBe(true);
+      expect((view.state as State).minor).toBe(100);
+    } finally {
+      view.unmount();
+    }
+  });
+
+  it("code: a value from the list changes it; an unknown one is refused with both labels", () => {
+    const onValueChange = vi.fn();
+    const view = mount(bookiFieldCode as never, { options: drift, onValueChange } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(api.setCode!("200")).toBe(true);
+      expect((view.state as State).code).toBe("200");
+      expect(onValueChange.mock.calls[0]![0]).toBe("200");
+      expect(onValueChange.mock.calls[0]![1]).toMatchObject({ reason: "set-code" });
+
+      expect(() => api.setCode!("300")).toThrow(/Drift/);
+      expect(() => api.setCode!("300")).toThrow(/Prosjekt/);
+      expect((view.state as State).code).toBe("200");
+    } finally {
+      view.unmount();
+    }
+  });
+
+  it("date: an ISO date that exists changes it; an impossible or free-text one is refused", () => {
+    const onValueChange = vi.fn();
+    const view = mount(bookiFieldDate as never, { onValueChange } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(api.setDate!("2026-03-03")).toBe(true);
+      expect((view.state as State).date).toBe("2026-03-03");
+      expect(onValueChange.mock.calls[0]![1]).toMatchObject({ reason: "set-date" });
+
+      expect(() => api.setDate!("Smarch 3rd")).toThrow(/YYYY-MM-DD/);
+      expect(() => api.setDate!("2026-02-30")).toThrow(/YYYY-MM-DD/);
+      expect((view.state as State).date).toBe("2026-03-03");
+    } finally {
+      view.unmount();
+    }
+  });
+});
+
+// Three small components wrapping a plain input and a plain select the product
+// already has. The hook only adds the agent's actions and the refusal.
+
+function AmountField(props: {
+  value: number;
+  onValueChange?: (minor: number, details: { source?: string }) => void;
+  disabled?: boolean;
+}) {
+  return useBookiField(
+    {
+      kind: "amount",
+      value: props.value,
+      currency: "NOK",
+      label: "Beløp",
+      onValueChange: props.onValueChange,
+      disabled: props.disabled,
+    },
+    ({ value, change, refusal }) => (
+      <div>
+        <input aria-label="Beløp-felt" value={value} onChange={(e) => change(Number(e.target.value))} />
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  );
+}
+
+function CostCentreField(props: {
+  value: string;
+  onValueChange?: (code: string, details: { source?: string }) => void;
+}) {
+  return useBookiField(
+    { kind: "code", value: props.value, options: drift, label: "Kostnadssted", onValueChange: props.onValueChange },
+    ({ value, change, refusal }) => (
+      <div>
+        <select aria-label="Kostnadssted-velger" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)}>
+          {drift.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  );
+}
+
+/** The product owns the value: it passes the new one back, as a real select does. */
+function CostCentreOwned(props: { onValueChange?: (code: string, details: { source?: string }) => void }) {
+  const [code, setCode] = useState("100");
+  return (
+    <CostCentreField
+      value={code}
+      onValueChange={(next, details) => {
+        setCode(next);
+        props.onValueChange?.(next, details);
+      }}
+    />
+  );
+}
+
+function DateField(props: { value: string; onValueChange?: (date: string, details: { source?: string }) => void }) {
+  return useBookiField(
+    { kind: "date", value: props.value, label: "Forfallsdato", onValueChange: props.onValueChange },
+    ({ value, change, refusal }) => (
+      <div>
+        <input aria-label="Dato-felt" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  );
+}
+
+describe("useBookiField through the agent bridge", () => {
+  it("snapshot lists each field with its label, value key and actions", () => {
+    const agent = createBookiAgent();
+    render(
+      <>
+        <AmountField value={12_500} />
+        <CostCentreField value="100" />
+        <DateField value="2026-03-03" />
+      </>,
+    );
+    const snapshot = agent.snapshot();
+
+    const amount = snapshot.find((c) => c.component === "field-amount")!;
+    expect(amount).toMatchObject({ label: "Beløp", minor: 12_500, actions: ["setMinor"] });
+
+    const code = snapshot.find((c) => c.component === "field-code")!;
+    expect(code).toMatchObject({ label: "Kostnadssted", code: "100", actions: ["setCode"] });
+
+    const date = snapshot.find((c) => c.component === "field-date")!;
+    expect(date).toMatchObject({ label: "Forfallsdato", date: "2026-03-03", actions: ["setDate"] });
+  });
+
+  it("the snapshot shows no key named error", () => {
+    const agent = createBookiAgent();
+    render(<CostCentreField value="100" />);
+    const entry = agent.snapshot().find((c) => c.component === "field-code")!;
+    expect(Object.keys(entry)).not.toContain("error");
+    expect(entry).toHaveProperty("refusal", null);
+  });
+
+  it("an agent's setCode changes the product's select; a refused one says what exists", async () => {
+    const agent = createBookiAgent();
+    const onValueChange = vi.fn();
+    render(<CostCentreOwned onValueChange={onValueChange} />);
+    const entry = agent.snapshot().find((c) => c.component === "field-code")!;
+
+    const done = (await agent.act({ steps: [{ ref: entry.ref, action: "setCode", args: ["200"] }] })) as {
+      ok: boolean;
+    };
+    expect(done.ok).toBe(true);
+    expect(onValueChange.mock.calls[0]![0]).toBe("200");
+    expect(onValueChange.mock.calls[0]![1].source).toBe("agent");
+    expect((screen.getByLabelText("Kostnadssted-velger") as HTMLSelectElement).value).toBe("200");
+
+    const refused = (await agent.act({ steps: [{ ref: entry.ref, action: "setCode", args: ["300"] }] })) as {
+      ok: boolean;
+      error?: { message: string };
+    };
+    expect(refused.ok).toBe(false);
+    expect(refused.error?.message).toContain("Drift");
+    expect(refused.error?.message).toContain("Prosjekt");
+  });
+
+  it("a person's change through the product's own select is not the agent's", () => {
+    const onValueChange = vi.fn();
+    render(<CostCentreField value="100" onValueChange={onValueChange} />);
+    fireEvent.change(screen.getByLabelText("Kostnadssted-velger"), { target: { value: "200" } });
+    expect(onValueChange.mock.calls[0]![0]).toBe("200");
+    expect(onValueChange.mock.calls[0]![1].source).not.toBe("agent");
+  });
+
+  it("a person typing an invalid date shows the refusal next to the field and keeps the value", () => {
+    const onValueChange = vi.fn();
+    render(<DateField value="2026-03-03" onValueChange={onValueChange} />);
+    const input = screen.getByLabelText("Dato-felt") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "2026-02-30" } });
+    expect(screen.getByRole("alert").textContent).toContain("YYYY-MM-DD");
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(input.value).toBe("2026-03-03");
+  });
+
+  it("a refused amount through the agent returns ok false with the unit named", async () => {
+    const agent = createBookiAgent();
+    render(<AmountField value={0} />);
+    const entry = agent.snapshot().find((c) => c.component === "field-amount")!;
+    const refused = (await agent.act({ steps: [{ ref: entry.ref, action: "setMinor", args: ["12.5"] }] })) as {
+      ok: boolean;
+      error?: { message: string };
+    };
+    expect(refused.ok).toBe(false);
+    expect(refused.error?.message).toContain("minor units");
+  });
+
+  it("disabled leaves the snapshot entry with no actions to offer", () => {
+    const agent = createBookiAgent();
+    render(<AmountField value={0} disabled />);
+    const entry = agent.snapshot().find((c) => c.component === "field-amount")!;
+    expect(entry.actions ?? []).toEqual([]);
+  });
+});

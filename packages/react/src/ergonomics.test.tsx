@@ -133,6 +133,24 @@ const file = (id: string, kind?: string) => ({
 });
 
 const CONTROLS: Record<string, Control> = {
+  "field-amount": {
+    options: { currency: "NOK" },
+    probes: { setMinor: { args: [125.5], names: ["minor units", "12500"] } },
+  },
+  "field-code": {
+    options: {
+      value: "100",
+      options: [
+        { value: "100", label: "Drift" },
+        { value: "200", label: "Prosjekt" },
+      ],
+    },
+    probes: { setCode: { args: ["300"], names: ["Drift", "Prosjekt"] } },
+  },
+  "field-date": {
+    options: { value: "" },
+    probes: { setDate: { args: ["Smarch 3rd"], names: ["YYYY-MM-DD"] } },
+  },
   "account-picker": {
     options: { accounts },
     probes: {
@@ -680,9 +698,16 @@ const CONTROLS: Record<string, Control> = {
 
 const SRC = path.dirname(new URL(import.meta.url).pathname);
 const PRIMITIVES = path.join(SRC, "..", "..", "primitives", "src");
-const sources = readdirSync(PRIMITIVES)
-  .filter((file) => file.endsWith(".ts") && !file.includes(".test."))
-  .map((file) => readFileSync(path.join(PRIMITIVES, file), "utf8"));
+const sources = [
+  ...readdirSync(PRIMITIVES)
+    .filter((file) => file.endsWith(".ts") && !file.includes(".test."))
+    .map((file) => readFileSync(path.join(PRIMITIVES, file), "utf8")),
+  // The react files that define a primitive of their own, like use-booki-field-amount.ts.
+  ...readdirSync(SRC)
+    .filter((file) => /\.tsx?$/.test(file) && !file.includes(".test."))
+    .map((file) => readFileSync(path.join(SRC, file), "utf8"))
+    .filter((text) => text.includes("definePrimitive(")),
+];
 
 type Definition = { name: string; options: Record<string, unknown>; slots: Record<string, unknown> };
 const definitions = (Object.values(library) as unknown[]).filter(

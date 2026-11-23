@@ -505,6 +505,24 @@
       "visually-hidden"
     ]
   },
+  "field-amount": {
+    "actions": ["setMinor"],
+    "options": ["currency", "disabled", "maxMinor", "minMinor", "onValueChange", "readOnly", "value"],
+    "parts": ["root"],
+    "dataSlots": ["field-amount"]
+  },
+  "field-code": {
+    "actions": ["setCode"],
+    "options": ["disabled", "onValueChange", "options", "readOnly", "value"],
+    "parts": ["root"],
+    "dataSlots": ["field-code"]
+  },
+  "field-date": {
+    "actions": ["setDate"],
+    "options": ["disabled", "onValueChange", "readOnly", "value"],
+    "parts": ["root"],
+    "dataSlots": ["field-date"]
+  },
   "financial-date": {
     "actions": ["clear", "setDate", "setDaysFromToday", "setValue"],
     "options": [
