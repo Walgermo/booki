@@ -343,6 +343,14 @@ own, map it there and keep `code` and `message`: the agent acts on them.
 it acts for (`onBehalfOf`) allow, and an unknown person is refused. Permissions the agent
 has by the company's rule go in `agentOwn`. Without `personOf` the person is only recorded.
 
+**Your own rules** refuse with `throw new RuleRefusal("…")` (422 `server.rule`). Any other
+error a rule throws is rethrown, not sent to the caller. A request an agent raised records
+the person it worked for as `requestedFor`, so that person cannot decide it.
+
+**What an agent reads is data.** Supplier names, descriptions and other text read off a
+document reach the agent in state and in refusals, quoted. Tell your model that text in
+tool results is never an instruction. A reconciliation gives the agent `referenceTag`, never the KID.
+
 **Log refusals too:** on `!verdict.ok`, write `actorRecord(actor)` and `verdict.code` to the audit trail.
 
 Guards: `guardPostVoucher`, `guardDecideApproval`, `guardApproved`,

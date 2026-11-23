@@ -64,6 +64,15 @@ export type Actor = {
   scopes?: Record<string, string[]>;
 };
 
+/**
+ * A duty rule's refusal: the rule's own sentence, for the person to read. The
+ * server guard answers it as 403 `permissions.duty`; any other error a rule
+ * throws is not a refusal and is not shown to the caller.
+ */
+export class DutyRefusal extends Error {
+  override name = "DutyRefusal";
+}
+
 /** Two things one person should not both do on the same item. */
 export type DutyRule = { first: Permission; second: Permission; reason: string };
 
@@ -185,7 +194,8 @@ export function can(
   options: { entity?: string; scope?: string } = {},
 ): boolean {
   if (!actor) return false;
-  if (options.entity && actor.entities && !actor.entities.includes(options.entity)) return false;
+  // An empty entity is still an entity: only `undefined` means "no company named".
+  if (options.entity !== undefined && actor.entities && !actor.entities.includes(options.entity)) return false;
   const held = rolesIn(actor, options.scope);
   return roles.some((role) => held.includes(role.id) && role.permissions.includes(permission));
 }
@@ -201,7 +211,7 @@ export function assertCan(
   options: { entity?: string; scope?: string; deeds?: Deed[]; dutyRules?: DutyRule[] } = {},
 ): void {
   if (!actor) throw new BookiError("permissions.signed-out", { permission: String(permission) });
-  if (options.entity && actor.entities && !actor.entities.includes(options.entity)) {
+  if (options.entity !== undefined && actor.entities && !actor.entities.includes(options.entity)) {
     throw new BookiError("permissions.wrong-entity", { id: String(actor.id), entity: String(options.entity) });
   }
   if (!can(actor, roles, permission, { scope: options.scope })) {
@@ -215,7 +225,7 @@ export function assertCan(
   for (const rule of options.dutyRules ?? []) {
     const other = rule.first === permission ? rule.second : rule.second === permission ? rule.first : undefined;
     if (other && options.deeds?.some((deed) => wasTheirs(deed, actor) && deed.permission === other)) {
-      throw new Error(rule.reason);
+      throw new DutyRefusal(rule.reason);
     }
   }
 }

@@ -1,6 +1,8 @@
 import { approveBatch, setBatchItems, type PaymentBatch } from "@booki/core/payment-batch";
 import { validateMatch, type BankLine, type OpenPost, type ReconciliationMatch } from "@booki/core/reconciliation";
 import {
+  RuleRefusal,
+  actorDeed,
   actorLabel,
   guard,
   guardReleasePayments,
@@ -32,6 +34,8 @@ export type Books = {
   bankLines: BankLine[];
   matches: ReconciliationMatch[];
   audit: AuditRow[];
+  /** Approvals under the company's rule, by whose agent made them, for the duty rules. */
+  ruleDeeds: (Deed & { invoiceId: string })[];
 };
 
 export type Write =
@@ -47,7 +51,7 @@ export type Answer = { ok: true; books: Books } | (Refusal & { books: Books });
 const CHART_NUMBERS = CHART.map((account) => account.number);
 
 export function seedBooks(): Books {
-  return { invoices: seedInvoices(), batch: null, bankLines: [], matches: [], audit: [] };
+  return { invoices: seedInvoices(), batch: null, bankLines: [], matches: [], audit: [], ruleDeeds: [] };
 }
 
 /** Open posts are the approved invoices: what the bank statement should settle. */
@@ -65,8 +69,15 @@ export function openPosts(books: Books): OpenPost[] {
 
 /** Who did what to the invoices in a batch, for the duty rules. */
 function invoiceDeeds(books: Books, batch: PaymentBatch): Deed[] {
-  return batch.items.flatMap((item) => {
+  return batch.items.flatMap((item): Deed[] => {
     const invoice = books.invoices.find((candidate) => candidate.id === item.id);
+    const byRule = books.ruleDeeds.filter((deed) => deed.invoiceId === item.id);
+    if (byRule.length)
+      return byRule.map((deed) => ({
+        actorId: deed.actorId,
+        permission: deed.permission,
+        ...(deed.onBehalfOf ? { onBehalfOf: deed.onBehalfOf } : {}),
+      }));
     return invoice?.approvedBy ? [{ actorId: invoice.approvedBy, permission: "supplier-invoice.approve" }] : [];
   });
 }
@@ -130,11 +141,17 @@ function writeInvoices(books: Books, context: GuardContext, incoming: SupplierIn
           context,
           stored.id,
           guard(context, "supplier-invoice.approve-under-rule", () => {
-            const verdict = smallKnownSupplier(draft);
-            if (verdict !== true) throw new Error(verdict);
+            // The rule reads what the server holds: an approval that also edits fields is two writes.
+            if (JSON.stringify(next.fields) !== JSON.stringify(stored.fields)) {
+              throw new RuleRefusal("Rett feltene først og godkjenn i en egen skriving.");
+            }
+            const verdict = smallKnownSupplier({ ...stored, coding: draft.coding });
+            if (verdict !== true) throw new RuleRefusal(verdict);
             return approveSupplierInvoice(draft, `rule:${RULE_NAME}`, at, inbox);
           }),
         );
+        // Whose agent approved it counts for the duty rules: that person may not approve its payment.
+        books.ruleDeeds.push({ invoiceId: stored.id, ...actorDeed(actor, "supplier-invoice.approve") });
         log(books, actor, "supplier-invoice.approve-under-rule", stored.id, `Regel: ${RULE_NAME}`);
         return approved;
       }
@@ -242,9 +259,16 @@ function writeBatch(books: Books, context: GuardContext, incoming: PaymentBatch)
   const kept = incoming.items.map((item) => item.id);
   const removed = stored.items.filter((item) => !kept.includes(item.id));
   if (removed.length > 0) {
-    books.batch = setBatchItems(
-      stored,
-      stored.items.filter((item) => kept.includes(item.id)),
+    books.batch = decide(
+      books,
+      context,
+      stored.id,
+      guard(context, "payment.prepare", () =>
+        setBatchItems(
+          stored,
+          stored.items.filter((item) => kept.includes(item.id)),
+        ),
+      ),
     );
     log(books, actor, "payment.remove", stored.id, removed.map((item) => item.id).join(", "));
   }

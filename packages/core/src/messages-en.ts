@@ -50,6 +50,7 @@ export const EN = {
   "batch.not-approvable": "The batch cannot be approved yet: {issues}",
   "batch.already-approved-by": '"{who}" has already approved this batch. It needs a different person.',
   "batch.not-releasable": "The batch cannot be released: {issues}",
+  "batch.required-approvals": "requiredApprovals is a whole number of at least 1, not {value}.",
   "batch.approvals-missing": "The batch has {current} of {required} approvals{stale}.",
   "batch.approvals-stale": " ({count} earlier approval(s) no longer count because the batch changed)",
   "voucher.amount-format": "{field} must be a non-negative integer in minor units (e.g. 12500 = 125.00), got {value}",

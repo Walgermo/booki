@@ -145,3 +145,73 @@ describe("the books, as the server keeps them", () => {
     expect(books.audit[0]).toMatchObject({ actor: "agent:bookkeeper", target: "Betalingsforslag" });
   });
 });
+
+describe("findings of the security review", () => {
+  it("does not let the agent make an unknown supplier a regular one by editing its fields", () => {
+    const books = seedBooks();
+    const si2 = books.invoices.find((i) => i.id === "si-2")!;
+    const forged = {
+      ...si2,
+      fields: {
+        ...si2.fields,
+        supplierOrgNumber: { ...si2.fields.supplierOrgNumber, value: "923609016" },
+        grossMinor: { ...si2.fields.grossMinor, value: 400_000 },
+      },
+      coding: { account: "6340" },
+    };
+    // In one write with the approval: refused.
+    const together = apply(books, as("agent:nina"), {
+      action: "invoices",
+      invoices: books.invoices.map((i) =>
+        i.id === "si-2" ? { ...forged, status: "approved" as const, approvedBy: "rule:x" } : i,
+      ),
+    });
+    expect(together.ok).toBe(false);
+    // As two writes: the edit stands, but the rule checks the registered bank account.
+    apply(books, as("agent:nina"), {
+      action: "invoices",
+      invoices: books.invoices.map((i) => (i.id === "si-2" ? forged : i)),
+    });
+    const after = apply(books, as("agent:nina"), {
+      action: "invoices",
+      invoices: books.invoices.map((i) =>
+        i.id === "si-2" ? { ...i, status: "approved" as const, approvedBy: "rule:x" } : i,
+      ),
+    });
+    expect(after).toMatchObject({ ok: false, code: "server.rule" });
+    expect(books.invoices.find((i) => i.id === "si-2")!.status).not.toBe("approved");
+  });
+
+  it("counts an approval under the rule as the deed of the person whose agent made it", () => {
+    const books = seedBooks();
+    const reject = books.invoices.map((i) =>
+      i.id === "si-3" ? { ...i, status: "rejected" as const, rejectionReason: "Kopi av si-1" } : i,
+    );
+    apply(books, as("person:kari"), { action: "invoices", invoices: reject });
+    apply(books, as("agent:ola"), { action: "invoices", invoices: coded(books, "si-1", "6800") });
+    const approved = apply(books, as("agent:ola"), {
+      action: "invoices",
+      invoices: withInvoice(books, "si-1", { status: "approved", approvedBy: "rule:x" }),
+    });
+    expect(approved.ok).toBe(true);
+    expect(apply(books, as("person:nina"), { action: "prepare-batch" }).ok).toBe(true);
+    const ola = apply(books, as("person:ola"), {
+      action: "batch",
+      batch: { ...books.batch!, approvals: [{ approverId: "ola", at: "x", fingerprint: "x" }] },
+    });
+    expect(ola).toMatchObject({ ok: false, code: "permissions.duty" });
+  });
+
+  it("lets only someone who may prepare a batch take payments out of it", () => {
+    const books = seedBooks();
+    apply(books, as("person:nina"), { action: "invoices", invoices: coded(books, "si-2", "6340") });
+    apply(books, as("person:kari"), {
+      action: "invoices",
+      invoices: withInvoice(books, "si-2", { status: "approved" }),
+    });
+    apply(books, as("person:nina"), { action: "prepare-batch" });
+    const kari = apply(books, as("person:kari"), { action: "batch", batch: { ...books.batch!, items: [] } });
+    expect(kari).toMatchObject({ ok: false, status: 403 });
+    expect(books.batch!.items).toHaveLength(1);
+  });
+});
