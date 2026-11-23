@@ -1,4 +1,5 @@
 import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import type { BookiChangeDetails } from "./change-details.js";
 import { type PaymentBatch as Batch, type PaymentItem } from "@booki/core/payment-batch";
 import { matchingRows, type TableColumn, type TableQuery } from "@booki/core/table";
 import { createParts } from "@ui-sdk/react/primitive";
@@ -80,7 +81,7 @@ export type PaymentBatchProps = {
   defaultBatch?: Batch;
   actor?: string;
   requiredApprovals?: number;
-  onBatchChange?: (batch: Batch) => void;
+  onBatchChange?: (batch: Batch, details: BookiChangeDetails) => void;
   /** Payments a person sees per page. Defaults to 100. */
   pageSize?: number;
   /** The sort, search, filters and page of the list, when the app owns it. */

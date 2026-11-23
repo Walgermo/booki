@@ -59,6 +59,8 @@ writeFileSync(
   join(root, "dist/layered.css"),
   `@layer theme, base, booki, components, utilities;\n@layer booki {\n${css}\n}\n`,
 );
+// TypeScript checks side-effect imports (TS2882): the CSS has no exports.
+writeFileSync(join(root, "dist/css.d.ts"), "export {};\n");
 writeFileSync(join(root, "dist/shadcn.css"), readFileSync(join(root, "src/shadcn.css"), "utf8"));
 console.log(
   `Built @booki/styles → dist/booki.css, layered.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,

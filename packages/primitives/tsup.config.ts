@@ -18,6 +18,7 @@ export default defineConfig({
     "src/audit-findings.ts",
     "src/document-signoff.ts",
     "src/sheet-stack.ts",
+    "src/agent-policy.ts",
     "src/person-only.ts",
     "src/table-query.ts",
     "src/audit-workpaper.ts",

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { BookiChangeDetails } from "./change-details.js";
 import {
   periodMonths,
   type DepreciationRun,
@@ -133,9 +134,9 @@ export type FixedAssetRegisterProps = {
   accumulatedAccount?: RunAccount;
   /** Defaults to the profile's currency. */
   currency?: string;
-  onAssetsChange?: (assets: FixedAsset[]) => void;
-  onPeriodChange?: (period: string) => void;
-  onRunsChange?: (runs: string[]) => void;
+  onAssetsChange?: (assets: FixedAsset[], details: BookiChangeDetails) => void;
+  onPeriodChange?: (period: string, details: BookiChangeDetails) => void;
+  onRunsChange?: (runs: string[], details: BookiChangeDetails) => void;
   /** A person confirmed the run: post these voucher lines. */
   onRun?: (run: DepreciationRun) => void;
   onDispose?: (disposal: Disposal) => void;

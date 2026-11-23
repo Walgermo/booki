@@ -5,6 +5,7 @@ import {
   type AttachmentKind,
   type AttachmentRegion,
 } from "@booki/core/attachments";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -73,7 +74,7 @@ export type EvidenceListProps = {
   locked?: boolean;
   actor?: string;
   agentActor?: string;
-  onAttachmentsChange?: (attachments: Attachment[]) => void;
+  onAttachmentsChange?: (attachments: Attachment[], details: BookiChangeDetails) => void;
   className?: string;
   "aria-label"?: string;
 };

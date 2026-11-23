@@ -1,4 +1,5 @@
 import { closeBlockers, type CloseSummary, type CloseTask } from "@booki/core/close";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -22,7 +23,7 @@ export type CloseChecklistProps = {
   defaultTasks?: CloseTask[];
   actor?: string;
   agentActor?: string;
-  onTasksChange?: (tasks: CloseTask[]) => void;
+  onTasksChange?: (tasks: CloseTask[], details: BookiChangeDetails) => void;
   nameOf?: (id: string) => ReactNode;
   className?: string;
   "aria-label"?: string;

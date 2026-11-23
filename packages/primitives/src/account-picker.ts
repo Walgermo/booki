@@ -1,8 +1,8 @@
 import type { AccountOption } from "@booki/core/voucher";
-import { BookiError } from "@booki/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";
+import { itemsHint, refuseUnknown, shownItems } from "./offered.js";
 import {
   createPicker,
   fallbackAttrs,
@@ -30,7 +30,10 @@ export type AccountPickerOptions = {
 export type AccountPickerState = {
   value: string;
   name: string;
+  /** What the snapshot lists: all of a short chart, none of a long one. */
   items: AgentItem[];
+  /** How to find an account in a chart too long to list. */
+  itemsHint: string;
   accounts: AccountOption[];
   label: string;
   placeholder: string;
@@ -79,14 +82,15 @@ export const accountPicker = definePrimitive({
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["value", "name", "items"],
+  controlled: ["value", "name", "items", "itemsHint"],
   state: (options: AccountPickerOptions): AccountPickerState => {
     const accounts = options.accounts ?? [];
     const selected = pickInitial(accounts, options.value, options.defaultValue);
     return {
       value: selected?.number ?? "",
       name: selected?.name ?? "",
-      items: toItems(accounts),
+      items: shownItems(toItems(accounts)),
+      itemsHint: itemsHint(toItems(accounts)),
       accounts,
       label: options.label ?? "Account",
       placeholder: options.placeholder ?? "Select account…",
@@ -102,7 +106,8 @@ export const accountPicker = definePrimitive({
     }
     if (options.accounts !== undefined) {
       partial.accounts = options.accounts;
-      partial.items = toItems(options.accounts);
+      partial.items = shownItems(toItems(options.accounts));
+      partial.itemsHint = itemsHint(toItems(options.accounts));
     }
     if (options.value !== undefined) {
       const accounts = options.accounts ?? [];
@@ -129,18 +134,15 @@ export const accountPicker = definePrimitive({
         const account = resolveAccount(context.store.get().accounts, key);
         return account ? apply(account, why.reason, why.event) : false;
       },
-      text: (state) => state.items.find((i) => i.value === state.value)?.label ?? "",
+      text: (state) => toItems(state.accounts.filter((a) => a.number === state.value))[0]?.label ?? "",
     });
 
     const methods = {
       picker,
       setAccount: (raw: string, event?: unknown) => {
-        const { accounts, items } = context.store.get();
+        const { accounts } = context.store.get();
         const selected = resolveAccount(accounts, String(raw));
-        if (!selected) {
-          const listed = items.map((i) => i.label).join(", ");
-          throw new BookiError("select.unknown-account", { value: String(raw), items: listed || "(none)" });
-        }
+        if (!selected) refuseUnknown("select.unknown-account", toItems(accounts), raw);
         return apply(selected, "set-account", asEvent(event));
       },
       /** Same as setAccount, and "" empties it: history and staging restore `value` through set<Key>. */
@@ -152,7 +154,7 @@ export const accountPicker = definePrimitive({
         if (ok) context.store.set({ name: "" });
         return ok;
       },
-      allItems: () => context.store.get().items,
+      allItems: () => toItems(context.store.get().accounts),
     };
     return methods;
   },

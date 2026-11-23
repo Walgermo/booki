@@ -151,6 +151,10 @@
       "types": "./dist/permissions.d.ts",
       "default": "./dist/permissions.js"
     },
+    "./closest": {
+      "types": "./dist/closest.d.ts",
+      "default": "./dist/closest.js"
+    },
     "./msg": {
       "types": "./dist/msg.d.ts",
       "default": "./dist/msg.js"

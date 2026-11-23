@@ -6,6 +6,7 @@ import {
   type InvoiceTotals,
   type TaxCategory,
 } from "@booki/core/invoice";
+import type { BookiChangeDetails } from "./change-details.js";
 import { formatMoney, money } from "@booki/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
@@ -34,7 +35,7 @@ export type InvoiceEditorProps = {
   defaultInvoice?: Invoice;
   others?: Invoice[];
   nextNumber?: string;
-  onInvoiceChange?: (invoice: Invoice) => void;
+  onInvoiceChange?: (invoice: Invoice, details: BookiChangeDetails) => void;
   /** Tax rates offered for category S, in basis points. Defaults to the profile's codes. */
   taxRatesBp?: number[];
   className?: string;

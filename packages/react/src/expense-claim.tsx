@@ -6,6 +6,7 @@ import {
   type ExpenseRule,
   type PolicyException,
 } from "@booki/core/expense";
+import type { BookiChangeDetails } from "./change-details.js";
 import { formatMoney, money } from "@booki/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
@@ -113,7 +114,7 @@ export type ExpenseClaimProps = {
   policy?: ExpensePolicy;
   today?: string;
   actor?: string;
-  onClaimChange?: (claim: Claim) => void;
+  onClaimChange?: (claim: Claim, details: BookiChangeDetails) => void;
   className?: string;
   "aria-label"?: string;
 };

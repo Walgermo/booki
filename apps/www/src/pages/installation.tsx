@@ -1,3 +1,4 @@
+import { version } from "../../../../packages/react/package.json";
 import { Link } from "react-router-dom";
 
 import { InstallBlock } from "../components/install-block";
@@ -29,12 +30,13 @@ cd booki
 pnpm install
 pnpm pack:local --out ../your-product/vendor/booki`;
 
+// What `pnpm pack:local` names the files: the packages share one version.
 const ADD = `# pnpm-workspace.yaml
 overrides:
-  "@booki/core": "file:./vendor/booki/booki-core-0.1.0.tgz"
-  "@booki/primitives": "file:./vendor/booki/booki-primitives-0.1.0.tgz"
-  "@booki/react": "file:./vendor/booki/booki-react-0.1.0.tgz"
-  "@booki/styles": "file:./vendor/booki/booki-styles-0.1.0.tgz"
+  "@booki/core": "file:./vendor/booki/booki-core-${version}.tgz"
+  "@booki/primitives": "file:./vendor/booki/booki-primitives-${version}.tgz"
+  "@booki/react": "file:./vendor/booki/booki-react-${version}.tgz"
+  "@booki/styles": "file:./vendor/booki/booki-styles-${version}.tgz"
 
 # then
 pnpm add @booki/core @booki/react @booki/styles`;

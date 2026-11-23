@@ -1,3 +1,4 @@
+import { closest, LISTED_WHOLE } from "./closest.js";
 import { assertForeignAmount, convertMinor, type ForeignAmount } from "./fx.js";
 import { BookiError, msg } from "./msg.js";
 import { assertPostingAllowed, type PeriodState } from "./period-lock.js";
@@ -176,9 +177,9 @@ export function resolveChartAccount(chart: AccountOption[], account: string): Ac
   const found = chart.find((option) => option.number === number);
   if (found) return found;
   // A short chart is listed whole: a model reads a partial list as the chart.
-  const shown = chart.length <= 30 ? chart.length : 5;
-  const sample = chart
-    .slice(0, shown)
+  const shown = chart.length <= LISTED_WHOLE ? chart.length : 5;
+  // Of a long one, the nearest to what was asked for.
+  const sample = closest(chart, account, (option) => `${option.number} ${option.name}`, shown)
     .map((option) => `${option.number} ${option.name}`)
     .join(", ");
   if (!number) {

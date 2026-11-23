@@ -9,6 +9,8 @@ export type AuditEvent = {
   detail?: string;
   /** Optional rule/workflow version for agent auditability */
   ruleVersion?: string;
+  /** Who confirmed or refused the step: a person's id, or a rule such as `rule:under-5000`. */
+  decidedBy?: string;
 };
 
 export type AuditTrailProps = {
@@ -41,6 +43,7 @@ function AuditTrail({ events, className, emptyLabel }: AuditTrailProps) {
           </div>
           <div data-slot="audit-event-body">
             {event.actor}
+            {event.decidedBy ? ` → ${event.decidedBy}` : ""}
             {event.detail ? ` — ${event.detail}` : ""}
             {event.ruleVersion ? ` · v${event.ruleVersion}` : ""}
           </div>

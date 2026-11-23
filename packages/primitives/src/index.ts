@@ -119,6 +119,15 @@ export {
   documentSignoff,
 } from "./document-signoff.js";
 export { type Options as SheetStackOptions, sheetStack } from "./sheet-stack.js";
+export {
+  type AgentDecision,
+  type AgentDecisionRow,
+  type AgentPolicyOptions,
+  type AgentPolicyStep,
+  bookiAllow,
+  bookiRegisterTools,
+  isAllowed,
+} from "./agent-policy.js";
 export { isPersonOnly, personOnly } from "./person-only.js";
 export {
   type Options as AuditFindingsOptions,

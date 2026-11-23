@@ -1,4 +1,5 @@
 import { formatMoney, money } from "@booki/core/money";
+import type { BookiChangeDetails } from "./change-details.js";
 import {
   type BankLine,
   type OpenPost,
@@ -34,7 +35,7 @@ export type BankReconciliationProps = {
   openPosts: OpenPost[];
   matches?: ReconciliationMatch[];
   defaultMatches?: ReconciliationMatch[];
-  onMatchesChange?: (matches: ReconciliationMatch[]) => void;
+  onMatchesChange?: (matches: ReconciliationMatch[], details: BookiChangeDetails) => void;
   className?: string;
   "aria-label"?: string;
   children?: ReactNode;
@@ -124,11 +125,11 @@ function BankReconciliation({
       openPosts={openPosts}
       matches={matches}
       defaultMatches={defaultMatches}
-      onMatchesChange={(next: ReconciliationMatch[]) => {
+      onMatchesChange={(next: ReconciliationMatch[], details: BookiChangeDetails) => {
         // Rows that just left the tables can no longer be selected.
         setLineIds([]);
         setPostIds([]);
-        onMatchesChange?.(next);
+        onMatchesChange?.(next, details);
       }}
       className={className}
       aria-label={ariaLabel ?? copy.reconciliation}

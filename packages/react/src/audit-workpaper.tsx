@@ -1,4 +1,5 @@
 import { localToday } from "@booki/core/financial-date";
+import type { BookiChangeDetails } from "./change-details.js";
 import {
   SAMPLE_METHODS,
   TEST_RESULTS,
@@ -162,7 +163,7 @@ export type AuditWorkpaperProps = {
   actor?: string;
   /** Defaults to the profile's currency. */
   currency?: string;
-  onWorkpaperChange?: (workpaper: Workpaper) => void;
+  onWorkpaperChange?: (workpaper: Workpaper, details: BookiChangeDetails) => void;
   /** How a person's id is shown. */
   nameOf?: (id: string) => ReactNode;
   /** How an attachment id is described next to its field, e.g. a file name. */

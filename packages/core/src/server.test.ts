@@ -234,3 +234,58 @@ describe("audit engagements", () => {
     expect(actorRecord(tone)).toEqual({ actor: "tone", kind: "person" });
   });
 });
+
+describe("an agent never does more than the person it acts for", () => {
+  const people: Record<string, ServerActor> = { nina, kari, ola };
+  const personOf = (id: string) => people[id];
+  const agent: ServerActor = { id: "bookkeeper", kind: "agent", roles: ["accountant"], onBehalfOf: "kari" };
+  const post = (context: Parameters<typeof guard>[0]) => guard(context, "voucher.post", () => "posted");
+
+  it("refuses what the person may not do, and names who may", () => {
+    const verdict = post({ actor: agent, personOf });
+    expect(verdict).toMatchObject({ ok: false, status: 403, code: "server.delegation" });
+    expect(verdict.ok === false && verdict.message).toContain("Accountant");
+    expect(verdict.ok === false && verdict.message).toContain("kari");
+  });
+
+  it("allows what both may do", () => {
+    expect(post({ actor: { ...agent, onBehalfOf: "nina" }, personOf })).toMatchObject({ ok: true });
+  });
+
+  it("does not let the person's roles add to the agent's", () => {
+    const own: ServerActor = { ...agent, roles: [], onBehalfOf: "nina" };
+    expect(post({ actor: own, personOf })).toMatchObject({ ok: false, code: "permissions.denied" });
+  });
+
+  it("refuses a person it does not know, or a lookup that answers someone else", () => {
+    const gone: ServerActor = { ...agent, onBehalfOf: "left-the-company" };
+    expect(post({ actor: gone, personOf })).toMatchObject({ status: 403, code: "server.delegation-unknown" });
+    expect(post({ actor: agent, personOf: () => nina })).toMatchObject({ code: "server.delegation-unknown" });
+    expect(post({ actor: { ...agent, onBehalfOf: "" }, personOf })).toMatchObject({
+      code: "server.delegation-unknown",
+    });
+  });
+
+  it("refuses a company the person does not work in", () => {
+    const limited = () => ({ ...nina, entities: ["nordlys"] });
+    const actor: ServerActor = { ...agent, onBehalfOf: "nina" };
+    expect(post({ actor, personOf: limited, entity: "fjord" })).toMatchObject({ code: "server.delegation-entity" });
+    expect(post({ actor, personOf: limited, entity: "nordlys" })).toMatchObject({ ok: true });
+  });
+
+  it("counts the person's roles in the scope named", () => {
+    const scoped = () => ({ ...kari, scopes: { "case-1": ["accountant"] } });
+    expect(post({ actor: agent, personOf: scoped, scope: "case-1" })).toMatchObject({ ok: true });
+    expect(post({ actor: agent, personOf: scoped, scope: "case-2" })).toMatchObject({ code: "server.delegation" });
+  });
+
+  it("leaves what the company's own rule gives the agent, and a person's own calls", () => {
+    expect(post({ actor: agent, personOf, agentOwn: ["voucher.post"] })).toMatchObject({ ok: true });
+    expect(post({ actor: nina, personOf: () => undefined })).toMatchObject({ ok: true });
+  });
+
+  it("says it in Norwegian too", () => {
+    const verdict = post({ actor: agent, personOf, locale: "nb" });
+    expect(verdict.ok === false && verdict.message).toContain("arbeider for");
+  });
+});
