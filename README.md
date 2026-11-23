@@ -25,7 +25,7 @@
 
 <br>
 
-**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work, for React, Vue, Svelte, Solid and plain HTML.**
+**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work, for React, with experimental Vue, Svelte, Solid and plain HTML support.**
 
 Agents already work in accounting software by reading the screen and typing
 into text boxes. They guess which field is which, type `1.250,00` where the
@@ -37,7 +37,7 @@ and stop where a person has to decide. Your server checks the same rules again.
 ## Quick start
 
 Booki is not on npm yet: it is published once v1 has run in a real product.
-Until then, the skill packs it from a clone. Give it to your coding agent:
+Until then, the skill packs it from a clone. What comes next is in [`ROADMAP.md`](ROADMAP.md). Give it to your coding agent:
 
 - **In your app, with a coding agent:** load the skill, or copy the full setup
   prompt with the button on [booki.dev](https://booki.dev).
@@ -141,15 +141,29 @@ one agent operates them all.
 | Package | For |
 | --- | --- |
 | `@booki/react` | React 19: the controls, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
-| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML. |
-| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`). |
+| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML (experimental). |
+| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`) (experimental). |
 | `@booki/core` | The rules, with no framework: money, vouchers, reconciliation, approvals, period locks, close, invoices, payment batches, supplier invoices, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles, and the server guard. |
 | `@booki/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. |
 | `@booki/styles` | The optional default look, "Paper and Ink", as CSS variables (`DESIGN.md`). |
 
-Country profiles for Norway, the United States, Sweden, Denmark, the United
-Kingdom and Germany; define your own for the rest. No ERP connectors: your
-backend stays yours.
+## Support
+
+**Supported:**
+
+- React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and `@booki/styles`)
+- The Norway (NO) and United States (US) country profiles
+
+**Experimental:**
+
+- Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`, `@booki/solid`, `@booki/web`). They work and are generated from the same primitives, but they have less testing and their API may change between releases without notice.
+- The Sweden (SE), Denmark (DK), United Kingdom (GB) and Germany (DE) starter profiles.
+
+## Country profiles
+
+Norway and the United States are supported country profiles. Sweden, Denmark,
+the United Kingdom and Germany are experimental starter profiles; define your
+own for the rest. No ERP connectors: your backend stays yours.
 
 ## Examples
 
@@ -181,6 +195,7 @@ backend stays yours.
 
 Issues and pull requests are welcome. [`CONTRIBUTING.md`](CONTRIBUTING.md) has
 the setup and the rules a review checks; `pnpm check` runs what CI runs.
+The plan for v1 and after is in [`ROADMAP.md`](ROADMAP.md).
 Versions and release notes come from Changesets ([`RELEASING.md`](RELEASING.md)).
 Found a security problem? Report it privately ([`SECURITY.md`](SECURITY.md)).
 

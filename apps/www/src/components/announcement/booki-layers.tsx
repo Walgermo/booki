@@ -23,8 +23,8 @@ export function BookiLayers() {
             </ul>
             <p className="site-layers__text">
               {t(
-                "React controls; custom elements for Angular and server-rendered pages; parts for Vue, Svelte and Solid.",
-                "React-kontroller; custom elements for Angular og serverrendrede sider; deler for Vue, Svelte og Solid.",
+                "React controls (supported); custom elements for Angular and server-rendered pages, and parts for Vue, Svelte and Solid (both experimental).",
+                "React-kontroller (støttet); custom elements for Angular og serverrendrede sider, og deler for Vue, Svelte og Solid (begge eksperimentelle).",
               )}
             </p>
           </div>

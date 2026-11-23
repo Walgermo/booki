@@ -71,8 +71,8 @@ export const CATALOGUE = (t: T): { label: string; items: string[]; text: string 
     label: t("Countries", "Land"),
     items: [],
     text: t(
-      "Norway: kontonummer and organisasjonsnummer (mod 11), KID, MVA codes and terms. United States: ABA routing and account, EIN, memo. Starter profiles for Sweden, Denmark, the UK and Germany, and defineProfile for any other.",
-      "Norge: kontonummer og organisasjonsnummer (mod 11), KID, mva-koder og -terminer. USA: ABA routing og konto, EIN, memo. Startprofiler for Sverige, Danmark, Storbritannia og Tyskland, og defineProfile for alle andre.",
+      "Norway: kontonummer and organisasjonsnummer (mod 11), KID, MVA codes and terms. United States: ABA routing and account, EIN, memo. Norway and US are supported. Starter profiles for Sweden, Denmark, the UK and Germany are experimental, and defineProfile for any other.",
+      "Norge: kontonummer og organisasjonsnummer (mod 11), KID, mva-koder og -terminer. USA: ABA routing og konto, EIN, memo. Norge og USA er støttet. Startprofiler for Sverige, Danmark, Storbritannia og Tyskland er eksperimentelle, og defineProfile for alle andre.",
     ),
   },
   {

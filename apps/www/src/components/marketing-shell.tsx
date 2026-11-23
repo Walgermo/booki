@@ -62,6 +62,10 @@ export function MarketingShell() {
               <a href={`${REPO_URL}/security/advisories/new`} target="_blank" rel="noreferrer" className="site-link">
                 {t("Report a security problem", "Meld fra om et sikkerhetsproblem")}
               </a>
+              {" · "}
+              <a href={`${REPO_URL}/blob/main/ROADMAP.md`} target="_blank" rel="noreferrer" className="site-link">
+                {t("Roadmap", "Veikart")}
+              </a>
             </p>
           </div>
           {/* Only what a visitor needs from here: the docs, the code, language and theme. */}

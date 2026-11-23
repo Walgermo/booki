@@ -234,8 +234,8 @@ const STACK = (t: T): { label: string; text: string }[] => [
   {
     label: t("Frameworks", "Rammeverk"),
     text: t(
-      "React 19, Vue 3.5, Svelte 5, Solid 2, or Web Components for Angular and pages rendered on the server. One set of definitions, so the same control has the same actions everywhere.",
-      "React 19, Vue 3.5, Svelte 5, Solid 2, eller Web Components for Angular og serverrendrede sider. Ett sett definisjoner, så samme kontroll har samme handlinger overalt.",
+      "React 19 (supported). Vue 3.5, Svelte 5, Solid 2 and Web Components for Angular and pages rendered on the server are experimental. One set of definitions, so the same control has the same actions everywhere.",
+      "React 19 (støttet). Vue 3.5, Svelte 5, Solid 2 og Web Components for Angular og serverrendrede sider er eksperimentelle. Ett sett definisjoner, så samme kontroll har samme handlinger overalt.",
     ),
   },
   {
@@ -414,8 +414,8 @@ const SHORTFALLS = (t: T): string[] => [
     "Serverkontrollene dekker bokføring, attestering, frigivelse av betalinger, periodeavslutning, fakturaer og mva. Andre skriveoperasjoner trenger guard() med en egen regel, og dere kobler avsenderen fra deres egen innlogging.",
   ),
   t(
-    "Labels are English and Norwegian. Sweden, Denmark, the UK and Germany have English labels and example VAT codes.",
-    "Ledetekstene finnes på engelsk og norsk. Sverige, Danmark, Storbritannia og Tyskland har engelske ledetekster og eksempler på mva-koder.",
+    "Labels are English and Norwegian. Sweden, Denmark, the UK and Germany have English labels and example VAT codes, as experimental starter profiles.",
+    "Ledetekstene finnes på engelsk og norsk. Sverige, Danmark, Storbritannia og Tyskland har engelske ledetekster og eksempler på mva-koder, som eksperimentelle startprofiler.",
   ),
   t(
     "One maintainer so far. If the project stops, you keep an MIT copy of plain React code running against your own backend; nothing depends on a service.",
