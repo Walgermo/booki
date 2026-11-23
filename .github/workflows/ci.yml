@@ -56,7 +56,51 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Coverage
+        run: pnpm coverage
+      - name: Coverage summary
+        # Prints the table in the job summary and writes the badge JSON.
+        run: node scripts/coverage-summary.mjs --badge coverage-badge.json
+      - name: Upload coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-badge
+          path: coverage-badge.json
+
       - name: Build docs site
         run: pnpm --filter @booki/www build
       - name: Build examples
         run: pnpm --filter "./examples/*" build
+
+  coverage-badge:
+    # Only this job can write to the repository, and only to the coverage-badge branch.
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-badge
+          path: badge
+
+      - name: Publish the badge to the coverage-badge branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          work="$(mktemp -d)"
+          cp "$GITHUB_WORKSPACE/badge/coverage-badge.json" "$work/coverage.json"
+          cd "$work"
+          # A fresh repository with one commit on an orphan branch: the branch keeps no history
+          # and never touches main. The force push replaces only coverage-badge.
+          git init -q
+          git checkout -q --orphan coverage-badge
+          git add coverage.json
+          git commit -q -m "Update coverage badge"
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" coverage-badge

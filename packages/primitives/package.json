@@ -218,7 +218,8 @@
   "scripts": {
     "build": "tsup && node ../../scripts/vendor-ui-sdk-types.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@booki/core": "workspace:*"
@@ -228,6 +229,7 @@
   },
   "devDependencies": {
     "@ui-sdk/core": "0.1.0-beta.14",
+    "@vitest/coverage-v8": "3.2.7",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7"
