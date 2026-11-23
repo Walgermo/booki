@@ -44,14 +44,33 @@ export function inPage<F extends (...args: never[]) => unknown>(fn: F): F {
 /**
  * Runs before any page script. Records WebMCP tool registrations when the
  * browser has no WebMCP of its own.
+ *
+ * A tool is kept once by name, the latest registration winning, and leaves
+ * when the signal it was registered with aborts. ui-sdk's registerTools
+ * unregisters by aborting, so React's development double effect (register,
+ * clean up, register) and a hot reload register each tool again; without
+ * this the report listed every tool twice.
  */
 export const INIT_SCRIPT = `(() => {
   const tools = [];
   Object.defineProperty(globalThis, "__readinessTools", { value: tools, configurable: true });
+  const add = (tool) => {
+    if (!tool || typeof tool !== "object") return;
+    const i = tools.findIndex((t) => t.name === tool.name);
+    if (i >= 0) tools.splice(i, 1, tool); else tools.push(tool);
+  };
   const context = {
-    registerTool(tool) { tools.push(tool); return Promise.resolve(); },
+    registerTool(tool, options) {
+      const signal = options && options.signal;
+      if (signal && signal.aborted) return Promise.resolve();
+      add(tool);
+      if (signal && typeof signal.addEventListener === "function") {
+        signal.addEventListener("abort", () => { const i = tools.indexOf(tool); if (i >= 0) tools.splice(i, 1); }, { once: true });
+      }
+      return Promise.resolve();
+    },
     unregisterTool(name) { const i = tools.findIndex((t) => t.name === name); if (i >= 0) tools.splice(i, 1); return Promise.resolve(); },
-    provideContext(value) { for (const tool of (value && value.tools) || []) tools.push(tool); return Promise.resolve(); },
+    provideContext(value) { tools.length = 0; for (const tool of (value && value.tools) || []) add(tool); return Promise.resolve(); },
     clearContext() { tools.length = 0; return Promise.resolve(); },
   };
   try { if (!document.modelContext) Object.defineProperty(document, "modelContext", { value: context, configurable: true }); } catch {}
@@ -262,7 +281,14 @@ export function findCharts(): Array<Omit<ChartInfo, keyof ElementInfo> & { index
 /** Reads the page's agent bridge, through window.agent or its WebMCP snapshot tool. */
 export async function readBridge(): Promise<{
   source: "window.agent" | "webmcp" | null;
-  components: Array<{ ref?: string; component?: string; label?: string; actions?: string[]; confirm?: string }>;
+  components: Array<{
+    ref?: string;
+    component?: string;
+    label?: string;
+    actions?: string[];
+    confirm?: string;
+    offPage?: boolean;
+  }>;
   tools: string[];
   error: string | null;
 }> {
@@ -270,7 +296,8 @@ export async function readBridge(): Promise<{
     agent?: { snapshot?: () => unknown };
     __readinessTools?: Array<{ name: string; execute?: (input: unknown) => unknown }>;
   };
-  const tools = (g.__readinessTools ?? []).map((tool) => String(tool.name));
+  // Once each: a page may register a tool on both document and navigator, or again on a re-render.
+  const tools = [...new Set((g.__readinessTools ?? []).map((tool) => String(tool.name)))];
   const toList = (value: unknown): unknown[] => {
     if (Array.isArray(value)) return value;
     if (value && typeof value === "object") {
@@ -301,6 +328,83 @@ export async function readBridge(): Promise<{
   } catch (error) {
     return { source: null, components: [], tools, error: String(error) };
   }
+}
+
+/** How a field relates to the bridge's components. */
+export type BridgeCoverage = {
+  /** The field is inside the root element of a bridge component. */
+  inRoot: boolean;
+  /** The field is inside data-agent-hidden: kept from the agent on purpose. */
+  agentHidden: boolean;
+  /** For a radio: its group, named by aria-labelledby, aria-label or a legend. */
+  group: { name: string; covered: boolean } | null;
+};
+
+/**
+ * Whether a field is inside a bridge component's root element.
+ *
+ * ui-sdk writes a component's kind (the snapshot entry's `component`) as
+ * `data-slot` on its root part, and `<kind>-<slot>` on its other parts; its
+ * `elementOf(ref)` gives the root, or the first part when the root is not
+ * rendered, but only to code inside the app. From outside, the snapshot does
+ * not say which element belongs to which entry, so the outermost elements of
+ * a kind all count when the page has no more of them (outside
+ * data-agent-hidden) than the snapshot has entries of that kind; otherwise
+ * only one whose name is the label of an entry of that kind counts.
+ */
+export function bridgeCoverage(element: Element, entries: Array<{ component: string; label: string }>): BridgeCoverage {
+  const clean = (text: string | null | undefined) => (text ?? "").replace(/\s+/g, " ").trim();
+  const norm = (text: string | null | undefined) => clean(text).toLowerCase();
+  const textOfIds = (ids: string | null) =>
+    (ids ?? "")
+      .split(/\s+/)
+      .map((id) => (id ? (document.getElementById(id)?.textContent ?? "") : ""))
+      .join(" ");
+  const nameOf = (el: Element): string => {
+    const labelledby = clean(textOfIds(el.getAttribute("aria-labelledby")));
+    if (labelledby) return labelledby;
+    const label = clean(el.getAttribute("aria-label"));
+    if (label) return label;
+    if (el.tagName === "FIELDSET") return clean(el.querySelector(":scope > legend")?.textContent);
+    const labels = (el as HTMLInputElement).labels;
+    if (labels?.length) return clean([...labels].map((l) => l.textContent).join(" "));
+    return "";
+  };
+  const quote = (value: string) => `"${value.replace(/["\\]/g, "\\$&")}"`;
+
+  const counts = new Map<string, number>();
+  const labelsOf = new Map<string, Set<string>>();
+  for (const entry of entries) {
+    if (!entry.component) continue;
+    counts.set(entry.component, (counts.get(entry.component) ?? 0) + 1);
+    const labels = labelsOf.get(entry.component) ?? new Set<string>();
+    if (norm(entry.label)) labels.add(norm(entry.label));
+    labelsOf.set(entry.component, labels);
+  }
+  const roots: Element[] = [];
+  for (const [kind, labels] of labelsOf) {
+    // The root part, or the outermost parts when the root is not rendered
+    // (a control that wraps ui-sdk's parts in an element of its own).
+    const parts = [...document.querySelectorAll(`[data-slot=${quote(kind)}], [data-slot^=${quote(`${kind}-`)}]`)];
+    const found = parts.filter(
+      (el) => !el.closest("[data-agent-hidden]") && !parts.some((other) => other !== el && other.contains(el)),
+    );
+    if (found.length <= (counts.get(kind) ?? 0)) roots.push(...found);
+    else roots.push(...found.filter((el) => labels.has(norm(nameOf(el)))));
+  }
+  const inside = (el: Element) => roots.some((root) => root.contains(el));
+  const allLabels = new Set(entries.map((entry) => norm(entry.label)).filter(Boolean));
+
+  let group: BridgeCoverage["group"] = null;
+  const isRadio =
+    element.getAttribute("role") === "radio" ||
+    (element.tagName === "INPUT" && (element as HTMLInputElement).type === "radio");
+  if (isRadio) {
+    const host = element.closest("[role=radiogroup], fieldset, [role=group]");
+    const name = host ? nameOf(host) : "";
+    if (host && name) group = { name, covered: allLabels.has(norm(name)) || inside(host) };
+  }
+  return { inRoot: inside(element), agentHidden: element.closest("[data-agent-hidden]") !== null, group };
 }
 
 /**

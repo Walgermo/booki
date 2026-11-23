@@ -1,0 +1,29 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Bridge coverage</title>
+<script>
+window.agent = { snapshot: () => [
+  { ref: "c1", component: "select", label: "Konto", actions: ["setValue"] },
+  { ref: "c2", component: "radio-group", label: "Retning", actions: ["setValue"] },
+  { ref: "c3", component: "voucher-composer", label: "Bilag", actions: ["setLine", "addLine"] },
+  { ref: "c5", component: "financial-date", label: "Bilagsdato", actions: ["setDate"] },
+] };
+</script></head>
+<body><main>
+<!-- On the bridge by its label. -->
+<label>Konto <select><option>1920 Bank</option></select></label>
+<!-- On the bridge by its label: a radio group, named by its legend. -->
+<fieldset><legend>Retning</legend>
+  <label><input type="radio" name="dir" checked> Inn</label>
+  <label><input type="radio" name="dir"> Ut</label>
+</fieldset>
+<!-- Inside the root of a bridge component (data-slot is its kind), under names of its own. -->
+<div data-slot="voucher-composer" role="group" aria-label="Bilag">
+  <label>Linje 1 beløp <input type="text"></label>
+  <label>Linje 1 konto <input type="text"></label>
+</div>
+<!-- A control that wraps the parts in an element of its own: no root part, only "financial-date-*" parts. -->
+<div data-slot="financial-date-field" aria-label="Bilagsdato"><label>Bokføringsdato <input data-slot="financial-date-control"></label></div>
+<!-- Kept from the agent on purpose. -->
+<div data-agent-hidden><label>Intern merknad <input type="text"></label></div>
+<!-- A filter a person can use and the bridge does not offer. -->
+<label>Avdeling <select><option>Alle</option><option>Salg</option></select></label>
+</main></body></html>
