@@ -120,7 +120,7 @@ export function FeaturesPage() {
             items={[
               t(
                 "Amounts are whole minor units: a fraction is refused before it reaches a voucher.",
-                "Beløp er hele minor units: en brøk avvises før den når et bilag.",
+                "Beløp er heltall i øre: en brøkdel av en øre avvises før den når et bilag.",
               ),
               t(
                 "Account numbers, KID and organisation numbers are checked (mod 10, mod 11).",
@@ -128,7 +128,7 @@ export function FeaturesPage() {
               ),
               t(
                 "Accounts and VAT codes come from a closed list; the refusal names the valid ones.",
-                "Kontoer og MVA-koder kommer fra en lukket liste; avvisningen navngir de gyldige.",
+                "Kontoer og mva-koder kommer fra en lukket liste; avvisningen navngir de gyldige.",
               ),
               t(
                 "Bank details read as [redacted] to an agent, in snapshots and in change events.",
@@ -141,7 +141,7 @@ export function FeaturesPage() {
               <AmountField aria-label={t("Amount excl. VAT", "Beløp eks. mva")} defaultValue={1_550_000} />
               <FinancialDateField aria-label={t("Posting date", "Bokføringsdato")} defaultValue="2026-10-31" />
               <AccountPicker aria-label={t("Account", "Konto")} accounts={ACCOUNTS} defaultValue="6800" />
-              <TaxCodeSelect aria-label={t("VAT code", "MVA-kode")} />
+              <TaxCodeSelect aria-label={t("VAT code", "mva-kode")} />
               <BankAccountInput aria-label={t("Account number", "Kontonummer")} />
               <PaymentReferenceInput aria-label="KID" />
               <OrganizationNumberInput aria-label={t("Organisation number", "Organisasjonsnummer")} />
@@ -163,11 +163,11 @@ export function FeaturesPage() {
             items={[
               t(
                 "Approving, signing off, releasing and submitting are a person's buttons, never an agent's actions.",
-                "Godkjenning, signering, frigivelse og innsending er en persons knapper, aldri en agents handlinger.",
+                "Godkjenning, signering, frigivelse og innsending er forbeholdt en person, aldri en agents handlinger.",
               ),
               t(
                 "Supplier invoices are coded by the agent and approved by a person; duplicates are named.",
-                "Leverandørfakturaer konteres av agenten og godkjennes av en person; duplikater navngis.",
+                "Leverandørfakturaer konteres av agenten og attesteres av en person; duplikater flagges.",
               ),
               t(
                 "Separation of duties is built in: who approved a payment cannot release it.",
@@ -198,7 +198,7 @@ export function FeaturesPage() {
               ),
               t(
                 "Findings carry their basis and evidence; a confidential finding is never read by the agent.",
-                "Funn bærer grunnlag og dokumentasjon; et fortrolig funn leses aldri av agenten.",
+                "Hvert funn har grunnlag og dokumentasjon; et fortrolig funn leses aldri av agenten.",
               ),
               t(
                 "What the rules find is a warning to weigh, never a hard stop on professional judgment.",
@@ -229,7 +229,7 @@ export function FeaturesPage() {
               ),
               t(
                 "Sign-off per level, bound to the version signed: a later edit marks it, never withdraws it.",
-                "Signering per nivå, bundet til versjonen som ble signert: en senere endring merker den, trekker den aldri.",
+                "Signering per nivå, bundet til versjonen som ble signert: en senere endring markerer den, men trekker den aldri tilbake.",
               ),
               t(
                 "Open points go with the signature instead of blocking it.",
@@ -259,11 +259,11 @@ export function FeaturesPage() {
             items={[
               t(
                 "A trial balance with drill-down to the account and its vouchers.",
-                "En saldobalanse med drilling ned til kontoen og bilagene.",
+                "En saldobalanse der du kan drille ned til kontoen og bilagene.",
               ),
               t(
                 "Charts expose every period as minor units, so an agent never reads a tooltip.",
-                "Grafer gir hver periode som minor units, så en agent aldri leser et verktøytips.",
+                "Grafer gir hver periode som heltall i øre, så en agent aldri leser et verktøytips.",
               ),
               t(
                 "Lists sort, search, page and export to CSV the same way everywhere.",
@@ -290,15 +290,15 @@ export function FeaturesPage() {
             items={[
               t(
                 "Every write route runs through one guard, with the actor your sign-in established.",
-                "Hver skriverute går gjennom én vakt, med aktøren innloggingen din fastslo.",
+                "Hvert skrivende API-kall går gjennom samme kontroll, med aktøren innloggingen fastslo.",
               ),
               t(
                 "Roles per engagement, independence for the quality reviewer, and a required reason to withdraw.",
-                "Roller per oppdrag, uavhengighet for kvalitetskontrolløren og påkrevd begrunnelse for å trekke.",
+                "Roller per oppdrag, uavhengighet for oppdragskontrolløren og påkrevd begrunnelse for å trekke noe tilbake.",
               ),
               t(
                 "The audit line names the agent, whose session it ran in, its client and its grant.",
-                "Revisjonslinjen navngir agenten, hvem sin økt den kjørte i, klienten og tilgangen.",
+                "Linjen i revisjonssporet navngir agenten, hvis økt den kjørte i, OAuth-klienten og tilgangen.",
               ),
             ]}
           />

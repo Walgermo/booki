@@ -11,7 +11,7 @@ const ITEMS: Item[] = [
     q: ["What is Booki?", "Hva er Booki?"],
     a: [
       "Ready-made controls for accounting screens: amounts, accounts, VAT, vouchers, invoices, bank and approval. A person uses them like any form. An AI agent reads them as typed state and calls named actions, under the rules you set, and every step lands in your audit trail.",
-      "Ferdige kontroller for regnskapsskjermbilder: beløp, konto, mva, bilag, faktura, bank og attestering. En person bruker dem som et vanlig skjema. En AI-agent leser dem som typet tilstand og kaller navngitte handlinger, under reglene dere setter, og hvert steg havner i revisjonssporet.",
+      "Ferdige kontroller for regnskapsskjermbilder: beløp, konto, mva, bilag, faktura, bank og attestering. En person bruker dem som et vanlig skjema. En AI-agent leser tilstanden deres som strukturerte data og kaller navngitte handlinger, under reglene dere setter, og hvert steg havner i revisjonssporet.",
     ],
   },
   {
@@ -19,6 +19,13 @@ const ITEMS: Item[] = [
     a: [
       "An MCP server gives the agent your API as tools: it works behind the screen, and the person sees the result afterwards. That is a second product surface you design, secure and keep in step with the UI. Booki puts the agent on the screen the person already uses, with the same validation and rules as their own clicks, a visible cursor, and approvals that stay a person's. They go together: Booki publishes its controls as tools over WebMCP, so an agent that speaks MCP can use them directly.",
       "En MCP-server gir agenten API-et deres som verktøy: den jobber bak skjermen, og personen ser resultatet etterpå. Det er en ekstra flate i produktet som må designes, sikres og holdes i takt med UI-et. Booki setter agenten i skjermbildet personen allerede bruker, med samme validering og regler som personens egne klikk, en synlig cursor og attestering som fortsatt er en persons. De to går sammen: Booki publiserer kontrollene som verktøy over WebMCP, så en agent som snakker MCP kan bruke dem direkte.",
+    ],
+  },
+  {
+    q: ["Why not just give the agent our API?", "Hvorfor ikke bare gi agenten API-et vårt?"],
+    a: [
+      "For work nobody watches, like posting a thousand vouchers from a file overnight, an API is cheaper and simpler: use it. Booki is for the steps a person sees, corrects and decides in the screen they already use: the agent works there, the person watches, and approving stays theirs. We have not yet measured Booki against an agent on an API; that measurement is next, and the figures will be on this page whichever way they go.",
+      "For arbeid ingen ser på, som å bokføre tusen bilag fra en fil i løpet av natten, er et API billigere og enklere: bruk det. Booki er for stegene en person ser, retter og avgjør i skjermbildet de allerede bruker: agenten jobber der, personen ser på, og attesteringen er fortsatt deres. Vi har ennå ikke målt Booki mot en agent på et API. Den målingen kommer, og tallene havner på denne siden uansett hvordan de blir.",
     ],
   },
   {
@@ -32,14 +39,14 @@ const ITEMS: Item[] = [
     q: ["Can the agent approve or pay on its own?", "Kan agenten attestere eller betale selv?"],
     a: [
       "Only where your rule says it may. Approving, signing off and releasing payments are a person's buttons and never agent actions. A step marked for confirmation waits for a person unless your rule allows it, as with posting under 50 000 kr in the demo, and the server guards refuse the rest for an agent.",
-      "Bare der regelen deres sier at den får. Attestering, signering og frigiving av betalinger er en persons knapper og aldri agenthandlinger. Et steg som krever bekreftelse venter på en person med mindre regelen tillater det, slik som bokføring under 50 000 kr i demoen, og serverens vakter avviser resten for en agent.",
+      "Bare der regelen deres sier at den får. Attestering, signering og frigivelse av betalinger er forbeholdt en person og aldri agenthandlinger. Et steg som krever bekreftelse venter på en person med mindre regelen tillater det, slik som bokføring under 50 000 kr i demoen, og serverkontrollen avviser resten når det er en agent som prøver.",
     ],
   },
   {
     q: ["Which AI models does it work with?", "Hvilke AI-modeller fungerer det med?"],
     a: [
       "Any model that can call tools. Measured with Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash. Opus and Sonnet do these tasks right without Booki too; for them Booki saves cost and time. For the cheap models it is whether the books come out right: on our rebuilt screens they were right about four times in five, on Booki every time in the runs still counted. Five runs per cell is few, so read it as an indication.",
-      "Alle modeller som kan kalle verktøy. Målt med Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash. Opus og Sonnet klarer disse oppgavene uten Booki også; for dem sparer Booki kostnad og tid. For de billige modellene gjelder det om regnskapet blir riktig: på våre gjenskapte skjermbilder fikk de det riktig omtrent fire av fem ganger, på Booki hver gang i kjøringene som fortsatt telles. Fem kjøringer per celle er lite, så les det som en pekepinn.",
+      "Alle modeller som kan kalle verktøy. Målt med Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash. Opus og Sonnet klarer disse oppgavene uten Booki også; for dem sparer Booki kostnad og tid. For de billige modellene er forskjellen om regnskapet blir riktig: på våre gjenskapte skjermbilder ble resultatet riktig omtrent fire av fem ganger, på Booki hver gang i kjøringene som fortsatt telles. Fem kjøringer per celle er lite, så les det som en pekepinn.",
     ],
   },
   {
@@ -53,7 +60,7 @@ const ITEMS: Item[] = [
     q: ["Does it know Norwegian accounting?", "Kan det norsk regnskap?"],
     a: [
       "Yes. The Norwegian profile checks kontonummer and organisasjonsnummer (mod 11), generates and checks KID, knows the MVA codes and terms, and posts VAT for a coded line. There are profiles for the US, Sweden, Denmark, the UK and Germany too, and you can define your own.",
-      "Ja. Den norske profilen kontrollerer kontonummer og organisasjonsnummer (mod 11), lager og kontrollerer KID, kjenner mva-kodene og terminene, og fører mva for en kodet linje. Det finnes profiler for USA, Sverige, Danmark, Storbritannia og Tyskland også, og dere kan lage deres egen.",
+      "Ja. Den norske profilen kontrollerer kontonummer og organisasjonsnummer (mod 11), lager og kontrollerer KID, kjenner mva-kodene og terminene, og beregner mva for en linje med mva-kode. Det finnes profiler for USA, Sverige, Danmark, Storbritannia og Tyskland også, og dere kan lage deres egen.",
     ],
   },
   {
@@ -97,7 +104,7 @@ export function Faq() {
       title={t("Questions", "Spørsmål")}
       note={t(
         "What teams ask before they try it on one screen.",
-        "Det team spør om før de prøver det på ett skjermbilde.",
+        "Det teamene spør om før de prøver Booki på ett skjermbilde.",
       )}
     >
       <div className="site-faq">

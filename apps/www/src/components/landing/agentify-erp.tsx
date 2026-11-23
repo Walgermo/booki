@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { cursor, setStepPolicy, whenCursorFree } from "@/agent";
+import { Button as SdkButton } from "@ui-sdk/react/button";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
 import { titleLanded } from "./hero-title";
@@ -283,7 +284,7 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
                     {postedBy.current === "agent"
                       ? t(
                           `Posted · voucher ${voucherNo} · by the agent under your rule`,
-                          `Bokført · bilag ${voucherNo} · av agenten under regelen deres`,
+                          `Bokført · bilag ${voucherNo} · av agenten etter regelen deres`,
                         )
                       : t(`Posted · voucher ${voucherNo} · by you`, `Bokført · bilag ${voucherNo} · av deg`)}
                   </span>
@@ -295,13 +296,12 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
                   <span className="text-sm text-muted-foreground">
                     {t(
                       "Posted automatically under 50 000 kr when balanced.",
-                      "Bokføres automatisk under 50 000 kr når bilaget balanserer.",
+                      "Bokføres automatisk under 50 000 kr når bilaget går i balanse.",
                     )}
                   </span>
                 )}
                 {phase === "waiting" || phase === "posted" ? (
-                  <button
-                    type="button"
+                  <SdkButton
                     className="site-link site-text-button text-sm"
                     onClick={() => {
                       setLines([]);
@@ -309,7 +309,7 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
                     }}
                   >
                     {t("Run again", "Kjør på nytt")}
-                  </button>
+                  </SdkButton>
                 ) : null}
               </div>
               <Button

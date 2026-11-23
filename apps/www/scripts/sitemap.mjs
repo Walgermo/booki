@@ -21,7 +21,7 @@ const pages = [
   "/docs/examples",
 ];
 // These names redirect to /docs, so they are not pages of their own.
-const redirects = new Set(["introduction", "installation", "demo"]);
+const redirects = new Set(["introduction", "installation", "demo", "month-end", "erp-teams"]);
 const urls = [...new Set([...pages, ...docs.filter((name) => !redirects.has(name)).map((name) => `/docs/${name}`)])];
 writeFileSync(
   join(here, "../public/sitemap.xml"),

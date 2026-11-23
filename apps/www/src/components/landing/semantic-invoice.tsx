@@ -21,6 +21,7 @@ export function SemanticInvoice({ formRef }: { formRef: RefObject<HTMLFormElemen
 
   return (
     <form
+      data-plain-html=""
       ref={formRef}
       aria-label={t("Invoice", "Faktura")}
       onInput={onInput}

@@ -1,3 +1,4 @@
+import { Button } from "@ui-sdk/react/button";
 import { drawSample, startWorkpaper } from "@booki/core/audit";
 import { NO_VAT_SCHEMA_EXAMPLE } from "@booki/core/vat-return";
 import {
@@ -42,18 +43,19 @@ import {
 } from "@/lib/demo-data";
 import { CASHFLOW, COST_BY_ACCOUNT, COSTS, OPENING, REVENUE, series } from "@/components/erp-dashboard";
 import type { ClientRequest, Finding, SignableDocument, StackSheet } from "@booki/react";
-import { useState } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 
 // Made-up engagement: no real company or person.
 const AUDIT_EVIDENCE = [
   { id: "E-11", label: "Salgsjournal desember" },
   { id: "E-12", label: "Følgesedler januar" },
   { id: "E-13", label: "Lagertelling 31.12." },
+  { id: "E-14", label: "Attestasjonslogg leverandørfakturaer, 4. kvartal" },
 ];
 const FINDINGS_AT = "2026-11-03T09:15:00Z";
 const AUDIT_FINDINGS: Finding[] = [
   {
-    id: "F-1",
+    id: "F-01",
     code: "F-01",
     title: "Inntekt ført i feil periode",
     category: "misstatement",
@@ -68,13 +70,13 @@ const AUDIT_FINDINGS: Finding[] = [
     log: [{ at: FINDINGS_AT, by: "nina", action: "raised" }],
   },
   {
-    id: "F-2",
+    id: "F-02",
     code: "F-02",
     title: "Manglende attestasjon av inngående fakturaer",
     category: "control-deficiency",
     status: "confirmed",
     basis: "documented",
-    sources: ["E-13"],
+    sources: ["E-14"],
     confidential: false,
     raisedBy: "agent",
     confirmedBy: "kari",
@@ -84,7 +86,7 @@ const AUDIT_FINDINGS: Finding[] = [
     ],
   },
   {
-    id: "F-3",
+    id: "F-03",
     code: "F-03",
     title: "Mulig nærstående part blant leverandørene",
     category: "compliance",
@@ -128,6 +130,18 @@ const SHEET_ROWS: Record<string, { key: string; title: string; dockable?: boolea
 };
 
 /** A person's decision: the question, what is decided, and the answer an agent cannot give. */
+const subscribeNothing = () => () => {};
+
+/** Renders its children only in a browser: the build's HTML has none of it. */
+function InBrowser({ children }: { children: ReactNode }) {
+  const inBrowser = useSyncExternalStore(
+    subscribeNothing,
+    () => true,
+    () => false,
+  );
+  return inBrowser ? children : null;
+}
+
 function ConfirmDialogPreview() {
   const toaster = useState(() => createToaster())[0];
   return (
@@ -160,14 +174,10 @@ function ToastsPreview() {
   const toaster = useState(() => createToaster())[0];
   return (
     <div className="flex flex-wrap gap-2">
-      <button
-        type="button"
-        onClick={() => toaster("Bilag 1042 er bokført", { description: "Kontorhuset AS · 15 500,00 kr" })}
-      >
+      <Button onClick={() => toaster("Bilag 1042 er bokført", { description: "Kontorhuset AS · 15 500,00 kr" })}>
         Vis kvittering
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
         onClick={() =>
           toaster({
             title: "Agent satte Beløp til 1 250,00",
@@ -177,7 +187,7 @@ function ToastsPreview() {
         }
       >
         Vis agentens kvittering
-      </button>
+      </Button>
       <BookiToasts toaster={toaster} />
     </div>
   );
@@ -195,9 +205,7 @@ function SheetStackPreview() {
           {(SHEET_ROWS[sheet.key] ?? [{ key: `${sheet.key}-note`, title: "Ingen flere ark herfra" }]).map((row) =>
             SHEET_ROWS[sheet.key] ? (
               <li key={row.key}>
-                <button type="button" onClick={() => setSheets((open) => [...open, row])}>
-                  Åpne {row.title}
-                </button>
+                <Button onClick={() => setSheets((open) => [...open, row])}>Åpne {row.title}</Button>
               </li>
             ) : (
               <li key={row.key} className="text-sm text-muted-foreground">
@@ -322,8 +330,17 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
     />
   ),
   "audit-findings": () => <AuditFindings defaultFindings={AUDIT_FINDINGS} evidence={AUDIT_EVIDENCE} actor="kari" />,
-  "confirm-dialog": () => <ConfirmDialogPreview />,
-  toasts: () => <ToastsPreview />,
+  // Both open in a portal, which only a browser can render: not in the build's HTML.
+  "confirm-dialog": () => (
+    <InBrowser>
+      <ConfirmDialogPreview />
+    </InBrowser>
+  ),
+  toasts: () => (
+    <InBrowser>
+      <ToastsPreview />
+    </InBrowser>
+  ),
   "document-signoff": () => <DocumentSignoff defaultDocument={WORKPAPER_DOCUMENT} actor="kari" actorName="Kari" />,
   "sheet-stack": () => <SheetStackPreview />,
   "client-requests": () => <ClientRequests defaultRequests={CLIENT_REQUESTS} today="2026-11-15" actor="nina" />,

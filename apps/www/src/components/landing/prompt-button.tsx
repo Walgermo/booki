@@ -1,3 +1,4 @@
+import { Button } from "@ui-sdk/react/button";
 import { useEffect, useRef, useState } from "react";
 
 import { useLang } from "@/lib/lang";
@@ -121,8 +122,8 @@ export function PromptButton({ prompt }: { prompt: string }) {
         if (!root.current?.contains(event.relatedTarget as Node)) hold("focus", false);
       }}
     >
-      <button
-        type="button"
+      {/* A ui-sdk Button, so an agent on the page presses it through the bridge like a person. */}
+      <Button
         className="prompt-button__trigger"
         data-done={done ? "" : undefined}
         aria-expanded={open}
@@ -141,7 +142,7 @@ export function PromptButton({ prompt }: { prompt: string }) {
           <CheckIcon />
           {state === "manual" ? t("Copy it below", "Kopier den under") : t("Copied", "Kopiert")}
         </span>
-      </button>
+      </Button>
 
       <div id="prompt-slip" className="prompt-slip" role="status" aria-live="polite" hidden={!open}>
         {open ? (

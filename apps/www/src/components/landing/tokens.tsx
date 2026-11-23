@@ -223,7 +223,7 @@ export function TokenStory({ agent }: { agent: LandingAgent }) {
         title={t("One invoice, two ways", "Én faktura, to måter")}
         note={t(
           "Both forms are live. An agent booked the same invoice on each, and the page counted every character it read and wrote. Both paid. Compare what it took.",
-          "Begge skjemaene er ekte. En agent bokførte den samme fakturaen på hvert av dem, og siden talte hvert tegn den leste og skrev. Begge betalte. Sammenlign hva det krevde.",
+          "Begge skjemaene er ekte. En agent bokførte den samme fakturaen på hvert av dem, og siden telte hvert tegn den leste og skrev. Fakturaen ble betalt i begge. Sammenlign hva det krevde.",
         )}
       >
         <div className="grid items-start gap-x-10 gap-y-12 md:grid-cols-2">

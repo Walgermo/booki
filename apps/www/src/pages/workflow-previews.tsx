@@ -30,7 +30,9 @@ function AsPerson({ initial, children }: { initial: string; children: (actor: st
     <div className="grid gap-5">
       <label className="site-label flex flex-wrap items-center gap-3">
         {t("Signed in as", "Innlogget som")}
+        {/* Who is signed in is the person's to choose: an agent never switches identity. */}
         <select
+          data-agent-hidden=""
           className="h-10 rounded-[6px] border border-input bg-card px-3 text-sm text-foreground"
           value={actor}
           onChange={(event) => setActor(event.target.value)}

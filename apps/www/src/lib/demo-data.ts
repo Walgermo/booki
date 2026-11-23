@@ -14,7 +14,8 @@ import type {
 
 /** Made-up books for Nordlys AS, October 2026. Shared by the docs previews and the ERP demo. */
 
-const field = <T>(value: T, confidence = 0.98) => ({ value, confidence });
+// How sure the reading of each field is: a document is read better in some places than others.
+const field = <T>(value: T, confidence: number) => ({ value, confidence });
 
 export const SUPPLIER_INVOICES: SupplierInvoice[] = [
   {
@@ -23,16 +24,16 @@ export const SUPPLIER_INVOICES: SupplierInvoice[] = [
     document: { id: "doc-1", fileName: "kontorrekvisita-8841.pdf", page: 1 },
     bankAccount: "8601 11 17947",
     fields: {
-      supplierName: field("Kontorrekvisita AS"),
-      supplierOrgNumber: field("974760673"),
-      invoiceNumber: field("8841"),
-      invoiceDate: field("2026-10-12"),
-      dueDate: field("2026-11-11"),
-      netMinor: field(1_240_000),
-      taxMinor: field(310_000),
-      grossMinor: field(1_550_000),
-      currency: field("NOK"),
-      paymentReference: field("10012342"),
+      supplierName: field("Kontorrekvisita AS", 0.99),
+      supplierOrgNumber: field("974760673", 0.97),
+      invoiceNumber: field("8841", 0.95),
+      invoiceDate: field("2026-10-12", 0.96),
+      dueDate: field("2026-11-11", 0.93),
+      netMinor: field(1_240_000, 0.97),
+      taxMinor: field(310_000, 0.96),
+      grossMinor: field(1_550_000, 0.98),
+      currency: field("NOK", 0.99),
+      paymentReference: field("10012342", 0.92),
     },
   },
   {
@@ -41,16 +42,16 @@ export const SUPPLIER_INVOICES: SupplierInvoice[] = [
     document: { id: "doc-2", fileName: "brattli-okt.pdf", page: 1 },
     bankAccount: "1234 56 78903",
     fields: {
-      supplierName: field("Brattli AS"),
+      supplierName: field("Brattli AS", 0.99),
       supplierOrgNumber: field("976944682", 0.62),
-      invoiceNumber: field("20045519"),
-      invoiceDate: field("2026-10-20"),
-      dueDate: field("2026-11-04"),
-      netMinor: field(350_400),
-      taxMinor: field(87_600),
+      invoiceNumber: field("20045519", 0.95),
+      invoiceDate: field("2026-10-20", 0.96),
+      dueDate: field("2026-11-04", 0.93),
+      netMinor: field(350_400, 0.97),
+      taxMinor: field(87_600, 0.96),
       grossMinor: field(438_100, 0.71),
-      currency: field("NOK"),
-      paymentReference: field("20045519"),
+      currency: field("NOK", 0.99),
+      paymentReference: field("20045519", 0.92),
     },
   },
   {
@@ -58,16 +59,16 @@ export const SUPPLIER_INVOICES: SupplierInvoice[] = [
     status: "new",
     document: { id: "doc-3", fileName: "kontorrekvisita-8841-kopi.pdf", page: 1 },
     fields: {
-      supplierName: field("Kontorrekvisita AS"),
-      supplierOrgNumber: field("974760673"),
-      invoiceNumber: field("8841"),
-      invoiceDate: field("2026-10-12"),
-      dueDate: field("2026-11-11"),
-      netMinor: field(1_240_000),
-      taxMinor: field(310_000),
-      grossMinor: field(1_550_000),
-      currency: field("NOK"),
-      paymentReference: field("10012342"),
+      supplierName: field("Kontorrekvisita AS", 0.99),
+      supplierOrgNumber: field("974760673", 0.97),
+      invoiceNumber: field("8841", 0.95),
+      invoiceDate: field("2026-10-12", 0.96),
+      dueDate: field("2026-11-11", 0.93),
+      netMinor: field(1_240_000, 0.97),
+      taxMinor: field(310_000, 0.96),
+      grossMinor: field(1_550_000, 0.98),
+      currency: field("NOK", 0.99),
+      paymentReference: field("10012342", 0.92),
     },
   },
 ];

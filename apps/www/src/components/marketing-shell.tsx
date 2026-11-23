@@ -42,13 +42,28 @@ export function MarketingShell() {
           className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-sm text-muted-foreground"
           style={{ borderTop: "var(--hairline) solid var(--bk-border-strong)" }}
         >
-          <p className="m-0">
-            {t("Open source, MIT. Made by", "Åpen kildekode, MIT. Laget av")}{" "}
-            <a href={AUTHOR_URL} target="_blank" rel="noreferrer" className="site-link">
-              Stian Walgermo
-            </a>
-            .
-          </p>
+          <div className="m-0 grid gap-1">
+            <p className="m-0">
+              {t("Open source, MIT. Made by", "Åpen kildekode, MIT. Laget av")}{" "}
+              <a href={AUTHOR_URL} target="_blank" rel="noreferrer" className="site-link">
+                Stian Walgermo
+              </a>
+              .
+            </p>
+            <p className="m-0">
+              {t(
+                "Before 1.0, not on npm yet: React with the Norwegian and US profiles is supported, the rest is experimental.",
+                "Før 1.0, ikke på npm ennå: React med norsk og amerikansk profil er støttet, resten er eksperimentelt.",
+              )}{" "}
+              <a href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer" className="site-link">
+                {t("Questions and bugs", "Spørsmål og feil")}
+              </a>
+              {" · "}
+              <a href={`${REPO_URL}/security/advisories/new`} target="_blank" rel="noreferrer" className="site-link">
+                {t("Report a security problem", "Meld fra om et sikkerhetsproblem")}
+              </a>
+            </p>
+          </div>
           {/* Only what a visitor needs from here: the docs, the code, language and theme. */}
           <nav aria-label={t("Footer", "Bunntekst")} className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <TextLink asChild icon="docs">

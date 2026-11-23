@@ -29,7 +29,7 @@ const SQUARE = 12;
  */
 const TOOL_WORD: Record<string, [string, string]> = {
   snapshot: ["read page", "les siden"],
-  take_screenshot: ["screenshot", "ta bilde"],
+  take_screenshot: ["screenshot", "ta skjermdump"],
   click: ["click", "klikk"],
   type: ["type", "skriv"],
   hover: ["point at", "pek på"],
