@@ -172,6 +172,15 @@ utilities. To change how they look, override tokens on a wrapper:
 </div>
 ```
 
+## Browsers
+
+`@booki/styles` uses native CSS nesting (the base rules state the component
+scope once), `:where()`, `:has()`, `oklch()` and `color-mix()`. The floor is
+Chrome or Edge 112, Safari 16.5 and Firefox 117. Below it the nested base
+rules are dropped and the controls fall back to the browser's look. Write new
+styles for the same floor; do not add a feature newer than it without saying
+so here.
+
 ## Not done
 
 No agent has been run against this document yet to see where it drifts.
