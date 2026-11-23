@@ -1,0 +1,17 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Bridge coverage, radios</title>
+<script>
+window.agent = { snapshot: () => [{ ref: "c1", component: "select", label: "Konto", actions: ["setValue"] }] };
+</script></head>
+<body><main>
+<label>Konto <select><option>1920 Bank</option></select></label>
+<!-- Not on the bridge: reported once, as the group. -->
+<div role="radiogroup" aria-label="Retning">
+  <button type="button" role="radio" aria-checked="true">Inn</button>
+  <button type="button" role="radio" aria-checked="false">Ut</button>
+</div>
+<!-- Disabled: takes no input, not reported. -->
+<label>Arkivert <input type="checkbox" disabled></label>
+<!-- More roots of a kind than entries: only the one named by an entry's label counts. -->
+<div data-slot="select" aria-label="Konto"></div>
+<div data-slot="select" aria-label="Prosjekt"><label>Prosjekt nr <input type="text"></label></div>
+</main></body></html>
