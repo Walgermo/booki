@@ -9,11 +9,14 @@ import type { SupplierInvoice } from "@booki/core/supplier-invoice";
  */
 export const RULE_NAME = "små-faste";
 
-const KNOWN_SUPPLIERS = new Set(["923609016" /* Kontorrekvisita AS */]);
+/** A regular supplier is its organisation number and the bank account it is paid to, as registered. */
+const KNOWN_SUPPLIERS = new Map([["923609016" /* Kontorrekvisita AS */, "15034134623"]]);
 const LIMIT_MINOR = 500_000; // 5 000,00 kr
 
 export function smallKnownSupplier(invoice: SupplierInvoice): true | string {
-  if (!KNOWN_SUPPLIERS.has(String(invoice.fields.supplierOrgNumber.value))) {
+  // The bank account is the server's, never edited from a screen: a changed
+  // organisation number alone does not make a supplier a regular one.
+  if (KNOWN_SUPPLIERS.get(String(invoice.fields.supplierOrgNumber.value)) !== invoice.bankAccount) {
     return "Bare faste leverandører kan godkjennes etter regelen.";
   }
   if (invoice.fields.grossMinor.value > LIMIT_MINOR) return "Over 5 000 kr: en person attesterer.";

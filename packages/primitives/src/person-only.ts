@@ -9,11 +9,14 @@ const sentences = new Set<string>();
 
 /** Register a person-only sentence and return it, for use as the attribute's value. */
 export function personOnly(sentence: string): string {
-  sentences.add(sentence);
+  // The bridge reads a confirm sentence trimmed and cut at 200 characters: register it as it will arrive.
+  sentences.add(sentence.trim().slice(0, 200));
   return sentence;
 }
 
 /** Whether a step's confirm sentence marks a person's decision. */
 export function isPersonOnly(sentence: unknown): boolean {
-  return typeof sentence === "string" && sentences.has(sentence);
+  if (typeof sentence !== "string") return false;
+  // A step that touches parts under several confirm marks gets them joined with "; ".
+  return sentences.has(sentence) || sentence.split("; ").some((part) => sentences.has(part));
 }
