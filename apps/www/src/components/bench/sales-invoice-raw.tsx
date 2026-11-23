@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { RawListbox, RawPickDialog, type PickEntry } from "./raw-picker";
 
@@ -93,13 +94,13 @@ export function SalesInvoiceRaw() {
   const totals = { netMinor, vatMinor, grossMinor: netMinor + vatMinor };
 
   // For the benchmark's end-state checks only. A real agent never sees this.
-  (window as unknown as { __rawSalesInvoice?: RawSalesInvoiceState }).__rawSalesInvoice = {
+  useEndState<RawSalesInvoiceState>("__rawSalesInvoice", {
     customer,
     lines,
     simple,
     created,
     totals,
-  };
+  });
 
   const setLine = (index: number, patch: Partial<Line>) =>
     setLines((current) => current.map((line, i) => (i === index ? { ...line, ...patch } : line)));

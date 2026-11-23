@@ -88,34 +88,39 @@ const WHY: Record<string, { en: string; nb: string }> = {
 
 const DURATION = 2600;
 
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 /**
  * Progress in model requests, 0 → max. The chart loads finished: it only
  * runs when the visitor asks (Replay, or another task), never on scroll.
  * Reduced motion jumps straight to the end.
  */
 function useProgress(max: number, replay: string) {
-  const [t, setT] = useState(max);
+  // The share of the run that has played; at rest it is all of it.
+  const [played, setPlayed] = useState(1);
+  // A new key starts the run over, before the next paint.
+  const [asked, setAsked] = useState(replay);
+  if (asked !== replay) {
+    setAsked(replay);
+    setPlayed(reducedMotion() ? 1 : 0);
+  }
   // The key it loaded with: matching it means nobody asked yet (safe under StrictMode's double effects).
   const initial = useRef<string | null>(replay);
   useEffect(() => {
     if (replay === initial.current) return;
     initial.current = null;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setT(max);
-      return;
-    }
+    if (reducedMotion()) return;
     let frame = 0;
     const began = performance.now();
     const tick = (now: number) => {
-      const p = Math.min(1, (now - began) / DURATION);
-      setT(max * (1 - (1 - p) ** 2));
+      const p = Math.min(1, Math.max(0, (now - began) / DURATION));
+      setPlayed(p);
       if (p < 1) frame = requestAnimationFrame(tick);
     };
-    setT(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [max, replay]);
-  return t;
+  }, [replay]);
+  return max * (1 - (1 - played) ** 2);
 }
 
 /** Billed input after `t` requests (linear between requests, flat once that side is done). */

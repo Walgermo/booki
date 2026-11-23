@@ -11,7 +11,8 @@ import {
   useBookiLocale,
 } from "@booki/react";
 import { Button } from "@ui-sdk/react/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEndState } from "./end-state";
 
 import { setStepPolicy } from "@/agent";
 
@@ -105,7 +106,9 @@ export function BookiSupplierInvoice() {
     { label: "Under 50 000 kr", ok: grossMinor > 0 && grossMinor <= AUTO_POST_LIMIT_MINOR },
   ];
   const latest = useRef(checks);
-  latest.current = checks;
+  useLayoutEffect(() => {
+    latest.current = checks;
+  });
 
   useEffect(
     () =>
@@ -119,7 +122,7 @@ export function BookiSupplierInvoice() {
   );
 
   // For the benchmark's end-state checks only.
-  (window as unknown as { __accSupplierInvoice?: BookiSupplierInvoiceState }).__accSupplierInvoice = {
+  useEndState<BookiSupplierInvoiceState>("__accSupplierInvoice", {
     supplier,
     invoiceNumber,
     invoiceDate,
@@ -132,7 +135,7 @@ export function BookiSupplierInvoice() {
     posted,
     postedBy,
     checked: checks.filter((check) => check.ok).map((check) => check.label),
-  };
+  });
 
   return (
     <div className="acc-invoice">

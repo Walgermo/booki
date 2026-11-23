@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { RawListbox, RawPickDialog, type PickEntry } from "./raw-picker";
 import { BOOKED, INBOX, INBOX_ACCOUNTS, type InboxRecord } from "./workflow-data";
@@ -82,11 +83,11 @@ export function InboxRaw() {
   const [notice, setNotice] = useState("");
 
   // For the benchmark's end-state checks only. A real agent never sees this.
-  (window as unknown as { __rawInbox?: RawInboxState }).__rawInbox = {
+  useEndState<RawInboxState>("__rawInbox", {
     invoices,
     booked: { id: BOOKED.id, status: "Bokført" },
     events,
-  };
+  });
 
   const current = invoices.find((i) => i.id === selected) ?? null;
   const patch = (next: Partial<RawInboxInvoice>) =>

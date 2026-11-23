@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useEndState } from "./end-state";
 
 /**
  * A voucher registration screen modelled on how large ERP products build it
@@ -97,7 +98,7 @@ export function RawVoucher() {
   const [query, setQuery] = useState("");
 
   // For the benchmark's end-state checks only. A real agent never sees this.
-  (window as unknown as { __rawVoucher?: RawVoucherState }).__rawVoucher = { date, rows, postOnSave, posted };
+  useEndState<RawVoucherState>("__rawVoucher", { date, rows, postOnSave, posted });
 
   const update = (id: number, patch: Partial<Row>) =>
     setRows((current) => current.map((row) => (row.id === id ? { ...row, ...patch } : row)));

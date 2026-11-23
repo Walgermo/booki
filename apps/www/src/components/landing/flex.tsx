@@ -86,6 +86,8 @@ export function Flex({ agent }: { agent: LandingAgent }) {
   const [look, setLook] = useState("Paper");
   const [machine, setMachine] = useState("");
   const box = useRef<HTMLDivElement | null>(null);
+  // Reads the agent's view again, once the page has settled.
+  const refresh = useRef(() => {});
   const active = LOOKS.find((item) => item.name === look) ?? LOOKS[0]!;
 
   useEffect(() => {
@@ -106,12 +108,13 @@ export function Flex({ agent }: { agent: LandingAgent }) {
       }, 0);
     };
     later();
+    refresh.current = later;
     const unsubscribe = agent.subscribe(later);
     return () => {
       window.clearTimeout(timer);
       unsubscribe();
     };
-  }, [agent, country]);
+  }, [agent]);
 
   return (
     <Section
@@ -124,7 +127,15 @@ export function Flex({ agent }: { agent: LandingAgent }) {
     >
       <div className="grid gap-6">
         <div className="flex flex-wrap gap-x-10 gap-y-4">
-          <Switch label={t("Country", "Land")} options={["NO", "US"] as const} value={country} onChange={setCountry} />
+          <Switch
+            label={t("Country", "Land")}
+            options={["NO", "US"] as const}
+            value={country}
+            onChange={(next) => {
+              setCountry(next);
+              refresh.current();
+            }}
+          />
           <Switch
             label={t("Look", "Utseende")}
             options={LOOKS.map((item) => item.name)}
