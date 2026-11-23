@@ -17,6 +17,7 @@ const COPY = {
     flat: "Unchanged",
     trend: "Trend",
     noPrevious: "No comparison",
+    notSet: "Not set",
   },
   NO: {
     vs: "mot",
@@ -26,12 +27,14 @@ const COPY = {
     flat: "Uendret",
     trend: "Utvikling",
     noPrevious: "Ingen sammenligning",
+    notSet: "Ikke satt",
   },
 } as const;
 
 export type KpiStatProps = {
   label: string;
-  valueMinor: number;
+  /** Undefined or null shows "Not set". */
+  valueMinor?: number | null;
   previousMinor?: number | null;
   /** Defaults to the locale profile's currency. */
   currency?: string;
@@ -41,6 +44,10 @@ export type KpiStatProps = {
   good?: KpiGood;
   /** A short series for the sparkline, oldest first. */
   series?: PeriodValue[];
+  /** Show "No comparison" when there is no previous value. Default false: the line is left out. */
+  showNoComparison?: boolean;
+  /** Show whole amounts without ",00". Default true: a figure, not a ledger line. */
+  trimZeroFraction?: boolean;
   className?: string;
 };
 
@@ -58,13 +65,15 @@ function KpiStat({
   previousLabel,
   good = "up",
   series,
+  showNoComparison = false,
+  trimZeroFraction = true,
   className,
 }: KpiStatProps) {
   const { country, profile } = useBookiLocaleOptional();
   const copy = COPY[country === "NO" ? "NO" : "EN"];
   const code = currency ?? profile.currency;
   const locale = profile.locale;
-  const fmt = (minor: number) => formatMoney(money(minor, code), { locale });
+  const fmt = (minor: number) => formatMoney(money(minor, code), { locale, trimZeroFraction });
   const id = useId();
 
   return (
@@ -102,11 +111,15 @@ function KpiStat({
             <p data-slot="kpi-stat-label" id={`${id}-l`}>
               {label}
             </p>
-            <p data-slot="kpi-stat-value">{view.valueMinor === null ? "–" : fmt(view.valueMinor)}</p>
+            <p data-slot="kpi-stat-value" data-state={view.set ? undefined : "not-set"}>
+              {view.valueMinor !== null ? fmt(view.valueMinor) : view.set ? "–" : copy.notSet}
+            </p>
             {view.deltaMinor === null ? (
-              <p data-slot="kpi-stat-delta" data-direction="none">
-                {copy.noPrevious}
-              </p>
+              showNoComparison && view.set ? (
+                <p data-slot="kpi-stat-delta" data-direction="none">
+                  {copy.noPrevious}
+                </p>
+              ) : null
             ) : (
               <p
                 data-slot="kpi-stat-delta"
