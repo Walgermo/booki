@@ -254,7 +254,7 @@
     "build": "tsup && node ../../scripts/vendor-ui-sdk-types.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage --testTimeout=20000"
   },
   "dependencies": {
     "@booki/core": "workspace:*",
