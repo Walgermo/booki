@@ -88,6 +88,11 @@ export type PaymentBatchProps = {
   query?: TableQuery;
   defaultQuery?: Partial<TableQuery>;
   onQueryChange?: (query: TableQuery) => void;
+  /**
+   * A memo or invoice reference reads "[redacted]" to an agent too. A KID always does. Which
+   * one the references are follows the country profile (a KID in Norway, a memo in the US).
+   */
+  secretReference?: boolean;
   nameOf?: (id: string) => ReactNode;
   className?: string;
   "aria-label"?: string;
@@ -126,6 +131,7 @@ function PaymentBatch({
   query,
   defaultQuery,
   onQueryChange,
+  secretReference,
   nameOf = (id) => id,
   className,
   "aria-label": ariaLabel,
@@ -144,6 +150,8 @@ function PaymentBatch({
       requiredApprovals={requiredApprovals}
       onBatchChange={onBatchChange}
       pageSize={pageSize}
+      referenceKind={profile.paymentReference.kind}
+      secretReference={secretReference}
       query={query}
       defaultQuery={defaultQuery}
       onQueryChange={onQueryChange}

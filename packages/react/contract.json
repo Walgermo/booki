@@ -746,7 +746,9 @@
       "onQueryChange",
       "pageSize",
       "query",
-      "requiredApprovals"
+      "referenceKind",
+      "requiredApprovals",
+      "secretReference"
     ],
     "parts": ["approve", "next", "prev", "release", "remove", "root", "search", "sort"],
     "dataSlots": [
@@ -772,7 +774,17 @@
   },
   "payment-reference": {
     "actions": ["clear", "generateKid", "setReference", "setValue"],
-    "options": ["defaultValue", "description", "disabled", "kind", "label", "onValueChange", "readOnly", "value"],
+    "options": [
+      "defaultValue",
+      "description",
+      "disabled",
+      "kind",
+      "label",
+      "onValueChange",
+      "readOnly",
+      "secretReference",
+      "value"
+    ],
     "parts": ["input", "root"],
     "dataSlots": []
   },
