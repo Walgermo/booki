@@ -203,6 +203,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "signoff.reason-required":
     "Oppgi en begrunnelse på minst {min} tegn for å trekke signaturen: den lagres med signaturen.",
   "signoff.not-signed": '"{level}" er ikke signert, så det er ingenting å trekke.',
+  "signoff.open-points": 'Dokumentet "{id}" har fortsatt {count} åpne punkter. Lukk dem før du signerer.',
   "sheets.no-sheet": 'Ingen åpen side "{key}". Åpne: {keys}.',
   "money.not-decimal": '"{value}" er ikke et desimaltall i hele enheter, som "1234.50".',
   "money.too-precise":

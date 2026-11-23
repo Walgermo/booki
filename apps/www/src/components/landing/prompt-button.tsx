@@ -186,7 +186,7 @@ export function PromptButton({ prompt }: { prompt: string }) {
             <p className="prompt-slip__step">
               <span className="prompt-slip__num">→</span>
               <span>
-                {t("Paste it into your coding agent", "Lim den inn i kodeagenten din")}
+                {t("Paste it into your coding agent", "Lim den inn i kodeagenten deres")}
                 <span className="prompt-slip__keys" aria-label={`${mod} V`}>
                   <kbd>{mod}</kbd>
                   <kbd>V</kbd>
@@ -196,7 +196,7 @@ export function PromptButton({ prompt }: { prompt: string }) {
             <p className="prompt-slip__then">
               {t(
                 "It installs Booki, swaps your money and account fields for agent-ready controls, and shows you the agent working in your app.",
-                "Den installerer Booki, bytter beløps- og kontofeltene til agentklare kontroller, og viser deg agenten i arbeid i appen din.",
+                "Den installerer Booki, bytter beløps- og kontofeltene til agentklare kontroller, og viser dere agenten i arbeid i appen deres.",
               )}
             </p>
             <p className="prompt-slip__agents">Claude Code · Cursor · Codex · Copilot</p>

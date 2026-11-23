@@ -1,7 +1,7 @@
 {
   "name": "@booki/solid",
   "version": "0.1.0",
-  "description": "Booki for Solid — agent-first accounting controls as Solid components: the same rules, state and agent actions as @booki/react.",
+  "description": "Booki for Solid (experimental) — agent-first accounting controls as Solid components: the same rules, state and agent actions as @booki/react.",
   "type": "module",
   "license": "MIT",
   "repository": {

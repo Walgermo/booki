@@ -13,6 +13,13 @@ const NEEDS = [
     { en: "The controls take ref as a plain prop.", nb: "Kontrollene tar ref som en vanlig prop." },
   ],
   [
+    { en: "Supported: React 19 with the NO and US profiles", nb: "Støttet: React 19 med NO- og US-profilene" },
+    {
+      en: "Vue, Svelte, Solid, Web Components and the SE, DK, GB and DE profiles are experimental.",
+      nb: "Vue, Svelte, Solid, Web Components og profilene for SE, DK, GB og DE er eksperimentelle.",
+    },
+  ],
+  [
     { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.14", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.14" },
     {
       en: "Peer dependencies; pnpm and npm install them for you.",
@@ -337,7 +344,7 @@ export function InstallationPage() {
         <p className={p}>
           {t(
             "The snapshot lists each control with its value and the actions it takes. The step sets the amount to 1 250,00 and reports the change with ",
-            "Snapshotet lister hver kontroll med verdien og handlingene den tar. Steget setter beløpet til 1 250,00 og rapporterer endringen med ",
+            "Øyeblikksbildet lister hver kontroll med verdien og handlingene den tar. Steget setter beløpet til 1 250,00 og rapporterer endringen med ",
           )}
           <code>source: &quot;agent&quot;</code>
           {t(

@@ -137,7 +137,7 @@ export * from "./agent.js";
   const pkg = {
     name: `@booki/${fw.id}`,
     version: existing.version ?? "0.1.0",
-    description: `Booki for ${fw.name} — agent-first accounting controls as ${fw.about}: the same rules, state and agent actions as @booki/react.`,
+    description: `Booki for ${fw.name} (experimental) — agent-first accounting controls as ${fw.about}: the same rules, state and agent actions as @booki/react.`,
     type: "module",
     license: "MIT",
     repository: {
@@ -213,6 +213,10 @@ export default defineConfig({
   writeIfChanged(
     path.join(dir, "README.md"),
     `# @booki/${fw.id}
+
+Experimental. This adapter is less tested than \`@booki/react\`, and its API may
+change between releases. See the
+[Support section](https://github.com/Walgermo/booki#support) of the README.
 
 Agent-first accounting controls for ${fw.name}. The same rules, state and agent
 actions as \`@booki/react\`, generated from the same framework-free definitions

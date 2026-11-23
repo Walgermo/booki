@@ -308,6 +308,46 @@
   text-wrap: balance;
 }
 
+/* Two measured figures under the hook, divided by a hairline. Not tiles: no boxes. */
+.landing-hero__stats {
+  display: flex;
+  justify-content: center;
+  margin: 1.75rem 0 0;
+}
+
+.landing-hero__stats > div {
+  display: grid;
+  gap: 0.5rem;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.landing-hero__stats > div + div {
+  border-left: var(--hairline) solid var(--bk-border-strong);
+}
+
+.landing-hero__stats dt {
+  font-family: var(--bk-mono);
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-fg);
+}
+
+.landing-hero__stats dd {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+/* What the figures were measured on: a caption, quieter than the hook. */
+.landing-hero__source {
+  margin: 0.875rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
 .landing-hero__lede {
   max-width: 34rem;
   font-size: var(--text-lede);

@@ -1,7 +1,7 @@
 import type { SignableDocument } from "@booki/core/document-signoff";
 import type { StackSheet } from "@booki/core/sheet-stack";
 import { mount } from "@ui-sdk/core/testing";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { BookiAccessProvider } from "./access.js";
 import { createBookiAgent } from "./booki-agent.js";
@@ -104,6 +104,56 @@ describe("DocumentSignoff", () => {
     try {
       await view.click(view.part("sign", "performed#sign")!);
       expect(view.changes.at(-1)).toMatchObject({ key: "document", reason: "sign-performed", source: "mouse" });
+    } finally {
+      view.unmount();
+    }
+  });
+
+  it("refuses a signature while open points are blocked, and says why", async () => {
+    const { entry, act, button } = signoff(<DocumentSignoff defaultDocument={doc()} actor="nina" blockOpenPoints />);
+    expect(entry()).toMatchObject({ signable: false, blockOpenPoints: true });
+    expect(entry().obstacles).toHaveLength(1);
+    expect(entry().obstacles[0]).toMatch(/open point/);
+    expect(button("Sign as performed")).toBeUndefined();
+    expect(document.body.textContent).not.toMatch(/go with the signature/);
+    const check = await act("assertSignable");
+    expect(check.ok).toBe(false);
+    expect(check.error?.message).toMatch(/open point/);
+    expect((await act("sign", ["performed"])).ok).toBe(false);
+  });
+
+  it("signs once the open points are cleared, with blockOpenPoints on", () => {
+    const changes: SignableDocument[] = [];
+    const { button } = signoff(
+      <DocumentSignoff
+        defaultDocument={doc({ openPoints: [] })}
+        actor="nina"
+        blockOpenPoints
+        onDocumentChange={(next) => changes.push(next)}
+      />,
+    );
+    fireEvent.click(button("Sign as performed")!);
+    expect(changes.at(-1)?.signatures[0]).toMatchObject({ level: "performed", by: "nina", version: 3 });
+  });
+
+  it("says the open-point obstacle in Norwegian", async () => {
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <DocumentSignoff defaultDocument={doc()} actor="nina" blockOpenPoints />
+      </BookiLocaleProvider>,
+    );
+    await waitFor(() => expect(document.body.textContent).toMatch(/åpne punkter/));
+  });
+
+  it("does not throw when a person clicks sign while blocked (ui-sdk mount)", async () => {
+    const view = mount(
+      documentSignoff,
+      { defaultDocument: doc(), actor: "nina", blockOpenPoints: true },
+      `<root><sign value="performed#sign">Sign</sign></root>`,
+    );
+    try {
+      await view.click(view.part("sign", "performed#sign")!);
+      expect(view.changes).toEqual([]);
     } finally {
       view.unmount();
     }

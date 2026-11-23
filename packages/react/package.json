@@ -1,7 +1,7 @@
 {
   "name": "@booki/react",
   "version": "0.1.0",
-  "description": "Booki React — agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. Unstyled by default.",
+  "description": "Booki React — agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. Unstyled by default. Supported: React 19 with the NO and US profiles.",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -253,7 +253,8 @@
   "scripts": {
     "build": "tsup && node ../../scripts/vendor-ui-sdk-types.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --testTimeout=20000"
   },
   "dependencies": {
     "@booki/core": "workspace:*",
@@ -272,6 +273,7 @@
     "@types/react-dom": "^19.2.3",
     "@ui-sdk/core": "0.1.0-beta.14",
     "@ui-sdk/react": "0.1.0-beta.14",
+    "@vitest/coverage-v8": "3.2.7",
     "jsdom": "^31.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

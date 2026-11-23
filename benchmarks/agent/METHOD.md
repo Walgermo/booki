@@ -393,6 +393,17 @@ pages, and in four runs to list folders, read files and scan ports on the
 benchmark machine. Those transcripts are not published; [RUNS.md](RUNS.md)
 lists every run.
 
+## API baseline (not run)
+
+The same three tasks (voucher, supplier invoice, sales invoice) and the same
+end-state checks exist for an agent that has tool calls straight to a
+bookkeeping API and no screen. The code is in `src/api/`: an in-process
+`BookkeepingApi` for the Norwegian profile, its tool definitions, and
+`verify.ts`, which reuses the screen runs' expected numbers and check names.
+It is unit-tested (`pnpm --filter agent-benchmark test`) and has never been run
+against a model. No figures exist and none are published. The paid runs, the
+figures and the FAQ update on the site are still open under issue #13.
+
 ## Threats to validity
 
 - **Code tools.** A model may read a page with `browser_evaluate`; Opus did on the replica dashboards. Real products whose chart data is not in the page would deny that.

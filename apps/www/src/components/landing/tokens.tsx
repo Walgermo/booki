@@ -208,7 +208,7 @@ export function TokenStory({ agent }: { agent: LandingAgent }) {
       source: accSource,
       outcome: t(
         "Paid, through named actions on one snapshot.",
-        "Betalt, gjennom navngitte handlinger på ett snapshot.",
+        "Betalt, gjennom navngitte handlinger på ett øyeblikksbilde.",
       ),
       form: (
         <div ref={accRef} className="landing-form landing-stage site-sheet">

@@ -1,7 +1,7 @@
 {
   "name": "@booki/core",
   "version": "0.1.0",
-  "description": "Booki core — the accounting rules behind agent-first apps: integer money, locale profiles, validators, ledger and table logic. Framework-agnostic.",
+  "description": "Booki core — the accounting rules behind agent-first apps: integer money, locale profiles, validators, ledger and table logic. Framework-agnostic. Norway and US profiles are supported; SE, DK, GB and DE are experimental starters.",
   "type": "module",
   "license": "MIT",
   "repository": {
@@ -179,9 +179,11 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "3.2.7",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.7"

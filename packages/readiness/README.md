@@ -10,6 +10,9 @@ accessibility snapshot Playwright gives a model) and the way a bridge agent
 does (`window.agent` or WebMCP tools), and reports every place an agent has to
 guess, read pixels, see a secret or press an irreversible button unchecked.
 Each check enforces a rule of the [Agent Contract](https://github.com/Walgermo/booki/blob/main/spec/agent-contract.md).
+The package also has two subpaths: `@booki/readiness/conformance`, a suite that
+tests a bridge against the contract in-process ([Conformance suite](#conformance-suite)),
+and `@booki/readiness/reference`, a small reference implementation of the contract.
 
 ```bash
 npx @booki/readiness https://app.example.com/vouchers/new --storage-state session.json --out report.html
@@ -89,6 +92,68 @@ console.log(report.score, report.findings.length)
 
 `check(page)` runs the checks on a Playwright `Page` you already drive, for a
 test suite that signs in and opens dialogs first.
+
+## Conformance suite
+
+`@booki/readiness/conformance` tests the bridge of a screen against the
+[Agent Contract](https://github.com/Walgermo/booki/blob/main/spec/agent-contract.md)
+(sections 2 to 7). It is in-process: it calls `act()`, so run it on test data,
+never on a live company. The browser audit above only reads a page; this suite
+changes state. `@booki/readiness/reference` is a small implementation of the
+contract without Booki or ui-sdk, which the suite passes.
+
+```ts
+import { runConformance, formatConformance } from '@booki/readiness/conformance'
+import { createReference } from '@booki/readiness/reference'
+
+const { bridge, server } = createReference()
+const report = await runConformance({ bridge, server, drive: { ref: 'Amount', action: 'setMinor', args: [155000] } })
+console.log(formatConformance(report))
+expect(report.conforms).toBe(true) // in vitest
+```
+
+`bridge` is an object with `snapshot()` (returns the components), `act({ steps })`
+(returns `{ ok, error?: { message } }`) and `subscribe(listener)` (returns an
+unsubscribe function). With ui-sdk, the bridge is the `agent` from
+`createAgent` or `createBookiAgent`, which already has this shape.
+
+The target takes these options, all optional:
+
+| Option | What it is for |
+| --- | --- |
+| `drive` | One safe, successful step, for the recording check (6.1). |
+| `secrets` | Literal test values, such as a test IBAN, that must not appear in the snapshot (3.5). |
+| `closedList` | `{ step, valid }`: a bad value and every valid choice its refusal must name (4.3). |
+| `personOnly` | Steps only a person may take, which the agent must be refused (5.1). |
+| `server` | Your write gate, `(actor, permission) => { status }`, asked for each person-only permission as an agent and once unsigned (5.1, 7.3). |
+| `normalizeEvent` | Maps your bridge's event to `{ source, actor }` when it is not that shape already (6.1). |
+
+The checks, with the section each enforces:
+
+| Id | § | Level | What it checks |
+| --- | --- | --- | --- |
+| `bridge-shape` | 2 | MUST | `snapshot`, `act` and `subscribe` are functions, and `snapshot` returns an array. |
+| `snapshot-named` | 3.1 | MUST | Every component has a `ref`, `component`, `label` and string `actions`; labels are unique. |
+| `snapshot-values` | 3.2 | MUST | Minor-unit values are integers or `null`; dates are `YYYY-MM-DD` or `null`. |
+| `snapshot-secrets` | 3.5 | MUST | The snapshot holds none of the literal `secrets` and no secret pattern (the same finder as the audit). |
+| `act-never-throws` | 4.5 | MUST | `act()` refuses an unknown ref and an unknown action with `ok: false` and a message, without throwing. |
+| `amount-minor-only` | 4.2 | MUST | `setMinor` refuses fractions and formatted text. |
+| `closed-list` | 4.3 | MUST | A bad value for a closed list is refused, and the refusal names every valid choice. |
+| `person-only-not-offered` | 5.1 | MUST | No action named as a person's decision (approve, sign off, …) is offered, and `personOnly` steps are refused. |
+| `recording-agent` | 6.1 | MUST | The `drive` step records exactly one event whose actor starts with `agent:`. |
+| `server-person-only` | 5.1 | MUST | The `server` refuses an agent for every person-only permission. |
+| `refusal-names-valid` | 12.2 | MUST | A refusal for an unknown ref names the controls that exist, and a refusal for an unknown action names the valid actions. |
+| `server-unsigned` | 7.3 | SHOULD | An unsigned request to the `server` gets 401. |
+
+Each check returns `pass`, `fail` or `skip`. A **skip** means the suite had no
+input for the check, not that the check passed: no `drive`, `closedList`,
+`server` or `secrets` option was given, or the bridge has no components to
+probe. `conforms` is `false` only when a MUST check fails. The report lists the
+passes, failures and skips, so give every option you can.
+
+The suite does not yet cover the per-language refusals (spec 10.4) or the
+ergonomics rules (12) beyond naming the valid choices. Passing it is necessary,
+not sufficient.
 
 ## Output
 

@@ -122,7 +122,7 @@ export function Flex({ agent }: { agent: LandingAgent }) {
       title={t("Flexible", "Fleksibelt")}
       note={t(
         "Controls ship unstyled, and a country is data. Switch the look and only the person's view changes. Switch the country and the agent learns new rules.",
-        "Kontrollene leveres uten stil, og et land er data. Bytt utseende, og bare det personen ser, endres. Bytt land, og agenten lærer nye regler.",
+        "Kontrollene leveres ustylet, og et land er data. Bytt utseende, og bare det personen ser, endres. Bytt land, og agenten lærer nye regler.",
       )}
     >
       <div className="grid gap-6">

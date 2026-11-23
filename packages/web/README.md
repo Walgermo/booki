@@ -1,5 +1,9 @@
 # @booki/web
 
+Experimental. This package is less tested than `@booki/react`, and its API may
+change between releases. See the
+[Support section](https://github.com/Walgermo/booki#support) of the README.
+
 Agent-first accounting controls as custom elements: the same rules, state and
 agent actions as `@booki/react`, for any framework or none. Use it in Angular,
 in pages rendered on the server, or in plain HTML.

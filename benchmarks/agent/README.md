@@ -267,6 +267,11 @@ ANTHROPIC_API_KEY=… pnpm --filter agent-benchmark bench --task reconcile
 ANTHROPIC_API_KEY=… pnpm --filter agent-benchmark bench --task close
 ```
 
+The API baseline (the same three tasks with tool calls to a bookkeeping API and
+no screen) is in `src/api/`, and it has no run yet; see
+[METHOD.md](METHOD.md#api-baseline-not-run). `pnpm --filter agent-benchmark test`
+runs its unit tests, which never call a model.
+
 It builds the packages, starts the site on port 5199 (or uses `--url`), starts
 one Playwright MCP server per run on the installed Chrome (`--browser
 chrome`; no browser is downloaded), prints every run and the median (min–max)
