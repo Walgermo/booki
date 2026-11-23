@@ -39,6 +39,19 @@ import { restoreSelect } from "./lock.js";
 export const LINE_FORMAT =
   'addLine({ account: "7140", debitMinor: 250000, vatCode: "11" }) is 2 500,00 incl. VAT, in minor units; setDebit/setCredit(lineId, minor)';
 
+/** How to book a line in another currency, shown in the snapshot. Says the unit of the amount and of the rate. */
+export const FOREIGN_FORMAT =
+  'setForeign(lineId, "USD", 42000, 10500000) is 420,00 USD at rate 10,5: minor units, rate in millionths; or (lineId, { currency, amountMinor, rateScaled })';
+
+/** The fields an object given to setForeign may carry. */
+export const FOREIGN_FIELDS = ["currency", "amountMinor", "rateScaled"] as const;
+
+/** A whole number written as digits counts as that number; anything else stays as given, to be refused. */
+const wholeOf = (value: unknown): unknown =>
+  typeof value === "string" && /^\s*-?\d+\s*$/.test(value) ? Number(value) : value;
+
+const shownArg = (value: unknown): string => (value === undefined ? "nothing" : JSON.stringify(value));
+
 /** The fields an object given to addLine may carry. */
 export const LINE_FIELDS = [
   "account",
@@ -201,7 +214,7 @@ export const voucherComposer = definePrimitive({
   // `postable` and `postings` (what the ledger receives, VAT split out) are
   // added: the full list of issues comes back from `assertPostable`, so
   // ordinary edits stay cheap for an agent to read.
-  controlled: ["lines", "postable", "postings", "lineFormat"],
+  controlled: ["lines", "postable", "postings", "lineFormat", "foreignFormat"],
   state: (options: VoucherComposerOptions) => {
     const edit: EditState = {
       rowError: null,
@@ -215,6 +228,7 @@ export const voucherComposer = definePrimitive({
       ...edit,
       // Read before the first try, so an agent writes a line right the first time.
       lineFormat: LINE_FORMAT,
+      foreignFormat: FOREIGN_FORMAT,
     };
   },
   sync: (options: VoucherComposerOptions) => ({
@@ -421,20 +435,41 @@ export const voucherComposer = definePrimitive({
       /**
        * Book a line in another currency. `rateScaled` is the rate in
        * millionths (11.5 is 11500000); the base amount is worked out from it.
-       * Pass no currency to clear it.
+       * The three values may come as arguments or as one object. Pass no
+       * currency to clear it. Each refusal says which value is wrong, its
+       * unit, and the whole call written out.
        */
-      setForeign: (lineId: string, currency?: string, amountMinor?: number, rateScaled?: number) => {
+      setForeign: (
+        lineId: string,
+        currency?: string | { currency?: unknown; amountMinor?: unknown; rateScaled?: unknown },
+        amountMinor?: number,
+        rateScaled?: number,
+      ) => {
         const { lines } = context.store.get();
         assertLine(lines, String(lineId));
         const base = context.options().currency;
         if (!base) throw new BookiError("voucher.no-base-currency");
+        const given =
+          typeof currency === "object" && currency !== null
+            ? checkFields("setForeign", currency, FOREIGN_FIELDS, FOREIGN_FORMAT)
+            : currency === undefined || currency === null || currency === ""
+              ? undefined
+              : { currency, amountMinor, rateScaled };
+        if (!given) return commit(setLineForeign(lines, String(lineId), undefined, base), "set-foreign");
+        const code = given.currency;
+        const amount = wholeOf(given.amountMinor);
+        const rate = wholeOf(given.rateScaled);
+        if (typeof code !== "string" || !/^[A-Za-z]{3}$/.test(code)) {
+          throw new BookiError("voucher.foreign-currency", { got: shownArg(code), format: FOREIGN_FORMAT });
+        }
+        if (typeof amount !== "number" || !Number.isSafeInteger(amount)) {
+          throw new BookiError("voucher.foreign-amount", { got: shownArg(given.amountMinor), format: FOREIGN_FORMAT });
+        }
+        if (typeof rate !== "number" || !Number.isSafeInteger(rate) || rate <= 0) {
+          throw new BookiError("voucher.foreign-rate", { got: shownArg(given.rateScaled), format: FOREIGN_FORMAT });
+        }
         return commit(
-          setLineForeign(
-            lines,
-            String(lineId),
-            currency ? { currency, amountMinor: Number(amountMinor), rateScaled: Number(rateScaled) } : undefined,
-            base,
-          ),
+          setLineForeign(lines, String(lineId), { currency: code, amountMinor: amount, rateScaled: rate }, base),
           "set-foreign",
         );
       },

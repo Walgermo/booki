@@ -549,6 +549,12 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "reference.kid-failed": 'Kunne ikke lage KID fra "{seed}". Oppgi sifrene den bygges av.',
   "voucher.no-line": 'Ingen bilagslinje "{id}". Linje-id-er: {ids}.',
   "voucher.no-base-currency": "Bilaget har ingen basisvaluta, så et beløp i annen valuta kan ikke regnes om.",
+  "voucher.foreign-currency":
+    'setForeign: valutaen er en kode på tre bokstaver, som "EUR", ikke {got}. Skriv {format}.',
+  "voucher.foreign-amount":
+    "setForeign: beløpet er et heltall i minste enhet av den utenlandske valutaen (42000 er 420,00), ikke {got}. Skriv {format}.",
+  "voucher.foreign-rate":
+    "setForeign: kursen er et heltall i milliondeler over null (10,5 er 10500000), ikke {got}. Skriv {format}.",
   "invoice.no-line": 'Ingen fakturalinje "{id}". Linjer: {lines}.',
   "reconciliation.no-match": 'Ingen avstemming "{id}". Avstemmings-id-er: {ids}.',
   "batch.no-payment": 'Ingen betaling "{id}". Betalinger: {ids}.',
