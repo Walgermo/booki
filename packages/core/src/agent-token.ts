@@ -15,6 +15,11 @@ export type AgentGrant = {
   onBehalfOf: string;
   /** The client it came through (your page, an MCP client). */
   clientId?: string;
+  /**
+   * What the token is for: an engagement, a company, one API. `verifyAgentToken`
+   * with `{ audience }` refuses a token issued for anything else.
+   */
+  audience?: string;
   /** Seconds it is valid. Default 900 (15 minutes), at most 86 400. */
   ttlSeconds?: number;
 };
@@ -25,6 +30,7 @@ export type AgentClaims = {
   kind: "agent";
   onBehalfOf: string;
   clientId?: string;
+  audience?: string;
   /** This token's own id, for the audit trail (`actorRecord`). */
   grantId: string;
   /** When it stops being valid, in milliseconds since 1970. */
@@ -68,6 +74,7 @@ export async function issueAgentToken(grant: AgentGrant, secret: string, now = D
     kind: "agent",
     onBehalfOf: grant.onBehalfOf,
     ...(grant.clientId ? { clientId: grant.clientId } : {}),
+    ...(grant.audience ? { audience: grant.audience } : {}),
     grantId: base64url(crypto.getRandomValues(new Uint8Array(12))),
     expiresAt: now + ttl * 1000,
   };
@@ -80,7 +87,13 @@ export async function issueAgentToken(grant: AgentGrant, secret: string, now = D
  * The claims of a valid, unexpired token signed with `secret`, or null. Null
  * for every failure alike: a caller learns nothing about why.
  */
-export async function verifyAgentToken(token: unknown, secret: string, now = Date.now()): Promise<AgentClaims | null> {
+export async function verifyAgentToken(
+  token: unknown,
+  secret: string,
+  now: number | { now?: number; audience?: string } = Date.now(),
+): Promise<AgentClaims | null> {
+  const at = typeof now === "number" ? now : (now.now ?? Date.now());
+  const audience = typeof now === "number" ? undefined : now.audience;
   const key = await keyFor(secret);
   if (typeof token !== "string" || token.length > 4096) return null;
   const [prefix, payload, signature, ...rest] = token.split(".");
@@ -95,7 +108,9 @@ export async function verifyAgentToken(token: unknown, secret: string, now = Dat
     if (!ok) return null;
     const claims = JSON.parse(new TextDecoder().decode(fromBase64url(payload))) as AgentClaims;
     if (claims.kind !== "agent" || typeof claims.id !== "string" || typeof claims.onBehalfOf !== "string") return null;
-    if (!Number.isFinite(claims.expiresAt) || claims.expiresAt <= now) return null;
+    if (!Number.isFinite(claims.expiresAt) || claims.expiresAt <= at) return null;
+    // Given an audience, only a token issued for exactly that one passes.
+    if (audience !== undefined && claims.audience !== audience) return null;
     return claims;
   } catch {
     return null;

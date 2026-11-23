@@ -27,8 +27,9 @@ export type AmountFieldOptions = {
 };
 
 export type AmountFieldState = {
-  value: number;
-  /** No amount entered (with `allowEmpty`). `value` and `minor` read 0 meanwhile. */
+  /** Minor units, or null while the field is empty (with `allowEmpty`). */
+  value: number | null;
+  /** No amount entered (with `allowEmpty`): `value` and `minor` are null. */
   empty: boolean;
   allowEmpty: boolean;
   /**
@@ -36,7 +37,7 @@ export type AmountFieldState = {
    * `minor` key: `stageChanges` with `{ key: "minor" }` calls `setMinor` and
    * reads `before` from it, which makes revert work.
    */
-  minor: number;
+  minor: number | null;
   draft: string;
   focused: boolean;
   /** Value when the current human edit began (focus); restored on a refused blur. */
@@ -107,13 +108,13 @@ export const amountField = definePrimitive({
     const allowEmpty = options.allowEmpty ?? false;
     const given = options.value !== undefined ? options.value : options.defaultValue;
     const empty = allowEmpty && (given === null || given === undefined);
-    const value = given ?? 0;
+    const value = empty ? null : (given ?? 0);
     return {
       value,
       empty,
       allowEmpty,
       minor: value,
-      draft: empty ? "" : formatMinor(value, currency, locale),
+      draft: value === null ? "" : formatMinor(value, currency, locale),
       focused: false,
       editStart: null,
       currency,
@@ -130,8 +131,8 @@ export const amountField = definePrimitive({
     if (options.value !== undefined) {
       const empty = (options.allowEmpty ?? false) && options.value === null;
       next.empty = empty;
-      next.value = options.value ?? 0;
-      next.minor = options.value ?? 0;
+      next.value = empty ? null : (options.value ?? 0);
+      next.minor = next.value;
     }
     if (options.currency !== undefined) next.currency = options.currency;
     if (options.locale !== undefined) next.locale = options.locale;
@@ -154,7 +155,7 @@ export const amountField = definePrimitive({
       if (canceled) return false;
       // Report on `minor`; this writes `minor` into the store. An empty field
       // already holds 0, so 0 there changes only `empty`.
-      const ok = empty && next === context.store.get().minor ? true : change("minor", next, { reason, event });
+      const ok = change("minor", next, { reason, event });
       if (ok && empty) change("empty", false, { reason, event });
       if (ok) {
         if (context.options().value !== undefined) {
@@ -176,7 +177,9 @@ export const amountField = definePrimitive({
 
     /** Agent / programmatic write in minor units. Throws a repairable message. */
     function setMinorChecked(minor: unknown, reason: string, event?: Event) {
-      const { currency, minMinor, maxMinor } = context.store.get();
+      const { currency, minMinor, maxMinor, allowEmpty } = context.store.get();
+      // null is "no amount": only where the field may be empty.
+      if (minor === null && allowEmpty) return commitEmpty(reason, event);
       const n = typeof minor === "string" && /^\s*-?\d+\s*$/.test(minor) ? Number(minor) : minor;
       if (typeof n !== "number" || !Number.isSafeInteger(n)) {
         throw new BookiError("amount.not-minor", {
@@ -202,7 +205,7 @@ export const amountField = definePrimitive({
       const ok = change("empty", true, { reason, event });
       if (!ok) return false;
       context.options().onEmpty?.({ reason });
-      if (context.options().value === undefined) context.store.set({ value: 0, minor: 0 });
+      if (context.options().value === undefined) context.store.set({ value: null, minor: null });
       context.store.set({ draft: "" });
       return true;
     }
@@ -230,24 +233,25 @@ export const amountField = definePrimitive({
       },
       focus: () => {
         if (isLocked(context.store.get())) return;
-        const { value, currency, locale, empty } = context.store.get();
+        const { value, currency, locale } = context.store.get();
         context.store.set({
           focused: true,
           editStart: value,
-          draft: empty ? "" : formatMinor(value, currency, locale),
+          draft: value === null ? "" : formatMinor(value, currency, locale),
         });
       },
       blur: (event?: unknown) => {
         if (isLocked(context.store.get())) return;
         const { draft, editStart } = context.store.get();
         context.store.set({ focused: false, editStart: null });
-        if (!commitDraft(draft, "blur", asEvent(event)) && editStart !== null) {
+        if (!commitDraft(draft, "blur", asEvent(event))) {
           // Refused (unparseable or out of range): keystrokes may have
           // committed a prefix, so put back the amount from before the edit.
-          commitMinor(editStart, "blur", asEvent(event));
+          if (editStart !== null) commitMinor(editStart, "blur", asEvent(event));
+          else if (context.store.get().allowEmpty) commitEmpty("blur", asEvent(event));
         }
-        const { value, currency, locale, empty } = context.store.get();
-        context.store.set({ draft: empty ? "" : formatMinor(value, currency, locale) });
+        const { value, currency, locale } = context.store.get();
+        context.store.set({ draft: value === null ? "" : formatMinor(value, currency, locale) });
       },
     };
   },
@@ -271,12 +275,12 @@ export const amountField = definePrimitive({
       attrs: (state) => {
         const display = state.focused
           ? state.draft
-          : state.empty
+          : state.value === null
             ? ""
             : state.secret && state.value !== 0
               ? "[redacted]"
               : formatMinor(state.value, state.currency, state.locale);
-        const exceeds = rangeError(state.value, state.minMinor, state.maxMinor) !== null;
+        const exceeds = state.value !== null && rangeError(state.value, state.minMinor, state.maxMinor) !== null;
         return {
           "data-slot": "amount-field-input",
           type: "text",

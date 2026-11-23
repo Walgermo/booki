@@ -1,5 +1,5 @@
 import { bookiAllow, bookiRegisterTools, type AgentDecision, type AgentPolicyOptions } from "@booki/primitives/agent-policy";
-export { actAndRecord } from "@booki/primitives/agent-policy";
+export { actAndRecord, withRecordedAct } from "@booki/primitives/agent-policy";
 import { createAgent, registerTools as registerBridgeTools } from "@ui-sdk/web/agent";
 
 /**

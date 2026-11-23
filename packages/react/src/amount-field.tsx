@@ -78,12 +78,12 @@ function AmountField({
       aria-label={label}
       {...props}
     >
-      {(state: { value: number; empty: boolean }) => (
+      {(state: { value: number | null; empty: boolean }) => (
         <>
           <AmountFieldCurrency>{currency}</AmountFieldCurrency>
           <AmountFieldInput id={id} required={required} aria-label={label} />
           {/* Integer minor units, the same number the agent reads. */}
-          <FormValue name={name} value={state.empty ? "" : state.value} disabled={disabled} />
+          <FormValue name={name} value={state.value ?? ""} disabled={disabled} />
         </>
       )}
     </AmountFieldRoot>

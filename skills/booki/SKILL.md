@@ -114,6 +114,7 @@ import {
   attachAudit,
   createBookiHistory,
   registerTools,
+  withRecordedAct,
 } from "@booki/react"
 
 // The company's rules for marked steps (data-agent-confirm): return true to let
@@ -150,8 +151,11 @@ if (typeof window !== "undefined") {
   if (process.env.NEXT_PUBLIC_BOOKI_WEBMCP === "on") {
     registerTools(agent, { allow: cursor.wrap(allow), audit, agentId: "browser" })
   }
-  // Console and devtools: window.agent.snapshot(). Not in production.
-  if (process.env.NODE_ENV !== "production") Object.assign(window, { agent })
+  // Console and devtools: window.agent.snapshot(). Not in production. Its act records
+  // a step the control refuses, as actAndRecord does.
+  if (process.env.NODE_ENV !== "production") {
+    Object.assign(window, { agent: withRecordedAct(agent, { audit, agentId: "bookkeeper" }) })
+  }
 }
 ```
 
@@ -266,7 +270,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 
 | Component | Package entry | Agent notes |
 | --- | --- | --- |
-| AmountField | `@booki/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor` |
+| AmountField | `@booki/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor`; `allowEmpty`: empty reads `value: null`, `setMinor(null)` and `clear` empty it |
 | VoucherComposer | `@booki/react` | line edits with VAT code, department and project per line; `assertPostable` names what blocks posting; closed lists via `accounts`, `taxCodes`, `departments`, `projects` |
 | BankReconciliation | `@booki/react` | agent suggests matches (`suggestMatch`), a person approves; sides must sum equal |
 | ApprovalChain | `@booki/react` | agent reads status and who may decide (`assertApproved`); approve/reject/escalate are a person's, checked against limits and levels |
@@ -351,11 +355,15 @@ has by the company's rule go in `agentOwn`. Without `personOf` the person is onl
 `@booki/core/server` issues a signed token that lasts 15 minutes. Your sign-in issues it for the signed-in person,
 and the page sends it with the agent's writes. `verifyAgentToken(token, secret)` gives
 `{ id, kind: "agent", onBehalfOf, grantId }` or null; add the agent's roles. The secret is
-at least 32 characters and stays on the server.
+at least 32 characters and stays on the server. Bind a token to what it is for with
+`audience` (an engagement, a company) and verify with `verifyAgentToken(token, secret, { audience })`.
 
 **A step the control refuses** (a fraction of an øre, an unknown account) is not an `allow`
 decision. Where your code calls `act` for a model, call `actAndRecord(agent, input, { audit, agentId })`
-instead: it writes an `agent.failed` row with the refusal sentence.
+instead: it writes an `agent.failed` row with the refusal sentence and the control's name, once
+(a step `allow` refused is already recorded). `withRecordedAct(agent, …)` gives a bridge whose `act`
+does it. The browser's own agent (WebMCP) does not go through it: its `allow` refusals are
+recorded, a control's own refusal is not.
 
 **Your own rules** refuse with `throw new RuleRefusal("…")` (422 `server.rule`). Any other
 error a rule throws is rethrown, not sent to the caller. A request an agent raised records

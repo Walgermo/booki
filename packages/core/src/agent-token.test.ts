@@ -45,4 +45,14 @@ describe("agent tokens", () => {
     await expect(issueAgentToken({ agentId: "b", onBehalfOf: "n" }, "short")).rejects.toThrow(/32/);
     await expect(issueAgentToken({ agentId: "b", onBehalfOf: "n", ttlSeconds: 90_000 }, SECRET)).rejects.toThrow();
   });
+
+  it("is only good for the audience it was issued for, when the server asks", async () => {
+    const token = await issueAgentToken({ agentId: "b", onBehalfOf: "n", audience: "engagement-93000" }, SECRET, 0);
+    expect(await verifyAgentToken(token, SECRET, { now: 1, audience: "engagement-93000" })).toMatchObject({
+      audience: "engagement-93000",
+    });
+    expect(await verifyAgentToken(token, SECRET, { now: 1, audience: "engagement-1" })).toBeNull();
+    const none = await issueAgentToken({ agentId: "b", onBehalfOf: "n" }, SECRET, 0);
+    expect(await verifyAgentToken(none, SECRET, { now: 1, audience: "engagement-93000" })).toBeNull();
+  });
 });

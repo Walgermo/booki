@@ -78,3 +78,33 @@ describe("a step the control itself refuses", () => {
     expect(rows[0]!.detail).toMatch(/^setMinor: /);
   });
 });
+
+describe("a step refused by allow, then failing in act", () => {
+  it("is recorded once, under the control's name", async () => {
+    const { AmountField } = await import("./amount-field.js");
+    const { withRecordedAct } = await import("./index.js");
+    const rows: { action: string; target: string }[] = [];
+    const audit = (row: { action: string; target: string }) => rows.push(row);
+    const bridge = createBookiAgent({ allow: () => false, audit, agentId: "bookkeeper" });
+    const agent = withRecordedAct(bridge, { audit, agentId: "bookkeeper" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    const ref = agent.snapshot().find((c) => c.component === "amount-field")!.ref;
+    expect((await agent.act({ steps: [{ ref, action: "setMinor", args: [100] }] })).ok).toBe(false);
+    expect(rows.map((row) => row.action)).toEqual(["agent.refused"]);
+    rows.length = 0;
+    cleanup();
+    const open = withRecordedAct(createBookiAgent({ allow: () => true, audit }), { audit });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    const ref2 = open.snapshot().find((c) => c.component === "amount-field")!.ref;
+    await open.act({ steps: [{ ref: ref2, action: "setMinor", args: [12.5] }] });
+    expect(rows).toEqual([expect.objectContaining({ action: "agent.failed", target: "Beløp" })]);
+  });
+});
