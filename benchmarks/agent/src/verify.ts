@@ -25,7 +25,7 @@ export type Verification = {
 
 type Line = { account: string; debitMinor: number | null; creditMinor: number | null };
 
-const verdict = (checks: Record<string, boolean>, posted: boolean, observed: unknown): Verification => ({
+export const verdict = (checks: Record<string, boolean>, posted: boolean, observed: unknown): Verification => ({
   ok: Object.values(checks).every(Boolean),
   checks,
   posted,

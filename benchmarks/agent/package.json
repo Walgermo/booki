@@ -6,6 +6,7 @@
   "description": "Bookkeeping tasks done by a Claude model through the Playwright MCP server on ERP-style screens and through the ui-sdk bridge on Booki.",
   "scripts": {
     "bench": "tsx src/bench.ts",
+    "test": "tsx --test \"src/**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "h2h": "tsx src/h2h.ts",
     "proof": "tsx src/proof.ts"
