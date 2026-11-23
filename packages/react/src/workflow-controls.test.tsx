@@ -221,7 +221,7 @@ describe("InvoiceEditor", () => {
       { description: "Reise", qtyMilli: 1000, unitPriceMinor: 238_000, taxRate: 25 },
     ]);
     expect(unknown.error?.message).toMatch(
-      /no field "qtyMilli"\. A line takes: description, quantity \(12\.5\) or quantityMilli/,
+      /no field "qtyMilli"\. A line takes: description, quantity \(2\.5\) or quantityMilli/,
     );
     const missing = await act("addLine", [{ description: "Reise", taxRate: 25 }]);
     expect(missing.error?.message).toMatch(/needs quantity, unitPriceMinor/);

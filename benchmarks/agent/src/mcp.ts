@@ -26,7 +26,18 @@ export type McpOptions = {
   cwd?: string;
   /** Extra capabilities (`--caps`), e.g. ["vision"] for the coordinate tools. Default: none. */
   caps?: string[];
+  /** The one origin the browser may request: the benchmark site. Everything else is blocked. */
+  origin?: string;
 };
+
+/**
+ * Tools the model never gets. `browser_run_code_unsafe` runs Node code in the
+ * server's process, with the file system and the network of the machine the
+ * benchmark runs on: in an early round a model used it to list home folders,
+ * read files and scan ports. `browser_file_upload` reads local files too. A
+ * real product's agent would not have either; the page tools stay.
+ */
+export const WITHHELD_TOOLS = new Set(["browser_run_code_unsafe", "browser_file_upload"]);
 
 /**
  * The server's command line. Chrome through `--browser chrome` (the installed
@@ -34,8 +45,9 @@ export type McpOptions = {
  * the bridge pages. Everything else is the server's default, so the tool list
  * is the default tool list.
  */
-export const mcpArgs = ({ headed, caps }: Pick<McpOptions, "headed" | "caps">) => [
+export const mcpArgs = ({ headed, caps, origin }: Pick<McpOptions, "headed" | "caps" | "origin">) => [
   ...(caps && caps.length ? ["--caps", caps.join(",")] : []),
+  ...(origin ? ["--allowed-origins", new URL(origin).origin] : []),
   "--browser",
   "chrome",
   "--isolated",
@@ -105,13 +117,19 @@ export async function startPlaywrightMcp(options: McpOptions): Promise<Playwrigh
   }
 
   const listed = await client.listTools();
-  const tools: Anthropic.Tool[] = listed.tools.map((tool) => ({
-    name: tool.name,
-    description: tool.description ?? "",
-    input_schema: tool.inputSchema as Anthropic.Tool.InputSchema,
-  }));
+  const tools: Anthropic.Tool[] = listed.tools
+    .filter((tool) => !WITHHELD_TOOLS.has(tool.name))
+    .map((tool) => ({
+      name: tool.name,
+      description: tool.description ?? "",
+      input_schema: tool.inputSchema as Anthropic.Tool.InputSchema,
+    }));
 
   const call = async (name: string, input: unknown): Promise<McpCallOutcome> => {
+    if (WITHHELD_TOOLS.has(name)) {
+      const text = `Tool "${name}" is not available.`;
+      return { blocks: [{ type: "text", text }], content: text, isError: true };
+    }
     try {
       const result = (await client.callTool({
         name,

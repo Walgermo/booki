@@ -382,6 +382,17 @@ tasks were run against a built copy of the site under `vite preview`, so that
 other work on the dev server could not disturb them. Results and what they
 showed are in the README.
 
+## Tools the model never gets
+
+`browser_run_code_unsafe` runs Node code in the Playwright MCP server, with the
+file system and network of the machine the benchmark runs on, and
+`browser_file_upload` reads local files. Both are withheld from the tool list,
+and the browser may only request the benchmark site (`--allowed-origins`). In
+the runs of 21 November they were available: models used the first to read
+pages, and in four runs to list folders, read files and scan ports on the
+benchmark machine. Those transcripts are not published; [RUNS.md](RUNS.md)
+lists every run.
+
 ## Threats to validity
 
 - **Code tools.** A model may read a page with `browser_evaluate`; Opus did on the replica dashboards. Real products whose chart data is not in the page would deny that.

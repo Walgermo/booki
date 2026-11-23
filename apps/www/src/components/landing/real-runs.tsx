@@ -1,19 +1,5 @@
-import { BENCH, formatters, modelName, type BenchTask } from "@/lib/bench";
+import { formatters, modelName, type BenchTask, realOf } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
-
-type RealSide = {
-  task: string;
-  model: string;
-  key: string;
-  name: string;
-  runs: number;
-  succeeded: number;
-  toolCalls: number;
-  requests: number;
-  tokens: number;
-  costUsd: number | null;
-  wallMs: number;
-};
 
 const ORDER = ["tripletex", "dnb", "acc"];
 
@@ -25,14 +11,11 @@ const ORDER = ["tripletex", "dnb", "acc"];
 export function RealRuns({ task }: { task: BenchTask }) {
   const { lang, t } = useLang();
   const f = formatters(lang);
-  const sides = ((BENCH as { real?: { sides: RealSide[] } }).real?.sides ?? []).filter((side) => side.task === task);
-  // Only the models that got it right every time on Booki: a model that misses
-  // there is not one to recommend, so it is not in the table.
-  const full = (model: string) =>
-    sides.some((side) => side.model === model && side.key === "acc" && side.succeeded === side.runs);
+  // Every model run, also one that missed on Booki.
+  const sides = realOf(task);
   // Strongest first: Opus, Sonnet, Haiku, then other providers.
   const rank = (id: string) => ["opus", "sonnet", "haiku"].findIndex((name) => id.includes(name)) >>> 0;
-  const models = [...new Set(sides.map((side) => side.model))].filter(full).sort((a, b) => rank(a) - rank(b));
+  const models = [...new Set(sides.map((side) => side.model))].sort((a, b) => rank(a) - rank(b));
   if (models.length === 0) return null;
   const screens = ORDER.filter((key) => sides.some((side) => side.key === key));
   const nameOf = (key: string) =>
@@ -43,8 +26,8 @@ export function RealRuns({ task }: { task: BenchTask }) {
         <p className="site-kicker m-0">{t("With real models", "Med ekte modeller")}</p>
         <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
           {t(
-            "The same task given to a model through the browser tools on each screen, run five times each. Right means the books ended up correct, checked after every run. Time is end to end, the model's own time included; cost is what the gateway billed at list price. Shown: the models that were right every time on Booki.",
-            "Samme oppgave gitt til en modell gjennom nettleserverktøyene på hver skjerm, fem ganger hver. Riktig betyr at regnskapet ble riktig, sjekket etter hver kjøring. Tiden er fra start til slutt, med modellens egen tid; kostnaden er det gatewayen fakturerte til listepris. Med her: modellene som fikk det riktig hver gang på Booki.",
+            "The same task given to a model through the browser tools on each screen, run five times each. Right means the books ended up correct, checked after every run. Time is end to end, the model's own time included; cost is what the gateway billed at list price. Every model we ran is shown. The large models were right on both, so for them Booki saves cost and time; for the cheap ones it is whether the books come out right.",
+            "Samme oppgave gitt til en modell gjennom nettleserverktøyene på hver skjerm, fem ganger hver. Riktig betyr at regnskapet ble riktig, sjekket etter hver kjøring. Tiden er fra start til slutt, med modellens egen tid; kostnaden er det gatewayen fakturerte til listepris. Alle modellene vi kjørte er med. De store modellene fikk det riktig på begge, så for dem sparer Booki kostnad og tid; for de billige gjelder det om regnskapet blir riktig.",
           )}
         </p>
       </div>

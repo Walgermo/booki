@@ -67,7 +67,7 @@ export function nextLineId(lines: InvoiceLine[]): string {
  */
 /** How to write a line, shown in the snapshot. Money in minor units, unit price before VAT; quantity and rates as people say them. */
 export const LINE_FORMAT =
-  'addLine({ description: "Rådgivning", quantity: 12.5, unitPriceMinor: 145000, taxRate: 25 }); price ex VAT; also taxCategory, discountPercent';
+  'addLine({ description: "Kursdag", quantity: 2.5, unitPriceMinor: 98000, taxRate: 25 }); price ex VAT; also taxCategory, discountPercent';
 
 export const invoiceEditor = definePrimitive({
   name: "invoice-editor",

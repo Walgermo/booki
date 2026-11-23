@@ -167,11 +167,11 @@ const PILOT = (t: T): { step: string; detail: string }[] => [
 /** The three numbers a leader asks for first, from the benchmark run itself (src/data/bench.json). */
 const VOUCHER = versus("voucher");
 /** Measured with real models (pnpm proof); the scripted estimate where a task has no real runs. */
-const REAL_RAW = realFor("voucher", "anthropic/", "tripletex");
-const REAL_ACC = realFor("voucher", "anthropic/", "acc");
-const CHEAP = cheapModel("voucher");
-const CHEAP_ACC = CHEAP ? realFor("voucher", CHEAP, "acc") : undefined;
-const CHEAP_RAW = CHEAP ? realFor("voucher", CHEAP, "tripletex") : undefined;
+const REAL_RAW = realFor("supplier-invoice", "anthropic/", "tripletex");
+const REAL_ACC = realFor("supplier-invoice", "anthropic/", "acc");
+const CHEAP = cheapModel("supplier-invoice");
+const CHEAP_ACC = CHEAP ? realFor("supplier-invoice", CHEAP, "acc") : undefined;
+const CHEAP_RAW = CHEAP ? realFor("supplier-invoice", CHEAP, "tripletex") : undefined;
 const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: string }[] => {
   const { int, usd, seconds } = formatters(lang);
   const one = (n: number) => n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 });
@@ -184,20 +184,23 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
     return [
       {
         figure: `${one(REAL_RAW.costUsd / REAL_ACC.costUsd)}×`,
-        text: t("cheaper to post one voucher, measured", "billigere å bokføre ett bilag, målt"),
+        text: t(
+          "cheaper to register one supplier invoice, measured",
+          "billigere å registrere én leverandørfaktura, målt",
+        ),
         source: t(
-          `Claude Opus 5.5 on a DOM snapshot of Tripletex's voucher screen against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} a voucher, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
-          `Claude Opus 5.5 på et DOM-snapshot av bilagsskjermbildet i Tripletex mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per bilag, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 on our rebuild of Tripletex's supplier-invoice screen against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} an invoice, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 på vår gjenskaping av leverandørfakturaskjermen i Tripletex mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per faktura, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
         ),
       },
       ...(CHEAP_ACC && CHEAP_RAW
         ? [
             {
               figure: `${CHEAP_ACC.succeeded}/${CHEAP_ACC.runs}`,
-              text: t("vouchers right with a far cheaper model", "bilag riktig med en langt billigere modell"),
+              text: t("invoices right with a far cheaper model", "fakturaer riktig med en langt billigere modell"),
               source: t(
-                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on the Tripletex snapshot, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} a voucher. On agent-first screens a cheaper model does the job.`,
-                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på Tripletex-snapshotet, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per bilag. På agent-first-skjermer gjør en billigere modell jobben.`,
+                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on our Tripletex rebuild, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} an invoice. On agent-first screens a cheaper model does the job.`,
+                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på vår Tripletex-gjenskaping, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per faktura. På agent-first-skjermer gjør en billigere modell jobben.`,
               ),
             },
           ]

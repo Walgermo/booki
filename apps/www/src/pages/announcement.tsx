@@ -288,19 +288,19 @@ export function AnnouncementPage() {
       ),
     },
     {
-      figure: `${one(kpi.cheaper)}×`,
+      figure: `${one(kpi.cheaper.median)}×`,
       text: t("cheaper per task", "billigere per oppgave"),
       source: t(
-        `${f.usd(kpi.cost.before, 3)} → ${f.usd(kpi.cost.after, 3)}, the median for the same model on the same task.`,
-        `${f.usd(kpi.cost.before, 3)} → ${f.usd(kpi.cost.after, 3)}, medianen for samme modell på samme oppgave.`,
+        `Median of ${kpi.pairs} pairs of model and screen, ${one(kpi.cheaper.low)}–${one(kpi.cheaper.high)}×.`,
+        `Median av ${kpi.pairs} par av modell og skjerm, ${one(kpi.cheaper.low)}–${one(kpi.cheaper.high)}×.`,
       ),
     },
     {
-      figure: `${one(kpi.faster)}×`,
+      figure: `${one(kpi.faster.median)}×`,
       text: t("faster, start to finish", "raskere, fra start til slutt"),
       source: t(
-        `${f.seconds(kpi.wallMs.before)} → ${f.seconds(kpi.wallMs.after)}, the model's own time included.`,
-        `${f.seconds(kpi.wallMs.before)} → ${f.seconds(kpi.wallMs.after)}, med modellens egen tid.`,
+        `Median, ${one(kpi.faster.low)}–${one(kpi.faster.high)}×, the model's own time included.`,
+        `Median, ${one(kpi.faster.low)}–${one(kpi.faster.high)}×, med modellens egen tid.`,
       ),
     },
   ];
@@ -566,8 +566,8 @@ export function AnnouncementPage() {
             </p>
             <p className="text-sm text-muted-foreground">
               {t(
-                `Read these with care. The screens were rebuilt from DOM snapshots with invented data and never run against Tripletex or DNB themselves. Five runs per screen and model through Vercel AI Gateway, medians, ${f.runDate}. ${priceLine(lang)}. Your own screens will differ; the pilot measures them. Every page, script and call is in the repository: pnpm proof.`,
-                `Les dem med omhu. Skjermbildene er gjenskapt fra DOM-snapshots med oppdiktede data, og aldri kjørt mot Tripletex eller DNB selv. Fem kjøringer per skjermbilde og modell gjennom Vercel AI Gateway, medianer, ${f.runDate}. ${priceLine(lang)}. Deres egne skjermbilder vil gi andre tall; piloten måler dem. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.`,
+                `Corrected 23 November 2026: the voucher and sales invoice runs are withdrawn, because a control's format hint held their answer; the figures here are from the supplier invoice and the dashboard. Read these with care. The screens were rebuilt from DOM snapshots with invented data and never run against Tripletex or DNB themselves. Five runs per screen and model through Vercel AI Gateway, medians, ${f.runDate}. ${priceLine(lang)}. Your own screens will differ; the pilot measures them. Every page, script and call is in the repository: pnpm proof.`,
+                `Rettet 23. november 2026: kjøringene for bilag og salgsfaktura er trukket tilbake, fordi et formathint i kontrollen inneholdt svaret; tallene her er fra leverandørfakturaen og dashbordet. Les dem med omhu. Skjermbildene er gjenskapt fra DOM-snapshots med oppdiktede data, og aldri kjørt mot Tripletex eller DNB selv. Fem kjøringer per skjermbilde og modell gjennom Vercel AI Gateway, medianer, ${f.runDate}. ${priceLine(lang)}. Deres egne skjermbilder vil gi andre tall; piloten måler dem. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.`,
               )}{" "}
               <Link to="/#race-title" className="site-link">
                 {t("See the race on the home page", "Se kappløpet på forsiden")}
