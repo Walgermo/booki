@@ -253,6 +253,17 @@ and, per page, the tool definitions and their token count, plus every version
 that can move a number (model ids, Playwright MCP, MCP SDK, ui-sdk, Chrome,
 Node, git commit).
 
+## Hard tasks (not run yet)
+
+Five harder tasks are written and fixed, with no runs yet: `doc-error`,
+`closed-period`, `duplicate`, `foreign-currency` and `partial-vat`. Their ids
+and pages are fixed as of this commit and must not be tuned against; a change
+needs a new task id. Their checks are unit-tested with
+`pnpm --filter agent-benchmark test`, and they are not part of `pnpm proof` or
+h2h. The model-free dry run is `pnpm --filter agent-benchmark bench -- --dry-run --task <id>`.
+What Booki can and cannot do on them: [HARD-NOTES.md](HARD-NOTES.md). See
+[METHOD.md](METHOD.md#hard-tasks-written-before-booki-ran-them).
+
 ## Run it
 
 ```bash

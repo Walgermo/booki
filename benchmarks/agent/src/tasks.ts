@@ -23,6 +23,18 @@ import {
   verifyVoucherRaw,
   type Verification,
 } from "./verify.js";
+import {
+  verifyClosedPeriodAcc,
+  verifyClosedPeriodRaw,
+  verifyDocErrorAcc,
+  verifyDocErrorRaw,
+  verifyDuplicateAcc,
+  verifyDuplicateRaw,
+  verifyForeignAcc,
+  verifyForeignRaw,
+  verifyPartialVatAcc,
+  verifyPartialVatRaw,
+} from "./verify-hard.js";
 
 /** Identical for every page of every task. */
 export const SYSTEM_PROMPT =
@@ -38,11 +50,21 @@ export type TaskId =
   | "dashboard"
   | "inbox"
   | "reconcile"
-  | "close";
+  | "close"
+  | "doc-error"
+  | "closed-period"
+  | "duplicate"
+  | "foreign-currency"
+  | "partial-vat";
 
 /** The single-screen tasks and the workflow tasks, in the order they are run. */
 export const SCREEN_TASKS: TaskId[] = ["voucher", "supplier-invoice", "sales-invoice", "dashboard"];
 export const WORKFLOW_TASKS: TaskId[] = ["inbox", "reconcile", "close"];
+/**
+ * The five hard tasks. Not in SCREEN_TASKS or WORKFLOW_TASKS: they have no
+ * recorded replicas, so `pnpm proof` and h2h never run them.
+ */
+export const HARD_TASKS: TaskId[] = ["doc-error", "closed-period", "duplicate", "foreign-currency", "partial-vat"];
 
 export type PageSpec = {
   /** Short id used in tables and the results file. */
@@ -359,6 +381,144 @@ export const TASKS: Record<TaskId, TaskSpec> = {
         // The voucher posts under the company's rule (balanced, open period, at most 50 000).
         expectPosted: true,
         personStep: { component: "close-checklist", action: "signOff", args: ["bank"] },
+      },
+    ],
+  },
+  "doc-error": {
+    id: "doc-error",
+    maxSteps: 40,
+    text: "Bokfør leverandørfakturaen fra Verktøy Øst AS (fakturanummer 2207). Kontér den på 6800 Kontorrekvisita med 25 % mva. Svar kort på hva du gjorde.",
+    pages: [
+      {
+        id: "doc-error-raw",
+        path: "/bench/doc-error-raw",
+        tools: "browser",
+        label: "listbox supplier-invoice screen + browser tools",
+        ready: "!!document.querySelector('.raw-voucher') && !!window.__rawDocError",
+        verify: verifyDocErrorRaw,
+        key: "hard",
+        // The printed total does not add up: the agent holds the invoice instead of posting it.
+        expectPosted: false,
+      },
+      {
+        id: "doc-error-acc",
+        path: "/bench/doc-error-acc",
+        tools: "bridge",
+        label: "Booki SupplierInvoiceInbox + bridge",
+        ready: `${bridgeReady("supplier-invoice-inbox")} && !!window.__accDocError`,
+        verify: verifyDocErrorAcc,
+        key: "acc",
+        expectPosted: false,
+      },
+    ],
+  },
+  "closed-period": {
+    id: "closed-period",
+    maxSteps: 40,
+    text: "Registrer et bilag datert 2026-09-15: debet 6800 Kontorrekvisita 12 500,00, kredit 2400 Leverandørgjeld 12 500,00, uten mva. Opprett det. Svar kort på hva du gjorde.",
+    pages: [
+      {
+        id: "closed-period-raw",
+        path: "/bench/closed-period-raw",
+        tools: "browser",
+        label: "listbox voucher screen + browser tools",
+        ready: "!!document.querySelector('.raw-voucher') && !!window.__rawClosedPeriod",
+        verify: verifyClosedPeriodRaw,
+        key: "hard",
+        // September is locked: the voucher goes into October, and the agent says so.
+        expectPosted: true,
+      },
+      {
+        id: "closed-period-acc",
+        path: "/bench/closed-period-acc",
+        tools: "bridge",
+        label: "Booki PeriodLock and voucher + bridge",
+        ready: `${bridgeReady("period-lock")} && !!window.__accClosedPeriod`,
+        verify: verifyClosedPeriodAcc,
+        key: "acc",
+        expectPosted: true,
+      },
+    ],
+  },
+  duplicate: {
+    id: "duplicate",
+    maxSteps: 40,
+    text: "Bokfør leverandørfakturaen fra Kontorrekvisita AS, fakturanummer 8841, fakturadato 2026-10-12, 15 500,00 inkludert 25 % mva, kostnadskonto 6800. Svar kort på hva du gjorde.",
+    pages: [
+      {
+        id: "duplicate-raw",
+        path: "/bench/duplicate-raw",
+        tools: "browser",
+        label: "listbox supplier-invoice screen + browser tools",
+        ready: "!!document.querySelector('.raw-voucher') && !!window.__rawDuplicate",
+        verify: verifyDuplicateRaw,
+        key: "hard",
+        // The invoice is already in the ledger: the agent must not post it again.
+        expectPosted: false,
+      },
+      {
+        id: "duplicate-acc",
+        path: "/bench/duplicate-acc",
+        tools: "bridge",
+        label: "Booki SupplierInvoiceInbox + bridge",
+        ready: `${bridgeReady("supplier-invoice-inbox")} && !!window.__accDuplicate`,
+        verify: verifyDuplicateAcc,
+        key: "acc",
+        expectPosted: false,
+      },
+    ],
+  },
+  "foreign-currency": {
+    id: "foreign-currency",
+    maxSteps: 30,
+    text: "Bokfør fakturaen NC-5531 fra Nordic Cloud Ltd, datert 2026-10-14, på 1 000,00 EUR, uten norsk mva. Bruk kursen for fakturadatoen. Kostnadskonto 6800, kredit 2400 Leverandørgjeld. Bokfør bilaget i norske kroner med valutabeløp og kurs registrert.",
+    pages: [
+      {
+        id: "foreign-currency-raw",
+        path: "/bench/foreign-currency-raw",
+        tools: "browser",
+        label: "listbox voucher screen + browser tools",
+        ready: "!!document.querySelector('.raw-voucher') && !!window.__rawForeign",
+        verify: verifyForeignRaw,
+        key: "hard",
+        expectPosted: true,
+      },
+      {
+        id: "foreign-currency-acc",
+        path: "/bench/foreign-currency-acc",
+        tools: "bridge",
+        label: "Booki voucher + bridge",
+        ready: `${bridgeReady("voucher-composer")} && !!window.__accForeign`,
+        verify: verifyForeignAcc,
+        key: "acc",
+        expectPosted: true,
+      },
+    ],
+  },
+  "partial-vat": {
+    id: "partial-vat",
+    maxSteps: 30,
+    text: "Bokfør leverandørfakturaen 7710 fra Mobil og Data AS datert 2026-10-20, 12 500,00 inkludert 25 % mva. Mobilabonnementet brukes halvt privat, så bare halvparten av inngående mva kan trekkes fra. Kostnadskonto 6900, inngående mva 2710, kredit 2400 Leverandørgjeld. Opprett bilaget.",
+    pages: [
+      {
+        id: "partial-vat-raw",
+        path: "/bench/partial-vat-raw",
+        tools: "browser",
+        label: "listbox voucher screen + browser tools",
+        ready: "!!document.querySelector('.raw-voucher') && !!window.__rawPartialVat",
+        verify: verifyPartialVatRaw,
+        key: "hard",
+        expectPosted: true,
+      },
+      {
+        id: "partial-vat-acc",
+        path: "/bench/partial-vat-acc",
+        tools: "bridge",
+        label: "Booki voucher + bridge",
+        ready: `${bridgeReady("voucher-composer")} && !!window.__accPartialVat`,
+        verify: verifyPartialVatAcc,
+        key: "acc",
+        expectPosted: true,
       },
     ],
   },

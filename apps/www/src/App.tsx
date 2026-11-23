@@ -25,7 +25,17 @@ const DocsShell = page(() => import("./components/docs-shell"), "DocsShell");
 const BenchAccPage = page(() => import("./pages/bench"), "BenchAccPage");
 const BenchCloseAccPage = page(() => import("./pages/bench"), "BenchCloseAccPage");
 const BenchCloseRawPage = page(() => import("./pages/bench"), "BenchCloseRawPage");
+const BenchClosedPeriodAccPage = page(() => import("./pages/bench"), "BenchClosedPeriodAccPage");
+const BenchClosedPeriodRawPage = page(() => import("./pages/bench"), "BenchClosedPeriodRawPage");
+const BenchDocErrorAccPage = page(() => import("./pages/bench"), "BenchDocErrorAccPage");
+const BenchDocErrorRawPage = page(() => import("./pages/bench"), "BenchDocErrorRawPage");
+const BenchDuplicateAccPage = page(() => import("./pages/bench"), "BenchDuplicateAccPage");
+const BenchDuplicateRawPage = page(() => import("./pages/bench"), "BenchDuplicateRawPage");
+const BenchForeignAccPage = page(() => import("./pages/bench"), "BenchForeignAccPage");
+const BenchForeignRawPage = page(() => import("./pages/bench"), "BenchForeignRawPage");
 const BenchInboxAccPage = page(() => import("./pages/bench"), "BenchInboxAccPage");
+const BenchPartialVatAccPage = page(() => import("./pages/bench"), "BenchPartialVatAccPage");
+const BenchPartialVatRawPage = page(() => import("./pages/bench"), "BenchPartialVatRawPage");
 const BenchInboxRawPage = page(() => import("./pages/bench"), "BenchInboxRawPage");
 const BenchReconcileAccPage = page(() => import("./pages/bench"), "BenchReconcileAccPage");
 const BenchReconcileRawPage = page(() => import("./pages/bench"), "BenchReconcileRawPage");
@@ -71,6 +81,16 @@ export function App() {
         <Route path="bench/reconcile-acc" element={<BenchReconcileAccPage />} />
         <Route path="bench/close-raw" element={<BenchCloseRawPage />} />
         <Route path="bench/close-acc" element={<BenchCloseAccPage />} />
+        <Route path="bench/closed-period-raw" element={<BenchClosedPeriodRawPage />} />
+        <Route path="bench/closed-period-acc" element={<BenchClosedPeriodAccPage />} />
+        <Route path="bench/foreign-currency-raw" element={<BenchForeignRawPage />} />
+        <Route path="bench/foreign-currency-acc" element={<BenchForeignAccPage />} />
+        <Route path="bench/partial-vat-raw" element={<BenchPartialVatRawPage />} />
+        <Route path="bench/partial-vat-acc" element={<BenchPartialVatAccPage />} />
+        <Route path="bench/doc-error-raw" element={<BenchDocErrorRawPage />} />
+        <Route path="bench/doc-error-acc" element={<BenchDocErrorAccPage />} />
+        <Route path="bench/duplicate-raw" element={<BenchDuplicateRawPage />} />
+        <Route path="bench/duplicate-acc" element={<BenchDuplicateAccPage />} />
         <Route path="docs" element={<DocsShell />}>
           <Route index element={<IntroductionPage />} />
           <Route path="installation" element={<InstallationPage />} />
