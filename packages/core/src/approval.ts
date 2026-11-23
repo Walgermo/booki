@@ -40,6 +40,11 @@ export type ApprovalRequest = {
   amountMinor: number;
   /** Who asked. They can never approve their own request. */
   requesterId: string;
+  /**
+   * When an agent raised the request: the person whose session it ran in
+   * (`onBehalfOf`). They may not decide it either.
+   */
+  requestedFor?: string;
   decisions: ApprovalDecision[];
 };
 
@@ -102,6 +107,7 @@ function eligible(
   return out.filter(
     (entry) =>
       entry.id !== request.requesterId &&
+      entry.id !== request.requestedFor &&
       !earlier.has(entry.id) &&
       (entry.approver.limitMinor === undefined || entry.approver.limitMinor >= request.amountMinor),
   );
@@ -147,7 +153,7 @@ export function decide(
   const level = state.current;
   const who = String(input.approverId ?? "").trim();
   if (who === "") throw new BookiError("approval.decider-required");
-  if (who === request.requesterId) {
+  if (who === request.requesterId || who === request.requestedFor) {
     throw new BookiError("approval.requester-cannot-decide", { who });
   }
   const pool = state.escalated && level.escalateTo ? [level.escalateTo] : level.approvers;

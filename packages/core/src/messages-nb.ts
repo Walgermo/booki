@@ -52,6 +52,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "batch.not-approvable": "Betalingsoppdraget kan ikke godkjennes ennå: {issues}",
   "batch.already-approved-by": '"{who}" har allerede godkjent betalingsoppdraget. Det trengs en annen person.',
   "batch.not-releasable": "Betalingsoppdraget kan ikke frigis: {issues}",
+  "batch.required-approvals": "requiredApprovals er et helt tall på minst 1, ikke {value}.",
   "batch.approvals-missing": "Betalingsoppdraget har {current} av {required} godkjenninger{stale}.",
   "batch.approvals-stale": " (tidligere godkjenninger som ikke lenger gjelder fordi oppdraget er endret: {count})",
   "voucher.amount-format":

@@ -27,6 +27,8 @@ type RootState = {
   matches: ReconciliationMatch[];
   unmatchedBankLines: BankLine[];
   unmatchedPosts: OpenPost[];
+  openBankLines: BankLine[];
+  openPostsLeft: OpenPost[];
   summary: ReconciliationSummary;
 };
 
@@ -156,14 +158,14 @@ function BankReconciliation({
             <div data-slot="bank-reconciliation-tables">
               {table(
                 copy.bankStatement,
-                state.unmatchedBankLines,
+                state.openBankLines,
                 pickedLines,
                 (id) => setLineIds((list) => toggle(list, id)),
                 "bank-reconciliation-bank",
               )}
               {table(
                 copy.ledger,
-                state.unmatchedPosts,
+                state.openPostsLeft,
                 pickedPosts,
                 (id) => setPostIds((list) => toggle(list, id)),
                 "bank-reconciliation-ledger",

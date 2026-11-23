@@ -125,6 +125,10 @@ export function approveBatch(batch: PaymentBatch, approverId: string, at: string
 
 /** Throws unless enough different people have approved the batch exactly as it is now. */
 export function assertReleasable(batch: PaymentBatch, requiredApprovals = 2): void {
+  // 0, a fraction or NaN would let a batch go with no one's approval.
+  if (!Number.isSafeInteger(requiredApprovals) || requiredApprovals < 1) {
+    throw new BookiError("batch.required-approvals", { value: String(requiredApprovals) });
+  }
   if (batch.status !== "draft") throw new BookiError("batch.already-released", { id: batch.id });
   const issues = batchIssues(batch);
   if (issues.length > 0) throw new BookiError("batch.not-releasable", { issues });

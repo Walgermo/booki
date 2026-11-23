@@ -21,11 +21,36 @@ export type BankReconciliationOptions = {
   ) => void;
 };
 
+/**
+ * A payment reference (KID) is secret to an agent, but two that are equal tell
+ * a bank line from the post it pays. Each distinct reference becomes a tag,
+ * `ref-1`, `ref-2`, shared by every line and post that carries it.
+ */
+function tagReferences<T extends { reference?: string }>(lists: T[][]): T[][] {
+  const tags = new Map<string, string>();
+  const tag = (reference: string) => {
+    if (!tags.has(reference)) tags.set(reference, `ref-${tags.size + 1}`);
+    return tags.get(reference)!;
+  };
+  return lists.map((list) =>
+    list.map((entry) => {
+      if (!entry.reference) return entry;
+      const { reference, ...rest } = entry;
+      return { ...rest, referenceTag: tag(reference) } as unknown as T;
+    }),
+  );
+}
+
 export function derive(bankLines: BankLine[], openPosts: OpenPost[], matches: ReconciliationMatch[]) {
   const free = unmatched(bankLines, openPosts, matches);
+  const [lines, posts] = tagReferences<BankLine | OpenPost>([free.bankLines, free.posts]);
   return {
-    unmatchedBankLines: free.bankLines,
-    unmatchedPosts: free.posts,
+    // What the agent reads: references as tags, never the KID itself.
+    unmatchedBankLines: lines as BankLine[],
+    unmatchedPosts: posts as OpenPost[],
+    // What the person's tables show, with the references. Not in `controlled`.
+    openBankLines: free.bankLines,
+    openPostsLeft: free.posts,
     reconciled: summarize(bankLines, matches).reconciled,
   };
 }
@@ -40,7 +65,7 @@ export function nextId(matches: ReconciliationMatch[]): string {
 
 /** Which ids go where, shown in the snapshot: bank lines first, then open posts. */
 export const MATCH_FORMAT =
-  'suggestMatch(["bankLineId"], ["openPostId"]): bank line ids first, then the open posts they settle; a person approves';
+  'suggestMatch(["bankLineId"], ["openPostId"]): bank lines first, then the posts they settle; equal referenceTag, same reference. A person approves';
 
 /**
  * Bank reconciliation an agent can work in. The snapshot lists the bank lines
@@ -231,6 +256,8 @@ export const bankReconciliation = definePrimitive({
         matches: state.matches,
         unmatchedBankLines: state.unmatchedBankLines,
         unmatchedPosts: state.unmatchedPosts,
+        openBankLines: state.openBankLines,
+        openPostsLeft: state.openPostsLeft,
         summary: summarize(state.bankLines, state.matches),
       }),
     }),

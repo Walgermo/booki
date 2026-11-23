@@ -79,6 +79,8 @@ established. For an audit or consulting product:
 - **Delegation.** Pass `personOf` and an agent may only do what the person it
   acts for may do, as their roles are now. What the company's rule gives the
   agent itself goes in `agentOwn`.
+- **Your own rules.** Refuse with `throw new RuleRefusal(sentence)`. Any other
+  error from a rule is rethrown, so a database error never reaches the caller.
 - **Reasons.** `minReason: 20` with `reason` refuses a withdrawal without a
   real explanation (422, in the caller's language).
 - **Judgment, not gates.** Where the books are a matter of professional

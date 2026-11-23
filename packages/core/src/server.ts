@@ -35,6 +35,7 @@ import { releaseBatch, type PaymentBatch } from "./payment-batch.js";
 import {
   STANDARD_DUTY_RULES,
   STANDARD_ROLES,
+  DutyRefusal,
   assertCan,
   can,
   type Actor,
@@ -194,8 +195,7 @@ function refuse(error: unknown, locale: MessageLanguage | undefined): Refusal {
         : {}),
     };
   }
-  // A plain Error is a duty rule's reason sentence; anything else is a bug, so rethrow it.
-  if (error instanceof Error && !(error instanceof TypeError) && !(error instanceof RangeError)) {
+  if (error instanceof DutyRefusal) {
     return {
       ok: false,
       status: 403,
@@ -203,7 +203,20 @@ function refuse(error: unknown, locale: MessageLanguage | undefined): Refusal {
       message: locale && locale !== "en" ? localize(error.message, locale) : error.message,
     };
   }
+  // Your own rule's refusal: its sentence goes back as it is.
+  if (error instanceof RuleRefusal) return { ok: false, status: 422, code: "server.rule", message: error.message };
+  // Anything else (a database error, a bug) is not a refusal, and its message
+  // can hold hosts and user names: rethrow it for your error handling.
   throw error;
+}
+
+/**
+ * Throw it from a rule of your own to refuse with a sentence of yours: the
+ * guard answers 422 `server.rule` with it. Any other error a rule throws is
+ * rethrown, so a database error never reaches the caller as a message.
+ */
+export class RuleRefusal extends Error {
+  override name = "RuleRefusal";
 }
 
 /**

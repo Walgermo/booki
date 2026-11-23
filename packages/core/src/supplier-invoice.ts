@@ -1,5 +1,8 @@
 import { BookiError, msg } from "./msg.js";
 
+/** Text from a document, put into a sentence of ours: one line, at most 60 characters, quoted. */
+const quoted = (text: unknown) => JSON.stringify(String(text).replace(/\s+/g, " ").trim().slice(0, 60));
+
 /** The fields read off a supplier's invoice document. */
 export const SUPPLIER_INVOICE_FIELDS = [
   "supplierName",
@@ -319,8 +322,12 @@ export function supplierInvoiceIssues(invoice: SupplierInvoice, context: Supplie
   if (duplicates.length > 0) {
     issues.push(
       msg("supplier-invoice.duplicate", {
-        number: String(f.invoiceNumber.value),
-        supplier: f.supplierName.value || msg("supplier-invoice.this-supplier"),
+        number: String(f.invoiceNumber.value)
+          .replace(/[\s"«»]+/g, " ")
+          .trim()
+          .slice(0, 40),
+        // Read off a document, so it is data: one line, short, in quotes, never Booki's own words.
+        supplier: f.supplierName.value ? quoted(f.supplierName.value) : msg("supplier-invoice.this-supplier"),
         othersAndList: duplicates.map((id) => `"${id}"`),
       }),
     );
