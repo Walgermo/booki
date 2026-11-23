@@ -191,53 +191,23 @@
 
 /* ── Shared form chrome ──────────────────────────────────────────────── */
 
-:where([data-slot]) :is(label) {
-  display: grid;
-  gap: 0.35rem;
-  font-size: 0.8125rem;
-  font-weight: var(--bk-font-weight-medium);
-  letter-spacing: -0.01em;
-  color: var(--bk-fg);
-}
+:where([data-slot]) {
+  & :is(label) {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: var(--bk-font-weight-medium);
+    letter-spacing: -0.01em;
+    color: var(--bk-fg);
+  }
 
-:where([data-slot]) :is(label) > :is(input, select, textarea, button) {
-  font-weight: 400;
-}
+  & :is(label) > :is(input, select, textarea, button) {
+    font-weight: 400;
+  }
 
-/* :where keeps this rule at zero specificity. With :is, the long input:not()
-   chain outranked the select rule below and wiped its chevron and padding. */
-:where([data-slot])
-  :where(
-    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not([type="submit"]):not(
-      [type="reset"]
-    ),
-    select,
-    textarea
-  ) {
-  box-sizing: border-box;
-  width: 100%;
-  min-height: var(--bk-control-h);
-  margin: 0;
-  padding: 0.4rem var(--bk-control-px);
-  border: 1px solid var(--bk-border);
-  border-radius: var(--bk-radius);
-  background: var(--bk-card);
-  color: var(--bk-fg);
-  font: inherit;
-  /* 16px so iOS does not zoom the page on focus; smaller only with a mouse. */
-  font-size: 1rem;
-  line-height: 1.25;
-  /* A field is a recess in the paper: a breath of shade along its top edge. */
-  box-shadow: var(--bk-shadow-recess), var(--bk-shadow-xs);
-  outline: none;
-  transition:
-    border-color var(--bk-duration) var(--bk-ease-out),
-    box-shadow var(--bk-duration) var(--bk-ease-out),
-    background-color var(--bk-duration) var(--bk-ease-out);
-}
-
-@media (pointer: fine) {
-  :where([data-slot])
+  /* :where keeps this rule at zero specificity. With :is, the long input:not()
+     chain outranked the select rule below and wiped its chevron and padding. */
+  &
     :where(
       input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not(
         [type="submit"]
@@ -245,7 +215,39 @@
       select,
       textarea
     ) {
-    font-size: 0.875rem;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--bk-control-h);
+    margin: 0;
+    padding: 0.4rem var(--bk-control-px);
+    border: 1px solid var(--bk-border);
+    border-radius: var(--bk-radius);
+    background: var(--bk-card);
+    color: var(--bk-fg);
+    font: inherit;
+    /* 16px so iOS does not zoom the page on focus; smaller only with a mouse. */
+    font-size: 1rem;
+    line-height: 1.25;
+    /* A field is a recess in the paper: a breath of shade along its top edge. */
+    box-shadow: var(--bk-shadow-recess), var(--bk-shadow-xs);
+    outline: none;
+    transition:
+      border-color var(--bk-duration) var(--bk-ease-out),
+      box-shadow var(--bk-duration) var(--bk-ease-out),
+      background-color var(--bk-duration) var(--bk-ease-out);
+  }
+
+  @media (pointer: fine) {
+    &
+      :where(
+        input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="button"]):not(
+          [type="submit"]
+        ):not([type="reset"]),
+        select,
+        textarea
+      ) {
+      font-size: 0.875rem;
+    }
   }
 }
 
@@ -255,58 +257,60 @@
   }
 }
 
-:where([data-slot]) select {
-  appearance: none;
-  padding-right: 2rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.6rem center;
-  background-size: 1rem;
-}
-
-:where([data-slot]) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea)::placeholder {
-  color: color-mix(in srgb, var(--bk-muted-fg) 75%, transparent);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  :where([data-slot]) :is(input, select, textarea):hover:not(:disabled):not(:focus-visible) {
-    border-color: var(--bk-border-strong);
+:where([data-slot]) {
+  & select {
+    appearance: none;
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+    background-size: 1rem;
   }
-}
 
-:where([data-slot]) :is(input, select, textarea):focus-visible {
-  border-color: var(--bk-fg);
-  box-shadow:
-    var(--bk-shadow-recess),
-    0 0 0 3px color-mix(in srgb, var(--bk-ring) 10%, transparent);
-}
-
-/* The native date picker's icon: quiet until wanted. */
-:where([data-slot]) input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0.45;
-  cursor: pointer;
-  transition: opacity var(--bk-duration) var(--bk-ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  :where([data-slot]) input[type="date"]:hover::-webkit-calendar-picker-indicator {
-    opacity: 0.9;
+  & :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea)::placeholder {
+    color: color-mix(in srgb, var(--bk-muted-fg) 75%, transparent);
   }
-}
 
-:where([data-slot]) :is(input, select, textarea)[aria-invalid="true"] {
-  border-color: color-mix(in srgb, var(--bk-danger) 55%, var(--bk-border));
-}
+  @media (hover: hover) and (pointer: fine) {
+    & :is(input, select, textarea):hover:not(:disabled):not(:focus-visible) {
+      border-color: var(--bk-border-strong);
+    }
+  }
 
-:where([data-slot]) :is(input, select, textarea)[aria-invalid="true"]:focus-visible {
-  box-shadow:
-    var(--bk-shadow-xs),
-    0 0 0 3px color-mix(in srgb, var(--bk-danger) 16%, transparent);
-}
+  & :is(input, select, textarea):focus-visible {
+    border-color: var(--bk-fg);
+    box-shadow:
+      var(--bk-shadow-recess),
+      0 0 0 3px color-mix(in srgb, var(--bk-ring) 10%, transparent);
+  }
 
-:where([data-slot]) :is(input, select, textarea, button):disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+  /* The native date picker's icon: quiet until wanted. */
+  & input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.45;
+    cursor: pointer;
+    transition: opacity var(--bk-duration) var(--bk-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    & input[type="date"]:hover::-webkit-calendar-picker-indicator {
+      opacity: 0.9;
+    }
+  }
+
+  & :is(input, select, textarea)[aria-invalid="true"] {
+    border-color: color-mix(in srgb, var(--bk-danger) 55%, var(--bk-border));
+  }
+
+  & :is(input, select, textarea)[aria-invalid="true"]:focus-visible {
+    box-shadow:
+      var(--bk-shadow-xs),
+      0 0 0 3px color-mix(in srgb, var(--bk-danger) 16%, transparent);
+  }
+
+  & :is(input, select, textarea, button):disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
 }
 
 :where([data-slot]) button,
@@ -406,20 +410,22 @@
   order: 3;
 }
 
-/* Field description / error (ui-sdk Field children) */
-:where([data-slot]) p {
-  margin: 0;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  font-weight: 400;
-  color: var(--bk-muted-fg);
-}
+:where([data-slot]) {
+  /* Field description / error (ui-sdk Field children) */
+  & p {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--bk-muted-fg);
+  }
 
-:where([data-slot]) [data-slot$="-error"],
-:where([data-slot]) [role="alert"]:not([data-slot="exception-banner"]) {
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--bk-danger);
+  & [data-slot$="-error"],
+  & [role="alert"]:not([data-slot="exception-banner"]) {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--bk-danger);
+  }
 }
 
 /* ── Text link ───────────────────────────────────────────────────────── */
@@ -1263,34 +1269,36 @@
   flex-basis: 100%;
 }
 
-/* Quiet until wanted: a row of solid buttons would outweigh the figures. */
-:where([data-slot]) button[data-slot="voucher-line-remove"] {
-  padding-inline: 0.6rem;
-  background: transparent;
-  border-color: transparent;
-  color: var(--bk-muted-fg);
-  /* The cell is right-aligned figures; the button is a word. */
-  font-family: var(--bk-font);
-  white-space: nowrap;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  :where([data-slot]) button[data-slot="voucher-line-remove"]:hover:not(:disabled) {
-    background: var(--bk-muted);
-    color: var(--bk-fg);
+:where([data-slot]) {
+  /* Quiet until wanted: a row of solid buttons would outweigh the figures. */
+  & button[data-slot="voucher-line-remove"] {
+    padding-inline: 0.6rem;
+    background: transparent;
+    border-color: transparent;
+    color: var(--bk-muted-fg);
+    /* The cell is right-aligned figures; the button is a word. */
+    font-family: var(--bk-font);
+    white-space: nowrap;
   }
-}
 
-/* Read-only: recessed, still legible, still focusable. */
-:where([data-slot]) :is(input, textarea)[readonly],
-:where([data-slot]) select[data-readonly] {
-  background-color: var(--bk-muted);
-  border-color: var(--bk-border);
-  cursor: default;
-}
+  @media (hover: hover) and (pointer: fine) {
+    & button[data-slot="voucher-line-remove"]:hover:not(:disabled) {
+      background: var(--bk-muted);
+      color: var(--bk-fg);
+    }
+  }
 
-:where([data-slot]) select[data-readonly] {
-  background-image: none;
+  /* Read-only: recessed, still legible, still focusable. */
+  & :is(input, textarea)[readonly],
+  & select[data-readonly] {
+    background-color: var(--bk-muted);
+    border-color: var(--bk-border);
+    cursor: default;
+  }
+
+  & select[data-readonly] {
+    background-image: none;
+  }
 }
 
 /* AmountField draws its own frame, so the frame carries the state. */

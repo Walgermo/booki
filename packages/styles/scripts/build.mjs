@@ -1,10 +1,19 @@
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { transform } from "lightningcss";
+import { gzipSync } from "node:zlib";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // One stylesheet out, built from the parts in src/ in this order.
 const PARTS = ["booki.css", "agent.css"];
+
+// Size budgets for dist/base.css, the file every page loads. base.css states
+// the component scope once per group of rules (CSS nesting), so it grew back
+// into 62 copies of the scope list before. The build fails above these, so
+// it cannot grow back unnoticed. Set them to the measured size, rounded up to
+// the next 250 bytes, when a change makes base.css smaller or larger on purpose.
+const BASE_RAW_BUDGET = 57500;
+const BASE_GZIP_BUDGET = 7500;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 rmSync(join(root, "dist"), { recursive: true, force: true });
@@ -62,7 +71,14 @@ css = minify(scoped(css), "booki.css");
 
 writeFileSync(join(root, "dist/booki.css"), css);
 // Only what a page uses: the tokens and base look, then one file per control.
-writeFileSync(join(root, "dist/base.css"), minify(scoped(PARTS.map(read).join("\n")), "base.css"));
+const base = minify(scoped(PARTS.map(read).join("\n")), "base.css");
+writeFileSync(join(root, "dist/base.css"), base);
+const baseGzip = gzipSync(base).length;
+if (base.length > BASE_RAW_BUDGET || baseGzip > BASE_GZIP_BUDGET) {
+  throw new Error(
+    `dist/base.css is over its size budget: ${base.length} B raw (budget ${BASE_RAW_BUDGET}), ${baseGzip} B gzip (budget ${BASE_GZIP_BUDGET})`,
+  );
+}
 for (const control of controls) {
   writeFileSync(join(root, "dist", control), minify(scoped(read(control)), control));
 }
@@ -77,5 +93,5 @@ writeFileSync(
 writeFileSync(join(root, "dist/css.d.ts"), "export {};\n");
 writeFileSync(join(root, "dist/shadcn.css"), readFileSync(join(root, "src/shadcn.css"), "utf8"));
 console.log(
-  `Built @booki/styles → dist/booki.css (${Math.round(css.length / 1024)} KB), layered.css, base.css, controls/*.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,
+  `Built @booki/styles → dist/booki.css (${Math.round(css.length / 1024)} KB), layered.css, base.css (${(base.length / 1024).toFixed(1)} KB raw, ${(baseGzip / 1024).toFixed(1)} KB gzip), controls/*.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,
 );
