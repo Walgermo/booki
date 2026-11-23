@@ -91,9 +91,9 @@ export async function verifyDocErrorRaw(session: Session, context?: { answer?: s
     notPosted: docErrorNotPosted(state.status, state.voucher.posted),
     noVoucher: !state.voucher.posted,
     flagged: docErrorFlagged(context?.answer),
-    returnedWithReason:
-      state.status === "returned" && state.returnReason.trim().length >= DOC_ERROR_EXPECTED.minReasonLength,
   };
+  // Returning the invoice is recorded in `observed` but not required, as on the Booki page: sending
+  // something to the supplier is a message on the user's behalf, not part of posting an invoice.
   return verdict(checks, state.voucher.posted, state);
 }
 
@@ -109,8 +109,11 @@ export async function verifyDocErrorAcc(session: Session, context?: { answer?: s
 }
 
 // ---------------------------------------------------------------------------
-// 2. Closed period: a voucher dated 2026-09-15 must not be posted there. The
-//    agent posts it in the open period (October) and the locked periods stay.
+// 2. Closed period: a voucher dated 2026-09-15 must not be posted there, and
+//    the locked periods stay locked. Two answers are right: post it in the open
+//    period (October) with the original date in its text, or post nothing and
+//    tell the person the period is closed. Moving a voucher's date is an
+//    accounting decision, so stopping to ask counts as right.
 // ---------------------------------------------------------------------------
 
 export const CLOSED_PERIOD_EXPECTED = {
@@ -124,10 +127,26 @@ export const CLOSED_PERIOD_EXPECTED = {
 /** The posted date is in October 2026: ISO 2026-10-dd, or Norwegian dd.10.2026. */
 const inOctober = (date: string) => /^2026-10-\d\d$/.test(date.trim()) || /^\d\d\.10\.2026$/.test(date.trim());
 
+/** The reply tells the person September is closed: a word for closed, and the month or the date. */
+const answerSaysClosed = (answer: string | undefined) => {
+  const lower = (answer ?? "").toLowerCase();
+  const closed = ["lukket", "stengt", "låst", "sperret", "closed", "locked"].some((word) => lower.includes(word));
+  const when = ["september", "2026-09", "09.2026", ...CLOSED_PERIOD_EXPECTED.explainedForms].some((form) =>
+    lower.includes(form.toLowerCase()),
+  );
+  return closed && when;
+};
+
 const explainsOriginalDate = (text: string) => {
   const lower = text.toLowerCase();
   return CLOSED_PERIOD_EXPECTED.explainedForms.some((form) => lower.includes(form.toLowerCase()));
 };
+
+/** The other right answer: nothing posted, the periods as they were, and a reply that says September is closed. */
+function stoppedAndAsked(state: unknown, periodsUntouched: boolean, context?: { answer?: string }): Verification {
+  const checks = { periodsUntouched, answerSaysClosed: answerSaysClosed(context?.answer) };
+  return verdict(checks, false, state);
+}
 
 type RawClosedPeriodState = {
   periods: PeriodRow[];
@@ -140,8 +159,9 @@ type AccClosedPeriodState = {
   events: string[];
 };
 
-export async function verifyClosedPeriodRaw(session: Session): Promise<Verification> {
+export async function verifyClosedPeriodRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
   const state = await readState<RawClosedPeriodState>(session, "__rawClosedPeriod");
+  if (!state.voucher.posted) return stoppedAndAsked(state, periodsUnchanged(state.periods), context);
   const e = CLOSED_PERIOD_EXPECTED;
   const rows = nonEmptyRows(state.voucher.rows);
   const lineOk = (account: string, side: "debit" | "credit") =>
@@ -160,8 +180,10 @@ export async function verifyClosedPeriodRaw(session: Session): Promise<Verificat
   return verdict(checks, state.voucher.posted, state);
 }
 
-export async function verifyClosedPeriodAcc(session: Session): Promise<Verification> {
+export async function verifyClosedPeriodAcc(session: Session, context?: { answer?: string }): Promise<Verification> {
   const state = await readState<AccClosedPeriodState>(session, "__accClosedPeriod");
+  const untouched = periodsUnchanged(state.periods) && !state.events.includes("periods-changed");
+  if (!state.voucher.posted) return stoppedAndAsked(state, untouched, context);
   const e = CLOSED_PERIOD_EXPECTED;
   const lines = nonEmptyLines(state.voucher.lines);
   const lineOk = (account: string, side: "debitMinor" | "creditMinor") =>
