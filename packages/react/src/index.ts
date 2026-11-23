@@ -173,6 +173,7 @@ export {
 } from "./agent-presence.js";
 export {
   AgentCursor,
+  narrateNorwegian,
   createAgentCursor,
   type AgentCursorController,
   type AgentCursorOptions,
