@@ -100,3 +100,122 @@ What each piece does:
 Check it: `agent.snapshot()` lists the control with its label, value and
 actions; `agent.act({ steps: [{ ref, action: "setCostCentre", args: ["200"] }] })`
 changes it; a value that does not exist is refused with the ones that do.
+
+## The lower threshold: useBookiField
+
+For an amount, a closed list of codes or an ISO date, a product does not need
+`definePrimitive`. Wrap the field it already has in `useBookiField`: the hook
+keeps the value, adds the agent's action and its rules, and the product's own
+field is what `render` returns.
+
+```tsx
+useBookiField({ kind, value, onValueChange, label, ... }, ({ value, change, refusal }) => <YourField ... />)
+```
+
+The code below is tested in `packages/react/src/use-booki-field.test.tsx`. Keep
+the two in sync.
+
+```tsx
+"use client"
+
+import { useBookiField } from "@booki/react"
+import { useState } from "react"
+
+const drift = [
+  { value: "100", label: "Drift" },
+  { value: "200", label: "Prosjekt" },
+]
+
+// An amount is integer minor units: 12500 is 125.00 NOK.
+function AmountField(props: {
+  value: number
+  onValueChange?: (minor: number, details: { source?: string }) => void
+  disabled?: boolean
+}) {
+  return useBookiField(
+    {
+      kind: "amount",
+      value: props.value,
+      currency: "NOK",
+      label: "Beløp",
+      onValueChange: props.onValueChange,
+      disabled: props.disabled,
+    },
+    ({ value, change, refusal }) => (
+      <div>
+        <input aria-label="Beløp-felt" value={value} onChange={(e) => change(Number(e.target.value), e.nativeEvent)} />
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  )
+}
+
+// A code is one of a closed list. The select gives a value and its DOM event.
+function CostCentreField(props: {
+  value: string
+  onValueChange?: (code: string, details: { source?: string }) => void
+}) {
+  return useBookiField(
+    { kind: "code", value: props.value, options: drift, label: "Kostnadssted", onValueChange: props.onValueChange },
+    ({ value, change, refusal }) => (
+      <div>
+        <select aria-label="Kostnadssted-velger" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)}>
+          {drift.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  )
+}
+
+// The product owns the value: it passes the new one back, as a real select does.
+function CostCentreOwned(props: { onValueChange?: (code: string, details: { source?: string }) => void }) {
+  const [code, setCode] = useState("100")
+  return (
+    <CostCentreField
+      value={code}
+      onValueChange={(next, details) => {
+        setCode(next)
+        props.onValueChange?.(next, details)
+      }}
+    />
+  )
+}
+
+// A date is ISO YYYY-MM-DD, or "" for none.
+function DateField(props: { value: string; onValueChange?: (date: string, details: { source?: string }) => void }) {
+  return useBookiField(
+    { kind: "date", value: props.value, label: "Forfallsdato", onValueChange: props.onValueChange },
+    ({ value, change, refusal }) => (
+      <div>
+        <input aria-label="Dato-felt" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  )
+}
+```
+
+What each piece does:
+
+- **The agent's actions** are `setMinor` (amount), `setCode` (code) and `setDate`
+  (date). Each one is the same rule a person meets, so a refused value comes back
+  as `ok: false` with the sentence that says why: the unit, or the options that
+  exist.
+- **The product keeps owning the value.** `value` is what the field shows; the
+  hook does not hold a copy the product must read from. `CostCentreOwned` passes
+  the new value back, which is what a controlled select does.
+- **`onValueChange` hears every change.** `details.source` is `"agent"` for the
+  agent's changes and not for a person's, so the product can tell whose it was.
+- **`change(next, event?)` is the person's path.** It returns `false` and sets
+  `refusal` when the value is not allowed, instead of throwing. Show `refusal`
+  next to the field. Pass the DOM event as the second argument where you have
+  it, so the source is the mouse, touch or keyboard it came from.
+- **`disabled` and `readOnly` leave the agent no actions.** The snapshot entry
+  is still there, with its value, and offers nothing to call.
+- **Other kinds need `definePrimitive`.** For anything beyond these three, use
+  the primitive above in this document.
