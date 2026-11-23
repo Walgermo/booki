@@ -19,6 +19,8 @@ export type PaymentReferenceInputProps = {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
+  /** A memo or invoice reference reads "[redacted]" to an agent too. A KID always does. */
+  secretReference?: boolean;
   required?: boolean;
   className?: string;
 } & Omit<BookiFormProps, "required"> &
@@ -32,6 +34,7 @@ function PaymentReferenceInput({
   value,
   defaultValue,
   onValueChange,
+  secretReference,
   required,
   name,
   id,
@@ -50,6 +53,7 @@ function PaymentReferenceInput({
       label={profile.paymentReference.label}
       description={profile.paymentReference.description}
       onValueChange={onValueChange}
+      secretReference={secretReference}
       disabled={disabled}
       readOnly={readOnly}
       className={className}

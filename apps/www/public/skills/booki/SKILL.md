@@ -305,7 +305,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 | DataTable | `@booki/react` | any list: sort, search, filter, pages, columns, selection, totals, CSV; agent reads the page and counts |
 | KpiStat, TrendChart, BarChart, AgingChart, CashflowWaterfall | `@booki/react` | dashboard figures and charts; the agent reads numbers, periods and buckets from the snapshot, never pixels; `drill` to pick a period, bar, bucket or step |
 | BankAccountInput | `@booki/react` | secret; NO kontonummer / US ABA |
-| PaymentReferenceInput | `@booki/react` | secret KID when NO |
+| PaymentReferenceInput | `@booki/react` | secret KID when NO; a US memo is shown unless `secretReference` |
 | OrganizationNumberInput | `@booki/react` | orgnr mod11 / EIN |
 | IbanInput | `@booki/react` | secret; checksum; NO → kontonummer |
 | FinancialDateField | `@booki/react` | invoice / due / posting ISO dates |

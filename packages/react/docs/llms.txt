@@ -70,7 +70,7 @@ History: AmountField reports changes on key `minor`, VoucherComposer on `lines`,
 ## Irreversible actions
 
 Controls that move or post money carry `data-agent-confirm`. Without `allow`, those steps fail with "Needs a person".
-Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`).
+Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`). A US memo or invoice reference is shown, unless the app sets `secretReference` on PaymentReferenceInput or PaymentBatch.
 
 ## useBookiField (a field the product already has)
 
@@ -121,7 +121,7 @@ A refusal is a sentence the agent can act on: it names the unit, the options tha
 | AgingChart | `@booki/react/aging-chart` | `drill(bucket)` — snapshot has `asOf`, `buckets` (not due, 1–30, 31–60, 61–90, 90+), `totalMinor`, `overdueMinor`, `overdueSharePct`, `topOverdue`. Rules: `@booki/core/aging` |
 | CashflowWaterfall | `@booki/react/cashflow-waterfall` | `drill(stepId)` — snapshot has opening, every step, closing, and whether they add up (`issues`). Steps are `{ id, label, amountMinor }` |
 | BankAccountInput | `@booki/react/bank-account-input` | `setKontonummer` / `setRouting` / `setAccount` / `clear` — `isValid`, secret |
-| PaymentReferenceInput | `@booki/react/payment-reference-input` | `setReference`, `generateKid`, `clear` — `isValid`; KID secret |
+| PaymentReferenceInput | `@booki/react/payment-reference-input` | `setReference`, `generateKid`, `clear` — `isValid`; a KID is always secret, a memo only with `secretReference` |
 | TaxCodeSelect | `@booki/react/tax-code-select` | `setTaxCode`, `clear` — closed `items`, snapshot `percent` |
 | AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart; over 30 accounts `items` is empty and `itemsHint` says how to `query({ within, text })` |
 | CurrencySelect | `@booki/react/currency-select` | `setCurrency`, `clear` — closed NOK/USD |
