@@ -143,7 +143,7 @@ function AmountField(props: {
     },
     ({ value, change, refusal }) => (
       <div>
-        <input aria-label="Beløp-felt" value={value} onChange={(e) => change(Number(e.target.value))} />
+        <input aria-label="Beløp-felt" value={value} onChange={(e) => change(Number(e.target.value), e.nativeEvent)} />
         {refusal ? <p role="alert">{refusal}</p> : null}
       </div>
     ),

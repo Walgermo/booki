@@ -17,7 +17,7 @@ export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
  *
  *   const amount = useBookiField({ kind: "amount", value, label: "Beløp", onValueChange }, ({ value, change, refusal }) => (
  *     <>
- *       <input value={value / 100} onChange={(e) => change(Math.round(Number(e.target.value) * 100))} />
+ *       <input value={value / 100} onChange={(e) => change(Math.round(Number(e.target.value) * 100), e.nativeEvent)} />
  *       {refusal ? <p>{refusal}</p> : null}
  *     </>
  *   ))
