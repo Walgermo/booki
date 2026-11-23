@@ -124,6 +124,7 @@ export {
   type AgentDecisionRow,
   type AgentPolicyOptions,
   type AgentPolicyStep,
+  actAndRecord,
   bookiAllow,
   bookiRegisterTools,
   isAllowed,

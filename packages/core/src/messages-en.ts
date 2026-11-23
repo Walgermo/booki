@@ -132,6 +132,9 @@ export const EN = {
   "reconciliation.match-not-suggested": 'Match "{id}" is {status}. Only a suggestion can be withdrawn.',
   "agent.not-text": '{action} takes text, like "12345678903"; got {got}.',
   "agent.needs-person": 'Needs a person: "{confirm}". Ask them to do it themselves.',
+  "agent-token.secret-short": "An agent token secret is at least 32 characters.",
+  "agent-token.ttl": "ttlSeconds is a whole number from 1 to 86400, not {value}.",
+  "agent-token.grant": "An agent token needs agentId and onBehalfOf.",
   "agent.person-only": "This is a person's decision and an agent may not make it, whatever the app allows: {confirm}.",
   "attestation.person-only":
     'Setting an attestation to "{status}" is a person\'s decision: a person approves, rejects or escalates it with the buttons.',
