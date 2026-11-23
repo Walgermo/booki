@@ -2,6 +2,10 @@ import { BookiLocaleProvider } from "@booki/react";
 import { useEffect, useRef } from "react";
 
 import { BookiClose } from "@/components/bench/acc-close";
+import { BookiClosedPeriod } from "@/components/bench/closed-period-acc";
+import { ClosedPeriodRaw } from "@/components/bench/closed-period-raw";
+import { BookiPartialVat } from "@/components/bench/partial-vat-acc";
+import { PartialVatRaw } from "@/components/bench/partial-vat-raw";
 import { BookiDashboard } from "@/components/bench/acc-dashboard";
 import { BookiInbox } from "@/components/bench/acc-inbox";
 import { BookiReconcile } from "@/components/bench/acc-reconcile";
@@ -9,6 +13,12 @@ import { BookiSalesInvoice } from "@/components/bench/acc-sales-invoice";
 import { BookiSupplierInvoice } from "@/components/bench/acc-supplier-invoice";
 import { BookiVoucher } from "@/components/bench/acc-voucher";
 import { CloseRaw } from "@/components/bench/close-raw";
+import { BookiDocError } from "@/components/bench/doc-error-acc";
+import { DocErrorRaw } from "@/components/bench/doc-error-raw";
+import { BookiForeign } from "@/components/bench/foreign-currency-acc";
+import { ForeignRaw } from "@/components/bench/foreign-currency-raw";
+import { BookiDuplicate } from "@/components/bench/duplicate-acc";
+import { DuplicateRaw } from "@/components/bench/duplicate-raw";
 import { DashboardGrid } from "@/components/bench/dashboard-grid";
 import { DashboardRaw } from "@/components/bench/dashboard-raw";
 import { GridVoucher } from "@/components/bench/grid-voucher";
@@ -224,6 +234,111 @@ export function BenchCloseAccPage() {
     <main lang="nb" className="landing-form mx-auto max-w-5xl p-6">
       <BookiLocaleProvider country="NO">
         <BookiClose />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Document error: the printed total does not add up to the lines and the VAT. */
+export function BenchDocErrorRawPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <DocErrorRaw />
+    </main>
+  );
+}
+
+export function BenchDocErrorAccPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiDocError />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Duplicate: the invoice is already in the ledger. */
+export function BenchDuplicateRawPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <DuplicateRaw />
+    </main>
+  );
+}
+
+export function BenchDuplicateAccPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiDuplicate />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Closed period: a voucher dated in a locked period is refused on the plain page, and the agent posts in October. */
+export function BenchClosedPeriodRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <ClosedPeriodRaw />
+    </main>
+  );
+}
+
+export function BenchClosedPeriodAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiClosedPeriod />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Partial VAT: the phone bill is half private, so the plain form has no VAT code and no split. */
+export function BenchPartialVatRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <PartialVatRaw />
+    </main>
+  );
+}
+
+export function BenchPartialVatAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiPartialVat />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Foreign currency: an EUR invoice booked in NOK at the rate of its date. The plain form has no conversion. */
+export function BenchForeignRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <ForeignRaw />
+    </main>
+  );
+}
+
+export function BenchForeignAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiForeign />
       </BookiLocaleProvider>
     </main>
   );

@@ -41,7 +41,7 @@ function toMinor(text: string, { grouped = false } = {}): number | null {
 }
 
 /** Norwegian amount text: "15 500,00", "15500,00", "15500" -> 1550000. */
-function nbMinor(text: string): number | null {
+export function nbMinor(text: string): number | null {
   const trimmed = text.replace(/[\s ]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "");
   if (trimmed === "") return 0;
   if (!/^\d+([,.]\d{1,2})?$/.test(trimmed)) return null;
