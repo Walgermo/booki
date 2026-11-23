@@ -11,8 +11,9 @@ import { ProofStrip } from "./proof-strip";
 import { AGENT_PROMPT, REPO_URL, type LandingAgent } from "./shared";
 
 /**
- * The landing page's hero: the title, one line on what it gives, the Install
- * button, the demo ERP the agent works in, and three measured figures.
+ * The landing page's hero: the title, one line on what it gives, two measured
+ * figures, the Install button, the demo ERP the agent works in, and the three
+ * figures told in full.
  */
 export function Hero({ agent }: { agent: LandingAgent }) {
   const { lang, t } = useLang();
@@ -20,7 +21,6 @@ export function Hero({ agent }: { agent: LandingAgent }) {
   const number = (n: number) =>
     n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: n < 10 ? 1 : 0 });
   const times = (n: number) => `${number(n)}×`;
-  const range = (s: { low: number; high: number }) => `${number(s.low)}–${times(s.high)}`;
   const markRef = useRef<HTMLSpanElement | null>(null);
   return (
     <section className="site-ledger grid grid-cols-[minmax(0,1fr)] gap-16 pt-[76px] pb-16 md:gap-28 md:pb-24">
@@ -32,12 +32,26 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           markRef={markRef}
         />
         <p className="landing-hero__hook">
+          {t("Make your code agentic with Booki.", "Gjør koden din agentisk med Booki.")}
+        </p>
+        {/* One figure per measurement, the median; the ranges are in the strip below the demo. */}
+        <dl className="landing-hero__stats">
+          <div>
+            <dt>{times(kpi.cheaper.median)}</dt>
+            <dd>{t("cheaper", "billigere")}</dd>
+          </div>
+          <div>
+            <dt>{times(kpi.faster.median)}</dt>
+            <dd>{t("faster", "raskere")}</dd>
+          </div>
+        </dl>
+        <p className="landing-hero__source">
           {t(
-            `Make your code agentic with Booki. Measured on ${kpi.tasks} tasks: ${times(kpi.cheaper.median)} cheaper (${range(kpi.cheaper)}) and ${times(kpi.faster.median)} faster (${range(kpi.faster)}), with the same model.`,
-            `Gjør koden din agentisk med Booki. Målt på ${kpi.tasks} oppgaver: ${times(kpi.cheaper.median)} billigere (${range(kpi.cheaper)}) og ${times(kpi.faster.median)} raskere (${range(kpi.faster)}), med samme modell.`,
+            `Measured on ${kpi.tasks} tasks, with the same model.`,
+            `Målt på ${kpi.tasks} oppgaver, med samme modell.`,
           )}
         </p>
-        {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 56 to the button. */}
+        {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 28 to the figures, 56 to the button. */}
         <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
           <PromptButton prompt={AGENT_PROMPT} />
         </div>
