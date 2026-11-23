@@ -6,7 +6,7 @@ import { BookiLocaleProvider } from "./locale.js";
 
 afterEach(() => cleanup());
 
-type Entry = { ref: string; value: number; minor: number; empty: boolean };
+type Entry = { ref: string; value: number | null; minor: number | null; empty: boolean };
 
 function setup(props: Parameters<typeof AmountField>[0]) {
   const agent = createBookiAgent();
@@ -25,7 +25,7 @@ describe("an amount nobody has entered", () => {
     const onEmpty = vi.fn();
     const onValueChange = vi.fn();
     const { agent, entry, input } = setup({ allowEmpty: true, onEmpty, onValueChange });
-    expect(entry()).toMatchObject({ empty: true });
+    expect(entry()).toMatchObject({ empty: true, value: null, minor: null });
     expect(input().value).toBe("");
 
     await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [0] }] });
@@ -35,8 +35,12 @@ describe("an amount nobody has entered", () => {
 
     await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [125_000] }] });
     await agent.act({ steps: [{ ref: entry().ref, action: "clear" }] });
-    expect(entry()).toMatchObject({ empty: true });
+    expect(entry()).toMatchObject({ empty: true, value: null });
     expect(onEmpty).toHaveBeenCalledWith(expect.objectContaining({ reason: "clear" }));
+    // null is "no amount" for the agent too.
+    await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [5] }] });
+    await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [null] }] });
+    expect(entry()).toMatchObject({ empty: true, value: null });
     expect(input().value).toBe("");
   });
 

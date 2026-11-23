@@ -48,6 +48,13 @@ export type AgentPolicyOptions = {
   ruleVersion?: string;
 };
 
+/**
+ * Steps `bookiAllow` has recorded as refused, newest last, so `actAndRecord`
+ * does not record the same step a second time when `act` then fails on it.
+ */
+let sequence = 0;
+const refusedSteps: { seq: number; ref: string; label?: string; action: string }[] = [];
+
 /** True when a decision lets the step run. */
 export const isAllowed = (decision: AgentDecision): boolean =>
   typeof decision === "object" && decision !== null ? decision.allow === true : decision === true;
@@ -64,6 +71,10 @@ export function bookiAllow(
   const { allow, audit, agentId = "bridge", ruleVersion } = options;
   if (!allow && !audit) return undefined;
   const record = (step: AskedStep, action: string, by?: string) => {
+    if (action !== "agent.confirmed") {
+      refusedSteps.push({ seq: ++sequence, ref: step.ref, label: step.label, action: step.action });
+      if (refusedSteps.length > 50) refusedSteps.shift();
+    }
     audit?.({
       actor: `agent:${agentId}`,
       action,
@@ -124,6 +135,7 @@ export function bookiRegisterTools<A>(register: Register<A>) {
 }
 
 type Actable = {
+  snapshot?: () => { ref: string; label?: string }[];
   act: (
     input: { steps: { ref: string; action: string; args?: unknown[] }[] },
     options?: { signal?: AbortSignal },
@@ -143,17 +155,45 @@ export async function actAndRecord<A extends Actable>(
   options: Pick<AgentPolicyOptions, "audit" | "agentId" | "ruleVersion">,
   actOptions?: { signal?: AbortSignal },
 ): Promise<Awaited<ReturnType<A["act"]>>> {
+  const from = sequence;
   const result = (await agent.act(input, actOptions)) as Awaited<ReturnType<A["act"]>>;
   const failed = (result as { ok: boolean; error?: { step: number; message: string } }).error;
   if (!(result as { ok: boolean }).ok && failed && options.audit) {
     const step = input.steps[failed.step];
+    // `allow` refused it, and `bookiAllow` has already recorded that: one row per decision.
+    const already = refusedSteps.some(
+      (refused) =>
+        refused.seq > from &&
+        refused.action === step?.action &&
+        (refused.ref === step?.ref || refused.label === step?.ref),
+    );
+    if (already) return result;
+    // The control's name, as a person reads it, rather than its ref.
+    const label = step ? agent.snapshot?.().find((entry) => entry.ref === step.ref)?.label : undefined;
     options.audit({
       actor: `agent:${options.agentId ?? "bridge"}`,
       action: "agent.failed",
-      target: step?.ref ?? "?",
+      target: label ?? step?.ref ?? "?",
       detail: `${step?.action ?? "?"}: ${failed.message.replace(/\s+/g, " ").slice(0, 200)}`,
       ...(options.ruleVersion ? { ruleVersion: options.ruleVersion } : {}),
     });
   }
   return result;
+}
+
+/**
+ * The same bridge, with `act` going through `actAndRecord`: give this to
+ * `window.agent` and to any code of yours that calls `act` for a model.
+ * The browser's own agent (`registerTools`, WebMCP) does not go through it:
+ * its refusals by `allow` are recorded, a control's own refusal is not.
+ */
+export function withRecordedAct<A extends Actable>(
+  agent: A,
+  options: Pick<AgentPolicyOptions, "audit" | "agentId" | "ruleVersion">,
+): A {
+  return {
+    ...agent,
+    act: (input: Parameters<A["act"]>[0], actOptions?: { signal?: AbortSignal }) =>
+      actAndRecord(agent, input, options, actOptions),
+  } as A;
 }
