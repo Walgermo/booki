@@ -85,6 +85,10 @@ come out with no padding or border:
 @import "tailwindcss";
 ```
 
+Only a few controls on a page: import `@booki/styles/base.css` and
+`@booki/styles/controls/<name>.css` for the ones it uses (`kpi-stat`, `data-table`, …)
+instead of the whole sheet (about 9 KB gzipped against 17 KB).
+
 `useBookiLocale()` / `useBookiLocaleOptional()` → `country`, `profile`, `setCountry`.
 
 | Concern | NO | US |

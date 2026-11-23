@@ -6,7 +6,8 @@ export type KpiGood = "up" | "down";
 
 export type Options = {
   label?: string;
-  valueMinor?: number;
+  /** Undefined or null: not set, shown as such and not counted as a fault. */
+  valueMinor?: number | null;
   previousMinor?: number | null;
   currency?: string;
   /** What `previous` is: "Feb 2026", "last year". */
@@ -23,8 +24,10 @@ export const SPARK_POINTS = 24;
 export function derive(options: Options) {
   const issues: string[] = [];
   const raw = options.valueMinor;
-  const valueMinor = Number.isSafeInteger(raw) ? (raw as number) : null;
-  if (valueMinor === null) issues.push(`The value is not whole minor units: "${String(raw)}".`);
+  // No value is "not set", not a fault: a figure nobody has entered yet.
+  const set = raw !== null && raw !== undefined;
+  const valueMinor = set && Number.isSafeInteger(raw) ? (raw as number) : null;
+  if (set && valueMinor === null) issues.push(`The value is not whole minor units: "${String(raw)}".`);
   const rawPrevious = options.previousMinor;
   const previousMinor =
     rawPrevious === null || rawPrevious === undefined ? null : Number.isSafeInteger(rawPrevious) ? rawPrevious : null;
@@ -40,6 +43,7 @@ export function derive(options: Options) {
     .slice(-SPARK_POINTS)
     .map((point): [string, number] => [point.period, point.valueMinor]);
   return {
+    set,
     label: options.label ?? "",
     currency: options.currency ?? "",
     valueMinor,
@@ -74,6 +78,7 @@ export const kpiStat = definePrimitive({
     series: "value",
   },
   controlled: [
+    "set",
     "label",
     "currency",
     "valueMinor",
