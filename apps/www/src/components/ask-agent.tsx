@@ -139,7 +139,7 @@ export function AskAgent() {
             <li key={row.id} className="grid gap-1 text-sm sm:grid-cols-[4rem_minmax(0,1fr)] sm:gap-4">
               <span className="text-muted-foreground">
                 {row.who === "you"
-                  ? t("You", "Dere")
+                  ? t("You", "Du")
                   : row.who === "agent"
                     ? "Agent"
                     : row.who === "tool"
