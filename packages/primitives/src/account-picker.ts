@@ -24,7 +24,8 @@ export type AccountPickerOptions = {
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
-  onValueChange?: (accountNumber: string) => void;
+  /** Hears every change, with why and from whom: `details.source` is `"agent"` for the agent's. */
+  onValueChange?: (accountNumber: string, details: { reason: string; source?: string }) => void;
 };
 
 export type AccountPickerState = {

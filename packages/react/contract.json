@@ -516,13 +516,13 @@
   },
   "field-amount": {
     "actions": ["setMinor"],
-    "options": ["currency", "disabled", "maxMinor", "minMinor", "onValueChange", "readOnly", "value"],
+    "options": ["allowEmpty", "currency", "disabled", "maxMinor", "minMinor", "onValueChange", "readOnly", "value"],
     "parts": ["root"],
     "dataSlots": ["field-amount"]
   },
   "field-code": {
     "actions": ["setCode"],
-    "options": ["disabled", "onValueChange", "options", "readOnly", "value"],
+    "options": ["allowEmpty", "disabled", "onValueChange", "options", "readOnly", "value"],
     "parts": ["root"],
     "dataSlots": ["field-code"]
   },

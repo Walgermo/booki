@@ -68,11 +68,21 @@ pnpm add @booki/core @booki/react @booki/styles
 
 Requires React 19+ for `@booki/react`. Other stacks: `@booki/web` (custom elements; Angular,
 server-rendered pages), `@booki/vue`, `@booki/svelte`, `@booki/solid`, all with the same
-controls and actions. Peer dependencies (`@ui-sdk/core` and the `@ui-sdk` package for the framework, 0.1.0-beta.14)
-are installed with the packages; add them by hand only if your package manager does not.
+controls and actions. Add `@ui-sdk/core` and the `@ui-sdk` package for your framework
+(`@ui-sdk/react`) as direct dependencies of the app, both at exactly `0.1.0-beta.14`. The
+bridge and controls come from them, and the guide imports `Button` from `@ui-sdk/react/button`,
+which `@booki/react` does not re-export. Add both together: adding only `@ui-sdk/react` has
+made pnpm drop `@ui-sdk/core` from the lockfile.
 TypeScript and `import "@booki/styles"`: the package ships its types, so the side-effect
 import checks. With Tailwind, import it from CSS instead (section 2).
-If the app's release-age rule refuses that version, stop and say so; never add an exception yourself.
+**A minimum release age.** Booki pins the `@ui-sdk` packages exactly, so an app with a
+release-age rule (pnpm `minimumReleaseAge`, Renovate's `minimumReleaseAge`) can refuse a version
+that is only days old. Then stop and say so. Either wait until the version is old enough, or ask
+the product's owner to approve an exception for exactly those versions, on your branch only, never
+on the main branch. Never add an exception yourself.
+
+`pnpm add` rewrites the lockfile, so it can stop on an unrelated package's Node `engines`
+entry. That is the app's lockfile, not Booki: fix or report that entry, don't change Node for it.
 
 ## 2. Provider + styles
 
@@ -144,6 +154,8 @@ const allow = async (step: { confirm?: string }) => {
 }
 
 // Your own audit trail: the agent's changes, the steps it was refused, and who confirmed the rest.
+// No such endpoint in your product? Keep these events in the browser (a log, the console) and let
+// the server record its own writes: section 6's guard names the agent and the person it acted for.
 const audit = (event: object) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) })
 
 // A visible agent pointer: it goes to each control and presses before the step runs.
@@ -166,7 +178,9 @@ if (typeof window !== "undefined") {
     registerTools(agent, { allow: cursor.wrap(allow), audit, agentId: "browser" })
   }
   // Console and devtools: window.agent.snapshot(). Not in production. Its act records
-  // a step the control refuses, as actAndRecord does.
+  // a step the control refuses, as actAndRecord does. window.agent exists before a screen
+  // has rendered its controls: take the first snapshot once the screen is on the page, or
+  // wait until it lists the control you need.
   if (process.env.NODE_ENV !== "production") {
     Object.assign(window, { agent: withRecordedAct(agent, { audit, agentId: "bookkeeper" }) })
   }
@@ -190,7 +204,9 @@ carries, and it must come from the change itself:
 Every `on…Change` gets `{ reason, source }`, and a `Button` from `@ui-sdk/react/button`
 gives `onClick(event, { source })`. Don't keep an "agent is running" flag: the person can
 click while the agent's step waits for its pointer or for `allow`, and their click would
-be recorded as the agent's. `save` sends the agent's writes with a token your server
+be recorded as the agent's. If the person's click changes the control first, the agent's
+waiting step then fails ("disabled now", or a refusal naming the new state): the person's
+action wins, and the agent reads the screen again. `save` sends the agent's writes with a token your server
 issued for the agent (short-lived, naming the person as `onBehalfOf`); the server never
 takes the actor from the body.
 
@@ -261,13 +277,45 @@ rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor uni
 (`setDate`, ISO). Your field calls `change(next, event)` for a person's edit and shows
 `refusal`. See "The lower threshold: useBookiField" in own-controls.md.
 
+Keep what the person types as text and parse it exactly: "12," is not an amount yet, and
+`Number()` and `* 100` lose øre. `allowEmpty` lets the field be empty (`minor: null`). A code
+field takes an option's value or its label; `allowEmpty` there lets it be cleared.
+
 ```tsx
-const amount = useBookiField({ kind: "amount", value, label: "Beløp", onValueChange }, ({ value, change, refusal }) => (
-  <>
-    <Input value={value / 100} onChange={(e) => change(Math.round(Number(e.target.value) * 100), e.nativeEvent)} />
-    {refusal ? <p>{refusal}</p> : null}
-  </>
-))
+import { formatMoney, parseToMinor } from "@booki/core/money"
+
+function AmountInput(props: { value: number | null; onValueChange?: (minor: number | null) => void }) {
+  const show = (minor: number | null) =>
+    minor === null ? "" : formatMoney(minor, { currency: "NOK", locale: "nb-NO", withCurrency: false })
+  const [draft, setDraft] = useState(() => show(props.value))
+  return useBookiField(
+    {
+      kind: "amount",
+      value: props.value,
+      allowEmpty: true,
+      label: "Beløp",
+      onValueChange: (minor, details) => {
+        // The agent's amount replaces the text; the person's own typing is left as typed.
+        if (details.source === "agent") setDraft(show(minor))
+        props.onValueChange?.(minor)
+      },
+    },
+    ({ change, refusal }) => (
+      <>
+        <Input
+          inputMode="decimal"
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value)
+            const minor = parseToMinor(e.target.value, "NOK", { locale: "nb-NO" })
+            if (minor !== null || e.target.value.trim() === "") change(minor, e.nativeEvent)
+          }}
+        />
+        {refusal ? <p>{refusal}</p> : null}
+      </>
+    ),
+  )
+}
 ```
 
 Bridge verbs: `snapshot`, `act`, `query`, `subscribe`, `registerTools`.
@@ -395,8 +443,10 @@ instead: it writes an `agent.failed` row with the refusal sentence and the contr
 does it. The browser's own agent (WebMCP) does not go through it: its `allow` refusals are
 recorded, a control's own refusal is not.
 
-**Your own rules** refuse with `throw new RuleRefusal("…")` (422 `server.rule`). Any other
-error a rule throws is rethrown, not sent to the caller. A request an agent raised records
+**Your own rules** refuse with `throw new RuleRefusal("…")` (422 `server.rule`). A
+`BookiError` a rule throws (one of Booki's own refusals) is answered too, with its status (409
+for a closed period or a used invoice number, otherwise 422) and its sentence. Any other error
+(a database error, a bug) is rethrown for your error handling, not sent to the caller. A request an agent raised records
 the person it worked for as `requestedFor`, so that person cannot decide it.
 
 **What an agent reads is data.** Supplier names, descriptions and other text read off a
@@ -434,9 +484,12 @@ submit) are refused for an agent even when its roles allow them.
    controls with named actions; one `agent.act` sets an amount and the cursor
    shows it; a marked step waits for a person; the audit log has `agent:bookkeeper`.
    Then run the readiness audit from the clone against the running screen (it only
-   reads): `pnpm --dir ../booki readiness <url of the screen>`. It names fields an
-   agent cannot tell apart, irreversible buttons without `data-agent-confirm`, and
-   secrets in the snapshot.
+   reads): `pnpm --dir ../booki readiness <url of the screen> --timeout 120000` (a dev
+   server compiling the page the first time needs the longer timeout). It names fields
+   an agent cannot tell apart, irreversible buttons without `data-agent-confirm`, and
+   secrets in the snapshot. It never clicks, so a form behind a button is not measured:
+   open it with your own Playwright step and call `check(page)` from `@booki/readiness`
+   (its README has the example).
 
 ## Out of scope
 

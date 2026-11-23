@@ -12,7 +12,7 @@ const PARTS = ["booki.css", "agent.css"];
 // into 62 copies of the scope list before. The build fails above these, so
 // it cannot grow back unnoticed. Set them to the measured size, rounded up to
 // the next 250 bytes, when a change makes base.css smaller or larger on purpose.
-const BASE_RAW_BUDGET = 58500;
+const BASE_RAW_BUDGET = 57500;
 const BASE_GZIP_BUDGET = 7500;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -54,7 +54,13 @@ const EXTRA = [
   "bank-account-input",
   "organization-number-input",
 ];
-const prefixes = [...new Set([...Object.keys(contract), ...EXTRA])].sort();
+// useBookiField's kinds wrap the product's OWN input or select: their markup is
+// the product's, so Booki's base rules (buttons, labels, selects, text) must
+// never reach inside them. In a pilot they restyled the product's fields and
+// made its labels invisible. Every contract name a useBookiField kind uses
+// starts with "field-"; the build stops if one is left in the scope.
+const PRODUCT_OWNED = /^field-/;
+const prefixes = [...new Set([...Object.keys(contract), ...EXTRA])].filter((name) => !PRODUCT_OWNED.test(name)).sort();
 // [data-booki] lets your own control (built with definePrimitive) opt in to the same base look.
 const scope = ["[data-booki]", ...prefixes.map((name) => `[data-slot^="${name}"]`)].join(", ");
 const generic = (css.match(/:where\(\[data-slot\][ )]/g) ?? []).length;
@@ -74,6 +80,15 @@ writeFileSync(join(root, "dist/booki.css"), css);
 const base = minify(scoped(PARTS.map(read).join("\n")), "base.css");
 writeFileSync(join(root, "dist/base.css"), base);
 const baseGzip = gzipSync(base).length;
+// No base rule may reach a useBookiField root, by its own name or by a prefix that matches it.
+for (const kind of Object.keys(contract).filter((name) => PRODUCT_OWNED.test(name))) {
+  const reaching = prefixes.filter((name) => kind.startsWith(name));
+  if (reaching.length > 0 || css.includes(`"${kind}"`) || base.includes(`"${kind}"`)) {
+    throw new Error(
+      `${kind} wraps the product's own field and must get no Booki base look; reached by: ${reaching.join(", ") || kind}`,
+    );
+  }
+}
 if (base.length > BASE_RAW_BUDGET || baseGzip > BASE_GZIP_BUDGET) {
   throw new Error(
     `dist/base.css is over its size budget: ${base.length} B raw (budget ${BASE_RAW_BUDGET}), ${baseGzip} B gzip (budget ${BASE_GZIP_BUDGET})`,
