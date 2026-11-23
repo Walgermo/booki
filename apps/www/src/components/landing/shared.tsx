@@ -9,9 +9,9 @@ export const AGENT_PROMPT = `Make this app agent-ready with Booki.
 
 1. Load the skill: run \`npx skills add Walgermo/booki --skill booki\`. If you can't install skills, read https://raw.githubusercontent.com/Walgermo/booki/main/skills/booki/SKILL.md and the catalog it links to.
 2. Follow its implementation checklist on this codebase: install the packages (Booki is not on npm yet: the skill packs them from a clone), wrap the root in BookiLocaleProvider and BookiAccessProvider (with our signed-in user), add AgentPresence and AgentCursor, and create one agent bridge in src/agent.ts with createBookiAgent, cursor.wrap(allow), attachAudit and registerTools.
-3. Move our money, bank, KID, date, account and voucher inputs to Booki controls, lists to DataTable and dashboard figures to the chart controls. For controls you keep, define a primitive (definePrimitive) and create its parts in our framework.
+3. Move our money, bank, KID, date, account and voucher inputs to Booki controls, lists to DataTable and dashboard figures to the chart controls. For an amount, code or date field we keep, use useBookiField; for other controls we keep, define a primitive (definePrimitive) and create its parts in our framework.
 4. Mark what can't be undone (posting, payments, SCA, deleting) with data-agent-confirm. Approving, signing off, finalizing and releasing stay with people. Run the same writes through @booki/core/server guards in our API, with the agent on its own credential.
-5. Prove it in the running app: window.agent.snapshot() lists named actions, one agent.act sets an amount while the cursor shows it, a marked step waits for a person, and the audit log records the agent. Tell me what you changed and anything you left.`;
+5. Prove it in the running app: window.agent.snapshot() lists named actions, one agent.act sets an amount while the cursor shows it, a marked step waits for a person, and the audit log records the agent. Then run the readiness audit from the Booki clone against the screen (pnpm --dir ../booki readiness <url>). Tell me what you changed and anything you left.`;
 
 export const REPO_URL = "https://github.com/Walgermo/booki";
 
