@@ -21,6 +21,7 @@ Options
   --executable <path>     A browser binary instead of a channel
   --wait <ms>             Wait after load, for late rendering (default 500)
   --wait-for <selector>   Wait until this selector is on the page
+  --timeout <ms>          Give up on loading the page (and --wait-for) after this long (default 30000)
   --headed                Show the browser
   --fail-under <score>    Exit with code 1 when the score is below this
   --snapshot              Include the full accessibility snapshot in the JSON
@@ -40,6 +41,7 @@ async function main(): Promise<number> {
       executable: { type: "string" },
       wait: { type: "string" },
       "wait-for": { type: "string" },
+      timeout: { type: "string" },
       headed: { type: "boolean" },
       "fail-under": { type: "string" },
       snapshot: { type: "boolean" },
@@ -50,6 +52,11 @@ async function main(): Promise<number> {
     process.stdout.write(HELP);
     return values.help ? 0 : 2;
   }
+  const timeout = values.timeout === undefined ? undefined : Number(values.timeout);
+  if (timeout !== undefined && !(Number.isFinite(timeout) && timeout >= 0)) {
+    process.stderr.write(`readiness: --timeout takes milliseconds, a number of 0 or more; got "${values.timeout}".\n`);
+    return 2;
+  }
   const options: AuditOptions = {
     storageState: values["storage-state"],
     profile: values.profile,
@@ -57,6 +64,7 @@ async function main(): Promise<number> {
     executablePath: values.executable,
     wait: values.wait ? Number(values.wait) : undefined,
     waitFor: values["wait-for"],
+    timeout,
     headed: values.headed,
   };
   const report = await audit(positionals[0]!, options);
@@ -79,6 +87,9 @@ main().then(
   (error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     process.stderr.write(`readiness: ${message}\n`);
+    if (/Timeout \d+ms exceeded/.test(message)) {
+      process.stderr.write("A dev server that compiles the page on first load can take longer: pass --timeout <ms>.\n");
+    }
     if (/Executable doesn't exist|Chromium distribution|channel/i.test(message)) {
       process.stderr.write(
         "Install Google Chrome, or pass --browser msedge, or --executable <path to a Chromium browser>.\n",

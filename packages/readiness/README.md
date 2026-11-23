@@ -53,6 +53,7 @@ npx @booki/readiness <url | file.html> [options]
 | `--executable <path>` | A Chromium-based browser binary, instead of a channel. |
 | `--wait <ms>` | Wait this long after the page has loaded (default 500), for screens that render late. |
 | `--wait-for <selector>` | Wait until this selector is on the page. |
+| `--timeout <ms>` | How long to wait for the page to load, and for `--wait-for`, before giving up (default 30000; `0` for no limit). Raise it for a dev server that compiles a page on its first request. |
 | `--headed` | Show the browser. |
 | `--fail-under <score>` | Exit with code 1 when the score is below this, for CI. |
 | `--snapshot` | Put the full accessibility snapshot in the JSON (the HTML always has it, folded). |
@@ -79,7 +80,8 @@ clicks, types or submits, so it is safe to run against a live company.
 
 Because nothing is clicked, a check sees the screen as it loads: a dialog, a
 drop-down or a cell editor that opens on click is not inspected. Save or open
-those states and check them as their own pages.
+those states and check them as their own pages, or open them in your own script
+([A form behind a button](#a-form-behind-a-button)).
 
 ### From code
 
@@ -92,6 +94,29 @@ console.log(report.score, report.findings.length)
 
 `check(page)` runs the checks on a Playwright `Page` you already drive, for a
 test suite that signs in and opens dialogs first.
+
+### A form behind a button
+
+The CLI only reads, so it never sees a form that opens on a click: a "New
+voucher" dialog, a drawer, the second step of a wizard. Open it yourself with
+Playwright, then hand the page to `check`:
+
+```ts
+import { chromium } from "playwright-core"
+import { check, toConsole } from "@booki/readiness"
+
+const browser = await chromium.launch({ channel: "chrome" })
+const page = await browser.newPage({ storageState: "session.json" })
+await page.goto("https://app.example.com/vouchers")
+await page.getByRole("button", { name: "New voucher" }).click()
+await page.getByRole("dialog").waitFor()
+
+console.log(toConsole(await check(page)))
+await browser.close()
+```
+
+`check` reads the page as it is when you call it and changes nothing; the
+click is your step, not the tool's. It needs no setup in the page.
 
 ## Conformance suite
 
@@ -180,7 +205,7 @@ Each check names the Agent Contract section it enforces.
 | No agent bridge | §2, §4.1 | No `window.agent` with controls and no WebMCP tools of the page's own. The agent can only read the tree and click. | 25 / 25 |
 | Bridge control without a name | §3.1 | A control in the bridge's snapshot with no label. | 4 / 12 |
 | A person's decision offered to the agent | §5.1 | A bridge action named approve, reject, escalate, release, sign off, finalize, submit, closePeriod, lockPeriod or dispose. | 15 / 30 |
-| Field without an accessible name | §3.1, §4.1 | A textbox, searchbox, combobox, listbox, spinbutton, checkbox, radio, switch or slider with no name in the snapshot: the agent can find it only by its position. | 5 / 30 |
+| Field without an accessible name | §3.1, §4.1 | A textbox, searchbox, combobox, listbox, spinbutton, checkbox, radio, switch or slider with no name in the snapshot: the agent can find it only by its position. Inputs no one can reach are skipped: `aria-hidden` or `inert` on the input or an ancestor, `type="hidden"`, not rendered, or visually hidden and out of the tab order (the native input Base UI and Radix render beside a custom select, radio group or checkbox). The two checks below skip them too. | 5 / 30 |
 | Field named by a rendering bug | §3.1 | A name such as `[object Object] (Ikke valgt)`, `undefined` or `NaN`. | 5 / 15 |
 | Fields that share one name | §3.1, §4.1 | Two or more fields of one role with the same name (one finding per group): the agent has to count. | 2 / 8 |
 | Focusable element that is not a control | §3.1, §4.1 | An element with `tabindex` ≥ 0 that the tree calls a cell or plain text, such as a grid cell that opens an editor on click. | 3 / 12 |

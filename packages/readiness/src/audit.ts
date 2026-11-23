@@ -9,6 +9,7 @@ import {
   findCharts,
   findFocusableNonControls,
   INIT_SCRIPT,
+  inPage,
   onlyInSecrets,
   readBridge,
   type ElementInfo,
@@ -84,6 +85,10 @@ export type AuditOptions = {
   waitFor?: string;
   headed?: boolean;
   viewport?: { width: number; height: number };
+  /**
+   * Milliseconds to wait for the page to load (navigation, the load event)
+   * and for `waitFor`, before giving up. Default 30000; 0 waits without a limit.
+   */
   timeout?: number;
 };
 
@@ -130,6 +135,13 @@ export function looksLikeIconName(name: string, iconFont: boolean): boolean {
 export const IRREVERSIBLE =
   /(^|[^\p{L}])(bokfør|opprett|godkjenn|attester|betal|send|signer|fullfør|frigi|overfør|utbetal|lukk periode|post|pay|approve|submit|finali[sz]e|release|sign[ -]?off|transfer)(e|er)?(?=$|[^\p{L}])/iu;
 
+// What runs in the page, each with its own `__name` helper (see inPage).
+const DESCRIBE = inPage(describeElement);
+const READ_BRIDGE = inPage(readBridge);
+const FIND_FOCUSABLE = inPage(findFocusableNonControls);
+const FIND_CHARTS = inPage(findCharts);
+const ONLY_IN_SECRETS = inPage(onlyInSecrets);
+
 const BROKEN_NAME = /\[object \w+\]|\bundefined\b|\bnull\b|\bNaN\b/;
 
 function toTarget(input: string): string {
@@ -162,8 +174,10 @@ async function open(target: string, options: AuditOptions): Promise<{ page: Page
   }
   await context.addInitScript(INIT_SCRIPT);
   const page = context.pages()[0] ?? (await context.newPage());
-  page.setDefaultTimeout(options.timeout ?? 30_000);
-  await page.goto(target, { waitUntil: "load" });
+  const timeout = options.timeout ?? 30_000;
+  page.setDefaultTimeout(timeout);
+  page.setDefaultNavigationTimeout(timeout);
+  await page.goto(target, { waitUntil: "load", timeout });
   await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => undefined);
   if (options.waitFor) await page.waitForSelector(options.waitFor);
   await page.waitForTimeout(options.wait ?? 500);
@@ -179,7 +193,7 @@ async function open(target: string, options: AuditOptions): Promise<{ page: Page
 async function describe(page: Page, node: SnapshotNode): Promise<ElementInfo | null> {
   if (!node.ref) return null;
   try {
-    return await page.locator(`aria-ref=${node.ref}`).evaluate(describeElement, undefined, { timeout: 2_000 });
+    return await page.locator(`aria-ref=${node.ref}`).evaluate(DESCRIBE, undefined, { timeout: 2_000 });
   } catch {
     return null;
   }
@@ -236,7 +250,7 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
   const findings: Finding[] = [];
 
   // Bridge first: it decides how irreversible buttons are gated.
-  const raw = await page.evaluate(readBridge);
+  const raw = await page.evaluate(READ_BRIDGE);
   const controls = raw.components.map((c) => ({
     label: typeof c.label === "string" ? c.label : "",
     component: String(c.component ?? "?"),
@@ -282,12 +296,17 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
   }
 
   // Fields.
-  const fields = nodes.filter((n) => FIELD_ROLES.has(n.role));
+  // Playwright lists an aria-hidden field it can still focus, marked [aria-hidden]
+  // and often without a ref. Neither a person's screen reader nor an agent's
+  // tree treats it as a field.
+  const fields = nodes.filter((n) => FIELD_ROLES.has(n.role) && !n.flags.includes("aria-hidden"));
   const named = new Map<string, SnapshotNode[]>();
   for (const node of fields) {
     const name = node.name.trim();
     if (!name) {
       const info = await describe(page, node);
+      // The native input a UI library hides beside a custom control: no one reaches it.
+      if (info?.hidden) continue;
       findings.push({
         rule: "field-unnamed",
         message: `A ${node.role} with no name${info?.context ? `, near "${info.context}"` : ""}.`,
@@ -298,6 +317,7 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
     }
     if (BROKEN_NAME.test(name)) {
       const info = await describe(page, node);
+      if (info?.hidden) continue;
       findings.push({
         rule: "field-broken-name",
         message: `A ${node.role} named "${name}".`,
@@ -310,25 +330,30 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
     const key = `${node.role}\u0000${name}`;
     named.set(key, [...(named.get(key) ?? []), node]);
   }
-  for (const group of named.values()) {
+  for (const candidates of named.values()) {
+    if (candidates.length < 2) continue;
+    const group: Array<{ node: SnapshotNode; info: ElementInfo | null }> = [];
+    for (const node of candidates) {
+      const info = await describe(page, node);
+      if (!info?.hidden) group.push({ node, info });
+    }
     if (group.length < 2) continue;
     const first = group[0]!;
-    const info = await describe(page, first);
     findings.push({
       rule: "field-ambiguous",
-      message: `${group.length} fields are each a ${first.role} named "${first.name}".`,
-      element: element(first, info),
+      message: `${group.length} fields are each a ${first.node.role} named "${first.node.name}".`,
+      element: element(first.node, first.info),
       count: group.length,
     });
   }
 
   // Things a person can focus or click that the tree does not call a control.
-  const focusables = await page.evaluate(findFocusableNonControls);
+  const focusables = await page.evaluate(FIND_FOCUSABLE);
   const focusLocator = page.locator("[tabindex]");
   for (const item of focusables) {
     const info = await focusLocator
       .nth(item.index)
-      .evaluate(describeElement, undefined, { timeout: 2_000 })
+      .evaluate(DESCRIBE, undefined, { timeout: 2_000 })
       .catch(() => null);
     findings.push({
       rule: "focusable-without-role",
@@ -381,13 +406,13 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
   }
 
   // Charts.
-  const charts = await page.evaluate(findCharts);
+  const charts = await page.evaluate(FIND_CHARTS);
   const chartLocator = page.locator("canvas, svg");
   for (const chart of charts) {
     if (chart.figures >= 2) continue;
     const info = await chartLocator
       .nth(chart.index)
-      .evaluate(describeElement, undefined, { timeout: 2_000 })
+      .evaluate(DESCRIBE, undefined, { timeout: 2_000 })
       .catch(() => null);
     const what = chart.kind === "canvas" ? "A canvas" : `An SVG${chart.role ? ` (role ${chart.role})` : ""}`;
     findings.push({
@@ -413,7 +438,7 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
     const node = nodes.find((n) => n.line === lineIndex) ?? nodes.filter((n) => n.line < lineIndex).at(-1);
     const info = node ? await describe(page, node) : null;
     // Marked data-agent-secret on a page with a bridge: the bridge redacts it.
-    if (hasBridge && (info?.secret || (await page.evaluate(onlyInSecrets, hit.value)))) continue;
+    if (hasBridge && (info?.secret || (await page.evaluate(ONLY_IN_SECRETS, hit.value)))) continue;
     findings.push({
       rule: "secret-visible",
       message: `${SECRET_LABEL[hit.kind]} ${hit.masked} is in the accessibility snapshot.`,
