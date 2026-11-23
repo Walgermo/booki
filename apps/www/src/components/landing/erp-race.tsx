@@ -70,19 +70,19 @@ const WHY: Record<string, { en: string; nb: string }> = {
   },
   "dashboard:acc": {
     en: "One snapshot: every month, the overdue buckets and the KPIs as numbers. No pixels.",
-    nb: "Ett snapshot: hver måned, forfalte poster per aldersgruppe og nøkkeltallene som tall. Ingen piksler.",
+    nb: "Ett øyeblikksbilde: hver måned, forfalte poster per aldersgruppe og nøkkeltallene som tall. Ingen piksler.",
   },
   "voucher:acc": {
     en: "One snapshot, then one act of named steps. Your rule posted it.",
-    nb: "Ett snapshot, så ett act med navngitte steg. Regelen deres bokførte det.",
+    nb: "Ett øyeblikksbilde, så ett act med navngitte steg. Regelen deres bokførte det.",
   },
   "supplier-invoice:acc": {
     en: "One snapshot, then one act of named steps.",
-    nb: "Ett snapshot, så ett act med navngitte steg.",
+    nb: "Ett øyeblikksbilde, så ett act med navngitte steg.",
   },
   "sales-invoice:acc": {
     en: "One snapshot, then one act of named steps.",
-    nb: "Ett snapshot, så ett act med navngitte steg.",
+    nb: "Ett øyeblikksbilde, så ett act med navngitte steg.",
   },
 };
 
@@ -503,7 +503,7 @@ export function ErpRace() {
               <p className="m-0 max-w-[68ch] text-sm text-ink-muted">
                 {tr(
                   "Measured on screens rebuilt from DOM snapshots, not on Tripletex or DNB Regnskap themselves: same fields, same widgets, invented data. The figures at the top and the table of real models are measured: real models, real tokens, billed at list price. The chart is the scripted best case, a script that never errs, with tokens estimated as characters ÷ 4. The pages, the scripts and every call are in the repository:",
-                  "Målt på skjermbilder bygd opp igjen fra DOM-snapshots, ikke på Tripletex eller DNB Regnskap selv: samme felt, samme komponenter, oppdiktede data. Tallene øverst og tabellen med ekte modeller er målt: ekte modeller, ekte tokens, fakturert til listepris. Grafen er det skriptede beste tilfellet, et skript som aldri tar feil, med tokens anslått som tegn ÷ 4. Sidene, skriptene og hvert kall ligger i repoet:",
+                  "Målt på skjermbilder bygd opp igjen fra DOM-øyeblikksbilder, ikke på Tripletex eller DNB Regnskap selv: samme felt, samme komponenter, oppdiktede data. Tallene øverst og tabellen med ekte modeller er målt: ekte modeller, ekte tokens, fakturert til listepris. Grafen er det skriptede beste tilfellet, et skript som aldri tar feil, med tokens anslått som tegn ÷ 4. Sidene, skriptene og hvert kall ligger i repoet:",
                 )}{" "}
                 <code>pnpm proof</code> · <code>pnpm --filter agent-benchmark h2h</code>.
               </p>

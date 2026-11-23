@@ -48,7 +48,7 @@ export const SITE_META: PageMeta = {
   },
   description: {
     en: "Build agent-first web apps for accounting and auditing. React controls an agent operates by name, under your rules, with a visible agent cursor and every step in the audit trail.",
-    nb: "Bygg agent-first webapper for regnskap og revisjon. React-kontroller en agent styrer med navn, under dine regler, med synlig agentpeker og hvert steg i revisjonssporet.",
+    nb: "Bygg agent-first webapper for regnskap og revisjon. React-kontroller en agent styrer ved navn, under dine regler, med synlig agentpeker og hvert steg i revisjonssporet.",
   },
 };
 

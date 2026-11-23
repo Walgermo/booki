@@ -80,7 +80,7 @@ export function BookiLayers() {
         <p className="m-0 text-sm text-ink-muted">
           {t(
             "The agent bridge reads the screen's controls and calls their actions by name. createBookiAgent adds your allow rule, the audit trail and undo by source; the agent cursor shows each step to the person.",
-            "Agentbroen leser kontrollene på skjermen og kaller handlingene deres med navn. createBookiAgent legger til allow-regelen, revisjonssporet og angre per kilde; agentpekeren viser hvert steg til personen.",
+            "Agentbroen leser kontrollene på skjermen og kaller handlingene deres ved navn. createBookiAgent legger til allow-regelen, revisjonssporet og angre per kilde; agentpekeren viser hvert steg til personen.",
           )}
         </p>
       </div>

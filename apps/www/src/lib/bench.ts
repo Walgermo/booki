@@ -40,9 +40,9 @@ export const TASKS: { id: BenchTask; label: Text; short: Text; plural: Text }[] 
   },
 ];
 
-/** A side's name in the site's language: "DOM snapshot" reads "DOM-snapshot" in Norwegian. */
+/** A side's name in the site's language: "DOM snapshot" reads "DOM-øyeblikksbilde" in Norwegian. */
 export const sideName = (name: string, lang: Lang = "en") =>
-  lang === "nb" ? name.replace("DOM snapshot", "DOM-snapshot").replace("DOM map", "DOM-kart") : name;
+  lang === "nb" ? name.replace("DOM snapshot", "DOM-øyeblikksbilde").replace("DOM map", "DOM-kart") : name;
 
 const ORDER = ["tripletex", "dnb", "acc"];
 

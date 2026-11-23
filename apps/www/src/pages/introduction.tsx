@@ -38,7 +38,7 @@ const CONTRACT: { rule: Text; how: Text }[] = [
     rule: { en: "Bank details stay unread", nb: "Bankopplysninger forblir uleste" },
     how: {
       en: "Account numbers, IBAN and KID read as [redacted] in snapshots, results and change events.",
-      nb: "Kontonumre, IBAN og KID leses som [redacted] i snapshots, resultater og endringshendelser.",
+      nb: "Kontonumre, IBAN og KID leses som [redacted] i øyeblikksbilder, resultater og endringshendelser.",
     },
   },
   {

@@ -131,7 +131,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "bar-chart": {
     description:
-      "Største først, resten samlet i Annet. Kostnad per konto, omsetning per kunde; agenten kan endre grensen og drille inn i en stolpe.",
+      "Største først, resten samlet i Annet. Kostnad per konto, omsetning per kunde; agenten kan endre grensen og drille inn i en søyle.",
   },
   "aging-chart": {
     description:

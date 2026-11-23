@@ -337,7 +337,7 @@ export function InstallationPage() {
         <p className={p}>
           {t(
             "The snapshot lists each control with its value and the actions it takes. The step sets the amount to 1 250,00 and reports the change with ",
-            "Snapshotet lister hver kontroll med verdien og handlingene den tar. Steget setter beløpet til 1 250,00 og rapporterer endringen med ",
+            "Øyeblikksbildet lister hver kontroll med verdien og handlingene den tar. Steget setter beløpet til 1 250,00 og rapporterer endringen med ",
           )}
           <code>source: &quot;agent&quot;</code>
           {t(

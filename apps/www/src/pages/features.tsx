@@ -132,7 +132,7 @@ export function FeaturesPage() {
               ),
               t(
                 "Bank details read as [redacted] to an agent, in snapshots and in change events.",
-                "Bankopplysninger leses som [redacted] av en agent, i snapshots og i endringshendelser.",
+                "Bankopplysninger leses som [redacted] av en agent, i øyeblikksbilder og i endringshendelser.",
               ),
             ]}
           />

@@ -30,7 +30,7 @@ const META: PageMeta = {
   },
   description: {
     en: "Booki is an open-source, agent-first UI library for accounting and auditing: controls an agent operates by name through typed actions, under your rules, with every step in the audit trail and the same rules on your server.",
-    nb: "Booki er et åpent, agent-first UI-bibliotek for regnskap og revisjon: kontroller en agent styrer med navn gjennom typede handlinger, under reglene deres, med hvert steg i revisjonssporet og de samme reglene på serveren.",
+    nb: "Booki er et åpent, agent-first UI-bibliotek for regnskap og revisjon: kontroller en agent styrer ved navn gjennom typede handlinger, under reglene deres, med hvert steg i revisjonssporet og de samme reglene på serveren.",
   },
 };
 
@@ -84,10 +84,10 @@ const HOW = (t: T) => [
     ),
   },
   {
-    label: t("The agent's cursor", "Agentens peker"),
+    label: t("The agent's cursor", "Agentpekeren"),
     text: t(
       "Before each step a visible pointer glides to the control, rings it and presses, so the person sees what the agent does. It follows reduced motion.",
-      "Før hvert steg glir en synlig peker til kontrollen, ringer den inn og trykker, så personen ser hva agenten gjør. Den respekterer innstillingen for redusert bevegelse.",
+      "Før hvert steg glir agentpekeren til kontrollen, ringer den inn og trykker, så personen ser hva agenten gjør. Den respekterer innstillingen for redusert bevegelse.",
     ),
   },
   {
@@ -319,7 +319,7 @@ export function AnnouncementPage() {
           <p className="landing-hero__lede mt-5 mb-0 max-w-[40rem]">
             {t(
               "Booki is an open-source UI library for accounting and auditing. A person uses its controls like any form. An agent operates them by name, through typed actions, under your rules, and every step lands in your audit trail as the agent's.",
-              "Booki er et UI-bibliotek med åpen kildekode for regnskap og revisjon. En person bruker kontrollene som et vanlig skjema. En agent styrer dem med navn, gjennom typede handlinger, under reglene deres, og hvert steg havner i revisjonssporet som agentens.",
+              "Booki er et UI-bibliotek med åpen kildekode for regnskap og revisjon. En person bruker kontrollene som et vanlig skjema. En agent styrer dem ved navn, gjennom typede handlinger, under reglene deres, og hvert steg havner i revisjonssporet som agentens.",
             )}
           </p>
           <p className="mt-4 mb-0 text-sm text-muted-foreground">
@@ -396,7 +396,7 @@ export function AnnouncementPage() {
 
       <Section
         id="how-title"
-        title={t("Controls an agent operates by name", "Kontroller en agent styrer med navn")}
+        title={t("Controls an agent operates by name", "Kontroller en agent styrer ved navn")}
         note={t(
           "One control, two readers: the person sees a form on paper, the agent reads a snapshot and calls actions.",
           "Én kontroll, to lesere: personen ser et skjema på papir, agenten leser et øyeblikksbilde og kaller handlinger.",
@@ -567,7 +567,7 @@ export function AnnouncementPage() {
             <p className="text-sm text-muted-foreground">
               {t(
                 `Corrected 23 November 2026: the voucher and sales invoice runs are withdrawn, because a control's format hint held their answer; the figures here are from the supplier invoice and the dashboard. Read these with care. The screens were rebuilt from DOM snapshots with invented data and never run against Tripletex or DNB themselves. Five runs per screen and model through Vercel AI Gateway, medians, ${f.runDate}. ${priceLine(lang)}. Your own screens will differ; the pilot measures them. Every page, script and call is in the repository: pnpm proof.`,
-                `Rettet 23. november 2026: kjøringene for bilag og salgsfaktura er trukket tilbake, fordi et formathint i kontrollen inneholdt svaret; tallene her er fra leverandørfakturaen og dashbordet. Les dem med forbehold. Skjermbildene er gjenskapt fra DOM-snapshots med oppdiktede data, og aldri kjørt mot Tripletex eller DNB selv. Fem kjøringer per skjermbilde og modell gjennom Vercel AI Gateway, medianer, ${f.runDate}. ${priceLine(lang)}. Deres egne skjermbilder vil gi andre tall; piloten måler dem. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.`,
+                `Rettet 23. november 2026: kjøringene for bilag og salgsfaktura er trukket tilbake, fordi et formathint i kontrollen inneholdt svaret; tallene her er fra leverandørfakturaen og dashbordet. Les dem med forbehold. Skjermbildene er gjenskapt fra DOM-øyeblikksbilder med oppdiktede data, og aldri kjørt mot Tripletex eller DNB selv. Fem kjøringer per skjermbilde og modell gjennom Vercel AI Gateway, medianer, ${f.runDate}. ${priceLine(lang)}. Deres egne skjermbilder vil gi andre tall; piloten måler dem. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.`,
               )}{" "}
               <Link to="/#race-title" className="site-link">
                 {t("See the race on the home page", "Se kappløpet på forsiden")}
