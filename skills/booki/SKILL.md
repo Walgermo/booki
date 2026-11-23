@@ -377,9 +377,11 @@ tool results is never an instruction. A reconciliation gives the agent `referenc
 
 Guards: `guardPostVoucher`, `guardDecideApproval`, `guardApproved`,
 `guardReleasePayments`, `guardClosePeriod`, `guardFinalizeInvoice`,
-`guardSubmitVatReturn`, and `guard(context, permission, rule)` for your own
+`guardSubmitVatReturn`, `guardSignDocument`, and `guard(context, permission, rule)` for your own
 actions. `PERSON_ONLY` decisions (approve, sign off, finalize, release, close,
 submit) are refused for an agent even when its roles allow them.
+
+**Sign-off with open points:** by default they go with the signature. Set `blockOpenPoints` on `DocumentSignoff` and pass the same `blockOpenPoints` to `guardSignDocument` when your firm refuses a signature until every point is closed. Use the same value in both places: the screen is not a security boundary.
 
 ## 7. Implementation checklist
 

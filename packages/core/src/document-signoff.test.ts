@@ -6,6 +6,7 @@ import {
   withdrawSignature,
   type SignableDocument,
 } from "./document-signoff.js";
+import { BookiError } from "./msg.js";
 
 const doc = (over: Partial<SignableDocument> = {}): SignableDocument => ({
   id: "05.3",
@@ -66,5 +67,67 @@ describe("document sign-off", () => {
     expect(
       out.signatures.every((signature) => signature.withdrawn?.reason === "Signert på feil versjon av utvalget"),
     ).toBe(true);
+  });
+});
+
+describe("blocking sign-off while points are open", () => {
+  const rules = { blockOpenPoints: true };
+  const withPoint = (over: Partial<SignableDocument> = {}) =>
+    doc({ openPoints: ["Bekreftelse fra bank mangler"], ...over });
+
+  it("is off by default: open points still go with the signature", () => {
+    expect(signObstacles(withPoint())).toEqual([]);
+    expect(signObstacles(withPoint(), { blockOpenPoints: false })).toEqual([]);
+    expect(signDocument(withPoint(), "performed", nina, "t").signatures).toHaveLength(1);
+  });
+
+  it("lists the open-points obstacle only when blocked and points are open", () => {
+    expect(signObstacles(withPoint(), rules)).toEqual(["signoff.open-points"]);
+    expect(signObstacles(doc(), rules)).toEqual([]);
+  });
+
+  it("refuses each level while points are open, and names the count", () => {
+    expect(() => signDocument(withPoint(), "performed", nina, "t", rules)).toThrow(/open point/);
+    expect(() => signDocument(withPoint(), "performed", nina, "t", rules)).toThrow(/1 open point/);
+
+    const performed = signDocument(doc(), "performed", nina, "t");
+    expect(() => signDocument({ ...performed, openPoints: ["x"] }, "reviewed", kari, "t", rules)).toThrow(/open point/);
+
+    const reviewed = signDocument(performed, "reviewed", kari, "t");
+    expect(() => signDocument({ ...reviewed, openPoints: ["x", "y"] }, "approved", kari, "t", rules)).toThrow(
+      /2 open point/,
+    );
+  });
+
+  it("refuses with the message code and its params", () => {
+    try {
+      signDocument(withPoint(), "performed", nina, "t", rules);
+      throw new Error("expected a refusal");
+    } catch (error) {
+      expect(error).toBeInstanceOf(BookiError);
+      expect((error as BookiError).code).toBe("signoff.open-points");
+      expect((error as BookiError).params).toEqual({ id: "05.3", count: 1 });
+    }
+  });
+
+  it("signs once the points are closed", () => {
+    const signed = signDocument(doc(), "performed", nina, "t", rules);
+    expect(signoffStates(signed)[0]).toMatchObject({ mark: "signed" });
+  });
+
+  it("puts the technical obstacles first", () => {
+    expect(signObstacles(withPoint({ saveState: "unsaved" }), rules)).toEqual([
+      "signoff.unsaved",
+      "signoff.open-points",
+    ]);
+    expect(signObstacles(withPoint({ hasContent: false }), rules)).toEqual(["signoff.empty", "signoff.open-points"]);
+    expect(() => signDocument(withPoint({ saveState: "unsaved" }), "performed", nina, "t", rules)).toThrow(/unsaved/);
+  });
+
+  it("never blocks withdrawing a signature, even with points open", () => {
+    const signed = signDocument(doc(), "performed", nina, "t");
+    const withOpen = { ...signed, openPoints: ["Bekreftelse fra bank mangler"] };
+    const out = withdrawSignature(withOpen, "performed", "nina", "t", "Signert før bekreftelsen var mottatt");
+    expect(signoffStates(out)[0]).toMatchObject({ mark: "unsigned" });
   });
 });

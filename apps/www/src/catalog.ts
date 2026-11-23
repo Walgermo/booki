@@ -293,7 +293,7 @@ export const catalog: CatalogItem[] = [
     name: "document-signoff",
     title: "DocumentSignoff",
     description:
-      "The sign-off line that ends a working paper: performed, reviewed, approved, each bound to the version signed. Open points go with the signature; a later edit marks it, never withdraws it.",
+      "The sign-off line that ends a working paper: performed, reviewed, approved, each bound to the version signed. Open points go with the signature by default; a company can set blockOpenPoints to refuse a signature until they are closed. A later edit marks it, never withdraws it.",
     group: "React",
     install: installCmd("@booki/react"),
   },

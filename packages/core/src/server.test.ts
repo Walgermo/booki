@@ -11,6 +11,7 @@ import {
   guardDecideApproval,
   guardPostVoucher,
   guardReleasePayments,
+  guardSignDocument,
   toHttp,
   type ServerActor,
 } from "./server.js";
@@ -287,6 +288,81 @@ describe("an agent never does more than the person it acts for", () => {
   it("says it in Norwegian too", () => {
     const verdict = post({ actor: agent, personOf, locale: "nb" });
     expect(verdict.ok === false && verdict.message).toContain("arbeider for");
+  });
+});
+
+describe("signing a document is a person's, at every level", () => {
+  const auditor: ServerActor = { id: "per", name: "Per", kind: "person", roles: ["auditor"] };
+  const partner: ServerActor = { id: "lise", kind: "person", roles: ["partner"] };
+  const robot: ServerActor = { id: "auditbot", kind: "agent", roles: ["auditor", "partner"], onBehalfOf: "per" };
+  const document = {
+    id: "05.3",
+    version: 4,
+    saveState: "saved" as const,
+    openPoints: [],
+    signatures: [],
+  };
+  const at = "2026-11-23T09:00:00Z";
+
+  it("signs for a person who holds the permission, and records their name", () => {
+    const verdict = guardSignDocument({ actor: auditor }, { document, level: "performed", at });
+    expect(verdict).toMatchObject({ ok: true, actor: "per" });
+    expect(verdict.ok && verdict.value.signatures[0]).toMatchObject({ level: "performed", by: "per", byName: "Per" });
+  });
+
+  it("refuses while points are open when the company blocks it, with 422 and the code", () => {
+    const open = { ...document, openPoints: ["Bekreftelse fra bank mangler"] };
+    const blocked = guardSignDocument(
+      { actor: auditor },
+      { document: open, level: "performed", at, blockOpenPoints: true },
+    );
+    expect(blocked).toMatchObject({ ok: false, status: 422, code: "signoff.open-points" });
+    // Without the rule the same signature goes through, with the points.
+    expect(guardSignDocument({ actor: auditor }, { document: open, level: "performed", at })).toMatchObject({
+      ok: true,
+    });
+  });
+
+  it("answers the open-points refusal in Norwegian", () => {
+    const open = { ...document, openPoints: ["Bekreftelse fra bank mangler"] };
+    const verdict = guardSignDocument(
+      { actor: auditor, locale: "nb" },
+      { document: open, level: "performed", at, blockOpenPoints: true },
+    );
+    expect(verdict).toMatchObject({ ok: false, code: "signoff.open-points" });
+    expect(verdict.ok === false && verdict.message).toContain("åpne punkter");
+  });
+
+  it("refuses an agent at every level, even when its roles hold the permission", () => {
+    const performed = guardSignDocument({ actor: robot }, { document, level: "performed", at });
+    expect(performed).toMatchObject({ ok: false, status: 403, code: "server.person-only" });
+
+    const signedPerformed = {
+      ...document,
+      signatures: [{ level: "performed" as const, by: "per", at, version: 4, openPoints: [] }],
+    };
+    const reviewed = guardSignDocument({ actor: robot }, { document: signedPerformed, level: "reviewed", at });
+    expect(reviewed).toMatchObject({ ok: false, status: 403, code: "server.person-only" });
+
+    const approved = guardSignDocument({ actor: robot }, { document, level: "approved", at });
+    expect(approved).toMatchObject({ ok: false, status: 403, code: "server.person-only" });
+  });
+
+  it("refuses when no one is signed in", () => {
+    expect(guardSignDocument({}, { document, level: "performed", at })).toMatchObject({ ok: false, status: 401 });
+  });
+
+  it("lets a partner sign the approval, never an agent", () => {
+    const signedReview = {
+      ...document,
+      signatures: [
+        { level: "performed" as const, by: "per", at, version: 4, openPoints: [] },
+        { level: "reviewed" as const, by: "kari", at, version: 4, openPoints: [] },
+      ],
+    };
+    expect(guardSignDocument({ actor: partner }, { document: signedReview, level: "approved", at })).toMatchObject({
+      ok: true,
+    });
   });
 });
 
