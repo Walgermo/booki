@@ -72,6 +72,18 @@ Your editor can run both on save: the Biome and oxc extensions read
 generators and are not formatted or linted. CI also builds the
 docs site and checks that the generated packages are current.
 
+To see test coverage, run:
+
+```bash
+pnpm coverage
+```
+
+It runs the tests of `@booki/core`, `@booki/primitives` and `@booki/react` with
+coverage and writes the reports to `packages/*/coverage`. `pnpm test` does not
+measure coverage. In CI, the job summary shows a table per package. On `main`,
+CI also updates the coverage badge in the README. There is no coverage
+threshold yet, so a low number does not fail the build.
+
 A change to a package needs a changeset, which becomes its line in the
 release notes:
 
