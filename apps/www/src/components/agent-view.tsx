@@ -45,7 +45,8 @@ export function entriesIn(scope: HTMLElement | null): Entry[] {
  */
 export function AgentView({ scope }: { scope: RefObject<HTMLElement | null> }) {
   const { t } = useLang();
-  const [entries, setEntries] = useState<Entry[]>([]);
+  // null until the bridge has been read: the build's HTML is made before any bridge runs.
+  const [entries, setEntries] = useState<Entry[] | null>(null);
 
   useEffect(() => {
     // In the order the bridge first saw them (c1, c2, …): a part that appears later
@@ -80,7 +81,14 @@ export function AgentView({ scope }: { scope: RefObject<HTMLElement | null> }) {
         className="site-machine min-w-0 overflow-y-auto [overscroll-behavior:contain] [scrollbar-gutter:stable]"
         style={{ height: "24rem" }}
       >
-        {entries.length === 0 ? (
+        {entries === null ? (
+          <p className="m-0 font-mono text-xs text-ink-muted">
+            {t(
+              "The snapshot is read from the running page: open it in a browser, or call window.agent.snapshot() there.",
+              "Øyeblikksbildet leses fra siden mens den kjører: åpne den i en nettleser, eller kall window.agent.snapshot() der.",
+            )}
+          </p>
+        ) : entries.length === 0 ? (
           <p className="m-0 font-mono text-xs text-ink-muted">
             {t(
               "Nothing from this preview is in the agent's snapshot. It only displays, so an agent has nothing to read or call on it; it works from the data you pass instead.",

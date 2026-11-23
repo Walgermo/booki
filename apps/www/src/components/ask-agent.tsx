@@ -103,7 +103,9 @@ export function AskAgent() {
           {t("Tell the agent what to do", "Si hva agenten skal gjøre")}
         </label>
         <div className="flex flex-wrap gap-2">
+          {/* The person's instruction to the agent: not a field the agent fills in itself. */}
           <input
+            data-agent-hidden=""
             id="ask-agent"
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}

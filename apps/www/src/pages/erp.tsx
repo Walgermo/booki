@@ -667,7 +667,9 @@ function Erp() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <label className="site-label flex items-center gap-2 whitespace-nowrap">
               Logget inn som
+              {/* Who is signed in is the person's to choose: an agent never switches identity. */}
               <select
+                data-agent-hidden=""
                 className="h-11 rounded-[var(--bk-radius-sm)] border border-input bg-card px-3 text-base text-foreground md:h-10 md:text-sm"
                 value={actor}
                 onChange={(event) => setActor(event.target.value)}
@@ -691,7 +693,7 @@ function Erp() {
               <div key={group} className="erp-nav__group" role="group" aria-label={GROUP_LABEL[group]}>
                 <span className="erp-nav__label">{GROUP_LABEL[group]}</span>
                 {SCREENS.filter((item) => item.group === group).map((item) => (
-                  <button
+                  <GateButton
                     key={item.id}
                     type="button"
                     className="site-nav-link site-text-button"
@@ -700,7 +702,7 @@ function Erp() {
                     onClick={() => setScreen(item.id)}
                   >
                     {item.title}
-                  </button>
+                  </GateButton>
                 ))}
               </div>
             ))}
@@ -718,8 +720,7 @@ function Erp() {
                   .sort((a, b) => Number(b.open) - Number(a.open))
                   .map((item) => (
                     <li key={item.id}>
-                      <button
-                        type="button"
+                      <GateButton
                         className="erp-queue__row"
                         data-open={item.open ? "" : undefined}
                         disabled={running}
@@ -730,7 +731,7 @@ function Erp() {
                         <span aria-hidden className="erp-queue__go">
                           →
                         </span>
-                      </button>
+                      </GateButton>
                     </li>
                   ))}
               </ul>
