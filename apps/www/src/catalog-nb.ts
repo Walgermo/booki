@@ -108,7 +108,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "document-signoff": {
     description:
-      "Signeringslinjen som avslutter et arbeidspapir: utført, gjennomgått, godkjent, hver bundet til versjonen som ble signert. Åpne punkter følger signaturen; en senere endring markerer den, men trekker den aldri tilbake.",
+      "Signeringslinjen som avslutter et arbeidspapir: utført, gjennomgått, godkjent, hver bundet til versjonen som ble signert. Åpne punkter følger signaturen som standard; et firma kan sette blockOpenPoints for å nekte signering til de er lukket. En senere endring markerer den, men trekker den aldri tilbake.",
   },
   "sheet-stack": {
     description:
