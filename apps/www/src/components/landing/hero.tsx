@@ -29,6 +29,11 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
           text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
           mark={t("agentic", "agentisk")}
+          // Booki is for more than an ERP: the last word turns through the systems its controls cover.
+          rotate={t(
+            "ERP|invoicing tool|payments app|audit software|expense app",
+            "ERP-system|fakturasystem|betalingsløsning|revisjonsverktøy|utleggssystem",
+          ).split("|")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
