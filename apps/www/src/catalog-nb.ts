@@ -11,7 +11,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   examples: {
     title: "Eksempler",
     description:
-      "Én faktura på et vanlig skjema og på Booki, kontrollene i ulike oppsett, og en kontroll du lager selv.",
+      "Én faktura på et vanlig skjema og på Booki, kontrollene i ulike oppsett, og en kontroll dere lager selv.",
   },
   demo: {
     title: "Demo",
@@ -78,13 +78,14 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "ledger-table": {
     description:
-      "Saldobalanse der du kan drille ned til en konto og dens bilag. Skrivebeskyttet, og begrenset for en agent.",
+      "Saldobalanse der dere kan drille ned til en konto og dens bilag. Skrivebeskyttet, og begrenset for en agent.",
   },
   "aged-balances": {
     description: "Kundefordringer eller leverandørgjeld etter alder. En agent spør hvilke poster som har forfalt.",
   },
   "vat-return": {
-    description: "En mva-melding regnet ut fra et oppsett du leverer. En agent kontrollerer den; en person sender inn.",
+    description:
+      "En mva-melding regnet ut fra et oppsett dere leverer. En agent kontrollerer den; en person sender inn.",
   },
   "audit-workpaper": {
     description:
@@ -123,7 +124,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "kpi-stat": {
     description:
-      "Ett tall mot perioden før, med en sparkline. Du angir om en økning er positiv; agenten leser verdien, endringen og om den er gunstig.",
+      "Ett tall mot perioden før, med en sparkline. Dere angir om en økning er positiv; agenten leser verdien, endringen og om den er gunstig.",
   },
   "trend-chart": {
     description:

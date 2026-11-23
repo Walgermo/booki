@@ -259,7 +259,7 @@ export function FeaturesPage() {
             items={[
               t(
                 "A trial balance with drill-down to the account and its vouchers.",
-                "En saldobalanse der du kan drille ned til kontoen og bilagene.",
+                "En saldobalanse der dere kan drille ned til kontoen og bilagene.",
               ),
               t(
                 "Charts expose every period as minor units, so an agent never reads a tooltip.",
@@ -308,7 +308,7 @@ export function FeaturesPage() {
 
       <Section
         id="fit"
-        title={t("Fits the product you have", "Passer inn i produktet du har")}
+        title={t("Fits the product you have", "Passer inn i produktet dere har")}
         note={t(
           "React, Web Components, Vue, Svelte and Solid, from one definition.",
           "React, Web Components, Vue, Svelte og Solid, fra én definisjon.",
@@ -320,7 +320,7 @@ export function FeaturesPage() {
               t("Client modules ready for Server Components.", "Klientmoduler klare for Server Components."),
               t(
                 "Unstyled by default; the optional look stays inside Booki and takes your theme's colours.",
-                "Ustylet som standard; det valgfrie utseendet holder seg inne i Booki og tar fargene fra temaet ditt.",
+                "Ustylet som standard; det valgfrie utseendet holder seg inne i Booki og tar fargene fra temaet deres.",
               ),
               t(
                 "Exact conversion from decimal text in your database to whole øre, and back.",

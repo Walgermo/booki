@@ -175,7 +175,7 @@ export async function POST(request: Request) {
 const SHORTFALLS = (t: T) => [
   t(
     "The packages are at 0.1 and not on npm yet. For now you build them from the repository.",
-    "Pakkene er på 0.1 og ikke på npm ennå. Foreløpig bygger du dem fra repoet.",
+    "Pakkene er på 0.1 og ikke på npm ennå. Foreløpig bygger dere dem fra repoet.",
   ),
   t(
     "The agent bridge is pre-1.0, so its API may still change.",

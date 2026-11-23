@@ -84,7 +84,7 @@ export function AskAgent() {
         <p className="m-0 text-muted-foreground">
           {t(
             "It needs a Claude API key on the server side. For local development, put",
-            "Den trenger en Claude API-nøkkel på serveren. Lokalt legger du",
+            "Den trenger en Claude API-nøkkel på serveren. Lokalt legger dere",
           )}{" "}
           <code>ANTHROPIC_API_KEY</code> {t("in", "i")} <code>apps/www/.env.local</code>{" "}
           {t(
@@ -139,7 +139,7 @@ export function AskAgent() {
             <li key={row.id} className="grid gap-1 text-sm sm:grid-cols-[4rem_minmax(0,1fr)] sm:gap-4">
               <span className="text-muted-foreground">
                 {row.who === "you"
-                  ? t("You", "Du")
+                  ? t("You", "Dere")
                   : row.who === "agent"
                     ? "Agent"
                     : row.who === "tool"

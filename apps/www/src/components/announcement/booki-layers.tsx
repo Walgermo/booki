@@ -13,7 +13,7 @@ export function BookiLayers() {
       <div className="site-layers__stack">
         <div className="site-layers__split">
           <div className="site-layers__layer">
-            <p className="site-layers__name">{t("Your screen", "Skjermbildet ditt")}</p>
+            <p className="site-layers__name">{t("Your screen", "Skjermbildet deres")}</p>
             <ul className="site-chips" aria-label={t("Framework packages", "Rammeverkpakker")}>
               {["@booki/react", "@booki/web", "@booki/vue", "@booki/svelte", "@booki/solid"].map((name) => (
                 <li key={name} className="site-chip">
@@ -33,7 +33,7 @@ export function BookiLayers() {
             <p className="site-layers__text">
               {t(
                 "Optional. Scoped to Booki's components, in a cascade layer if you like, with a shadcn token bridge.",
-                "Valgfritt. Avgrenset til Booki-komponentene, i et cascade layer om du vil, med en shadcn-bro for tokens.",
+                "Valgfritt. Avgrenset til Booki-komponentene, i et cascade layer om dere vil, med en shadcn-bro for tokens.",
               )}
             </p>
           </div>

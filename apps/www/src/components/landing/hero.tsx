@@ -27,14 +27,14 @@ export function Hero({ agent }: { agent: LandingAgent }) {
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
         <HeroTitle
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
-          text={t("Get agentic UI for your ERP", "Få agentisk UI til ditt ERP-system")}
+          text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
           mark={t("agentic", "agentisk")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
           {t(
             `Make your code agentic with Booki. Measured on ${kpi.tasks} tasks: ${times(kpi.cheaper.median)} cheaper (${range(kpi.cheaper)}) and ${times(kpi.faster.median)} faster (${range(kpi.faster)}), with the same model.`,
-            `Gjør koden din agentisk med Booki. Målt på ${kpi.tasks} oppgaver: ${times(kpi.cheaper.median)} billigere (${range(kpi.cheaper)}) og ${times(kpi.faster.median)} raskere (${range(kpi.faster)}), med samme modell.`,
+            `Gjør koden deres agentisk med Booki. Målt på ${kpi.tasks} oppgaver: ${times(kpi.cheaper.median)} billigere (${range(kpi.cheaper)}) og ${times(kpi.faster.median)} raskere (${range(kpi.faster)}), med samme modell.`,
           )}
         </p>
         {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 56 to the button. */}
