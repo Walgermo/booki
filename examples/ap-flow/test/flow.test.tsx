@@ -94,6 +94,11 @@ describe("supplier invoice to payment, with four people and an agent", () => {
 
     // The statement arrived: the agent suggests the matches; Nina approves them.
     await waitFor(() => expect(slot("bank-reconciliation")).not.toBeNull());
+    // The statement is open and nothing is matched: the lines carry their KIDs, and the agent sees none.
+    const kids = books().bankLines.map((line) => line.reference).filter(Boolean) as string[];
+    expect(kids.length).toBeGreaterThan(0);
+    const seen = JSON.stringify(pageAgent().snapshot());
+    for (const kid of kids) expect(seen).not.toContain(kid);
     const third = await runScriptedAgent(pageAgent());
     expect(third.did.filter((line) => line.includes("foreslo avstemming"))).toHaveLength(2);
     expect(books().matches.every((match) => match.status === "suggested" && match.source === "agent")).toBe(true);
