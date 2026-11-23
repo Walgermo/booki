@@ -15,6 +15,8 @@ import { BookiVoucher } from "@/components/bench/acc-voucher";
 import { CloseRaw } from "@/components/bench/close-raw";
 import { BookiDocError } from "@/components/bench/doc-error-acc";
 import { DocErrorRaw } from "@/components/bench/doc-error-raw";
+import { BookiForeign } from "@/components/bench/foreign-currency-acc";
+import { ForeignRaw } from "@/components/bench/foreign-currency-raw";
 import { BookiDuplicate } from "@/components/bench/duplicate-acc";
 import { DuplicateRaw } from "@/components/bench/duplicate-raw";
 import { DashboardGrid } from "@/components/bench/dashboard-grid";
@@ -316,6 +318,27 @@ export function BenchPartialVatAccPage() {
     <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
       <BookiLocaleProvider country="NO">
         <BookiPartialVat />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Foreign currency: an EUR invoice booked in NOK at the rate of its date. The plain form has no conversion. */
+export function BenchForeignRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <ForeignRaw />
+    </main>
+  );
+}
+
+export function BenchForeignAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiForeign />
       </BookiLocaleProvider>
     </main>
   );

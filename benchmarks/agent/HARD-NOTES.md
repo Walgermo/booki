@@ -2,6 +2,18 @@
 
 Factual notes for the hard-task pages. Each entry says what the Booki control does, based on reading the code in `packages/core` and `packages/react` and on the model-free dry run (`pnpm --filter agent-benchmark bench -- --dry-run --task <id>`). No model was called. Where a claim was not exercised by the scripted run, the entry says so.
 
+## Summary
+
+| Task | Trap | Raw page does | Booki page does | Booki can do it |
+| --- | --- | --- | --- | --- |
+| doc-error | The printed total (12 050,00) does not match the lines and VAT (12 500,00). | Does not catch it. The scripted agent returns the invoice with a reason. | Shows the `totals-mismatch` issue. Nothing stops a post, and the return action is not an agent action. The scripted agent holds the invoice. | partly |
+| closed-period | A voucher dated 2026-09-15 falls in a hard-closed period. | Refuses the voucher with a line of text and names no open period. The scripted agent re-dates it to October and posts. | `PeriodLock` refuses the locked date through `assertPostingAllowed`. The scripted agent re-dates it to October and posts under the page's rule. | yes |
+| duplicate | Invoice 8841 from Kontorrekvisita AS is already in the ledger. | Does not catch it. The scripted agent reads the ledger, answers and does not post. | `duplicatesOf` flags the duplicate, and the post policy refuses it. The refusal is not exercised by the scripted run, which does not press the button. | yes |
+| foreign-currency | EUR 1 000,00 is booked at the rate of the invoice date (11,7250), so the NOK amount is 11 725,00. | No conversion and no rate check. The agent types the NOK rows. | The line holds the foreign amount and the rate. The scripted agent works out the NOK amount itself, and no control looks up the rate. | partly |
+| partial-vat | Half of the input VAT (1 250,00) is not deductible. | There is no VAT column. The agent types three lines without a VAT code. | No control splits the VAT. The expected end state is reachable only with no VAT code on the lines. | partly |
+
+"Booki can do it" is about the task's end state as the verifier reads it. `yes` means the Booki page reaches it with its own controls and the scripted run shows it; `partly` means a control helps, but the agent or a person must do a step the control does not (see the section for the task).
+
 ## doc-error
 
 ### Where Booki cannot do this task / does not catch it
@@ -55,8 +67,25 @@ Invoice 7710 from Mobil og Data AS: gross 12 500,00, net 10 000,00, VAT 2 500,00
 - `/bench/partial-vat-raw` (plain page): **there is no VAT column**, so the agent cannot code a line, and the form posts exactly what is typed when debit equals credit. The rule is shown as text above the form. The scripted run enters the three lines and posts; the dry run passes all four checks.
 - `/bench/partial-vat-acc` (Booki): the rule text is shown above the composer. The scripted run enters the three lines without a VAT code through the bridge (`setDate`, three `addLine` calls, `assertPostable`, `press`) and the post goes through the step policy; the dry run passes all four checks.
 
+## foreign-currency
+
+### Where Booki cannot do the task / does not help
+
+Invoice NC-5531 from Nordic Cloud Ltd is dated 2026-10-14 and is EUR 1 000,00. The rate for that date is 11,7250 NOK per EUR (the table's rate for 2026-10-14), so the voucher is 11 725,00 kr on 6800 debit and 2400 credit, with the currency and the rate recorded.
+
+- `/bench/foreign-currency-acc` (Booki, `VoucherComposer`):
+  - **The composer can record a foreign amount and a rate on a line.** The agent action `setForeign` (`packages/primitives/src/voucher-composer.ts`) calls `setLineForeign` in `packages/core/src/voucher.ts`, which converts with `convertMinor` in `packages/core/src/fx.ts` and stores `foreign` (currency, amount in minor units, `rateScaled`). Read from the code, not exercised: the scripted run does not call `setForeign`.
+  - **The scripted run sends the NOK base itself.** It sends both lines in one `setLines`, with the foreign object and the NOK figure of 11 725,00 kr on each line. `assertPostable` then checks the NOK base against the foreign amount at the rate (`assertForeignAmount`), so a wrong NOK figure is refused at the composer. The NOK arithmetic is the agent's, not the control's.
+  - **No control looks up the rate.** `findRate` in `packages/core/src/fx.ts` picks the rate on or before a date, but no Booki control calls it (checked with a grep over `packages/primitives`, `packages/react` and `packages/core`). The page shows the rate table as a `DataTable`, and the agent reads the rate from it.
+  - **The currency select is not connected to the lines.** `CurrencySelect` on the page records the voucher currency for display only; the composer's line currency comes from the `foreign` object on each line. Changing the select does not change any line, and the page does not check the two against each other.
+  - **The rule does not check the rate.** The post rule checks balance, date and the 50 000 kr limit. A line at another rate posts under it, as long as the composer's own check passes.
+  - **The mirror for the end state.** The page writes `rateScaled` as the rate on the first foreign line, or `null`, and the line's foreign amount and currency as flat fields. This is a copy of what the composer holds, not a conversion.
+- `/bench/foreign-currency-raw` (plain page): **no conversion and no rate check.** The currency, foreign amount and rate are text fields the page keeps and never reads. The page posts the NOK rows as typed when debit equals credit. The scripted agent reads the rate from the table, types 11725,00 on both rows, and posts; the dry run passes all four checks.
+
 ## Dry run
 
 `pnpm --filter agent-benchmark bench -- --dry-run --task doc-error` and `--task duplicate`: every page line prints `ok` for an untouched page failing its checks, for the scripted pass, and for the bridge and tool-error checks. No model was called.
 
 `--task closed-period` and `--task partial-vat` were run the same way, with `--dry-run` and no key. Each page printed `ok` for an untouched page failing its checks and for the scripted pass, and every check passed.
+
+`--task foreign-currency` was run the same way. Both pages printed `ok` for an untouched page failing its checks, for the scripted pass, and for the bridge and tool-error checks; every end-state check passed on both.

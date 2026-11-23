@@ -70,6 +70,26 @@ run that hits the cap is a failed run.
 The texts are in `src/tasks.ts`. The system prompt is one neutral sentence and
 names no tool or product.
 
+## Hard tasks (written before Booki ran them)
+
+Five harder tasks were written before any run of them: `doc-error`,
+`closed-period`, `duplicate`, `foreign-currency` and `partial-vat`. Each has a
+raw page (`/bench/<id>-raw`) and a Booki page (`/bench/<id>-acc`). Their checks
+read the end state the page writes to `window` (`src/verify-hard.ts`), and the
+checks are unit-tested in `src/verify-hard.test.ts`
+(`pnpm --filter agent-benchmark test`).
+
+- The task ids, page paths, fixture numbers, window-state shapes, expected end
+  states and check names are fixed as of the commit that adds them. They must
+  not be tuned against any result. A change needs a new task id, not an edit.
+- No runs exist yet. `RUNS.md` has no row for these tasks, and no number is
+  claimed for them.
+- They are not part of `pnpm proof` or the head-to-head (`h2h`).
+- The model-free dry run exercises the pages with scripted agents, in a local
+  browser, and no model is called: `pnpm --filter agent-benchmark bench -- --dry-run --task <id>`.
+- What Booki can and cannot do on each task, and where its controls do not
+  help, is in [HARD-NOTES.md](HARD-NOTES.md).
+
 ## Pages
 
 | Page | Built from | Tools |

@@ -847,6 +847,74 @@ export async function scriptPartialVatAcc(_session: Session, rec: Recorder): Pro
   return PARTIAL_VAT_ANSWER;
 }
 
+// ---------------------------------------------------------------------------
+// Hard task: foreign currency. The EUR invoice is booked at the rate of its
+// date, 11,7250 NOK per EUR, as 11 725,00 kr in NOK on both lines.
+// ---------------------------------------------------------------------------
+
+const FOREIGN_ANSWER =
+  "Faktura NC-5531 fra Nordic Cloud Ltd, EUR 1 000,00 til kurs 11,7250 fra 14.10.2026, bokført som 11 725,00 kr debet 6800 og kredit 2400. Bilaget er datert 2026-10-14.";
+
+/** The plain page: the agent reads the rate, works the NOK amount out itself, and types the two rows. */
+export async function scriptForeignRaw(session: Session, rec: Recorder): Promise<string> {
+  const b = browser(session, rec);
+  const page = await b.look();
+  if (!page.includes("11,7250")) throw new Error("The 14.10.2026 rate is not on the page.");
+  await b.type(refIn(page, /- textbox "Bilagsdato" \[ref=/), "Bilagsdato", "2026-10-14");
+  await b.type(refIn(page, /- textbox "Valuta" \[ref=/), "Valuta", "EUR");
+  await b.type(refIn(page, /- textbox "Beløp i valuta" \[ref=/), "Beløp i valuta", "1000,00");
+  await b.type(refIn(page, /- textbox "Kurs" \[ref=/), "Kurs", "11,7250");
+  // Account, debit, credit on each row: the inputs have no names.
+  const unnamed = /- textbox \[ref=/;
+  await b.type(refIn(page, unnamed, 0), "Konto, linje 1", "6800");
+  await b.type(refIn(page, unnamed, 1), "Debet, linje 1", "11725,00");
+  await b.type(refIn(page, unnamed, 3), "Konto, linje 2", "2400");
+  await b.type(refIn(page, unnamed, 5), "Kredit, linje 2", "11725,00");
+  await b.click(refIn(page, /button "Bokfør bilag" \[ref=/), "Bokfør bilag");
+  const after = await b.look();
+  if (!after.includes("Bilaget er bokført.")) throw new Error("The voucher was not posted.");
+  return FOREIGN_ANSWER;
+}
+
+/**
+ * The Booki page: each line carries the EUR amount and the rate in `foreign`,
+ * and the NOK base on the line. The composer checks that base against the
+ * foreign amount at assertPostable. The lines go in with one `setLines`, since
+ * the script does not read line ids back from `addLine`; the base amounts are
+ * the agent's own NOK figures (11 725,00 kr), typed with the rate.
+ */
+export async function scriptForeignAcc(_session: Session, rec: Recorder): Promise<string> {
+  const snapshot = JSON.parse(await rec.call("snapshot")) as BridgeSnapshot;
+  const voucher = refFrom(snapshot, "voucher-composer");
+  const foreign = { currency: "EUR", amountMinor: 100_000, rateScaled: 11_725_000 };
+  await rec.call(
+    "act",
+    {
+      steps: [
+        {
+          ref: refFrom(snapshot, "financial-date"),
+          action: "setDate",
+          args: ["2026-10-14"],
+        },
+        {
+          ref: voucher,
+          action: "setLines",
+          args: [
+            [
+              { id: "l1", account: "6800", debitMinor: 1_172_500, creditMinor: 0, foreign },
+              { id: "l2", account: "2400", debitMinor: 0, creditMinor: 1_172_500, foreign },
+            ],
+          ],
+        },
+        { ref: voucher, action: "assertPostable", args: [] },
+        { ref: refFrom(snapshot, "button"), action: "press", args: [] },
+      ],
+    },
+    true,
+  );
+  return FOREIGN_ANSWER;
+}
+
 /** Keyed by page id, or "page:strategy" where a page has several strategies. */
 export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promise<string | void>> = {
   semantic: scriptInvoiceSemantic,
@@ -877,6 +945,8 @@ export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promis
   "closed-period-acc": scriptClosedPeriodAcc,
   "partial-vat-raw": scriptPartialVatRaw,
   "partial-vat-acc": scriptPartialVatAcc,
+  "foreign-currency-raw": scriptForeignRaw,
+  "foreign-currency-acc": scriptForeignAcc,
 };
 
 export const scriptFor = (page: string, strategy: string) =>
