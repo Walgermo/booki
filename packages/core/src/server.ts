@@ -27,6 +27,7 @@
 export { type AgentClaims, type AgentGrant, issueAgentToken, verifyAgentToken } from "./agent-token.js";
 import { assertApproved, decide, type ApprovalDecision, type ApprovalLevel, type ApprovalRequest } from "./approval.js";
 import { assertReadyToClose, type CloseSummary, type CloseTask } from "./close.js";
+import { signDocument, type SignableDocument, type SignoffLevel, type SignoffRules } from "./document-signoff.js";
 import { confirmFinding, type Finding } from "./findings.js";
 import { finalizeInvoice, type Invoice } from "./invoice.js";
 import { isIsoDate } from "./iso-date.js";
@@ -398,6 +399,32 @@ export function guardClosePeriod(context: GuardContext, input: { tasks: CloseTas
 /** Confirm an audit finding: a person's, recorded under their id. Warnings (`findingIssues`) do not refuse it. */
 export function guardConfirmFinding(context: GuardContext, input: { finding: Finding; at: string }): Verdict<Finding> {
   return guard(context, "finding.confirm", () => confirmFinding(input.finding, context.actor!.id, input.at));
+}
+
+const SIGNOFF_PERMISSION = {
+  performed: "audit.prepare",
+  reviewed: "audit.review",
+  approved: "audit.sign-off",
+} as const satisfies Record<SignoffLevel, Permission>;
+
+/**
+ * Sign a level of a document: a person's, recorded under their id. `blockOpenPoints` refuses it while points are open
+ * (default: they go with the signature). An agent is refused at every level.
+ */
+export function guardSignDocument(
+  context: GuardContext,
+  input: { document: SignableDocument; level: SignoffLevel; at: string } & SignoffRules,
+): Verdict<SignableDocument> {
+  // An unknown level has no permission of its own: check the sign-off permission, and let signDocument name the level.
+  const known = Object.prototype.hasOwnProperty.call(SIGNOFF_PERMISSION, input.level);
+  const permission: Permission = known ? SIGNOFF_PERMISSION[input.level] : "audit.sign-off";
+  const actor = context.actor;
+  const name = actor?.name;
+  return guard({ ...context, personOnly: [...(context.personOnly ?? []), permission] }, permission, () =>
+    signDocument(input.document, input.level, { id: actor!.id, ...(name ? { name } : {}) }, input.at, {
+      blockOpenPoints: input.blockOpenPoints,
+    }),
+  );
 }
 
 /** Finalize a sales invoice under a number: no issues, number unused. */

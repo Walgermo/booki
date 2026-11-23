@@ -4,9 +4,11 @@
  * A signature belongs to the version that was signed. A later save does not
  * take it away: it marks it "changed after sign-off", and it stays until a
  * person withdraws it (with a reason) or signs again. Open points never block
- * a signature; they are kept with it, so the record shows what the signer
- * knew. Only technical facts stop a signature: unsaved or conflicting work, or
- * a document with nothing in it. Who may sign is the caller's (roles,
+ * a signature unless the company sets `blockOpenPoints`; then only an empty
+ * list lets a signature through, and the points stay with the record either
+ * way, so it shows what the signer knew. Technical facts always stop a
+ * signature: unsaved or conflicting work, or a document with nothing in it.
+ * Withdrawing a signature is never blocked. Who may sign is the caller's (roles,
  * `@booki/core/server`); the four-eyes rule is checked here, because it is
  * about the document's own history.
  */
@@ -47,6 +49,12 @@ export type SignableDocument = {
   basisChanged?: SignoffLevel[];
 };
 
+/** Company rules for signing. Every rule is off by default. */
+export type SignoffRules = {
+  /** Refuse a signature while the document has open points. Default false: they go with the signature. */
+  blockOpenPoints?: boolean;
+};
+
 export type SignoffMark = "unsigned" | "signed" | "changed-after" | "basis-changed";
 
 export type LevelState = {
@@ -77,29 +85,32 @@ export function signoffStates(document: SignableDocument): LevelState[] {
   });
 }
 
-/** What stops a signature right now: technical facts only, as message codes. Empty when it can be signed. */
-export function signObstacles(document: SignableDocument): MessageCode[] {
+/** What stops a signature right now, as message codes. Empty when it can be signed. */
+export function signObstacles(document: SignableDocument, rules: SignoffRules = {}): MessageCode[] {
   const obstacles: MessageCode[] = [];
   if (document.saveState === "unsaved") obstacles.push("signoff.unsaved");
   if (document.saveState === "pending") obstacles.push("signoff.saving");
   if (document.saveState === "conflict") obstacles.push("signoff.conflict");
   if (document.hasContent === false) obstacles.push("signoff.empty");
+  if (rules.blockOpenPoints && document.openPoints.length > 0) obstacles.push("signoff.open-points");
   return obstacles;
 }
 
 /**
  * Sign a level. Refused for a technical obstacle, a missing earlier level, a
  * level already signed on this version, or (for review and approval) the
- * person who performed the work. The open points go with the signature.
+ * person who performed the work. The open points go with the signature,
+ * unless `rules.blockOpenPoints` refuses it while any are open.
  */
 export function signDocument(
   document: SignableDocument,
   level: SignoffLevel,
   signer: { id: string; name?: string },
   at: string,
+  rules: SignoffRules = {},
 ): SignableDocument {
-  const [obstacle] = signObstacles(document);
-  if (obstacle) throw new BookiError(obstacle, { id: document.id });
+  const [obstacle] = signObstacles(document, rules);
+  if (obstacle) throw new BookiError(obstacle, { id: document.id, count: document.openPoints.length });
   const index = SIGNOFF_LEVELS.indexOf(level);
   if (index < 0)
     throw new BookiError("signoff.unknown-level", { level: String(level), levels: SIGNOFF_LEVELS.join(", ") });

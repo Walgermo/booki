@@ -190,6 +190,7 @@ export const EN = {
   "signoff.reason-required":
     "Give a reason of at least {min} characters for withdrawing: it is kept with the signature.",
   "signoff.not-signed": '"{level}" is not signed, so there is nothing to withdraw.',
+  "signoff.open-points": 'Document "{id}" still has {count} open point(s). Close them before signing.',
   "sheets.no-sheet": 'No open sheet "{key}". Open: {keys}.',
   "money.not-decimal": '"{value}" is not decimal text in major units, like "1234.50".',
   "money.too-precise":
