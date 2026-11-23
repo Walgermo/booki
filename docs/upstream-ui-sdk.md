@@ -1,7 +1,9 @@
 # Upstream: ui-sdk issues Booki works around
 
-Two gaps in `@ui-sdk/*`, present in 0.1.0-beta.13 and still in beta.14. Both
-are reported. When one is fixed upstream, remove the workaround named under it.
+Two gaps in `@ui-sdk/*`, present in 0.1.0-beta.13 and still in beta.16. Both
+are reported and fixed upstream (vercel-labs/ui#1043 and #1042, merged after
+beta.16 was published), so the next release should carry them. When Booki moves
+to a release that has a fix, remove the workaround named under it.
 
 ## 1. `SlotProps` and the types it rests on are not exported from `@ui-sdk/core`
 

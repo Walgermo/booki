@@ -44,14 +44,14 @@
     "@booki/primitives": "workspace:*"
   },
   "peerDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.14",
-    "@ui-sdk/solid": "0.1.0-beta.14",
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/solid": "0.1.0-beta.16",
     "solid-js": "^2.0.0",
     "@solidjs/web": "^2.0.0"
   },
   "devDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.14",
-    "@ui-sdk/solid": "0.1.0-beta.14",
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/solid": "0.1.0-beta.16",
     "solid-js": "^2.0.0",
     "@solidjs/web": "^2.0.0",
     "tsup": "^8.5.0",

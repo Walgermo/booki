@@ -12,6 +12,6 @@ import { AmountField, VoucherComposer, BankReconciliation, createBookiAgent } fr
 - `AgentCursor`, `AgentPresence`, `useAgentProposal` and `AgentProposal` make the agent's work visible.
 - A control of your own: define its primitive with `definePrimitive` and `createChange`, then create its parts with `createParts`, all exported from here. A Booki control under your own names: `createParts` with a definition from `@booki/primitives`.
 
-Requires React 19. Peer dependencies: `@ui-sdk/core` and `@ui-sdk/react` 0.1.0-beta.14. The agent catalog is in `docs/llms.txt`.
+Requires React 19. Peer dependencies: `@ui-sdk/core` and `@ui-sdk/react` 0.1.0-beta.16. The agent catalog is in `docs/llms.txt`.
 
 Docs and source: https://github.com/Walgermo/booki
