@@ -1,6 +1,7 @@
 import type { ReconciliationMatch } from "@booki/core/reconciliation";
 import { BankReconciliation } from "@booki/react";
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { BANK_LINES, OPEN_POSTS } from "./workflow-data";
 
@@ -19,7 +20,7 @@ export function BookiReconcile() {
   const [matches, setMatches] = useState<ReconciliationMatch[]>([]);
 
   // For the benchmark's end-state checks only.
-  (window as unknown as { __accReconcile?: BookiReconcileState }).__accReconcile = { matches };
+  useEndState<BookiReconcileState>("__accReconcile", { matches });
 
   return (
     <div className="acc-invoice">

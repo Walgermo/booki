@@ -30,21 +30,25 @@ function firstTimeThisSession(): boolean {
  * place in `--i`; the stagger and the reduced-motion path live in globals.css.
  * `mark` names the word the agent's cursor starts from (`markRef` is its element).
  */
-export function HeroTitle({
-  text,
-  className,
-  mark,
-  markRef,
-}: {
+export function HeroTitle(props: TitleProps) {
+  // Another text (another language) is another title: measured again, and at rest.
+  return <Title key={props.text} {...props} />;
+}
+
+type TitleProps = {
   text: string;
   className?: string;
   mark?: string;
   /** The marked word's element, for the agent's cursor to start from. */
   markRef?: Ref<HTMLSpanElement>;
-}) {
+};
+
+function Title({ text, className, mark, markRef }: TitleProps) {
   const [play, setPlay] = useState(firstTimeThisSession);
   // Exposed for the demo below: how long until the title has landed.
-  titleLanded.ms = play ? 1100 : 250;
+  useLayoutEffect(() => {
+    titleLanded.ms = play ? 1100 : 250;
+  }, [play]);
   const [size, setSize] = useState<number | null>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const words = text.split(" ");
@@ -75,7 +79,7 @@ export function HeroTitle({
     watch.observe(box);
     void document.fonts?.ready.then(fit);
     return () => watch.disconnect();
-  }, [text]);
+  }, []);
 
   return (
     <h1

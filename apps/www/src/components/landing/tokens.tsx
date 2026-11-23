@@ -1,5 +1,5 @@
 import { elementOf } from "@ui-sdk/react/observe";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { ariaTree } from "./aria-tree";
 import { BookiInvoice } from "./acc-invoice";
@@ -139,7 +139,9 @@ export function TokenStory({ agent }: { agent: LandingAgent }) {
   const [fin, setAcc] = useState<Call[]>([]);
   // Read by the run without restarting it when the language changes.
   const langRef = useRef(lang);
-  langRef.current = lang;
+  useLayoutEffect(() => {
+    langRef.current = lang;
+  });
 
   // The company's payment rule: an agent may pay a balanced invoice under
   // $5,000 on its own. Anything else goes to a person.

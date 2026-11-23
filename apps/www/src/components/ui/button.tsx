@@ -1,7 +1,7 @@
 import {
-  cloneElement,
   isValidElement,
   type ButtonHTMLAttributes,
+  type ElementType,
   type ReactElement,
   type ReactNode,
   type Ref,
@@ -64,11 +64,15 @@ function Button({
       className?: string;
       ref?: Ref<HTMLElement>;
     }>;
-    return cloneElement(child, {
-      className: cn(classes, child.props.className),
-      ref: ref as Ref<HTMLElement>,
-      ...props,
-    });
+    const Child = child.type as ElementType;
+    return (
+      <Child
+        {...child.props}
+        className={cn(classes, child.props.className)}
+        ref={(ref as Ref<HTMLElement>) ?? child.props.ref}
+        {...props}
+      />
+    );
   }
 
   // The ui-sdk Button, so every button on the site is a control an agent can

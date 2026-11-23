@@ -2,7 +2,8 @@ import { invoiceIssues, invoiceTotals, type Invoice, type InvoiceTotals } from "
 import type { AccountOption } from "@booki/core/voucher";
 import { AccountPicker, InvoiceEditor } from "@booki/react";
 import { Button } from "@ui-sdk/react/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEndState } from "./end-state";
 
 import { setStepPolicy } from "@/agent";
 
@@ -46,7 +47,9 @@ export function BookiSalesInvoice() {
   const [created, setCreated] = useState(false);
   const [createdBy, setCreatedBy] = useState("");
   const latest = useRef(invoice);
-  latest.current = invoice;
+  useLayoutEffect(() => {
+    latest.current = invoice;
+  });
   const grantedBy = useRef<string | null>(null);
 
   useEffect(
@@ -61,13 +64,13 @@ export function BookiSalesInvoice() {
   );
 
   // For the benchmark's end-state checks only.
-  (window as unknown as { __accSalesInvoice?: BookiSalesInvoiceState }).__accSalesInvoice = {
+  useEndState<BookiSalesInvoiceState>("__accSalesInvoice", {
     customer,
     invoice,
     totals: safeTotals(invoice),
     created,
     createdBy,
-  };
+  });
 
   return (
     <div className="acc-invoice">

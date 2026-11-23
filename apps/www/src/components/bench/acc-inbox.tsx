@@ -1,6 +1,7 @@
 import { supplierInvoiceIssues, type SupplierInvoice } from "@booki/core/supplier-invoice";
 import { SupplierInvoiceInbox } from "@booki/react";
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { BOOKED, INBOX, INBOX_ACCOUNTS, toSupplierInvoice } from "./workflow-data";
 
@@ -35,11 +36,11 @@ export function BookiInbox() {
 
   // For the benchmark's end-state checks only.
   const context = { inbox: invoices, booked: BOOKED_LIST, chart: CHART };
-  (window as unknown as { __accInbox?: BookiInboxState }).__accInbox = {
+  useEndState<BookiInboxState>("__accInbox", {
     invoices,
     issues: Object.fromEntries(invoices.map((invoice) => [invoice.id, supplierInvoiceIssues(invoice, context)])),
     decided: invoices.filter((invoice) => !["new", "coded"].includes(invoice.status)).map((invoice) => invoice.id),
-  };
+  });
 
   return (
     <div className="acc-invoice">
