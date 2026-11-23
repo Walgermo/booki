@@ -2,6 +2,10 @@ import { BookiLocaleProvider } from "@booki/react";
 import { useEffect, useRef } from "react";
 
 import { BookiClose } from "@/components/bench/acc-close";
+import { BookiClosedPeriod } from "@/components/bench/closed-period-acc";
+import { ClosedPeriodRaw } from "@/components/bench/closed-period-raw";
+import { BookiPartialVat } from "@/components/bench/partial-vat-acc";
+import { PartialVatRaw } from "@/components/bench/partial-vat-raw";
 import { BookiDashboard } from "@/components/bench/acc-dashboard";
 import { BookiInbox } from "@/components/bench/acc-inbox";
 import { BookiReconcile } from "@/components/bench/acc-reconcile";
@@ -270,6 +274,48 @@ export function BenchDuplicateAccPage() {
     <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
       <BookiLocaleProvider country="NO">
         <BookiDuplicate />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Closed period: a voucher dated in a locked period is refused on the plain page, and the agent posts in October. */
+export function BenchClosedPeriodRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <ClosedPeriodRaw />
+    </main>
+  );
+}
+
+export function BenchClosedPeriodAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiClosedPeriod />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Partial VAT: the phone bill is half private, so the plain form has no VAT code and no split. */
+export function BenchPartialVatRawPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <PartialVatRaw />
+    </main>
+  );
+}
+
+export function BenchPartialVatAccPage() {
+  useBenchTitle("Registrer bilag");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiPartialVat />
       </BookiLocaleProvider>
     </main>
   );

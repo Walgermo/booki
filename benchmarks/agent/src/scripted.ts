@@ -724,6 +724,129 @@ export async function scriptDuplicateAcc(_session: Session, rec: Recorder): Prom
   return DUPLICATE_ANSWER;
 }
 
+// ---------------------------------------------------------------------------
+// Hard tasks: closed period and partial VAT. Both post, in the place the task
+// allows: the closed-period voucher moves to October, the partial-VAT voucher
+// is entered as three lines without a VAT code.
+// ---------------------------------------------------------------------------
+
+const CLOSED_PERIOD_ANSWER =
+  "Bilaget datert 2026-09-15 ble ikke bokført, fordi september er låst. Jeg bokførte det i oktober 2026 (2026-10-01) med teksten Flyttet fra 2026-09-15, perioden er stengt.";
+const PARTIAL_VAT_ANSWER =
+  "Bilag bokført 2026-10-20: 6900 Telefon 11 250,00 debet, 2710 inngående mva 1 250,00 debet, 2400 kredit 12 500,00. Halvparten av mva er ikke fradragsberettiget, og bilaget er ført uten mvakode.";
+
+/** The plain page: the agent sees the period table, tries a locked date, then posts in October. */
+export async function scriptClosedPeriodRaw(session: Session, rec: Recorder): Promise<string> {
+  const b = browser(session, rec);
+  const page = await b.look();
+  if (!/cell "2026-09"[\s\S]*?cell "Hard lukket"/.test(page)) throw new Error("September is not shown as locked.");
+  await b.type(refIn(page, /- textbox "Bilagsdato" \[ref=/), "Bilagsdato", "2026-09-15");
+  // Account, debit, credit on each row: the inputs have no names.
+  const unnamed = /- textbox \[ref=/;
+  await b.type(refIn(page, unnamed, 0), "Konto, linje 1", "6800");
+  await b.type(refIn(page, unnamed, 1), "Debet, linje 1", "12500,00");
+  await b.type(refIn(page, unnamed, 3), "Konto, linje 2", "2400");
+  await b.type(refIn(page, unnamed, 5), "Kredit, linje 2", "12500,00");
+  await b.click(refIn(page, /button "Opprett bilag" \[ref=/), "Opprett bilag");
+  const refused = await b.look();
+  if (!refused.includes("Perioden er stengt for bokføring.")) throw new Error("The locked period was not refused.");
+  await b.type(refIn(page, /- textbox "Bilagsdato" \[ref=/), "Bilagsdato", "2026-10-01");
+  await b.type(
+    refIn(page, /- textbox "Bilagstekst" \[ref=/),
+    "Bilagstekst",
+    "Flyttet fra 2026-09-15, perioden er stengt",
+  );
+  await b.click(refIn(page, /button "Opprett bilag" \[ref=/), "Opprett bilag");
+  const after = await b.look();
+  if (!after.includes("Bilaget er bokført.")) throw new Error("The voucher was not posted.");
+  return CLOSED_PERIOD_ANSWER;
+}
+
+/** The Booki page: the agent tries the locked date with the period lock, then posts in October with the bridge. */
+export async function scriptClosedPeriodAcc(_session: Session, rec: Recorder): Promise<string> {
+  const snapshot = JSON.parse(await rec.call("snapshot")) as BridgeSnapshot;
+  const date = refFrom(snapshot, "financial-date");
+  const voucher = refFrom(snapshot, "voucher-composer");
+  await rec.call(
+    "act",
+    {
+      steps: [
+        { ref: date, action: "setDate", args: ["2026-09-15"] },
+        {
+          ref: refFrom(snapshot, "period-lock"),
+          action: "assertPostingAllowed",
+          args: ["2026-09-15"],
+        },
+      ],
+    },
+    true,
+  );
+  await rec.call(
+    "act",
+    {
+      steps: [
+        { ref: date, action: "setDate", args: ["2026-10-01"] },
+        {
+          ref: refFrom(snapshot, "input"),
+          action: "setValue",
+          args: ["Flyttet fra 2026-09-15, perioden er stengt"],
+        },
+        { ref: voucher, action: "addLine", args: ["6800", null, 1_250_000, 0] },
+        { ref: voucher, action: "addLine", args: ["2400", null, 0, 1_250_000] },
+        { ref: voucher, action: "assertPostable", args: [] },
+        { ref: refFrom(snapshot, "button"), action: "press", args: [] },
+      ],
+    },
+    true,
+  );
+  return CLOSED_PERIOD_ANSWER;
+}
+
+/** The plain page: the three lines with no VAT code, typed as they stand, then posted. */
+export async function scriptPartialVatRaw(session: Session, rec: Recorder): Promise<string> {
+  const b = browser(session, rec);
+  const page = await b.look();
+  if (!page.includes("halvt privat")) throw new Error("The partial-VAT rule is not on the page.");
+  await b.type(refIn(page, /- textbox "Bilagsdato" \[ref=/), "Bilagsdato", "2026-10-20");
+  // Account, debit, credit on each row, rows 1 to 3 of the five: the inputs have no names.
+  const unnamed = /- textbox \[ref=/;
+  await b.type(refIn(page, unnamed, 0), "Konto, linje 1", "6900");
+  await b.type(refIn(page, unnamed, 1), "Debet, linje 1", "11250,00");
+  await b.type(refIn(page, unnamed, 3), "Konto, linje 2", "2710");
+  await b.type(refIn(page, unnamed, 4), "Debet, linje 2", "1250,00");
+  await b.type(refIn(page, unnamed, 6), "Konto, linje 3", "2400");
+  await b.type(refIn(page, unnamed, 8), "Kredit, linje 3", "12500,00");
+  await b.click(refIn(page, /button "Opprett bilag" \[ref=/), "Opprett bilag");
+  const after = await b.look();
+  if (!after.includes("Bilaget er bokført.")) throw new Error("The voucher was not posted.");
+  return PARTIAL_VAT_ANSWER;
+}
+
+/** The Booki page: the three lines through the composer, with no VAT code, then the post. */
+export async function scriptPartialVatAcc(_session: Session, rec: Recorder): Promise<string> {
+  const snapshot = JSON.parse(await rec.call("snapshot")) as BridgeSnapshot;
+  const voucher = refFrom(snapshot, "voucher-composer");
+  await rec.call(
+    "act",
+    {
+      steps: [
+        {
+          ref: refFrom(snapshot, "financial-date"),
+          action: "setDate",
+          args: ["2026-10-20"],
+        },
+        { ref: voucher, action: "addLine", args: ["6900", null, 1_125_000, 0] },
+        { ref: voucher, action: "addLine", args: ["2710", null, 125_000, 0] },
+        { ref: voucher, action: "addLine", args: ["2400", null, 0, 1_250_000] },
+        { ref: voucher, action: "assertPostable", args: [] },
+        { ref: refFrom(snapshot, "button"), action: "press", args: [] },
+      ],
+    },
+    true,
+  );
+  return PARTIAL_VAT_ANSWER;
+}
+
 /** Keyed by page id, or "page:strategy" where a page has several strategies. */
 export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promise<string | void>> = {
   semantic: scriptInvoiceSemantic,
@@ -750,6 +873,10 @@ export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promis
   "doc-error-acc": scriptDocErrorAcc,
   "duplicate-raw": scriptDuplicateRaw,
   "duplicate-acc": scriptDuplicateAcc,
+  "closed-period-raw": scriptClosedPeriodRaw,
+  "closed-period-acc": scriptClosedPeriodAcc,
+  "partial-vat-raw": scriptPartialVatRaw,
+  "partial-vat-acc": scriptPartialVatAcc,
 };
 
 export const scriptFor = (page: string, strategy: string) =>
