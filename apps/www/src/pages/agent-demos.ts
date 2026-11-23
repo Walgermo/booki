@@ -537,11 +537,11 @@ export const AGENT_DEMOS: Record<string, Demo> = {
       [{ title: "Leverandør uten rammeavtale", category: "compliance", basis: "reported" }],
       b("Drafted a finding on what a party said.", "Skrev et utkast til funn ut fra det en part sa."),
     ),
-    refused("audit-findings", "editFinding", ["F-3", { title: "Nærstående part" }]),
+    refused("audit-findings", "editFinding", ["F-03", { title: "Nærstående part" }]),
     act(
       "audit-findings",
       "assertConfirmable",
-      ["F-1"],
+      ["F-01"],
       b("Checked F-01: ready for a person to confirm.", "Sjekket F-01: klar til at en person bekrefter."),
     ),
   ],

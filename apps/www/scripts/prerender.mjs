@@ -1,0 +1,250 @@
+#!/usr/bin/env node
+/**
+ * Writes every page a visitor can land on as HTML into dist, so a reader
+ * without JavaScript (an agent fetching the page, a search engine, a link
+ * preview) gets the content and not an empty root. Then, from that HTML, a
+ * Markdown copy of each page (`/docs/kpi-stat.md`) and `/llms.txt`, the index
+ * a model reads first. In the browser, main.tsx renders the same pages again,
+ * with the agent bridge.
+ *
+ * The components were written for a browser, so the render runs with a
+ * browser-like global (jsdom): English, light, no stored choices.
+ */
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { JSDOM } from "jsdom";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const dist = join(here, "../dist");
+const site = "https://booki.dev";
+
+const dom = new JSDOM("<!doctype html><html lang='en'><body></body></html>", { url: `${site}/` });
+const globals = {
+  window: dom.window,
+  document: dom.window.document,
+  navigator: dom.window.navigator,
+  localStorage: dom.window.localStorage,
+  sessionStorage: dom.window.sessionStorage,
+  HTMLElement: dom.window.HTMLElement,
+  Element: dom.window.Element,
+  Node: dom.window.Node,
+  getComputedStyle: dom.window.getComputedStyle.bind(dom.window),
+  requestAnimationFrame: (callback) => setTimeout(() => callback(Date.now()), 0),
+  cancelAnimationFrame: (id) => clearTimeout(id),
+};
+for (const [name, value] of Object.entries(globals)) {
+  Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
+}
+dom.window.matchMedia = () => ({
+  matches: false,
+  addEventListener() {},
+  removeEventListener() {},
+  addListener() {},
+  removeListener() {},
+});
+for (const name of ["ResizeObserver", "IntersectionObserver", "MutationObserver"]) {
+  globalThis[name] ??= class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  };
+  dom.window[name] ??= globalThis[name];
+}
+
+/** The first h1 and the paragraph after it, for a page with no meta of its own. */
+function firstHeading(body) {
+  const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
+  const h1 = doc.querySelector("main h1") ?? doc.querySelector("h1");
+  if (!h1) return null;
+  let next = h1.nextElementSibling;
+  while (next && next.tagName !== "P") next = next.nextElementSibling;
+  const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
+  return { title: clean(h1.textContent), description: clean(next?.textContent).slice(0, 200) };
+}
+
+const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
+/** The page's own title, description, address and Markdown copy in the head. */
+function withMeta(template, { url, title, description, markdownPath }) {
+  const set = (html, pattern, value) => {
+    if (!pattern.test(html)) throw new Error(`index.html has no ${pattern}`);
+    return html.replace(pattern, value);
+  };
+  let html = template;
+  html = set(html, /<title>[^<]*<\/title>/, `<title>${escapeAttr(title)}</title>`);
+  html = set(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
+  html = set(html, /(<meta property="og:title" content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
+  html = set(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
+  html = set(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${site}${url}$2`);
+  return html.replace(
+    "</head>",
+    `    <link rel="canonical" href="${site}${url}" />\n    <link rel="alternate" type="text/markdown" href="${markdownPath}" />\n  </head>`,
+  );
+}
+
+/**
+ * The page as Markdown: what a model reads without parsing HTML. Headings,
+ * paragraphs, lists, tables, code and links; navigation, icons and anything
+ * hidden from people are left out.
+ */
+function toMarkdown(body, { url, title, description }) {
+  const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
+  const root = doc.querySelector("main") ?? doc.body;
+  for (const el of root.querySelectorAll(
+    "nav, header, footer, svg, script, style, [aria-hidden='true'], [hidden], button",
+  )) {
+    el.remove();
+  }
+  const inline = (node) => {
+    if (node.nodeType === 3) return node.textContent.replace(/\s+/g, " ");
+    if (node.nodeType !== 1) return "";
+    const tag = node.tagName.toLowerCase();
+    const inner = [...node.childNodes].map(inline).join("");
+    if (tag === "code") return `\`${node.textContent}\``;
+    if (tag === "strong" || tag === "b") return inner.trim() ? `**${inner.trim()}**` : "";
+    if (tag === "em" || tag === "i") return inner.trim() ? `*${inner.trim()}*` : "";
+    if (tag === "br") return "\n";
+    if (tag === "a") {
+      const href = node.getAttribute("href") ?? "";
+      const target = href.startsWith("/") ? `${site}${href}` : href;
+      return inner.trim() && target ? `[${inner.trim()}](${target})` : inner;
+    }
+    return inner;
+  };
+  const blocks = [];
+  const walk = (node) => {
+    if (node.nodeType !== 1) return;
+    const tag = node.tagName.toLowerCase();
+    const text = () =>
+      inline(node)
+        .replace(/[ \t]+/g, " ")
+        .trim();
+    if (/^h[1-6]$/.test(tag)) return void (text() && blocks.push(`${"#".repeat(Number(tag[1]))} ${text()}`));
+    if (tag === "p" || tag === "figcaption" || tag === "dt" || tag === "dd" || tag === "caption") {
+      return void (text() && blocks.push(text()));
+    }
+    if (tag === "pre") return void blocks.push(`\`\`\`\n${node.textContent.trim()}\n\`\`\``);
+    if (tag === "ul" || tag === "ol") {
+      const items = [...node.children].filter((li) => li.tagName === "LI");
+      const lines = items.map(
+        (li, i) => `${tag === "ol" ? `${i + 1}.` : "-"} ${inline(li).replace(/\s+/g, " ").trim()}`,
+      );
+      return void (lines.length && blocks.push(lines.join("\n")));
+    }
+    if (tag === "table") {
+      const rows = [...node.querySelectorAll("tr")].map((tr) =>
+        [...tr.children].map((cell) => inline(cell).replace(/\s+/g, " ").replace(/\|/g, "\\|").trim()),
+      );
+      if (!rows.length) return;
+      const width = Math.max(...rows.map((row) => row.length));
+      const line = (row) => `| ${[...row, ...Array(width - row.length).fill("")].join(" | ")} |`;
+      return void blocks.push([line(rows[0]), `|${" --- |".repeat(width)}`, ...rows.slice(1).map(line)].join("\n"));
+    }
+    for (const child of node.children) walk(child);
+  };
+  walk(root);
+  const content = blocks.filter((block, i) => block !== blocks[i - 1]).join("\n\n");
+  return `# ${title}\n\n> ${description}\n\nSource: ${site}${url}\n\n${content}\n`;
+}
+
+/** The index a model reads first: what Booki is, and every page as Markdown. */
+function llmsTxt(pages) {
+  const link = (page) => `- [${page.title}](${site}${page.markdownPath}): ${page.description}`;
+  const docs = pages.filter((page) => page.url.startsWith("/docs/"));
+  const rest = pages.filter((page) => !page.url.startsWith("/docs/"));
+  return [
+    "# Booki",
+    "",
+    "> Agent-first UI for accounting and auditing: controls an AI agent operates by name, under the company's rules, with a person deciding what is theirs. Before 1.0, not on npm yet.",
+    "",
+    "Every page here is also Markdown: add .md to its address. The agent bridge on each page (window.agent, and WebMCP where the browser has it) gives snapshot, query and act.",
+    "",
+    "## Start",
+    "",
+    ...rest.map(link),
+    "",
+    "## Controls and guides",
+    "",
+    ...docs.map(link),
+    "",
+    "## For coding agents",
+    "",
+    `- [Setup prompt](${site}/prompt.md): what the Install button copies; paste it into a coding agent in your app`,
+    `- [Booki skill](${site}/skills/booki/SKILL.md): how to install and wire Booki in an app`,
+    "- [Control catalogue](https://raw.githubusercontent.com/Walgermo/booki/main/packages/react/docs/llms.txt): every control and its agent actions",
+    "- [Agent Contract](https://raw.githubusercontent.com/Walgermo/booki/main/spec/agent-contract.md): the open specification",
+    "",
+  ].join("\n");
+}
+
+const { render, AGENT_PROMPT } = await import(pathToFileURL(join(here, "../dist-server/entry-server.js")).href);
+const template = readFileSync(join(dist, "index.html"), "utf8");
+const urls = [...readFileSync(join(here, "../public/sitemap.xml"), "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) =>
+  m[1].replace(site, ""),
+);
+
+const failures = [];
+const pages = [];
+for (const url of urls) {
+  const errors = [];
+  const origError = console.error;
+  console.error = (...args) => errors.push(args.map(String).join(" ").slice(0, 300));
+  let body = "";
+  let meta = null;
+  try {
+    ({ html: body, meta } = await render(url));
+  } catch (error) {
+    errors.push(String(error));
+  } finally {
+    console.error = origError;
+  }
+  const text = body
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (errors.length || text.length < 200)
+    failures.push(`${url}: ${errors[0] ?? `only ${text.length} characters of text`}`);
+  // Agent-first: everything a person can press or type in is a control the bridge sees.
+  // A ui-sdk or Booki part carries data-slot; a bare element does not. The one
+  // exception is marked data-plain-html: the landing page's plain-HTML comparison.
+  const page = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
+  const bare = [...page.querySelectorAll("button, input, select, textarea")].filter(
+    (el) =>
+      el.getAttribute("type") !== "hidden" &&
+      !el.closest("[data-slot]") &&
+      !el.closest("[data-plain-html]") &&
+      !el.closest("[data-agent-hidden]"),
+  );
+  for (const el of bare) {
+    failures.push(
+      `${url}: a <${el.tagName.toLowerCase()}> the agent bridge cannot see: "${(el.getAttribute("aria-label") ?? el.textContent ?? "").trim().slice(0, 60)}"`,
+    );
+  }
+  // A page with no meta of its own: its first heading and paragraph, not the site's.
+  const own = meta && meta.title.en !== template.match(/<title>([^<]*)<\/title>/)?.[1];
+  const fallback = own ? null : firstHeading(body);
+  const title = own ? meta.title.en : fallback?.title ? `${fallback.title} · Booki` : "Booki";
+  const description = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
+  const markdownPath = url === "/" ? "/index.md" : `${url}.md`;
+  const html = withMeta(template, { url, title, description, markdownPath }).replace(
+    '<div id="root"></div>',
+    `<div id="root">${body}</div>`,
+  );
+  const file = url === "/" ? "index.html" : `${url.slice(1)}.html`;
+  mkdirSync(dirname(join(dist, file)), { recursive: true });
+  writeFileSync(join(dist, file), html);
+  const markdown = toMarkdown(body, { url, title, description });
+  writeFileSync(join(dist, markdownPath.slice(1)), markdown);
+  pages.push({ url, title, description, markdownPath, words: markdown.split(/\s+/).length });
+}
+if (failures.length) {
+  console.error(`prerender: ${failures.length} page(s) did not render whole:\n  ${failures.join("\n  ")}`);
+  process.exit(1);
+}
+writeFileSync(join(dist, "prompt.md"), `${AGENT_PROMPT.trim()}\n`);
+writeFileSync(join(dist, "llms.txt"), llmsTxt(pages));
+console.log(`prerender: ${pages.length} pages, each as HTML and Markdown, and llms.txt`);

@@ -41,7 +41,7 @@ const LangContext = createContext<LangContextValue>({ lang: "en", setLang: () =>
 /** A page's own tab title and description, in both languages. */
 export type PageMeta = { title: { en: string; nb: string }; description: { en: string; nb: string } };
 
-const SITE_META: PageMeta = {
+export const SITE_META: PageMeta = {
   title: {
     en: "Booki: agent-first UI for accounting and auditing",
     nb: "Booki: agent-first UI for regnskap og revisjon",
@@ -103,8 +103,13 @@ export function LangProvider({ children }: { children: ReactNode }) {
 export const useLang = () => useContext(LangContext);
 
 /** Give the tab this page's title and description while the page is shown, in the site's language. Pass a stable object. */
+/** The page meta the build's HTML render saw, so each page's HTML has its own title. */
+export const renderedPageMeta: { current: PageMeta | null } = { current: null };
+
 export function usePageMeta(meta: PageMeta) {
   const set = useContext(PageMetaContext);
+  // The build renders without effects: note the meta here instead.
+  if ((globalThis as { __BOOKI_PRERENDER__?: boolean }).__BOOKI_PRERENDER__) renderedPageMeta.current = meta;
   useEffect(() => {
     set(meta);
     return () => set(null);

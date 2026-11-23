@@ -16,3 +16,4 @@ coverage
 benchmarks/agent/results/
 apps/www/public/sitemap.xml
 .packed
+apps/www/dist-server

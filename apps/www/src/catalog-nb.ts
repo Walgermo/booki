@@ -19,7 +19,7 @@ const NB: Record<string, { title?: string; description: string }> = {
       "Et fungerende skjermbilde for utgående faktura som en agent kan styre, med menneskelige kontrollpunkter på plass.",
   },
   "month-end": {
-    title: "Månedsslutt",
+    title: "Månedsavslutning",
     description:
       "En månedsavslutning en agent jobber seg gjennom: sjekkliste, periodelås, avstemming og avslutningsbilaget.",
   },
@@ -27,25 +27,25 @@ const NB: Record<string, { title?: string; description: string }> = {
     title: "For ERP-team",
     description: "Hva en pilot på ett skjermbilde krever, og hva som ikke er klart ennå.",
   },
-  money: { title: "Penger", description: "Money-hjelpere i heltall minor units fra @booki/core." },
+  money: { title: "Penger", description: "Money-hjelpere for heltall i øre fra @booki/core." },
   "amount-field": {
-    description: "definePrimitive-beløp: agenten bruker setMinor / clear; heltall minor units inn og ut.",
+    description: "definePrimitive-beløp: agenten bruker setMinor / clear; heltall i øre inn og ut.",
   },
   "amount-input": { description: "Kompatibilitetsinnpakning rundt AmountField (eldre Money-tilbakekall)." },
-  "money-amount": { description: "Viser Money med tabulære tall og valuta for lokalet." },
+  "money-amount": { description: "Viser Money med tabulære tall og valuta etter land- og språkinnstillingen." },
   "currency-select": { description: "Valutavelger for NOK / USD (kan utvides)." },
   "bank-account-input": { description: "Kontonummer (NO) eller ABA-routing og konto (US)." },
   "payment-reference-input": { description: "KID (NO) eller betalingsmelding (US)." },
   "organization-number-input": { description: "Norsk organisasjonsnummer (mod11) eller amerikansk EIN." },
-  "iban-input": { description: "IBAN med kontrollsiffer; hemmelig; utleder norsk kontonummer." },
+  "iban-input": { description: "IBAN med kontrollsifre; hemmelig; utleder norsk kontonummer." },
   "financial-date-field": { description: "Faktura-, forfalls- eller bokføringsdato (ISO) for agenter." },
-  "accounting-period-select": { description: "Velger for lukket år, måned eller MVA-termin." },
+  "accounting-period-select": { description: "Velger for år, måned eller mva-termin fra en fast liste." },
   "invoice-number-input": { description: "Leverandør- eller salgsfakturanummer / dokumentnummer." },
   "attestation-status": { description: "Venter / godkjent / avvist, med handlinger som krever bekreftelse." },
   "voucher-lines": { description: "Skrivebeskyttet debet/kredit-tabell med balanse i bunnen." },
   "voucher-composer": { description: "Bilag en agent kan føre: addLine, setDebit/Credit, assertBalance." },
   "bank-reconciliation": {
-    description: "Match banklinjer mot åpne poster. En agent foreslår treff; en person godkjenner dem.",
+    description: "Avstem banktransaksjoner mot åpne poster. En agent foreslår treff; en person godkjenner dem.",
   },
   "approval-chain": {
     description:
@@ -67,7 +67,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "supplier-invoice-inbox": {
     description:
-      "Innkommende leverandørfakturaer med utleste felt. En agent retter og konterer; en person godkjenner. Duplikater navngis.",
+      "Innkommende leverandørfakturaer med utleste felt. En agent retter og konterer; en person attesterer. Duplikater flagges.",
   },
   "evidence-list": {
     description:
@@ -78,13 +78,13 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "ledger-table": {
     description:
-      "Saldobalanse med drilling ned til en konto og dens bilag. Skrivebeskyttet, og begrenset for en agent.",
+      "Saldobalanse der du kan drille ned til en konto og dens bilag. Skrivebeskyttet, og begrenset for en agent.",
   },
   "aged-balances": {
-    description: "Kundefordringer eller leverandørgjeld etter alder. En agent spør hvem som har forfalt.",
+    description: "Kundefordringer eller leverandørgjeld etter alder. En agent spør hvilke poster som har forfalt.",
   },
   "vat-return": {
-    description: "En MVA-melding regnet ut fra et skjema du leverer. En agent kontrollerer den; en person sender inn.",
+    description: "En mva-melding regnet ut fra et oppsett du leverer. En agent kontrollerer den; en person sender inn.",
   },
   "audit-workpaper": {
     description:
@@ -108,7 +108,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "document-signoff": {
     description:
-      "Signeringslinjen som avslutter et arbeidspapir: utført, gjennomgått, godkjent, hver bundet til versjonen som ble signert. Åpne punkter følger signaturen; en senere endring merker den, trekker den aldri.",
+      "Signeringslinjen som avslutter et arbeidspapir: utført, gjennomgått, godkjent, hver bundet til versjonen som ble signert. Åpne punkter følger signaturen; en senere endring markerer den, men trekker den aldri tilbake.",
   },
   "sheet-stack": {
     description:
@@ -123,11 +123,11 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "kpi-stat": {
     description:
-      "Ett tall mot perioden før, med en sparkline. Du sier om opp er bra; agenten leser verdien, endringen og om den er gunstig.",
+      "Ett tall mot perioden før, med en sparkline. Du angir om en økning er positiv; agenten leser verdien, endringen og om den er gunstig.",
   },
   "trend-chart": {
     description:
-      "Måneder eller kvartaler for én eller flere serier, med periodevalg og drilling. Agenten leser hver periode som minor units, ikke piksler.",
+      "Måneder eller kvartaler for én eller flere serier, med periodevalg og drilling. Agenten leser hver periode som heltall i øre, ikke piksler.",
   },
   "bar-chart": {
     description:
@@ -135,13 +135,13 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "aging-chart": {
     description:
-      "Fordringer eller gjeld etter alder: ikke forfalt, 1–30, 31–60, 61–90, over 90 dager, med andelen forfalt og de største sene partene.",
+      "Fordringer eller gjeld etter alder: ikke forfalt, 1–30, 31–60, 61–90, over 90 dager, med andelen forfalt og motpartene med mest forfalt.",
   },
   "cashflow-waterfall": {
     description: "Inngående saldo, hver inn- og utbetaling, utgående saldo, og en kontroll på at det går opp.",
   },
   "account-picker": { description: "Entydig valg fra kontoplanen." },
-  "tax-code-select": { description: "Norske MVA-koder / amerikanske sales tax-koder fra BookiLocale-profilen." },
+  "tax-code-select": { description: "Norske mva-koder / amerikanske sales tax-koder fra BookiLocale-profilen." },
   "payment-confirm": { description: "Skriv APPROVE + data-agent-confirm." },
   "approval-gate": { description: "Attestasjonsdialog for forslag fra en agent." },
   "exception-banner": { description: "Eskaler / stopp for menneskelig gjennomgang." },

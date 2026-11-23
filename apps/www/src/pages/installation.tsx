@@ -21,7 +21,7 @@ const NEEDS = [
   ],
   [
     { en: "pnpm", nb: "pnpm" },
-    { en: "Used to pack the packages from the repo.", nb: "Brukes til å pakke pakkene fra repoet." },
+    { en: "Used to pack the packages from the repo.", nb: "Brukes til å bygge pakkene fra repoet." },
   ],
 ] as const;
 
@@ -192,7 +192,7 @@ export function InstallationPage() {
         title={t("Wrap the app", "Pakk inn appen")}
         note={t(
           "The provider sets currency, VAT codes, bank formats and language.",
-          "Provideren setter valuta, MVA-koder, bankformater og språk.",
+          "Provideren setter valuta, mva-koder, bankformater og språk.",
         )}
       >
         <InstallBlock label="src/main.tsx" command={PROVIDER} />
@@ -216,7 +216,7 @@ export function InstallationPage() {
       <Section
         id="amount"
         title={t("Replace an amount input", "Bytt ut et beløpsfelt")}
-        note={t("Amounts are whole minor units: 312500 is 3 125,00.", "Beløp er hele minor units: 312500 er 3 125,00.")}
+        note={t("Amounts are whole minor units: 312500 is 3 125,00.", "Beløp er heltall i øre: 312500 er 3 125,00.")}
       >
         <InstallBlock label={t("An invoice form", "Et fakturaskjema")} command={AMOUNT} />
         <p className={p}>
@@ -224,7 +224,7 @@ export function InstallationPage() {
           <code>name</code>
           {t(
             " the field submits with the form as integer minor units, so the server never parses a formatted number. It also takes ",
-            " sendes feltet med skjemaet som heltall i minor units, så serveren aldri tolker et formatert tall. Det tar også ",
+            " sendes feltet med skjemaet som heltall i øre, så serveren aldri tolker et formatert tall. Det tar også ",
           )}
           <code>id</code>, <code>disabled</code>, <code>readOnly</code> {t("and", "og")} <code>required</code>.{" "}
           {t(
@@ -243,7 +243,7 @@ export function InstallationPage() {
         title={t("Replace a voucher table", "Bytt ut en bilagstabell")}
         note={t(
           "One table for the person and the agent, held to the same rules.",
-          "Én tabell for personen og agenten, holdt til de samme reglene.",
+          "Én tabell for personen og agenten, underlagt de samme reglene.",
         )}
       >
         <InstallBlock label={t("A voucher screen", "Et bilagsskjermbilde")} command={VOUCHER} />
@@ -252,7 +252,7 @@ export function InstallationPage() {
           <code>editable</code>{" "}
           {t(
             "a person can change account, VAT code, department, project, debit and credit, and add or remove lines. Without it the table is read-only and only an agent edits. An edit that breaks a rule leaves the line as it was and says why on that row. See ",
-            "kan en person endre konto, MVA-kode, avdeling, prosjekt, debet og kredit, og legge til eller fjerne linjer. Uten den er tabellen skrivebeskyttet, og bare en agent redigerer. En endring som bryter en regel lar linjen være som den var og sier hvorfor på den raden. Se ",
+            "kan en person endre konto, mva-kode, avdeling, prosjekt, debet og kredit, og legge til eller fjerne linjer. Uten den er tabellen skrivebeskyttet, og bare en agent redigerer. En endring som bryter en regel lar linjen være som den var og sier hvorfor på den raden. Se ",
           )}
           <Link className="site-link" to="/docs/voucher-composer">
             VoucherComposer

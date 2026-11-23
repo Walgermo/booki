@@ -22,7 +22,7 @@ const TODAY = (t: T): { happens: string; costs: string }[] => [
     ),
     costs: t(
       "Someone pays for that in tokens and waiting time: your customer, or you if it is your assistant.",
-      "Noen betaler for det i tokens og ventetid: kunden din, eller dere selv hvis det er deres egen assistent.",
+      "Noen betaler for det i tokens og ventetid: kundene deres, eller dere selv hvis det er deres egen assistent.",
     ),
   },
   {
@@ -121,7 +121,7 @@ const WHY_NOW = (t: T): { title: string; text: string }[] => [
     ),
     text: t(
       "Separation of duties, attestation, locked periods, VAT boxes, an audit trail. These controls carry those rules, so you do not teach them to each agent.",
-      "Arbeidsdeling, attestering, låste perioder, mva-poster, revisjonsspor. Kontrollene har disse reglene innebygd, så dere slipper å lære dem opp i hver agent.",
+      "Arbeidsdeling, attestering, låste perioder, mva-poster, revisjonsspor. Kontrollene har disse reglene innebygd, så dere slipper å lære opp hver agent i dem.",
     ),
   },
 ];
@@ -138,7 +138,7 @@ const PILOT = (t: T): { step: string; detail: string }[] => [
     step: t("Swap its fields, or define your own", "Bytt feltene, eller definer deres egne"),
     detail: t(
       "Use the Booki controls, under your own tags and names if you like, or give a control of your own a primitive: its behaviour once, then its parts in your framework. The controls are unstyled; the default look is a set of --bk-* tokens you map to your own.",
-      "Bruk Booki-kontrollene, gjerne med egne tagger og navn, eller gi en kontroll dere har en primitiv: oppførselen én gang, så delene i deres rammeverk. Kontrollene er ustylet; standardutseendet er et sett --bk-*-tokens dere kobler til deres egne.",
+      "Bruk Booki-kontrollene, gjerne med egne tagger og navn, eller lag en primitiv av en kontroll dere allerede har: oppførselen defineres én gang, og delene i rammeverket deres. Kontrollene er ustylet; standardutseendet er et sett --bk-*-tokens dere kobler til deres egne.",
     ),
   },
   {
@@ -159,7 +159,7 @@ const PILOT = (t: T): { step: string; detail: string }[] => [
     step: t("Measure one task, before and after", "Mål én oppgave, før og etter"),
     detail: t(
       "Tokens, steps, wrong postings, and person-only steps the agent took. The benchmark in the repository runs that comparison against a real model with your API key.",
-      "Tokens, steg, feilføringer og steg bare en person skulle tatt, men som agenten tok. Benchmarken i repoet kjører den sammenligningen mot en ekte modell med deres API-nøkkel.",
+      "Tokens, steg, feilføringer og steg som bare en person skulle ha tatt, men som agenten tok. Benchmarken i repoet kjører den sammenligningen mot en ekte modell med deres API-nøkkel.",
     ),
   },
 ];
@@ -303,14 +303,14 @@ const SECURITY = (t: T): { label: string; text: string }[] => [
     label: t("Text on screen", "Tekst på skjermen"),
     text: t(
       "An agent may be told things by text on a page. Booki cannot stop a model from reading that, but it limits what the model can do with it to the actions above.",
-      "En agent kan bli fortalt ting av tekst på en side. Booki kan ikke hindre en modell i å lese det, men begrenser hva modellen kan gjøre med det, til handlingene over.",
+      "Tekst på en side kan gi en agent instruksjoner. Booki kan ikke hindre en modell i å lese det, men begrenser hva modellen kan gjøre med det, til handlingene over.",
     ),
   },
   {
     label: t("Your server", "Serveren deres"),
     text: t(
       "Still decides. The screen checks role, period and approvals for speed and clarity; @booki/core/server runs the same rules in your API, with the caller your sign-in established. An agent with every role is still refused a person's decision.",
-      "Bestemmer fortsatt. Skjermbildet sjekker rolle, periode og attesteringer for fart og tydelighet; @booki/core/server kjører de samme reglene i API-et deres, med den innloggingen deres har fastslått som avsender. En agent med alle roller får fortsatt nei til en persons beslutning.",
+      "Bestemmer fortsatt. Skjermbildet sjekker rolle, periode og attesteringer for fart og tydelighet; @booki/core/server kjører de samme reglene i API-et deres, med den innloggingen deres har fastslått som avsender. En agent får fortsatt nei til beslutninger som er forbeholdt en person, uansett roller.",
     ),
   },
 ];
@@ -406,8 +406,8 @@ const SHORTFALLS = (t: T): string[] => [
     "Ikke publisert på npm ennå. Installer fra repoet inntil videre.",
   ),
   t(
-    "No production users yet, and no published run against a real model: the figures on the home page count characters.",
-    "Ingen brukere i produksjon ennå, og ingen publisert kjøring mot en ekte modell: tallene på forsiden teller tegn.",
+    "No production users yet. The real-model runs are small, five per screen and model, on screens we rebuilt ourselves, and two tasks are withdrawn until they are run again.",
+    "Ingen brukere i produksjon ennå. Målingene med ekte modeller er små, fem kjøringer per skjermbilde og modell, på skjermbilder vi har gjenskapt selv, og to oppgaver er trukket tilbake til de er målt på nytt.",
   ),
   t(
     "Server guards cover posting, approvals, payment release, period close, invoices and VAT. Other writes need guard() with a rule of your own, and you wire the caller from your own sign-in.",
@@ -645,7 +645,7 @@ export function ErpTeamsPage() {
         title={t("Security model", "Sikkerhetsmodell")}
         note={t(
           "What an agent can reach on a Booki screen, and what it cannot.",
-          "Hva en agent kan nå i et Booki-skjermbilde, og hva den ikke kan.",
+          "Hva en agent har tilgang til i et Booki-skjermbilde, og hva den ikke kan.",
         )}
       >
         <dl className="site-rows m-0">

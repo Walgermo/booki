@@ -58,7 +58,7 @@ const WHY: Record<string, { en: string; nb: string }> = {
   },
   "sales-invoice:tripletex": {
     en: "The customer picker is “[object Object] (Velg kunde)” and line inputs have no names, so it counted.",
-    nb: "Kundevelgeren heter «[object Object] (Velg kunde)», og linjefeltene har ingen navn, så den talte.",
+    nb: "Kundevelgeren heter «[object Object] (Velg kunde)», og linjefeltene har ingen navn, så den telte.",
   },
   "dashboard:tripletex": {
     en: "The monthly figures are only in a tooltip, so it hovered every bar, switched year for last December, and read each tooltip.",
@@ -66,7 +66,7 @@ const WHY: Record<string, { en: string; nb: string }> = {
   },
   "dashboard:dnb": {
     en: "Canvas bars, and the tooltip never names the month, so it moved the pointer bar by bar and kept count.",
-    nb: "Søylene er tegnet på canvas, og verktøytipset sier aldri hvilken måned det er, så den flyttet pekeren søyle for søyle og talte.",
+    nb: "Søylene er tegnet på canvas, og verktøytipset sier aldri hvilken måned det er, så den flyttet pekeren søyle for søyle og telte.",
   },
   "dashboard:acc": {
     en: "One snapshot: every month, the overdue buckets and the KPIs as numbers. No pixels.",
@@ -288,7 +288,7 @@ function EstimateFigures({ task, t, max }: { task: BenchTask; t: number; max: nu
           <span className="text-sm text-muted-foreground">
             {tr(
               `${usd(perRun(raw))} against ${usd(perRun(acc))} for ${int(RUNS)} ${what} at Opus 5.5 prices. Caching on their side, none on ours: our runs are too short to cache.`,
-              `${usd(perRun(raw))} mot ${usd(perRun(acc))} for ${int(RUNS)} ${what} med Opus 5.5-priser. Caching på deres side, ingen på vår: kjøringene våre er for korte til å caches.`,
+              `${usd(perRun(raw))} mot ${usd(perRun(acc))} for ${int(RUNS)} ${what} med Opus 5.5-priser. Caching for de gjenskapte skjermbildene, ingen for Booki: kjøringene våre er for korte til å caches.`,
             )}
           </span>
         </dd>
@@ -393,7 +393,7 @@ export function ErpRace() {
 
               {screenshotsFor(task).length > 0 ? (
                 <div className="site-shot-note text-sm">
-                  <p className="m-0 font-medium">{tr("Why not a screenshot?", "Hvorfor ikke et skjermbilde?")}</p>
+                  <p className="m-0 font-medium">{tr("Why not a screenshot?", "Hvorfor ikke en skjermdump?")}</p>
                   <ul className="m-0 grid list-none gap-1 p-0">
                     {screenshotsFor(task).map((shot) => (
                       <li key={shot.key}>

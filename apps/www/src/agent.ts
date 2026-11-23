@@ -100,14 +100,17 @@ const allowWithCursor: typeof led = (step, context) => (quiet > 0 ? allow(step) 
 
 const agent = createBookiAgent({ agentId: "site", allow: allowWithCursor });
 
-// Try it in the console: window.agent.snapshot()
-Object.assign(window, { agent });
+// In the browser only: the build also renders the pages to HTML, with no window.
+if (typeof window !== "undefined") {
+  // Try it in the console: window.agent.snapshot()
+  Object.assign(window, { agent });
 
-// The same snapshot / act / query tools, for the browser's own agent: it gets the cursor too.
-const unregister = registerTools(agent, { allow: allowWithCursor });
+  // The same snapshot / act / query tools, for the browser's own agent: it gets the cursor too.
+  const unregister = registerTools(agent, { allow: allowWithCursor });
 
-if (import.meta.hot) {
-  import.meta.hot.dispose(unregister);
+  if (import.meta.hot) {
+    import.meta.hot.dispose(unregister);
+  }
 }
 
 export { agent, cursor };
