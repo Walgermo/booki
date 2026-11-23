@@ -1,9 +1,11 @@
-<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Clean</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "input", label: "Fixture", actions: ["setValue"] }] };</script></head>
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Clean</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "voucher-form", label: "Registrer bilag", actions: ["setValue"] }] };</script></head>
 <body><main>
 <h1>Registrer bilag</h1>
+<div data-slot="voucher-form" role="group" aria-label="Registrer bilag">
 <label>Bilagsdato <input type="date"></label>
 <label for="amount">Beløp</label><input id="amount" inputmode="decimal">
 <label>Konto <select><option>6800 Kontorrekvisita</option></select></label>
+</div>
 <button type="button">Ny linje</button>
 <button type="button" aria-label="Slett linje 1"><span class="material-icons" aria-hidden="true">delete</span></button>
 <button type="button" data-agent-confirm="Bokfører bilaget">Bokfør</button>
