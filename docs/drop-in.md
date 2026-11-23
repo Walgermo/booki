@@ -40,7 +40,7 @@ app; the build scopes those rules to Booki's component names instead.
   your product already has a colour for AI, point it there.
 - Skip `@booki/styles` entirely and the controls are unstyled: style the
   `data-slot` parts yourself.
-- Your own control, built with `definePrimitive` ([how](own-controls.md)), takes the same base look with
+- Your own control, built with `definePrimitive` ([how](own-controls.md), or for an amount, code or date field you already have, [`useBookiField`](own-controls.md#the-lower-threshold-usebookifield)), takes the same base look with
   `data-booki` on its root.
 
 ## 3. Money arrives as decimal text

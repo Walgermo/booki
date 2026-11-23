@@ -72,6 +72,18 @@ History: AmountField reports changes on key `minor`, VoucherComposer on `lines`,
 Controls that move or post money carry `data-agent-confirm`. Without `allow`, those steps fail with "Needs a person".
 Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`).
 
+## useBookiField (a field the product already has)
+
+`useBookiField(options, render)` from `@booki/react` gives an existing input or select the agent's action and Booki's rules, without replacing it. Three kinds only:
+
+| kind | value | action | snapshot keys |
+| --- | --- | --- | --- |
+| `amount` | integer minor units (`12500` = 125.00 NOK) | `setMinor` | `minor`, `currency`, `refusal` |
+| `code` | a value from the closed `options` list | `setCode` | `code`, `items`, `itemsHint`, `refusal` |
+| `date` | ISO `YYYY-MM-DD`, or `""` | `setDate` | `date`, `refusal` |
+
+A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
+
 ## Catalog
 
 ### FIN `definePrimitive` (operate these)
