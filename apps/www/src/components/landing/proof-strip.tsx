@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { formatters, proofKpis, USD_NOK } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
@@ -28,12 +28,26 @@ type Figure = {
  * the number counts with it, one figure after the other. It plays once, when
  * the strip comes into view; with reduced motion it shows the result at once.
  */
+const REDUCED = "(prefers-reduced-motion: reduce)";
+const watchMotion = (notify: () => void) => {
+  const query = window.matchMedia(REDUCED);
+  query.addEventListener("change", notify);
+  return () => query.removeEventListener("change", notify);
+};
+
 export function ProofStrip() {
   const { lang, t } = useLang();
   const f = formatters(lang);
   const kpi = proofKpis();
   const root = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState<number[]>([0, 0, 0]);
+  const [travelled, setProgress] = useState<number[]>([0, 0, 0]);
+  // Reduced motion: the result, no travel. The build's HTML is rendered as if motion were fine.
+  const reduced = useSyncExternalStore(
+    watchMotion,
+    () => window.matchMedia(REDUCED).matches,
+    () => false,
+  );
+  const progress = reduced ? [1, 1, 1] : travelled;
 
   const pct = (share: number) => `${Math.round(share * 100)} %`;
   const times = (n: number) => `${n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: 1 })}×`;
@@ -84,14 +98,10 @@ export function ProofStrip() {
     },
   ];
 
-  // Play once when it comes into view. Reduced motion: the result, no travel.
+  // Play once when it comes into view.
   useEffect(() => {
     const node = root.current;
-    if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProgress([1, 1, 1]);
-      return;
-    }
+    if (!node || reduced) return;
     let frame = 0;
     const seen = new IntersectionObserver(
       ([entry]) => {
@@ -112,7 +122,7 @@ export function ProofStrip() {
       seen.disconnect();
       cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [reduced]);
 
   return (
     <div ref={root} className="grid gap-6">

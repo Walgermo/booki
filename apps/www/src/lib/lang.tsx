@@ -109,6 +109,7 @@ export const renderedPageMeta: { current: PageMeta | null } = { current: null };
 export function usePageMeta(meta: PageMeta) {
   const set = useContext(PageMetaContext);
   // The build renders without effects: note the meta here instead.
+  // oxlint-disable-next-line react/immutability -- the one write a render makes, and only in the build
   if ((globalThis as { __BOOKI_PRERENDER__?: boolean }).__BOOKI_PRERENDER__) renderedPageMeta.current = meta;
   useEffect(() => {
     set(meta);

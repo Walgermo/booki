@@ -70,10 +70,12 @@ function IncomeChart({ year }: { year: number }) {
   const max = 600_000_00;
   const column = (width - left) / 12;
   const y = (minor: number) => 12 + plotH - (minor / max) * plotH;
+  const accumulated: (number | null)[] = [];
   let running = 0;
-  const accumulated = months.map((m) =>
-    m.revenueMinor === null ? null : (running += m.revenueMinor - (m.costsMinor ?? 0)),
-  );
+  for (const m of months) {
+    if (m.revenueMinor !== null) running += m.revenueMinor - (m.costsMinor ?? 0);
+    accumulated.push(m.revenueMinor === null ? null : running);
+  }
   const hovered = active === null ? null : months[active]!;
   return (
     <div style={{ position: "relative" }}>
@@ -173,15 +175,14 @@ function IncomeChart({ year }: { year: number }) {
 
 function Donut({ parts }: { parts: number[] }) {
   const total = parts.reduce((a, b) => a + Math.max(0, b), 0) || 1;
-  let start = 0;
+  const shares = parts.map((part) => Math.max(0, part) / total);
   const colours = [ink, brand, muted];
   return (
     <Surface width={140} height={140}>
-      {parts.map((part, index) => {
-        const share = Math.max(0, part) / total;
+      {shares.map((share, index) => {
+        const start = shares.slice(0, index).reduce((a, b) => a + b, 0);
         const a0 = start * 2 * Math.PI;
         const a1 = (start + share) * 2 * Math.PI;
-        start += share;
         const large = share > 0.5 ? 1 : 0;
         const p = (a: number, r: number) => `${70 + r * Math.sin(a)},${70 - r * Math.cos(a)}`;
         return (

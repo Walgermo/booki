@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { CLOSE_TASKS, PEOPLE, PERIOD_CODES, PERIODS, trialBalance } from "./workflow-data";
 
@@ -88,12 +89,12 @@ export function CloseRaw() {
   const log = (event: string) => setEvents((all) => [...all, event]);
 
   // For the benchmark's end-state checks only. A real agent never sees this.
-  (window as unknown as { __rawClose?: RawCloseState }).__rawClose = {
+  useEndState<RawCloseState>("__rawClose", {
     tasks,
     periods,
     voucher: { date, rows, posted },
     events,
-  };
+  });
 
   const setTask = (id: string, patch: Partial<RawCloseTask>) =>
     setTasks((all) => all.map((t) => (t.id === id ? { ...t, ...patch } : t)));

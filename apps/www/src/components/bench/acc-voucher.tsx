@@ -1,7 +1,8 @@
 import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
 import { FinancialDateField, VoucherComposer, useBookiLocale } from "@booki/react";
 import { Button } from "@ui-sdk/react/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEndState } from "./end-state";
 
 import { setStepPolicy } from "@/agent";
 
@@ -44,7 +45,9 @@ export function BookiVoucher() {
   const [posted, setPosted] = useState(false);
   const [postedBy, setPostedBy] = useState("");
   const latest = useRef({ date, lines });
-  latest.current = { date, lines };
+  useLayoutEffect(() => {
+    latest.current = { date, lines };
+  });
   const grantedBy = useRef<string | null>(null);
 
   const total = lines.reduce((sum, line) => sum + line.debitMinor, 0);
@@ -73,13 +76,13 @@ export function BookiVoucher() {
   );
 
   // For the benchmark's end-state checks only.
-  (window as unknown as { __accVoucher?: BookiVoucherState }).__accVoucher = {
+  useEndState<BookiVoucherState>("__accVoucher", {
     date,
     lines,
     posted,
     postedBy,
     checked: checks.filter((check) => check.ok).map((check) => check.label),
-  };
+  });
 
   return (
     <div className="acc-invoice">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
@@ -83,7 +83,11 @@ export function ServerRules() {
   const { lang, t } = useLang();
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   // An answer is in the language it was asked in; a new language starts the panel over.
-  useEffect(() => setAnswers({}), [lang]);
+  const [askedIn, setAskedIn] = useState(lang);
+  if (askedIn !== lang) {
+    setAskedIn(lang);
+    setAnswers({});
+  }
 
   const send = async (item: (typeof CASES)[number]) => {
     const response = await fetch("/api/books", {

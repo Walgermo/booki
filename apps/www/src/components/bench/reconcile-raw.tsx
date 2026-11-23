@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 import { BANK_LINES, OPEN_POSTS } from "./workflow-data";
 
@@ -32,7 +33,7 @@ export function ReconcileRaw() {
   const [message, setMessage] = useState("");
 
   // For the benchmark's end-state checks only. A real agent never sees this.
-  (window as unknown as { __rawReconcile?: RawReconcileState }).__rawReconcile = { matches };
+  useEndState<RawReconcileState>("__rawReconcile", { matches });
 
   const usedLines = new Set(matches.flatMap((m) => m.bankLineIds));
   const usedPosts = new Set(matches.flatMap((m) => m.postIds));

@@ -59,7 +59,13 @@ function callText(entry: Entry | undefined, action: string, args: unknown[]) {
  * bridge, with the visible cursor, on the control in the preview only. Every
  * call and the library's answer go in the log below the buttons.
  */
-export function AgentDemo({
+export function AgentDemo(props: { name: string; scope: RefObject<HTMLElement | null>; onReset: () => void }) {
+  const { country } = useBookiLocale();
+  // A new page or country is a fresh start: the run in progress stops and the log empties.
+  return <AgentDemoRun key={`${props.name}:${country}`} {...props} />;
+}
+
+function AgentDemoRun({
   name,
   scope,
   onReset,
@@ -86,17 +92,12 @@ export function AgentDemo({
     };
   }, []);
 
-  // A new page or country is a fresh start.
-  useEffect(() => {
-    stop.current = true;
-    setRows([]);
-  }, [name, country]);
-
   // Keep the latest step in view, inside the log's own box.
+  const logged = rows.length;
   useEffect(() => {
     const box = logBox.current;
-    if (box) box.scrollTop = box.scrollHeight;
-  }, [rows]);
+    if (box && logged > 0) box.scrollTop = box.scrollHeight;
+  }, [logged]);
 
   if (!demo) return null;
 

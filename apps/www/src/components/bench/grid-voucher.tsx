@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEndState } from "./end-state";
 
 /**
  * A second voucher screen for the head-to-head, modelled on the other common
@@ -59,7 +60,7 @@ export function GridVoucher() {
   const [posted, setPosted] = useState(false);
 
   // For the benchmark's end-state checks only.
-  (window as unknown as { __gridVoucher?: GridVoucherState }).__gridVoucher = { rows, posted };
+  useEndState<GridVoucherState>("__gridVoucher", { rows, posted });
 
   const commit = (value = draft) => {
     if (!editing) return;

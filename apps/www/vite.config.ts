@@ -19,27 +19,30 @@ function serverApi(): Plugin {
     name: "booki-server-api",
     configureServer(server) {
       for (const [path, file, name] of routes) {
-        server.middlewares.use(path, async (req, res) => {
-          try {
-            const chunks: Buffer[] = [];
-            for await (const chunk of req) chunks.push(chunk as Buffer);
-            const body = Buffer.concat(chunks);
-            const handler = ((await server.ssrLoadModule(file)) as Record<string, Handler>)[name]!;
-            const response = await handler(
-              new Request(`http://localhost${req.originalUrl ?? path}`, {
-                method: req.method,
-                headers: req.headers as Record<string, string>,
-                body: req.method === "POST" ? body : undefined,
-              }),
-            );
-            res.statusCode = response.status;
-            response.headers.forEach((value, key) => res.setHeader(key, value));
-            res.end(await response.text());
-          } catch (error) {
-            res.statusCode = 500;
-            res.setHeader("content-type", "application/json");
-            res.end(JSON.stringify({ error: String(error) }));
-          }
+        server.middlewares.use(path, (req, res) => {
+          // Every failure is answered below, so nothing is left for the server to catch.
+          void (async () => {
+            try {
+              const chunks: Buffer[] = [];
+              for await (const chunk of req) chunks.push(chunk as Buffer);
+              const body = Buffer.concat(chunks);
+              const handler = ((await server.ssrLoadModule(file)) as Record<string, Handler>)[name]!;
+              const response = await handler(
+                new Request(`http://localhost${req.originalUrl ?? path}`, {
+                  method: req.method,
+                  headers: req.headers as Record<string, string>,
+                  body: req.method === "POST" ? body : undefined,
+                }),
+              );
+              res.statusCode = response.status;
+              response.headers.forEach((value, key) => res.setHeader(key, value));
+              res.end(await response.text());
+            } catch (error) {
+              res.statusCode = 500;
+              res.setHeader("content-type", "application/json");
+              res.end(JSON.stringify({ error: String(error) }));
+            }
+          })();
         });
       }
     },

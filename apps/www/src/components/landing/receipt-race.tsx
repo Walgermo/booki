@@ -131,7 +131,8 @@ function Receipt({ side, open, bookiCost }: { side: BenchSide; open: boolean; bo
   const shown = open ? turns : turns.slice(0, FOLDED);
   const hidden = turns.length - shown.length;
   const label = side.key === "acc" ? "Booki + ERP" : sideName(side.name, lang).split(" · ")[0];
-  let delay = 0;
+  // Each line prints after the one before it; what follows the lines waits for them all.
+  const delay = shown.length * LINE;
   return (
     <section
       className="receipt"
@@ -151,8 +152,7 @@ function Receipt({ side, open, bookiCost }: { side: BenchSide; open: boolean; bo
       </p>
       <ol className="receipt__lines" aria-hidden="true">
         {shown.map((tokens, i) => {
-          const start = delay;
-          delay += LINE;
+          const start = i * LINE;
           const tool = tools[i];
           const squares = Math.max(1, Math.round(tokens / 1000));
           return (
