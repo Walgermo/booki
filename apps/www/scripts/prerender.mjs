@@ -63,7 +63,10 @@ function firstHeading(body) {
   let next = h1.nextElementSibling;
   while (next && next.tagName !== "P") next = next.nextElementSibling;
   const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
-  return { title: clean(h1.textContent), description: clean(next?.textContent).slice(0, 200) };
+  // What a reader hears: text marked aria-hidden (the hero title's turning word) is a copy for the eye.
+  const heard = h1.cloneNode(true);
+  for (const hidden of heard.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
+  return { title: clean(heard.textContent), description: clean(next?.textContent).slice(0, 200) };
 }
 
 const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");

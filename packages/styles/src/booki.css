@@ -1159,8 +1159,13 @@
   gap: var(--bk-gap);
 }
 
+/* Pinned to the corner of its containing block: left at its static place, it
+   sat wherever a wide table scrolled it, often outside every scroll box, and
+   widened the whole page on a phone. */
 [data-slot="visually-hidden"] {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   overflow: hidden;
