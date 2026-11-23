@@ -25,6 +25,10 @@ const DocsShell = page(() => import("./components/docs-shell"), "DocsShell");
 const BenchAccPage = page(() => import("./pages/bench"), "BenchAccPage");
 const BenchCloseAccPage = page(() => import("./pages/bench"), "BenchCloseAccPage");
 const BenchCloseRawPage = page(() => import("./pages/bench"), "BenchCloseRawPage");
+const BenchDocErrorAccPage = page(() => import("./pages/bench"), "BenchDocErrorAccPage");
+const BenchDocErrorRawPage = page(() => import("./pages/bench"), "BenchDocErrorRawPage");
+const BenchDuplicateAccPage = page(() => import("./pages/bench"), "BenchDuplicateAccPage");
+const BenchDuplicateRawPage = page(() => import("./pages/bench"), "BenchDuplicateRawPage");
 const BenchInboxAccPage = page(() => import("./pages/bench"), "BenchInboxAccPage");
 const BenchInboxRawPage = page(() => import("./pages/bench"), "BenchInboxRawPage");
 const BenchReconcileAccPage = page(() => import("./pages/bench"), "BenchReconcileAccPage");
@@ -71,6 +75,10 @@ export function App() {
         <Route path="bench/reconcile-acc" element={<BenchReconcileAccPage />} />
         <Route path="bench/close-raw" element={<BenchCloseRawPage />} />
         <Route path="bench/close-acc" element={<BenchCloseAccPage />} />
+        <Route path="bench/doc-error-raw" element={<BenchDocErrorRawPage />} />
+        <Route path="bench/doc-error-acc" element={<BenchDocErrorAccPage />} />
+        <Route path="bench/duplicate-raw" element={<BenchDuplicateRawPage />} />
+        <Route path="bench/duplicate-acc" element={<BenchDuplicateAccPage />} />
         <Route path="docs" element={<DocsShell />}>
           <Route index element={<IntroductionPage />} />
           <Route path="installation" element={<InstallationPage />} />

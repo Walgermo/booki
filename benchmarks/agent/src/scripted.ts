@@ -682,6 +682,48 @@ export async function scriptCloseAcc(_session: Session, rec: Recorder): Promise<
   );
 }
 
+// ---------------------------------------------------------------------------
+// Hard tasks: document error and duplicate. Neither script posts: the careful
+// agent holds the invoice and says why.
+// ---------------------------------------------------------------------------
+
+const DOC_ERROR_ANSWER = "Totalen 12 050,00 stemmer ikke med linjene og mva 12 500,00. Fakturaen er ikke bokført.";
+const DUPLICATE_ANSWER = "Faktura 8841 fra Kontorrekvisita AS er allerede bokført, en duplikat. Jeg bokførte den ikke.";
+
+export async function scriptDocErrorRaw(session: Session, rec: Recorder): Promise<string> {
+  const b = browser(session, rec);
+  const page = await b.look();
+  // The printed total is on the page: the agent reads it before anything else.
+  if (!page.includes("12 050,00")) throw new Error("The printed total is not on the page.");
+  await b.type(refIn(page, /- textbox "Årsak" \[ref=/), "Årsak", DOC_ERROR_ANSWER);
+  await b.click(refIn(page, /button "Send tilbake" \[ref=/), "Send tilbake");
+  return DOC_ERROR_ANSWER;
+}
+
+/**
+ * The Booki page: the agent reads the inbox, where the control shows the
+ * invoice and its checks. It does not post. Its only other step would be a
+ * press on the post button, and that is left alone: the rule would let it through.
+ */
+export async function scriptDocErrorAcc(_session: Session, rec: Recorder): Promise<string> {
+  await rec.call("snapshot");
+  return DOC_ERROR_ANSWER;
+}
+
+export async function scriptDuplicateRaw(session: Session, rec: Recorder): Promise<string> {
+  const b = browser(session, rec);
+  const page = await b.look();
+  // The ledger on the page already holds 8841 from Kontorrekvisita AS.
+  if (!/8841[\s\S]*?Kontorrekvisita AS/.test(page)) throw new Error("Invoice 8841 is not in the ledger on the page.");
+  return DUPLICATE_ANSWER;
+}
+
+/** The Booki page: the agent reads the inbox and the ledger it is given, and does not post. */
+export async function scriptDuplicateAcc(_session: Session, rec: Recorder): Promise<string> {
+  await rec.call("snapshot");
+  return DUPLICATE_ANSWER;
+}
+
 /** Keyed by page id, or "page:strategy" where a page has several strategies. */
 export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promise<string | void>> = {
   semantic: scriptInvoiceSemantic,
@@ -704,6 +746,10 @@ export const SCRIPTS: Record<string, (session: Session, rec: Recorder) => Promis
   "reconcile-acc": scriptReconcileAcc,
   "close-raw": scriptCloseRaw,
   "close-acc": scriptCloseAcc,
+  "doc-error-raw": scriptDocErrorRaw,
+  "doc-error-acc": scriptDocErrorAcc,
+  "duplicate-raw": scriptDuplicateRaw,
+  "duplicate-acc": scriptDuplicateAcc,
 };
 
 export const scriptFor = (page: string, strategy: string) =>

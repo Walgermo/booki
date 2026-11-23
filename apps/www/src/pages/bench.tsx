@@ -9,6 +9,10 @@ import { BookiSalesInvoice } from "@/components/bench/acc-sales-invoice";
 import { BookiSupplierInvoice } from "@/components/bench/acc-supplier-invoice";
 import { BookiVoucher } from "@/components/bench/acc-voucher";
 import { CloseRaw } from "@/components/bench/close-raw";
+import { BookiDocError } from "@/components/bench/doc-error-acc";
+import { DocErrorRaw } from "@/components/bench/doc-error-raw";
+import { BookiDuplicate } from "@/components/bench/duplicate-acc";
+import { DuplicateRaw } from "@/components/bench/duplicate-raw";
 import { DashboardGrid } from "@/components/bench/dashboard-grid";
 import { DashboardRaw } from "@/components/bench/dashboard-raw";
 import { GridVoucher } from "@/components/bench/grid-voucher";
@@ -224,6 +228,48 @@ export function BenchCloseAccPage() {
     <main lang="nb" className="landing-form mx-auto max-w-5xl p-6">
       <BookiLocaleProvider country="NO">
         <BookiClose />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Document error: the printed total does not add up to the lines and the VAT. */
+export function BenchDocErrorRawPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <DocErrorRaw />
+    </main>
+  );
+}
+
+export function BenchDocErrorAccPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiDocError />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/** Duplicate: the invoice is already in the ledger. */
+export function BenchDuplicateRawPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="mx-auto max-w-5xl p-6">
+      <DuplicateRaw />
+    </main>
+  );
+}
+
+export function BenchDuplicateAccPage() {
+  useBenchTitle("Registrer leverandørfaktura");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiDuplicate />
       </BookiLocaleProvider>
     </main>
   );
