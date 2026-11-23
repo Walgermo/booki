@@ -40,8 +40,8 @@ Supported: React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and
 Experimental: Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`,
 `@booki/solid`, `@booki/web`), and the Sweden (SE), Denmark (DK), United Kingdom (GB)
 and Germany (DE) starter profiles. Experimental means the packages work and come from
-the same primitives, but they have less testing, their API may change between
-releases without notice, and they are not covered by the Agent Contract guarantees.
+the same primitives, but they have less testing and their API may change between
+releases without notice.
 
 Rule for the agent: when the app is not React, or the country is not NO or US, tell
 the person that the setup is experimental before you wire it.

@@ -153,7 +153,7 @@ one agent operates them all.
 
 **Experimental:**
 
-- Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`, `@booki/solid`, `@booki/web`). They work and are generated from the same primitives, but they have less testing, their API may change between releases without notice, and they are not covered by the Agent Contract guarantees.
+- Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`, `@booki/solid`, `@booki/web`). They work and are generated from the same primitives, but they have less testing and their API may change between releases without notice.
 - The Sweden (SE), Denmark (DK), United Kingdom (GB) and Germany (DE) starter profiles.
 
 ## Country profiles

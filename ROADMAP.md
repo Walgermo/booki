@@ -10,13 +10,12 @@ Booki is pre-1.0: the API still changes, and nothing is on npm until v1 has run 
 - [#26](https://github.com/Walgermo/booki/issues/26) Test coverage in CI and the README: a measured number, so the coverage claim can be checked.
 - [#25](https://github.com/Walgermo/booki/issues/25) Migration guide for one screen, with times from the product pilot: a team should see what moving one existing screen takes, in real figures.
 - [#32](https://github.com/Walgermo/booki/issues/32) Publish to npm after v1 has run in a real product: the packages go to npm once a real product has used them.
-- [#20](https://github.com/Walgermo/booki/issues/20) Mark what is supported and what is experimental: done in this change, so React with the NO and US profiles is supported and the rest is experimental.
 
 ## After v1
 
 Benchmarks:
 
-- [#12](https://github.com/Walgermo/booki/issues/12) Remeasure the voucher, sales invoice and inbox benchmarks with newer models.
+- [#12](https://github.com/Walgermo/booki/issues/12) Remeasure the voucher, sales invoice and inbox benchmarks with Haiku and DeepSeek, and put the withdrawn results back on the site.
 - [#13](https://github.com/Walgermo/booki/issues/13) Measure Booki against an agent that works through an API or an MCP server.
 - [#14](https://github.com/Walgermo/booki/issues/14) Write the hard benchmark tasks before Booki runs them, so they are not tuned to it.
 - [#15](https://github.com/Walgermo/booki/issues/15) Run 30 times per cell, with spread and confidence intervals.
