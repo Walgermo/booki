@@ -26,6 +26,8 @@ export type Options = {
   denied?: Record<string, string>;
   /** Characters a withdrawal reason needs. Default 20. */
   minReason?: number;
+  /** Refuse a signature while the document has open points. Default false: they go with the signature. */
+  blockOpenPoints?: boolean;
   onDocumentChange?: (
     document: SignableDocument,
     details: { reason: string; source?: string; cancel?: () => void },
@@ -42,13 +44,16 @@ export type LevelView = {
   openPoints?: string[];
 };
 
-export function derive(document: SignableDocument) {
-  const obstacles = signObstacles(document).map((code) => msg(code, { id: document.id }));
+export function derive(document: SignableDocument, options: { blockOpenPoints?: boolean } = {}) {
+  const obstacles = signObstacles(document, { blockOpenPoints: options.blockOpenPoints }).map((code) =>
+    msg(code, { id: document.id, count: document.openPoints.length }),
+  );
   return {
     version: document.version,
     openPoints: document.openPoints,
     obstacles,
     signable: obstacles.length === 0,
+    blockOpenPoints: Boolean(options.blockOpenPoints),
     levels: signoffStates(document).map(
       ({ level, mark, signature }): LevelView => ({
         level,
@@ -68,7 +73,8 @@ const EMPTY: SignableDocument = { id: "", version: 0, saveState: "saved", openPo
  * bound to the version signed. An agent reads every level, its mark ("changed
  * after sign-off", "basis changed") and what stops a signature, and may ask
  * `assertSignable`. Signing and withdrawing are a person's buttons, never
- * agent actions; open points never stop them, they go with the signature.
+ * agent actions. Open points never stop a signature unless `blockOpenPoints` is
+ * on; then they do, and the points stay with the record. Withdrawing is never blocked.
  */
 export const documentSignoff = definePrimitive({
   name: "document-signoff",
@@ -79,21 +85,23 @@ export const documentSignoff = definePrimitive({
     actorName: "string",
     denied: "value",
     minReason: "number",
+    blockOpenPoints: "boolean",
     onDocumentChange: "callback",
   },
-  controlled: ["version", "levels", "openPoints", "obstacles", "signable"],
+  controlled: ["version", "levels", "openPoints", "obstacles", "signable", "blockOpenPoints"],
   state: (options: Options) => {
     const document = options.document ?? options.defaultDocument ?? EMPTY;
-    return { document, refusal: "", drafts: {} as Record<string, string>, ...derive(document) };
+    return { document, refusal: "", drafts: {} as Record<string, string>, ...derive(document, options) };
   },
   sync: (options: Options) =>
-    options.document === undefined ? {} : { document: options.document, ...derive(options.document) },
+    options.document === undefined ? {} : { document: options.document, ...derive(options.document, options) },
   api: (context) => {
     const change = createChange(context);
     const now = () => new Date().toISOString();
     const commit = (next: SignableDocument, reason: string, event?: Event) => {
       const ok = change("document", next, { reason, event });
-      if (ok && context.options().document === undefined) context.store.set({ refusal: "", ...derive(next) });
+      if (ok && context.options().document === undefined)
+        context.store.set({ refusal: "", ...derive(next, context.options()) });
       else if (ok) context.store.set({ refusal: "" });
       return ok;
     };
@@ -120,8 +128,9 @@ export const documentSignoff = definePrimitive({
     return {
       /** Agent: throws with what stops a signature now (technical facts only); open points do not. */
       assertSignable: () => {
-        const [first] = signObstacles(context.store.get().document);
-        if (first) throw new BookiError(first, { id: context.store.get().document.id });
+        const document = context.store.get().document;
+        const [first] = signObstacles(document, { blockOpenPoints: context.options().blockOpenPoints });
+        if (first) throw new BookiError(first, { id: document.id, count: document.openPoints.length });
         return { signable: true, openPoints: context.store.get().document.openPoints.length };
       },
       // Everything below is for a person. It is not in `agent.actions`, so the
@@ -133,7 +142,9 @@ export const documentSignoff = definePrimitive({
           refuseDenied(context.options(), `sign-${which}`);
           const name = context.options().actorName;
           return commit(
-            signDocument(context.store.get().document, which, { id: person(), ...(name ? { name } : {}) }, now()),
+            signDocument(context.store.get().document, which, { id: person(), ...(name ? { name } : {}) }, now(), {
+              blockOpenPoints: context.options().blockOpenPoints,
+            }),
             `sign-${which}`,
             event,
           );

@@ -84,6 +84,8 @@ export type DocumentSignoffProps = {
   actor?: string;
   actorName?: string;
   minReason?: number;
+  /** Refuse a signature while the document has open points. Default false: they go with the signature. */
+  blockOpenPoints?: boolean;
   nameOf?: (id: string) => ReactNode;
   /** A signing time as the person reads it. */
   formatTime?: (iso: string) => string;
@@ -112,6 +114,7 @@ function DocumentSignoff({
   actor,
   actorName,
   minReason = 20,
+  blockOpenPoints,
   nameOf = (id) => id,
   formatTime = (iso) => iso.slice(0, 10),
   className,
@@ -138,6 +141,7 @@ function DocumentSignoff({
       actorName={actorName}
       denied={access.denied}
       minReason={minReason}
+      blockOpenPoints={blockOpenPoints}
       className={className}
       aria-label={ariaLabel ?? copy.label}
     >
@@ -212,7 +216,7 @@ function DocumentSignoff({
                   );
                 })}
             </ol>
-            {open ? <p data-slot="document-signoff-open">{copy.openPoints(open)}</p> : null}
+            {open && !blockOpenPoints ? <p data-slot="document-signoff-open">{copy.openPoints(open)}</p> : null}
             {state.refusal ? (
               <p data-slot="document-signoff-error" role="alert">
                 {say(state.refusal)}
