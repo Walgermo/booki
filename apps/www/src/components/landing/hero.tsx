@@ -31,8 +31,8 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           mark={t("agentic", "agentisk")}
           // Booki is for more than an ERP: the last word turns through the systems its controls cover.
           rotate={t(
-            "ERP|accounting app|invoicing tool|audit software|expense app",
-            "ERP-system|regnskapssystem|fakturasystem|revisjonsverktøy|utleggssystem",
+            "ERP|invoicing tool|payments app|audit software|expense app",
+            "ERP-system|fakturasystem|betalingsløsning|revisjonsverktøy|utleggssystem",
           ).split("|")}
           markRef={markRef}
         />
