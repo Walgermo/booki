@@ -310,8 +310,8 @@ export function FeaturesPage() {
         id="fit"
         title={t("Fits the product you have", "Passer inn i produktet du har")}
         note={t(
-          "React, Web Components, Vue, Svelte and Solid, from one definition.",
-          "React, Web Components, Vue, Svelte og Solid, fra én definisjon.",
+          "React (supported), and Vue, Svelte, Solid and Web Components (experimental), from one definition.",
+          "React (støttet), og Vue, Svelte, Solid og Web Components (eksperimentelle), fra én definisjon.",
         )}
       >
         <div className="grid gap-5">
@@ -327,8 +327,8 @@ export function FeaturesPage() {
                 "Eksakt omregning fra desimaltekst i databasen til hele øre, og tilbake.",
               ),
               t(
-                "Norwegian and US profiles, with starters for Sweden, Denmark, the UK and Germany.",
-                "Norsk og amerikansk profil, med startprofiler for Sverige, Danmark, Storbritannia og Tyskland.",
+                "Norwegian and US profiles (supported), with experimental starters for Sweden, Denmark, the UK and Germany.",
+                "Norsk og amerikansk profil (støttet), med eksperimentelle startprofiler for Sverige, Danmark, Storbritannia og Tyskland.",
               ),
             ]}
           />

@@ -2,8 +2,8 @@
 name: booki
 description: >-
   Installs and wires Booki (@booki/core, @booki/react, @booki/styles) into a
-  React 19, Vue, Svelte, Solid or Web Components app — BookiLocaleProvider, agent-ready accounting primitives, and
-  createBookiAgent. Use when adding Booki, agent-first accounting controls, AmountField,
+  React 19 (supported), or Vue, Svelte, Solid or Web Components (experimental) app — BookiLocaleProvider,
+  agent-ready accounting primitives, and createBookiAgent. Use when adding Booki, agent-first accounting controls, AmountField,
   VoucherComposer, bank/KID inputs, or agent-operated ledger UI.
 ---
 
@@ -31,6 +31,20 @@ https://raw.githubusercontent.com/Walgermo/booki/main/docs/drop-in.md
 Fully implement Booki in the user's app: packages, locale provider, styles,
 domain primitives the product needs, and an agent bridge with human gates for
 money movement.
+
+## Support
+
+Supported: React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and
+`@booki/styles`) with the Norway (NO) and United States (US) country profiles.
+
+Experimental: Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`,
+`@booki/solid`, `@booki/web`), and the Sweden (SE), Denmark (DK), United Kingdom (GB)
+and Germany (DE) starter profiles. Experimental means the packages work and come from
+the same primitives, but they have less testing and their API may change between
+releases without notice.
+
+Rule for the agent: when the app is not React, or the country is not NO or US, tell
+the person that the setup is experimental before you wire it.
 
 ## 1. Install
 
@@ -236,7 +250,7 @@ actions, `controlled` state, `data-agent-confirm` on irreversible buttons), then
 create its parts with `createParts`, with your own tags and names, or keep the control
 you have inside a root made with `usePrimitive` and `usePart`. A whole example:
 https://raw.githubusercontent.com/Walgermo/booki/main/docs/own-controls.md The same
-primitive renders in React, Vue, Svelte, Solid and Web Components. A Booki
+primitive renders in React (supported), and in Vue, Svelte, Solid and Web Components (experimental). A Booki
 control under your own names: `createParts` with its definition from
 `@booki/primitives`.
 
@@ -320,7 +334,7 @@ Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
 - Wrap the app in `BookiAccessProvider` with the signed-in actor and roles; the
   controls then refuse a button the role does not allow. The server must still check:
   see section 6
-- Countries beyond NO/US/SE/DK/GB/DE: `defineProfile` + the provider's `profiles` prop
+- Countries beyond NO/US (supported) and SE/DK/GB/DE (experimental): `defineProfile` + the provider's `profiles` prop
 
 ## 6. The same rules on the server
 

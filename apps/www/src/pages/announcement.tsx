@@ -323,8 +323,8 @@ export function AnnouncementPage() {
             )}
           </p>
           <p className="mt-4 mb-0 text-sm text-muted-foreground">
-            Stian Walgermo · {t("MIT licence", "MIT-lisens")} · React, Web Components, Vue, Svelte {t("and", "og")}{" "}
-            Solid
+            Stian Walgermo · {t("MIT licence", "MIT-lisens")} · React {t("(supported)", "(støttet)")}, Web Components,
+            Vue, Svelte {t("and", "og")} Solid {t("(experimental)", "(eksperimentelle)")}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button asChild size="lg">
