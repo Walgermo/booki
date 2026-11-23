@@ -266,7 +266,7 @@ function Close() {
           <p className="landing-hero__lede mt-5 mb-0">
             {t(
               "It does the routine part where you can see it, and stops where a person has to decide.",
-              "Den gjør rutinearbeidet der du ser det, og stopper der en person må bestemme.",
+              "Den gjør rutinearbeidet der dere ser det, og stopper der en person må bestemme.",
             )}
           </p>
         </div>
@@ -283,7 +283,7 @@ function Close() {
           <p className="m-0 text-sm text-muted-foreground">
             {t(
               "This run is a fixed script sending real actions. To use a real model, ask it yourself at the bottom of the page.",
-              "Denne kjøringen er et fast skript som sender ekte handlinger. Vil du bruke en ekte modell, spør den selv nederst på siden.",
+              "Denne kjøringen er et fast skript som sender ekte handlinger. Vil dere bruke en ekte modell, spør den selv nederst på siden.",
             )}
           </p>
         </div>
@@ -365,7 +365,7 @@ function Close() {
                 {" · "}
                 {t(
                   "marked with a lime edge until you have looked",
-                  "merket med en limegrønn kant til du har sett på dem",
+                  "merket med en limegrønn kant til dere har sett på dem",
                 )}
               </span>
             </span>
@@ -421,7 +421,7 @@ function Close() {
         title={t("Bank", "Bank")}
         note={t(
           "A rule matched what was unambiguous. The agent suggests the rest; you approve.",
-          "En regel koblet det som var entydig. Agenten foreslår resten; du godkjenner.",
+          "En regel koblet det som var entydig. Agenten foreslår resten; dere godkjenner.",
         )}
       >
         <BankReconciliation

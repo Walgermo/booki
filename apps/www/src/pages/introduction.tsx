@@ -31,21 +31,21 @@ const CONTRACT: { rule: Text; how: Text }[] = [
     rule: { en: "People approve what leaves the account", nb: "Mennesker godkjenner det som forlater kontoen" },
     how: {
       en: "Posting, paying and attesting are marked for a person. An agent’s press fails unless your app says yes.",
-      nb: "Bokføring, betaling og attestering er merket for en person. Et trykk fra en agent feiler med mindre appen din sier ja.",
+      nb: "Bokføring, betaling og attestering er merket for en person. Et trykk fra en agent feiler med mindre appen deres sier ja.",
     },
   },
   {
     rule: { en: "Bank details stay unread", nb: "Bankopplysninger forblir uleste" },
     how: {
       en: "Account numbers, IBAN and KID read as [redacted] in snapshots, results and change events.",
-      nb: "Kontonumre, IBAN og KID leses som [redacted] i snapshots, resultater og endringshendelser.",
+      nb: "Kontonumre, IBAN og KID leses som [redacted] i øyeblikksbilder, resultater og endringshendelser.",
     },
   },
   {
     rule: { en: "Agent edits are attributable", nb: "Endringer fra en agent kan spores" },
     how: {
       en: "Every change reports whether an agent or a person made it, so your audit log can name the actor.",
-      nb: "Hver endring sier om en agent eller en person gjorde den, så revisjonssporet ditt kan navngi hvem.",
+      nb: "Hver endring sier om en agent eller en person gjorde den, så revisjonssporet deres kan navngi hvem.",
     },
   },
 ];
@@ -110,7 +110,7 @@ export function IntroductionPage() {
       <p className="mt-3 mb-0 max-w-prose text-sm text-muted-foreground">
         {t(
           "Every component page shows what the agent reads beside what the person sees, so you can check each rule against the real control.",
-          "Hver komponentside viser hva agenten leser ved siden av det personen ser, så du kan sjekke hver regel mot den ekte kontrollen.",
+          "Hver komponentside viser hva agenten leser ved siden av det personen ser, så dere kan sjekke hver regel mot den ekte kontrollen.",
         )}
       </p>
 

@@ -27,12 +27,12 @@ export function Hero({ agent }: { agent: LandingAgent }) {
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
         <HeroTitle
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
-          text={t("Get agentic UI for your ERP", "Få agentisk UI til ditt ERP-system")}
+          text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
           mark={t("agentic", "agentisk")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
-          {t("Make your code agentic with Booki.", "Gjør koden din agentisk med Booki.")}
+          {t("Make your code agentic with Booki.", "Gjør koden deres agentisk med Booki.")}
         </p>
         {/* One figure per measurement, the median; the ranges are in the strip below the demo. */}
         <dl className="landing-hero__stats">

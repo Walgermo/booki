@@ -217,7 +217,7 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
       ),
       source: t(
         `Scripted best case against a DOM snapshot of Tripletex's voucher screen: ${int(billed(VOUCHER.acc))} tokens against ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} tool calls against ${VOUCHER.raw.calls}.`,
-        `Skriptet beste tilfelle mot et DOM-snapshot av bilagsskjermbildet i Tripletex: ${int(billed(VOUCHER.acc))} tokens mot ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} verktøykall mot ${VOUCHER.raw.calls}.`,
+        `Skriptet beste tilfelle mot et DOM-øyeblikksbilde av bilagsskjermbildet i Tripletex: ${int(billed(VOUCHER.acc))} tokens mot ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} verktøykall mot ${VOUCHER.raw.calls}.`,
       ),
     },
     {
@@ -399,7 +399,7 @@ const SHORTFALLS = (t: T): string[] => [
   ),
   t(
     "Outside React the controls come as parts, so you write the markup around them (rows, options). The agent cursor works everywhere through <booki-agent-cursor>.",
-    "Utenfor React kommer kontrollene som deler, så du skriver markupen rundt dem (rader, valg). Agentmarkøren virker overalt via <booki-agent-cursor>.",
+    "Utenfor React kommer kontrollene som deler, så dere skriver markupen rundt dem (rader, valg). Agentpekeren virker overalt via <booki-agent-cursor>.",
   ),
   t(
     "Not published to npm yet. Install from the repository for now.",

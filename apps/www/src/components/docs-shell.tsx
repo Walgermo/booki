@@ -13,6 +13,14 @@ import { catalogText, groupName } from "../catalog-nb";
 const groups = ["Getting started", "Core", "React"] as const;
 const REPO_URL = "https://github.com/Walgermo/booki";
 
+// These three pages live outside /docs; the /docs/* paths remain only as redirects for old links.
+const REAL_PAGES: Record<string, string> = { demo: "/demo", "month-end": "/close", "erp-teams": "/erp-teams" };
+
+function docPath(name: string): string {
+  if (name === "introduction") return "/docs";
+  return REAL_PAGES[name] ?? `/docs/${name}`;
+}
+
 function NavGroups() {
   const { lang } = useLang();
   return (
@@ -26,7 +34,7 @@ function NavGroups() {
               .map((item) => (
                 <li key={item.name}>
                   <NavLink
-                    to={item.name === "introduction" ? "/docs" : `/docs/${item.name}`}
+                    to={docPath(item.name)}
                     end={item.name === "introduction"}
                     className="site-nav-link site-docnav-link lg:min-h-9"
                   >
