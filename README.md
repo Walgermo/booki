@@ -36,7 +36,7 @@ and stop where a person has to decide. Your server checks the same rules again.
 ## Quick start
 
 Booki is not on npm yet: it is published once v1 has run in a real product.
-Until then, the skill packs it from a clone. Give it to your coding agent:
+Until then, the skill packs it from a clone. What comes next is in [`ROADMAP.md`](ROADMAP.md). Give it to your coding agent:
 
 - **In your app, with a coding agent:** load the skill, or copy the full setup
   prompt with the button on [booki.dev](https://booki.dev).
@@ -192,6 +192,7 @@ own for the rest. No ERP connectors: your backend stays yours.
 
 Issues and pull requests are welcome. [`CONTRIBUTING.md`](CONTRIBUTING.md) has
 the setup and the rules a review checks; `pnpm check` runs what CI runs.
+The plan for v1 and after is in [`ROADMAP.md`](ROADMAP.md).
 Versions and release notes come from Changesets ([`RELEASING.md`](RELEASING.md)).
 Found a security problem? Report it privately ([`SECURITY.md`](SECURITY.md)).
 
