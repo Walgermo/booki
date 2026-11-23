@@ -1,0 +1,132 @@
+import { closest, LISTED_WHOLE } from "@booki/core/closest";
+import { BookiError } from "@booki/core/msg";
+import { lockOptions, lockState } from "@booki/primitives/lock";
+import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
+
+/**
+ * The code kind of `useBookiField`: a select the product already has, whose
+ * value is one of a closed list. The snapshot lists the items of a short list
+ * and none of a long one; `query({ within })` searches all of them.
+ *
+ * The list helpers are those of `@booki/primitives/offered` (`shownItems`,
+ * `itemsHint`, `refuseUnknown`). That module has no subpath export, so they
+ * are written out here from the same `@booki/core/closest` helpers.
+ *
+ * Renders as `<div role="group" data-slot="field-code">`.
+ */
+
+export type BookiFieldCodeItem = { value: string; label: string };
+
+export type BookiFieldCodeOptions = {
+  value?: string;
+  options?: BookiFieldCodeItem[];
+  disabled?: boolean;
+  readOnly?: boolean;
+  onValueChange?: (code: string, details: { reason: string; source?: string }) => void;
+};
+
+export type BookiFieldCodeState = {
+  code: string;
+  /** Every item, which the agent's `query` searches. */
+  options: BookiFieldCodeItem[];
+  /** The items the snapshot shows: all of a short list, none of a long one. */
+  items: BookiFieldCodeItem[];
+  itemsHint: string;
+  refusal: string | null;
+  disabled: boolean;
+  readOnly: boolean;
+};
+
+const shownItems = (items: BookiFieldCodeItem[]): BookiFieldCodeItem[] => (items.length <= LISTED_WHOLE ? items : []);
+
+const itemsHint = (items: BookiFieldCodeItem[]): string =>
+  items.length <= LISTED_WHOLE
+    ? ""
+    : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists the first 50.`;
+
+/** Throws the refusal for a value the list lacks: every label of a short list, the nearest of a long one. */
+function refuseUnknown(items: BookiFieldCodeItem[], raw: unknown): never {
+  const value = String(raw).slice(0, 80);
+  if (items.length <= LISTED_WHOLE) {
+    throw new BookiError("field.unknown-code", {
+      value,
+      items: items.map((item) => item.label).join(", ") || "(none)",
+    });
+  }
+  const near = closest(items, raw, (item) => item.label, 8);
+  throw new BookiError("field.unknown-code-more", {
+    value,
+    items: near.map((item) => item.label).join(", "),
+    count: items.length,
+  });
+}
+
+export const bookiFieldCode = definePrimitive({
+  name: "field-code",
+  options: {
+    value: "string",
+    options: "value",
+    ...lockOptions,
+    onValueChange: "callback",
+  },
+  controlled: ["code", "items", "itemsHint", "refusal"],
+  state: (options: BookiFieldCodeOptions): BookiFieldCodeState => {
+    const all = options.options ?? [];
+    return {
+      code: options.value ?? "",
+      options: all,
+      items: shownItems(all),
+      itemsHint: itemsHint(all),
+      refusal: null,
+      ...lockState(options),
+    };
+  },
+  sync: (options: BookiFieldCodeOptions): Partial<BookiFieldCodeState> => {
+    const next: Partial<BookiFieldCodeState> = { ...lockState(options) };
+    if (options.value !== undefined) next.code = options.value;
+    if (options.options !== undefined) {
+      next.options = options.options;
+      next.items = shownItems(options.options);
+      next.itemsHint = itemsHint(options.options);
+    }
+    return next;
+  },
+  api: (context) => {
+    const change = createChange(context);
+
+    function commit(next: string, reason: string, event?: Event): boolean {
+      const { code } = context.store.get();
+      if (next === code) return false;
+      // The product hears the change first and may cancel it.
+      if (dispatch(context, "onValueChange", next, { reason, event })) return false;
+      const ok = change("code", next, { reason, event });
+      // Controlled: the product passes the value back through sync; until it
+      // does, the field keeps the value it holds.
+      if (ok && context.options().value !== undefined) context.store.set({ code });
+      return ok;
+    }
+
+    return {
+      /** Agent and product path: one of the options' `value`. Throws a sentence that lists what exists. */
+      setCode: (code: string, event?: Event): boolean => {
+        const { options } = context.store.get();
+        if (!options.some((option) => option.value === code)) refuseUnknown(options, code);
+        return commit(code, "set-code", event);
+      },
+      items: (): BookiFieldCodeItem[] => context.store.get().options,
+      showRefusal: (message: string | null) => context.store.set({ refusal: message }),
+    };
+  },
+  slots: (slot) => ({
+    root: slot({
+      role: "group",
+      attrs: (state) => ({
+        "data-slot": "field-code",
+        "data-disabled": state.disabled ? "" : undefined,
+        "data-readonly": state.readOnly ? "" : undefined,
+      }),
+      state: (state) => ({ code: state.code, refusal: state.refusal }),
+    }),
+  }),
+  agent: { actions: ["setCode"], items: (api) => api.items() },
+});

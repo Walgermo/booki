@@ -533,6 +533,9 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Ingen valuta "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en.',
   "select.unknown-period": 'Ingen periode "{value}". Valg: {items}.',
   "select.unknown-attestation": 'Ingen attestasjonsstatus "{value}". Valg: {items}.',
+  "field.unknown-code": 'Ingen valg "{value}". Valg: {items}.',
+  "field.unknown-code-more":
+    'Ingen valg "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',
   "amount.not-minor":
     "Beløpet må være et sikkert heltall i minste enhet (f.eks. 12500 = 125,00 {currency}), fikk {value}.",
   "amount.below-min": "Beløpet {minor} (minste enhet) er under minMinor {min}.",

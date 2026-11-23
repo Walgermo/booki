@@ -271,6 +271,7 @@ export * from "./bar-chart.js";
 export * from "./kpi-stat.js";
 export * from "./aging-chart.js";
 export * from "./cashflow-waterfall.js";
+export * from "./use-booki-field.js";
 
 /**
  * Wrap a component of your own so the agent operates it like Booki's controls:
