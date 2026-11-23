@@ -6,6 +6,15 @@ tokens, calls, time and cost of each counted from the API's own `usage`.
 
 How it is built, what it counts and where it can be wrong: [METHOD.md](METHOD.md).
 
+
+> **Corrected 23 November 2026.** The voucher and sales invoice results below
+> are withdrawn: the Booki control's format hint held the task's answer
+> (VoucherComposer: account 6800, 1550000 øre, VAT code 1; InvoiceEditor: the
+> sales invoice's first line). The inbox's hint named the VAT code the task
+> asks for. The hints are changed and a test keeps task answers out of every
+> hint; these tasks will be run again. [RUNS.md](RUNS.md) lists every run,
+> counted or not.
+
 ## Real-model results, 21 November 2026
 
 Run with `pnpm proof` through Vercel AI Gateway: five runs per page, effort

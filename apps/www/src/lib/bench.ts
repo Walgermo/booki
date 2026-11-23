@@ -161,7 +161,20 @@ export type RealSide = {
   wallMs: number;
 };
 
-const REAL: RealSide[] = ((data as { real?: { sides: RealSide[] } }).real?.sides ?? []) as RealSide[];
+/**
+ * Tasks whose real-model results are withdrawn: a control's format hint gave
+ * their answer away (the voucher's account, amount and VAT code; the sales
+ * invoice's first line). They are shown again once remeasured with hints that
+ * no task's answer is in (packages/primitives/src/no-task-answers.test.ts).
+ */
+export const WITHDRAWN: readonly string[] = ["voucher", "sales-invoice"];
+
+const REAL: RealSide[] = (((data as { real?: { sides: RealSide[] } }).real?.sides ?? []) as RealSide[]).filter(
+  (side) => !WITHDRAWN.includes(side.task),
+);
+
+/** Every real-model result still counted, for a task. */
+export const realOf = (task: string): RealSide[] => REAL.filter((side) => side.task === task);
 
 /** The real-model result for a task, model (by prefix, e.g. "anthropic/") and screen, if it was run. */
 export function realFor(task: BenchTask, model: string, key: string): RealSide | undefined {
@@ -209,17 +222,26 @@ const median = (values: number[]) => {
 };
 
 /**
- * The landing page's three figures, from the real runs: right on Booki against
- * right on the rebuilt screens, and the median cost and time ratio of the same
- * model on the same task, Booki against the Tripletex rebuild.
+ * The landing page's figures, from the real runs still counted: right on Booki
+ * against right on the rebuilt screens, and for cost and time the median of
+ * one ratio per pair (the same model on the same task, a rebuilt screen
+ * against Booki) with the lowest and highest, so the spread shows.
  */
 export function proofKpis() {
   const sides = REAL.filter((side) => SCREEN_TASKS.includes(side.task as BenchTask));
   const acc = sides.filter((side) => side.key === "acc");
   const raw = sides.filter((side) => side.key !== "acc");
   const pairs = acc.flatMap((a) =>
-    sides.filter((r) => r.key === "tripletex" && r.task === a.task && r.model === a.model).map((r) => [a, r] as const),
+    sides
+      .filter((r) => (r.key === "tripletex" || r.key === "dnb") && r.task === a.task && r.model === a.model)
+      .map((r) => [a, r] as const),
   );
+  const spread = (ratios: number[]) => ({
+    median: median(ratios),
+    low: Math.min(...ratios),
+    high: Math.max(...ratios),
+  });
+  const costRatios = pairs.filter(([a, r]) => a.costUsd && r.costUsd).map(([a, r]) => r.costUsd! / a.costUsd!);
   const sum = (list: RealSide[], pick: (side: RealSide) => number) => list.reduce((n, side) => n + pick(side), 0);
   // Before and after are medians per run; each factor is their ratio, so the
   // three numbers shown for a figure always agree.
@@ -238,7 +260,9 @@ export function proofKpis() {
     models: new Set(acc.map((side) => side.model)).size,
     cost,
     wallMs,
-    cheaper: cost.before / cost.after,
-    faster: wallMs.before / wallMs.after,
+    pairs: pairs.length,
+    tasks: new Set(acc.map((side) => side.task)).size,
+    cheaper: spread(costRatios),
+    faster: spread(pairs.map(([a, r]) => r.wallMs / a.wallMs)),
   };
 }

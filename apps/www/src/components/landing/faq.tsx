@@ -38,15 +38,15 @@ const ITEMS: Item[] = [
   {
     q: ["Which AI models does it work with?", "Hvilke AI-modeller fungerer det med?"],
     a: [
-      "Any model that can call tools. Measured: Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash were right every time on Booki, also the cheapest ones. On screens rebuilt from Tripletex and DNB Regnskap the same models were right 83 % of the time.",
-      "Alle modeller som kan kalle verktøy. Målt: Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash fikk det riktig hver gang på Booki, også de billigste. På skjermbilder gjenskapt fra Tripletex og DNB Regnskap fikk de samme modellene det riktig 83 % av gangene.",
+      "Any model that can call tools. Measured with Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash. Opus and Sonnet do these tasks right without Booki too; for them Booki saves cost and time. For the cheap models it is whether the books come out right: on our rebuilt screens they were right about four times in five, on Booki every time in the runs still counted. Five runs per cell is few, so read it as an indication.",
+      "Alle modeller som kan kalle verktøy. Målt med Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash. Opus og Sonnet klarer disse oppgavene uten Booki også; for dem sparer Booki kostnad og tid. For de billige modellene gjelder det om regnskapet blir riktig: på våre gjenskapte skjermbilder fikk de det riktig omtrent fire av fem ganger, på Booki hver gang i kjøringene som fortsatt telles. Fem kjøringer per celle er lite, så les det som en pekepinn.",
     ],
   },
   {
     q: ["Where do the numbers come from?", "Hvor kommer tallene fra?"],
     a: [
-      "From real runs through Vercel AI Gateway: the same task, five runs per screen and model, the result checked after every run, cost at list price. The screens were rebuilt from DOM snapshots with invented data, never run against Tripletex or DNB themselves. Every page, script and call is in the repository: pnpm proof.",
-      "Fra ekte kjøringer gjennom Vercel AI Gateway: samme oppgave, fem kjøringer per skjermbilde og modell, resultatet kontrollert etter hver kjøring, kostnad til listepris. Skjermbildene er gjenskapt fra DOM-snapshots med oppdiktede data, aldri kjørt mot Tripletex eller DNB selv. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.",
+      "From real runs through Vercel AI Gateway: the same task, five runs per screen and model, the result checked after every run, cost at list price. The screens were rebuilt from DOM snapshots with invented data, never run against Tripletex or DNB themselves. Every page, script and call is in the repository: pnpm proof. The voucher and sales invoice runs are withdrawn: a control's hint held their answer. They come back when remeasured.",
+      "Fra ekte kjøringer gjennom Vercel AI Gateway: samme oppgave, fem kjøringer per skjermbilde og modell, resultatet kontrollert etter hver kjøring, kostnad til listepris. Skjermbildene er gjenskapt fra DOM-snapshots med oppdiktede data, aldri kjørt mot Tripletex eller DNB selv. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen inneholdt svaret. De kommer tilbake når de er målt på nytt.",
     ],
   },
   {

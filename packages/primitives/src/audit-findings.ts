@@ -24,7 +24,7 @@ export { buttonKey } from "./fields.js";
 
 /** How to draft and edit a finding, shown in the snapshot. Amounts are minor units. */
 export const FINDING_FORMAT =
-  'draftFinding({ title, category: "misstatement", basis: "documented", amountMinor: 1250000 }); editFinding(id, { description })';
+  'draftFinding({ title, category: "misstatement", basis: "documented", amountMinor: 860000 }); editFinding(id, { description })';
 
 /** What `draftFinding` takes. */
 export const DRAFT_FIELDS = ["title", "category", "basis", "description", "amountMinor", "currency"] as const;
@@ -33,7 +33,7 @@ export const DRAFT_FIELDS = ["title", "category", "basis", "description", "amoun
 export const EDIT_FIELDS = ["title", "code", "description", "category", "amountMinor", "currency"] as const;
 
 const DRAFT_EXAMPLE =
-  '{ "title": "Revenue cut-off", "category": "misstatement", "basis": "documented", "amountMinor": 1250000 }';
+  '{ "title": "Revenue cut-off", "category": "misstatement", "basis": "documented", "amountMinor": 860000 }';
 const EDIT_EXAMPLE = '{ "description": "Two December invoices delivered in January." }';
 
 /** A piece of evidence the host knows about, that a finding can cite. */

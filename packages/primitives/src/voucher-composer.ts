@@ -37,7 +37,7 @@ import { restoreSelect } from "./lock.js";
 
 /** How to write a line, shown in the snapshot. Amounts in minor units; with a VAT code, the amount includes VAT. */
 export const LINE_FORMAT =
-  'addLine({ account: "6800", debitMinor: 1550000, vatCode: "1" }) is 15 500,00 incl. VAT, in minor units; setDebit/setCredit(lineId, minor)';
+  'addLine({ account: "7140", debitMinor: 250000, vatCode: "11" }) is 2 500,00 incl. VAT, in minor units; setDebit/setCredit(lineId, minor)';
 
 /** The fields an object given to addLine may carry. */
 export const LINE_FIELDS = [
@@ -178,7 +178,7 @@ const RESTORE_FIELDS = [
   "dimensions",
   "foreign",
 ] as const;
-const LINE_EXAMPLE = '{ "id": "l1", "account": "6800", "debitMinor": 155000, "creditMinor": 0, "vatCode": "1" }';
+const LINE_EXAMPLE = '{ "id": "l1", "account": "7140", "debitMinor": 250000, "creditMinor": 0, "vatCode": "11" }';
 
 export const voucherComposer = definePrimitive({
   name: "voucher-composer",
