@@ -508,7 +508,7 @@ export const EN = {
     'No currency "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one.',
   "select.unknown-period": 'No period "{value}". Its items: {items}.',
   "select.unknown-attestation": 'No attestation status "{value}". Its items: {items}.',
-  "field.unknown-code": 'No option "{value}". Its items: {items}.',
+  "field.unknown-code": 'No option "{value}". The options, as value (label): {items}.',
   "field.unknown-code-more":
     'No option "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',
   "amount.not-minor": "Amount must be a safe integer in minor units (e.g. 12500 = 125.00 {currency}), got {value}.",

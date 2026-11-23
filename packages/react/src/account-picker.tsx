@@ -28,7 +28,8 @@ export type AccountPickerProps = {
   value?: string;
   /** Starting account when uncontrolled. Without one, no account is chosen. */
   defaultValue?: string;
-  onValueChange?: (accountNumber: string) => void;
+  /** Hears every change, with why and from whom: `details.source` is `"agent"` for the agent's. */
+  onValueChange?: (accountNumber: string, details: { reason: string; source?: string }) => void;
   className?: string;
 } & BookiFormProps &
   Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
