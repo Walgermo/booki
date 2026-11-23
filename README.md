@@ -24,7 +24,7 @@
 
 <br>
 
-**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work, for React, Vue, Svelte, Solid and plain HTML.**
+**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work, for React, with experimental Vue, Svelte, Solid and plain HTML support.**
 
 Agents already work in accounting software by reading the screen and typing
 into text boxes. They guess which field is which, type `1.250,00` where the
@@ -138,15 +138,29 @@ one agent operates them all.
 | Package | For |
 | --- | --- |
 | `@booki/react` | React 19: the controls, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
-| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML. |
-| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`). |
+| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML (experimental). |
+| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`) (experimental). |
 | `@booki/core` | The rules, with no framework: money, vouchers, reconciliation, approvals, period locks, close, invoices, payment batches, supplier invoices, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles, and the server guard. |
 | `@booki/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. |
 | `@booki/styles` | The optional default look, "Paper and Ink", as CSS variables (`DESIGN.md`). |
 
-Country profiles for Norway, the United States, Sweden, Denmark, the United
-Kingdom and Germany; define your own for the rest. No ERP connectors: your
-backend stays yours.
+## Support
+
+**Supported:**
+
+- React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and `@booki/styles`)
+- The Norway (NO) and United States (US) country profiles
+
+**Experimental:**
+
+- Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`, `@booki/solid`, `@booki/web`). They work and are generated from the same primitives, but they have less testing, their API may change between releases without notice, and they are not covered by the Agent Contract guarantees.
+- The Sweden (SE), Denmark (DK), United Kingdom (GB) and Germany (DE) starter profiles.
+
+## Country profiles
+
+Norway and the United States are supported country profiles. Sweden, Denmark,
+the United Kingdom and Germany are experimental starter profiles; define your
+own for the rest. No ERP connectors: your backend stays yours.
 
 ## Examples
 

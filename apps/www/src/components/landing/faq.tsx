@@ -31,8 +31,8 @@ const ITEMS: Item[] = [
   {
     q: ["Do we have to rebuild our frontend?", "Må vi bygge om frontenden?"],
     a: [
-      "No. Start with one screen: swap the fields that hold money, accounts, dates and references for Booki controls and keep your backend. It works in React, Vue, Svelte, Solid and plain web components.",
-      "Nei. Start med ett skjermbilde: bytt feltene som holder beløp, konto, dato og referanser til Booki-kontroller, og behold backenden. Det virker i React, Vue, Svelte, Solid og rene web components.",
+      "No. Start with one screen: swap the fields that hold money, accounts, dates and references for Booki controls and keep your backend. It works in React (supported), and in Vue, Svelte, Solid and plain web components (experimental).",
+      "Nei. Start med ett skjermbilde: bytt feltene som holder beløp, konto, dato og referanser til Booki-kontroller, og behold backenden. Det virker i React (støttet), og i Vue, Svelte, Solid og rene web components (eksperimentelle).",
     ],
   },
   {
@@ -59,8 +59,8 @@ const ITEMS: Item[] = [
   {
     q: ["Does it know Norwegian accounting?", "Kan det norsk regnskap?"],
     a: [
-      "Yes. The Norwegian profile checks kontonummer and organisasjonsnummer (mod 11), generates and checks KID, knows the MVA codes and terms, and posts VAT for a coded line. There are profiles for the US, Sweden, Denmark, the UK and Germany too, and you can define your own.",
-      "Ja. Den norske profilen kontrollerer kontonummer og organisasjonsnummer (mod 11), lager og kontrollerer KID, kjenner mva-kodene og terminene, og beregner mva for en linje med mva-kode. Det finnes profiler for USA, Sverige, Danmark, Storbritannia og Tyskland også, og dere kan lage deres egen.",
+      "Yes. The Norwegian profile checks kontonummer and organisasjonsnummer (mod 11), generates and checks KID, knows the MVA codes and terms, and posts VAT for a coded line. The US profile is supported. Starter profiles for Sweden, Denmark, the UK and Germany are experimental, and you can define your own.",
+      "Ja. Den norske profilen kontrollerer kontonummer og organisasjonsnummer (mod 11), lager og kontrollerer KID, kjenner mva-kodene og terminene, og beregner mva for en linje med mva-kode. Den amerikanske profilen er støttet. Startprofilene for Sverige, Danmark, Storbritannia og Tyskland er eksperimentelle, og dere kan lage deres egen.",
     ],
   },
   {

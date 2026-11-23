@@ -1,5 +1,9 @@
 # @booki/vue
 
+Experimental. This adapter is less tested than `@booki/react`, its API may change
+between releases, and it is not covered by the Agent Contract guarantees. See the
+[Support section](https://github.com/Walgermo/booki#support) of the README.
+
 Agent-first accounting controls for Vue. The same rules, state and agent
 actions as `@booki/react`, generated from the same framework-free definitions
 in `@booki/primitives`.
