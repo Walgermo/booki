@@ -18,15 +18,34 @@ export type ElementInfo = {
   /** The element or a descendant uses an icon font, by family or class. */
   iconFont: boolean;
   disabled: boolean;
+  /**
+   * Out of reach of a person and an agent: aria-hidden or inert on it or an
+   * ancestor, type="hidden", not rendered, or visually hidden and out of the
+   * tab order (the native input a UI library puts beside a custom control).
+   */
+  hidden: boolean;
 };
 
 /**
+ * Makes a function that runs in the page carry its own `__name` helper.
+ *
+ * esbuild with `keepNames` (tsx, and any bundler of the caller's that turns it
+ * on) wraps inner functions in `__name(fn, "name")`, a helper defined in the
+ * module, not in the page. Playwright sends only the function's source, so in
+ * a page that has no `__name` of its own the call throws. The function this
+ * returns has the original's source inside a wrapper that defines the helper,
+ * and Playwright serialises that whole source.
+ */
+export function inPage<F extends (...args: never[]) => unknown>(fn: F): F {
+  const source = `(...args) => { const __name = (target) => target; return (${fn.toString()})(...args); }`;
+  return new Function(`return ${source}`)() as F;
+}
+
+/**
  * Runs before any page script. Records WebMCP tool registrations when the
- * browser has no WebMCP of its own, and defines the `__name` helper some
- * TypeScript loaders insert into serialised functions.
+ * browser has no WebMCP of its own.
  */
 export const INIT_SCRIPT = `(() => {
-  globalThis.__name = globalThis.__name || ((fn) => fn);
   const tools = [];
   Object.defineProperty(globalThis, "__readinessTools", { value: tools, configurable: true });
   const context = {
@@ -136,6 +155,24 @@ export function describeElement(element: Element): ElementInfo {
     return text.length > 220 ? `${text.slice(0, 217)}…` : text;
   };
 
+  const hiddenFromPeople = (el: Element): boolean => {
+    if (el.getAttribute("type")?.toLowerCase() === "hidden" && el.tagName === "INPUT") return true;
+    if (el.closest("[aria-hidden=true], [inert]")) return true;
+    if (el instanceof HTMLElement && el.hidden) return true;
+    for (let node: Element | null = el; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden" || style.visibility === "collapse") return true;
+    }
+    // Visually hidden and not reachable with Tab: no person can get to it.
+    if ((el as HTMLElement).tabIndex < 0) {
+      const style = getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      const clipped = /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test(style.clip) || style.clipPath === "inset(50%)";
+      if (Number(style.opacity) === 0 || box.width <= 1 || box.height <= 1 || clipped) return true;
+    }
+    return false;
+  };
+
   const confirmHost = element.closest("[data-agent-confirm]");
   return {
     tag: element.tagName.toLowerCase(),
@@ -147,6 +184,7 @@ export function describeElement(element: Element): ElementInfo {
     secret: element.closest("[data-agent-secret]") !== null,
     iconFont: usesIconFont(element),
     disabled: (element as HTMLButtonElement).disabled === true || element.getAttribute("aria-disabled") === "true",
+    hidden: hiddenFromPeople(element),
   };
 }
 

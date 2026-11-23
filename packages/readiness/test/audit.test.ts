@@ -46,6 +46,17 @@ describe("readiness checks on fixture pages", () => {
     );
   });
 
+  it("skips the hidden inputs UI libraries put beside custom controls, and reports a visible unnamed one", async () => {
+    const report = await run("hidden-inputs");
+    // Base UI / Radix hidden inputs (aria-hidden, tabindex -1, visually hidden),
+    // inert, type="hidden" and display:none inputs are not fields anyone reaches.
+    expect(tally(report)).toEqual({ "field-unnamed": 1 });
+    const visible = report.findings[0]!;
+    expect(visible.element).toMatchObject({ role: "textbox", context: "Referanse" });
+    expect(visible.element?.html).toBe('<input type="text">');
+    expect(report.score).toBe(95);
+  });
+
   it("finds buttons named by an icon font or not at all", async () => {
     const report = await run("buttons");
     expect(tally(report)).toEqual({ "button-icon-name": 3, "button-unnamed": 1 });

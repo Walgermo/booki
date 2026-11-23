@@ -1,0 +1,31 @@
+<!doctype html><html lang="nb"><head><meta charset="utf-8"><title>Hidden inputs</title><script>window.agent = { snapshot: () => [{ ref: "c1", component: "select", label: "Konto", actions: ["select"] }] };</script>
+<style>.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); border: 0; white-space: nowrap; }</style></head>
+<body><main>
+<!-- Base UI Select: a labelled combobox, and the native input it renders for form submission. -->
+<div>
+  <label id="account-label">Konto</label>
+  <button type="button" role="combobox" aria-labelledby="account-label" aria-expanded="false" aria-haspopup="listbox">1920 Bank</button>
+  <input aria-hidden="true" tabindex="-1" name="account" value="1920" class="visually-hidden">
+</div>
+<!-- Radix Checkbox: the bubble input beside the button. -->
+<div>
+  <button type="button" role="checkbox" aria-checked="false" aria-label="Inkluder MVA"></button>
+  <input type="checkbox" aria-hidden="true" tabindex="-1" style="position:absolute;pointer-events:none;opacity:0;margin:0;transform:translateX(-100%)">
+</div>
+<!-- Base UI Radio group: out of the tab order and visually hidden, without aria-hidden. -->
+<div role="radiogroup" aria-label="Periode">
+  <button type="button" role="radio" aria-checked="true">Januar</button>
+  <button type="button" role="radio" aria-checked="false">Februar</button>
+  <input tabindex="-1" name="period" value="01" class="visually-hidden">
+</div>
+<!-- Hidden in other ways. -->
+<div aria-hidden="true"><input name="ancestor-hidden"></div>
+<div inert><input name="inert"></div>
+<input type="hidden" name="token" value="x">
+<input name="not-rendered" style="display:none">
+<!-- A hidden copy does not make a field's name shared. -->
+<label>Beskrivelse <input type="text"></label>
+<label>Beskrivelse <input type="text" aria-hidden="true" tabindex="-1" class="visually-hidden"></label>
+<!-- A real, visible input with no label: still reported. -->
+<div><span>Referanse</span><input type="text"></div>
+</main></body></html>
