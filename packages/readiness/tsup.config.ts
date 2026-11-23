@@ -1,9 +1,20 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/cli.ts"],
+  entry: {
+    index: "src/index.ts",
+    cli: "src/cli.ts",
+    conformance: "src/conformance/index.ts",
+    reference: "src/reference/index.ts",
+  },
   format: ["esm"],
-  dts: { entry: "src/index.ts" },
+  dts: {
+    entry: {
+      index: "src/index.ts",
+      conformance: "src/conformance/index.ts",
+      reference: "src/reference/index.ts",
+    },
+  },
   clean: true,
   target: "node20",
 });
