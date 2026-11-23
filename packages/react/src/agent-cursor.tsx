@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import type { AgentCursorController, AgentCursorState } from "@booki/primitives/agent-cursor";
+import { useBookiLocaleOptional } from "./locale.js";
+import { narrateNorwegian } from "./narrate-nb.js";
 
 export {
   createAgentCursor,
@@ -9,15 +11,17 @@ export {
   type AgentCursorState,
   type AgentCursorStep,
 } from "@booki/primitives/agent-cursor";
+export { narrateNorwegian } from "./narrate-nb.js";
 
 export type AgentCursorProps = {
   cursor: AgentCursorController;
   /** Who is working: shown on the label. */
   label?: ReactNode;
   /**
-   * Show what the agent does next to its name. Default true, in plain English
-   * from the action's name. Pass a function to narrate in your own words or
-   * language: `(state) => "setter beløp"`.
+   * Show what the agent does next to its name. Default true: in Norwegian under
+   * a Norwegian profile (`BookiLocaleProvider`), otherwise plain English from the
+   * action's name. Pass a function to narrate in your own words or language:
+   * `(state) => "setter beløp"`.
    */
   narrate?: boolean | ((state: AgentCursorState) => ReactNode);
 };
@@ -33,6 +37,13 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
   const [view, setView] = useState(() => ({ state: cursor.state(), previous: "idle" as AgentCursorState["phase"] }));
   useEffect(() => cursor.subscribe((next) => setView((now) => ({ state: next, previous: now.state.phase }))), [cursor]);
   const { state } = view;
+  const { profile } = useBookiLocaleOptional();
+  const say =
+    typeof narrate === "function"
+      ? narrate
+      : profile.locale.toLowerCase().startsWith("nb")
+        ? narrateNorwegian
+        : (now: AgentCursorState) => now.action;
 
   // The first appearance jumps; after that the pointer glides between controls.
   const first = state.phase !== "idle" && view.previous === "idle";
@@ -67,7 +78,7 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
             {narrate && state.action ? (
               <span data-slot="agent-cursor-action">
                 {" · "}
-                {typeof narrate === "function" ? narrate(state) : state.action}
+                {say(state)}
                 {state.target ? ` · ${state.target}` : ""}
               </span>
             ) : null}

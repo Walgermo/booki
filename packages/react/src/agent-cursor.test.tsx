@@ -125,7 +125,9 @@ describe("AgentCursor", () => {
     const overlay = document.querySelector('[data-slot="agent-cursor"]')!;
     expect(overlay.getAttribute("aria-hidden")).toBe("true");
     expect(overlay.getAttribute("data-phase")).toBe("done");
-    expect(document.querySelector('[data-slot="agent-cursor-label"]')?.textContent).toMatch(/Agent · set minor 12500/);
+    expect(document.querySelector('[data-slot="agent-cursor-label"]')?.textContent).toMatch(
+      /Agent · setter beløp 12500/,
+    );
   });
 
   it("shows a refusal, and stays out of the way when turned off", async () => {
