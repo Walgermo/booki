@@ -129,7 +129,7 @@ export function looksLikeIconName(name: string, iconFont: boolean): boolean {
 export const IRREVERSIBLE =
   /(^|[^\p{L}])(bokfør|opprett|godkjenn|attester|betal|send|signer|fullfør|frigi|overfør|utbetal|lukk periode|post|pay|approve|submit|finali[sz]e|release|sign[ -]?off|transfer)(e|er)?(?=$|[^\p{L}])/iu;
 
-const PERSON_ACTION =
+export const PERSON_ACTION =
   /^(approve|reject|escalate|release|sign[_-]?off|finali[sz]e|submit|closePeriod|lockPeriod|dispose)/i;
 
 const BROKEN_NAME = /\[object \w+\]|\bundefined\b|\bnull\b|\bNaN\b/;
