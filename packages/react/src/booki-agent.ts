@@ -1,50 +1,43 @@
 import { createHistory, describeEntry, stageChanges } from "@ui-sdk/react/history";
-import { createAgent, registerTools } from "@ui-sdk/react/agent";
-import { BookiError } from "@booki/core/msg";
-import { isPersonOnly } from "@booki/primitives/person-only";
+import { createAgent, registerTools as registerBridgeTools } from "@ui-sdk/react/agent";
+import {
+  bookiAllow,
+  bookiRegisterTools,
+  type AgentDecision,
+  type AgentPolicyOptions,
+} from "@booki/primitives/agent-policy";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
 
-type AllowFn =
-  NonNullable<Parameters<typeof createAgent>[0]> extends {
-    allow?: infer A;
-  }
-    ? A
-    : never;
-
-export type CreateBookiAgentOptions = {
-  /** Decides each resolved step. Confirm-marked steps fail unless this returns true. */
-  allow?: AllowFn;
-  /** Id suffix for audit actors (`agent:${agentId}`). */
-  agentId?: string;
+export type CreateBookiAgentOptions = AgentPolicyOptions & {
+  /** How long a step waits for `allow`, in ms. Default five minutes. */
   timeout?: number;
-  /** Optional workflow/rule version stamped on audit events. */
-  ruleVersion?: string;
 };
 
 /**
  * Finance-tuned agent bridge: irreversible `data-agent-confirm` steps need an
- * explicit `allow` answer (no silent approve). Same snapshot/act/query/subscribe
+ * explicit `allow` answer (no silent approve), and a person's decision
+ * (approve, sign, send, release) is refused whatever `allow` says. With
+ * `audit`, every refused step and every confirmed one is recorded, with who
+ * decided when `allow` answers `{ allow, by }`. Same snapshot/act/query/subscribe
  * surface as `createAgent`.
  */
 function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
-  const { allow, timeout } = options;
-  // With no `allow`, leave it unset: ui-sdk then runs unmarked steps and
-  // refuses `data-agent-confirm` steps with "Needs a person: …", which tells
-  // the agent what to do next. Answering `false` here would read as
-  // "The person said no" although nobody was asked.
-  if (!allow) return createAgent({ timeout });
-  // A person's decision (approve, sign, send, agree) never passes, whatever the
-  // app's `allow` says for confirm-gated steps under its own policy.
-  const guarded: typeof allow = (step, context) => {
-    if (isPersonOnly((step as { confirm?: unknown }).confirm)) {
-      throw new BookiError("agent.person-only", { confirm: String((step as { confirm?: unknown }).confirm) });
-    }
-    return allow(step, context);
-  };
-  return createAgent({ timeout, allow: guarded });
+  const { timeout } = options;
+  // With neither `allow` nor `audit`, leave it unset: the bridge then runs
+  // unmarked steps and refuses `data-agent-confirm` steps with "Needs a
+  // person: …", which tells the agent what to do next. Answering `false` here
+  // would read as "The person said no" although nobody was asked.
+  const allow = bookiAllow(options);
+  return createAgent(allow ? { timeout, allow } : { timeout });
 }
+
+/**
+ * Registers the agent's tools with the browser's own agent (WebMCP). `allow`
+ * decides each step; a person's decision is refused whatever it says.
+ */
+const registerTools = bookiRegisterTools(registerBridgeTools);
 
 export type AttachAuditPush = (event: Omit<AuditEvent, "id" | "at">) => void;
 
@@ -155,4 +148,4 @@ export {
   registerTools,
   stageChanges,
 };
-export type { AgentBridge };
+export type { AgentBridge, AgentDecision };

@@ -12,6 +12,7 @@
  *   1. Signed in?                                   401
  *   2. A person's decision, and the actor an agent? 403
  *   3. Role allows it, in this entity?              403
+ *      And, for an agent acting for someone, theirs? 403 (with `personOf`)
  *   4. Separation of duties against what they did?  403
  *   5. A reason given, where one is required?       422
  *   6. The books allow it (balance, period, approvals, readiness)? 409 or 422
@@ -48,7 +49,8 @@ import { assertPostable, type VoucherBalance, type VoucherLine, type VoucherRule
 /**
  * Who is calling, as your sign-in established it. An agent gets its own
  * credential and comes here as `kind: "agent"`; `onBehalfOf` is the person
- * whose session started it, for the audit trail.
+ * whose session started it. It is recorded, the duty rules count it, and with
+ * `personOf` in the context the person's own roles limit what the agent may do.
  */
 export type ServerActor = Actor & {
   kind: "person" | "agent";
@@ -73,6 +75,19 @@ export type GuardContext = {
   minReason?: number;
   /** Your own permissions that only a person may use, added to `PERSON_ONLY`. */
   personOnly?: Permission[];
+  /**
+   * The person an agent acts for (`actor.onBehalfOf`), with their roles as they
+   * are now. Give it, and an agent may only do what that person may do: an id
+   * it does not know is refused, and so is a permission or entity the person
+   * lacks. Without it `onBehalfOf` is recorded and counts for the duty rules,
+   * but the person's roles are not checked.
+   */
+  personOf?: (id: string) => Actor | undefined;
+  /**
+   * Permissions an agent has by the company's own rule rather than the person's
+   * (approving invoices under a limit, say): `personOf` is not asked for these.
+   */
+  agentOwn?: Permission[];
   /** What has already been done to this item, and by whom, for the duty rules. */
   deeds?: Deed[];
   /** Default: `STANDARD_DUTY_RULES`. Pass `[]` to switch them off. */
@@ -255,6 +270,34 @@ function admit(context: GuardContext, permission: Permission): void {
     });
   }
   assertCan(actor, roles, permission, { entity, scope, deeds, dutyRules });
+  // An agent never does more than the person it acts for could have done.
+  if (actor?.kind === "agent" && actor.onBehalfOf !== undefined && context.personOf) {
+    if (!(context.agentOwn ?? []).includes(permission)) {
+      const person = context.personOf(actor.onBehalfOf);
+      if (!person || person.id !== actor.onBehalfOf) {
+        throw new BookiError("server.delegation-unknown", {
+          agent: String(actor.id),
+          person: String(actor.onBehalfOf),
+        });
+      }
+      if (entity && person.entities && !person.entities.includes(entity)) {
+        throw new BookiError("server.delegation-entity", {
+          agent: String(actor.id),
+          person: String(person.id),
+          entity: String(entity),
+        });
+      }
+      if (!can(person, roles, permission, { scope })) {
+        const able = roles.filter((role) => role.permissions.includes(permission)).map((role) => role.name);
+        throw new BookiError("server.delegation", {
+          agent: String(actor.id),
+          person: String(person.id),
+          permission: String(permission),
+          roles: able.join(", ") || msg("permissions.none-defined"),
+        });
+      }
+    }
+  }
   if (minReason && String(reason ?? "").trim().length < minReason) {
     throw new BookiError("server.reason-required", { min: minReason });
   }

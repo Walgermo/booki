@@ -4,6 +4,7 @@ import {
   type ApprovalRequest,
   type ApprovalState,
 } from "@booki/core/approval";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -29,7 +30,7 @@ export type ApprovalChainProps = {
   defaultRequest?: ApprovalRequest;
   /** Id of the person at the keyboard. */
   actor?: string;
-  onRequestChange?: (request: ApprovalRequest) => void;
+  onRequestChange?: (request: ApprovalRequest, details: BookiChangeDetails) => void;
   /** Show a person's name instead of their id. */
   nameOf?: (id: string) => ReactNode;
   className?: string;

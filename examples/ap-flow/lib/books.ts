@@ -12,7 +12,7 @@ import {
 import { approveSupplierInvoice, rejectSupplierInvoice, type SupplierInvoice } from "@booki/core/supplier-invoice";
 import type { Deed } from "@booki/core/permissions";
 import { CHART, COMPANY, VALUE_DATE, seedInvoices } from "./data";
-import { ROLES } from "./people";
+import { ROLES, personOf } from "./people";
 import { RULE_NAME, smallKnownSupplier } from "./rule";
 
 /**
@@ -39,6 +39,7 @@ export type Write =
   | { action: "prepare-batch" }
   | { action: "batch"; batch: PaymentBatch }
   | { action: "matches"; matches: ReconciliationMatch[] }
+  | { action: "agent-step"; step: string; target: string }
   | { action: "reset" };
 
 export type Answer = { ok: true; books: Books } | (Refusal & { books: Books });
@@ -303,7 +304,14 @@ function writeMatches(books: Books, context: GuardContext, incoming: Reconciliat
  * stay as they were, apart from the refusal in the audit trail.
  */
 export function apply(books: Books, actor: ServerActor | undefined, write: Write): Answer {
-  const context: GuardContext = { actor, roles: ROLES, locale: "nb" };
+  const context: GuardContext = {
+    actor,
+    roles: ROLES,
+    locale: "nb",
+    // The agent may do what the person it works for may do, plus what the company's rule gives it.
+    personOf,
+    agentOwn: ["supplier-invoice.approve-under-rule"],
+  };
   if (write.action === "reset") return { ok: true, books: Object.assign(books, seedBooks()) };
   if (!actor) return { ...refusal(401, "auth.signed-out", "Ingen er logget inn."), books };
 
@@ -321,6 +329,11 @@ export function apply(books: Books, actor: ServerActor | undefined, write: Write
         break;
       case "matches":
         writeMatches(books, context, write.matches);
+        break;
+      case "agent-step":
+        // What the page says an agent was refused. Logged as the agent's, by its credential; it changes nothing.
+        if (actor.kind !== "agent") throw refusal(403, "agent-step.person", "Bare agenten logger egne steg.");
+        log(books, actor, `steg: ${String(write.step).slice(0, 40)}`, String(write.target).slice(0, 80));
         break;
       default:
         throw refusal(400 as Refusal["status"], "write.unknown", "Ukjent handling.");

@@ -206,6 +206,10 @@
       "types": "./dist/table-query.d.ts",
       "default": "./dist/table-query.js"
     },
+    "./agent-policy": {
+      "types": "./dist/agent-policy.d.ts",
+      "default": "./dist/agent-policy.js"
+    },
     "./person-only": {
       "types": "./dist/person-only.d.ts",
       "default": "./dist/person-only.js"

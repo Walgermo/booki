@@ -1,4 +1,4 @@
-import { STANDARD_ROLES, type Role } from "@booki/core/permissions";
+import { STANDARD_ROLES, type Actor, type Role } from "@booki/core/permissions";
 import type { ServerActor } from "@booki/core/server";
 
 /**
@@ -54,6 +54,12 @@ export function actorFor(token: string | null): ServerActor | undefined {
     return { id: AGENT_ID, name: "Agent", kind: "agent", roles: ["bookkeeping-agent"], onBehalfOf: person.id };
   }
   return undefined;
+}
+
+/** A person and their roles as they are now, for an agent that works for them. */
+export function personOf(id: string): Actor | undefined {
+  const person = PEOPLE.find((p) => p.id === id);
+  return person && { id: person.id, name: person.name, roles: [...person.roles] };
 }
 
 export const nameOf = (id: string): string => {

@@ -7,6 +7,7 @@ import {
   type FindingCategory,
   type FindingStatus,
 } from "@booki/core/findings";
+import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -97,7 +98,7 @@ export type AuditFindingsProps = {
   currency?: string;
   actor?: string;
   agentActor?: string;
-  onFindingsChange?: (findings: Finding[]) => void;
+  onFindingsChange?: (findings: Finding[], details: BookiChangeDetails) => void;
   nameOf?: (id: string) => ReactNode;
   className?: string;
   "aria-label"?: string;

@@ -111,7 +111,7 @@ Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`).
 | BankAccountInput | `@booki/react/bank-account-input` | `setKontonummer` / `setRouting` / `setAccount` / `clear` — `isValid`, secret |
 | PaymentReferenceInput | `@booki/react/payment-reference-input` | `setReference`, `generateKid`, `clear` — `isValid`; KID secret |
 | TaxCodeSelect | `@booki/react/tax-code-select` | `setTaxCode`, `clear` — closed `items`, snapshot `percent` |
-| AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart `items` |
+| AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart; over 30 accounts `items` is empty and `itemsHint` says how to `query({ within, text })` |
 | CurrencySelect | `@booki/react/currency-select` | `setCurrency`, `clear` — closed NOK/USD |
 | OrganizationNumberInput | `@booki/react/organization-number-input` | `setOrganizationNumber`, `clear` — orgnr mod11 / EIN |
 | IbanInput | `@booki/react/iban-input` | `setIban`, `clear` — `isValid`, secret; NO → kontonummer |
@@ -136,7 +136,7 @@ Form props: AmountField, the selects, the bank / reference / organization / IBAN
 | ScaPrompt | BankID/Passkey mock + confirm |
 | ExceptionBanner | Escalation; Review/Dismiss are confirm-gated |
 | CountryToggle | Switches BookiLocale (not in snapshot kinds) |
-| createBookiAgent | Bridge + `attachAudit` + `proposeChanges` + `createBookiHistory` |
+| createBookiAgent | Bridge: `allow` may answer `{ allow, by }`, `audit(row)` gets refused and confirmed steps; person-only steps never pass. + `attachAudit` + `proposeChanges` + `createBookiHistory` |
 
 ## Money rules
 

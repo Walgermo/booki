@@ -1,6 +1,6 @@
 "use client";
 
-import { createAgentCursor, createBookiAgent, type AgentBridge } from "@booki/react";
+import { createAgentCursor, createBookiAgent, type AgentBridge, type AgentDecisionRow } from "@booki/react";
 
 /**
  * The agent's visible pointer: it leads every step, so the person sees where
@@ -17,6 +17,21 @@ export const cursor = createAgentCursor();
 const allow = (step: { confirm?: string }) => !step.confirm;
 
 /**
+ * Every step that was refused, and every marked one that was confirmed, on its
+ * way to the audit trail. The page shows what the server logs; this is what
+ * never reached the server.
+ */
+type DecisionListener = (row: AgentDecisionRow) => void;
+let onDecision: DecisionListener = () => {};
+export const listenToDecisions = (listener: DecisionListener): (() => void) => {
+  onDecision = listener;
+  return () => {
+    onDecision = () => {};
+  };
+};
+const logDecision = (row: AgentDecisionRow) => onDecision(row);
+
+/**
  * The page's agent bridge, one per browser tab. The bridge is not a security
  * boundary: every write still goes through the server's guard with the
  * agent's own credential (lib/handler.ts).
@@ -24,24 +39,6 @@ const allow = (step: { confirm?: string }) => !step.confirm;
 let bridge: AgentBridge | null = null;
 
 export function pageAgent(): AgentBridge {
-  bridge ??= createBookiAgent({ agentId: "bookkeeper", allow: cursor.wrap(allow) });
+  bridge ??= createBookiAgent({ agentId: "bookkeeper", allow: cursor.wrap(allow), audit: logDecision });
   return bridge;
-}
-
-/**
- * Whose credential the next write carries. While an agent step runs, a change
- * a control reports is the agent's; otherwise it is the person's at the
- * keyboard. Every call into the bridge goes through `runAsAgent`.
- */
-let agentDepth = 0;
-
-export const actingAsAgent = () => agentDepth > 0;
-
-export async function runAsAgent<T>(work: () => Promise<T>): Promise<T> {
-  agentDepth += 1;
-  try {
-    return await work();
-  } finally {
-    agentDepth -= 1;
-  }
 }

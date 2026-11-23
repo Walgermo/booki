@@ -10,8 +10,8 @@ import {
   SupplierInvoiceInbox,
 } from "@booki/react";
 import { Button } from "@ui-sdk/react/button";
-import { useCallback, useState } from "react";
-import { actingAsAgent, cursor } from "@/lib/agent";
+import { useCallback, useEffect, useState } from "react";
+import { cursor, listenToDecisions } from "@/lib/agent";
 import { openPosts, type Answer, type Books, type Write } from "@/lib/books";
 import { CHART } from "@/lib/data";
 import { PEOPLE, ROLES, nameOf, type PersonId } from "@/lib/people";
@@ -33,9 +33,10 @@ export function ApFlow({ initial }: { initial: Books }) {
   const person = PEOPLE.find((p) => p.id === me)!;
 
   const send = useCallback(
-    async (write: Write): Promise<Answer> => {
-      // Read the credential now: the agent's while its step runs, else the person's.
-      const token = `${actingAsAgent() ? "agent" : "person"}:${me}`;
+    async (write: Write, source?: string): Promise<Answer> => {
+      // The change says who made it. Not "is an agent call running": a person can
+      // click while the agent's step waits.
+      const token = `${source === "agent" ? "agent" : "person"}:${me}`;
       return track(
         (async () => {
           const response = await fetch("/api/books", {
@@ -51,6 +52,13 @@ export function ApFlow({ initial }: { initial: Books }) {
       );
     },
     [me],
+  );
+
+  // Steps refused in the page never become a write, so they are logged on their own.
+  useEffect(
+    () =>
+      listenToDecisions((row) => void send({ action: "agent-step", step: row.action, target: row.target }, "agent")),
+    [send],
   );
 
   const posts = openPosts(books);
@@ -96,7 +104,7 @@ export function ApFlow({ initial }: { initial: Books }) {
               </h2>
               <SupplierInvoiceInbox
                 invoices={books.invoices}
-                onInvoicesChange={(invoices) => void send({ action: "invoices", invoices })}
+                onInvoicesChange={(invoices, { source }) => void send({ action: "invoices", invoices }, source)}
                 chart={CHART_NUMBERS}
                 actor={me}
                 agentActor="agent:bookkeeper"
@@ -113,7 +121,7 @@ export function ApFlow({ initial }: { initial: Books }) {
               {books.batch ? (
                 <PaymentBatch
                   batch={books.batch}
-                  onBatchChange={(batch) => void send({ action: "batch", batch })}
+                  onBatchChange={(batch, { source }) => void send({ action: "batch", batch }, source)}
                   actor={me}
                   requiredApprovals={1}
                   nameOf={nameOf}
@@ -126,7 +134,10 @@ export function ApFlow({ initial }: { initial: Books }) {
                       ? "Ingen fakturaer er attestert ennå. Betalingsforslaget lages av de attesterte."
                       : `${approved} attesterte fakturaer venter på et betalingsforslag.`}
                   </p>
-                  <Button disabled={approved === 0} onClick={() => void send({ action: "prepare-batch" })}>
+                  <Button
+                    disabled={approved === 0}
+                    onClick={(_event, { source }) => void send({ action: "prepare-batch" }, source)}
+                  >
                     Lag betalingsforslag
                   </Button>
                 </div>
@@ -142,7 +153,7 @@ export function ApFlow({ initial }: { initial: Books }) {
                   bankLines={books.bankLines}
                   openPosts={posts}
                   matches={books.matches}
-                  onMatchesChange={(matches) => void send({ action: "matches", matches })}
+                  onMatchesChange={(matches, { source }) => void send({ action: "matches", matches }, source)}
                   aria-label="Bankavstemming"
                 />
               ) : (

@@ -28,10 +28,26 @@
     "CHANGELOG.md"
   ],
   "exports": {
-    ".": "./dist/booki.css",
-    "./booki.css": "./dist/booki.css",
-    "./layered.css": "./dist/layered.css",
-    "./shadcn.css": "./dist/shadcn.css"
+    ".": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/booki.css",
+      "default": "./dist/booki.css"
+    },
+    "./booki.css": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/booki.css",
+      "default": "./dist/booki.css"
+    },
+    "./layered.css": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/layered.css",
+      "default": "./dist/layered.css"
+    },
+    "./shadcn.css": {
+      "types": "./dist/css.d.ts",
+      "style": "./dist/shadcn.css",
+      "default": "./dist/shadcn.css"
+    }
   },
   "scripts": {
     "build": "node ./scripts/build.mjs"

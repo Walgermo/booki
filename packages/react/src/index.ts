@@ -157,6 +157,7 @@ export {
   type AgentBridge,
   type AttachAuditOptions,
   type AttachAuditPush,
+  type AgentDecision,
   type CreateBookiAgentOptions,
 } from "./booki-agent.js";
 export {
@@ -276,4 +277,14 @@ export * from "./cashflow-waterfall.js";
  * named actions, declared state, and a person's click reported as theirs.
  */
 export { createChange, definePrimitive } from "@ui-sdk/core";
-export { createParts } from "@ui-sdk/react/primitive";
+export {
+  createParts,
+  usePart,
+  usePrimitive,
+  type PartProps,
+  type Parts,
+  type PrimitiveHandle,
+} from "@ui-sdk/react/primitive";
+export { type AgentDecisionRow, type AgentPolicyOptions, isAllowed } from "@booki/primitives/agent-policy";
+export type { BookiChangeDetails } from "./change-details.js";
+export { personOnly } from "@booki/primitives/person-only";

@@ -1,4 +1,5 @@
 import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import type { BookiChangeDetails } from "./change-details.js";
 import { matchingRows, type TableColumn, type TableQuery } from "@booki/core/table";
 import {
   SUPPLIER_INVOICE_FIELDS,
@@ -167,7 +168,7 @@ export type SupplierInvoiceInboxProps = {
   rule?: (invoice: SupplierInvoice) => boolean | string;
   /** The rule's name in the record: approved by `rule:<ruleName>`. */
   ruleName?: string;
-  onInvoicesChange?: (invoices: SupplierInvoice[]) => void;
+  onInvoicesChange?: (invoices: SupplierInvoice[], details: BookiChangeDetails) => void;
   /** Invoices a person sees per page. Defaults to 100. */
   pageSize?: number;
   /** The sort, search, filters and page of the list, when the app owns it. */

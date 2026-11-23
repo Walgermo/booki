@@ -1,7 +1,7 @@
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
-import { BookiError } from "@booki/core/msg";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";
+import { itemsHint, refuseUnknown, shownItems } from "./offered.js";
 import {
   createPicker,
   fallbackAttrs,
@@ -28,6 +28,7 @@ export type CurrencySelectOptions = {
 export type CurrencySelectState = {
   value: string;
   items: AgentItem[];
+  itemsHint: string;
   currencies: string[];
   disabled: boolean;
   readOnly: boolean;
@@ -51,13 +52,14 @@ export const currencySelect = definePrimitive({
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["value", "items"],
+  controlled: ["value", "items", "itemsHint"],
   state: (options: CurrencySelectOptions): CurrencySelectState => {
     const currencies = [...(options.currencies ?? DEFAULT_CURRENCIES)];
     const value = options.value ?? options.defaultValue ?? currencies[0] ?? "NOK";
     return {
       value,
-      items: toItems(currencies),
+      items: shownItems(toItems(currencies)),
+      itemsHint: itemsHint(toItems(currencies)),
       currencies,
       ...lockState(options),
       label: "Currency",
@@ -68,7 +70,8 @@ export const currencySelect = definePrimitive({
     const partial: Partial<CurrencySelectState> = { ...lockState(options) };
     if (options.currencies !== undefined) {
       partial.currencies = [...options.currencies];
-      partial.items = toItems(options.currencies);
+      partial.items = shownItems(toItems(options.currencies));
+      partial.itemsHint = itemsHint(toItems(options.currencies));
     }
     if (options.value !== undefined) partial.value = options.value;
     return partial;
@@ -88,11 +91,8 @@ export const currencySelect = definePrimitive({
       picker,
       setCurrency: (raw: string, event?: unknown) => {
         const code = String(raw).trim().toUpperCase();
-        const { currencies, items } = context.store.get();
-        if (!currencies.includes(code)) {
-          const listed = items.map((i) => i.label).join(", ");
-          throw new BookiError("select.unknown-currency", { value: String(raw), items: listed || "(none)" });
-        }
+        const { currencies } = context.store.get();
+        if (!currencies.includes(code)) refuseUnknown("select.unknown-currency", toItems(currencies), raw);
         return change("value", code, { reason: "set-currency", event: asEvent(event) });
       },
       /** Same as setCurrency: history and staging restore `value` through set<Key>. */
@@ -102,7 +102,7 @@ export const currencySelect = definePrimitive({
         const first = currencies[0] ?? "NOK";
         return change("value", first, { reason: "clear" });
       },
-      allItems: () => context.store.get().items,
+      allItems: () => toItems(context.store.get().currencies),
     };
     return methods;
   },

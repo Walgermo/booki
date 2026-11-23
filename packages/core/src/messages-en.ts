@@ -130,6 +130,7 @@ export const EN = {
   "reconciliation.match-decided": 'Match "{id}" is already {status}.',
   "reconciliation.match-not-suggested": 'Match "{id}" is {status}. Only a suggestion can be withdrawn.',
   "agent.not-text": '{action} takes text, like "12345678903"; got {got}.',
+  "agent.needs-person": 'Needs a person: "{confirm}". Ask them to do it themselves.',
   "agent.person-only": "This is a person's decision and an agent may not make it, whatever the app allows: {confirm}.",
   "attestation.person-only":
     'Setting an attestation to "{status}" is a person\'s decision: a person approves, rejects or escalates it with the buttons.',
@@ -208,6 +209,10 @@ export const EN = {
   "permissions.duty.eqcr": "The quality reviewer must not have prepared, reviewed or concluded work on the engagement.",
   "server.reason-required": "Give a reason of at least {min} characters: it is kept with the decision.",
   "server.unknown-kind": 'The actor\'s kind "{kind}" is neither a person nor an agent, so nothing is allowed.',
+  "server.delegation":
+    '"{agent}" acts for "{person}", who may not do "{permission}". It takes one of these roles: {roles}.',
+  "server.delegation-entity": '"{agent}" acts for "{person}", who does not work in entity "{entity}".',
+  "server.delegation-unknown": '"{agent}" acts for "{person}", who is not a known person, so nothing is allowed.',
   "server.person-only":
     'An agent may not do "{permission}": it is a person\'s decision. Ask someone with one of these roles: {roles}.',
   "permissions.signed-out": 'Nobody is signed in, so "{permission}" is refused.',
@@ -488,8 +493,14 @@ export const EN = {
   "agent.unknown-field": '{action}: no field "{field}". Fields: {fields}.',
   "agent.not-an-object": "{action} takes one object, such as {example}.",
   "select.unknown-account": 'No account "{value}". Its items: {items}.',
+  "select.unknown-account-more":
+    'No account "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
   "select.unknown-tax-code": 'No tax code "{value}". Its items: {items}.',
+  "select.unknown-tax-code-more":
+    'No tax code "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',
   "select.unknown-currency": 'No currency "{value}". Its items: {items}.',
+  "select.unknown-currency-more":
+    'No currency "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one.',
   "select.unknown-period": 'No period "{value}". Its items: {items}.',
   "select.unknown-attestation": 'No attestation status "{value}". Its items: {items}.',
   "amount.not-minor": "Amount must be a safe integer in minor units (e.g. 12500 = 125.00 {currency}), got {value}.",

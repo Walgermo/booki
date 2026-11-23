@@ -38,7 +38,7 @@ app; the build scopes those rules to Booki's component names instead.
   your product already has a colour for AI, point it there.
 - Skip `@booki/styles` entirely and the controls are unstyled: style the
   `data-slot` parts yourself.
-- Your own control, built with `definePrimitive`, takes the same base look with
+- Your own control, built with `definePrimitive` ([how](own-controls.md)), takes the same base look with
   `data-booki` on its root.
 
 ## 3. Money arrives as decimal text
@@ -74,6 +74,9 @@ established. For an audit or consulting product:
 - **Independence.** The standard duty rules refuse the preparer as reviewer,
   and anyone who prepared, reviewed or concluded as quality reviewer. Pass the
   item's `deeds`.
+- **Delegation.** Pass `personOf` and an agent may only do what the person it
+  acts for may do, as their roles are now. What the company's rule gives the
+  agent itself goes in `agentOwn`.
 - **Reasons.** `minReason: 20` with `reason` refuses a withdrawal without a
   real explanation (422, in the caller's language).
 - **Judgment, not gates.** Where the books are a matter of professional
@@ -95,6 +98,12 @@ section or dialog, so typing a confirmation word is covered too), and
 `source: "agent"` on every change instead of `event.isTrusted`. Change events
 to `agent.subscribe` never carry bank account numbers or payment references.
 The bridge is not a security boundary: keep the server guard on every route.
+
+Whose write it is comes from the change (`on…Change(value, { source })`), never from
+whether an agent call is running. `window.agent` stays out of production, and WebMCP
+(`registerTools`) is off until the server can tell the browser's agent from the person.
+`createBookiAgent({ audit })` records refused steps and who confirmed the rest. The
+[accounts-payable example](../examples/ap-flow) has the whole recipe.
 
 ## 6. Where to start
 

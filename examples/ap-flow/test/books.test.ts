@@ -121,4 +121,27 @@ describe("the books, as the server keeps them", () => {
     expect(answer.ok).toBe(false); // Nina is an accountant: she may not approve, whatever the body says.
     expect(apply(books, undefined, { action: "prepare-batch" })).toMatchObject({ ok: false, status: 401 });
   });
+
+  it("lets the agent do what the person it works for may do, and no more", () => {
+    const books = seedBooks();
+    apply(books, as("person:nina"), { action: "invoices", invoices: coded(books, "si-2", "6340") });
+    apply(books, as("person:kari"), {
+      action: "invoices",
+      invoices: withInvoice(books, "si-2", { status: "approved" }),
+    });
+    // Kari may not prepare a payment batch, so neither may the agent working for her.
+    const forKari = apply(books, as("agent:kari"), { action: "prepare-batch" });
+    expect(forKari).toMatchObject({ ok: false, status: 403, code: "server.delegation" });
+    expect(books.batch).toBeNull();
+    expect(books.audit[0]).toMatchObject({ actor: "agent:bookkeeper", action: "refused" });
+    expect(apply(books, as("agent:nina"), { action: "prepare-batch" }).ok).toBe(true);
+  });
+
+  it("logs a step the page refused as the agent's, and only for an agent", () => {
+    const books = seedBooks();
+    const write = { action: "agent-step", step: "agent.refused", target: "Betalingsforslag" } as const;
+    expect(apply(books, as("person:nina"), write).ok).toBe(false);
+    expect(apply(books, as("agent:nina"), write).ok).toBe(true);
+    expect(books.audit[0]).toMatchObject({ actor: "agent:bookkeeper", target: "Betalingsforslag" });
+  });
 });
