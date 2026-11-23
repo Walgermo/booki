@@ -522,6 +522,11 @@ export const EN = {
   "reference.kid-failed": 'Could not generate a KID from "{seed}". Give the digits it is built from.',
   "voucher.no-line": 'No voucher line "{id}". Line ids: {ids}.',
   "voucher.no-base-currency": "The voucher has no base currency, so a foreign amount cannot be converted.",
+  "voucher.foreign-currency": 'setForeign: the currency is a three-letter code like "EUR", got {got}. Write {format}.',
+  "voucher.foreign-amount":
+    "setForeign: the amount is a whole number of minor units of the foreign currency (42000 is 420,00), got {got}. Write {format}.",
+  "voucher.foreign-rate":
+    "setForeign: the rate is a whole number of millionths above zero (10.5 is 10500000), got {got}. Write {format}.",
   "invoice.no-line": 'No invoice line "{id}". Lines: {lines}.',
   "reconciliation.no-match": 'No match "{id}". Match ids: {ids}.',
   "batch.no-payment": 'No payment "{id}". Payments: {ids}.',
