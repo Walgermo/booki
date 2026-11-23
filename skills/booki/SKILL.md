@@ -343,6 +343,16 @@ own, map it there and keep `code` and `message`: the agent acts on them.
 it acts for (`onBehalfOf`) allow, and an unknown person is refused. Permissions the agent
 has by the company's rule go in `agentOwn`. Without `personOf` the person is only recorded.
 
+**The agent's credential.** `issueAgentToken({ agentId, onBehalfOf }, secret)` from
+`@booki/core/server` issues a signed token that lasts 15 minutes. Your sign-in issues it for the signed-in person,
+and the page sends it with the agent's writes. `verifyAgentToken(token, secret)` gives
+`{ id, kind: "agent", onBehalfOf, grantId }` or null; add the agent's roles. The secret is
+at least 32 characters and stays on the server.
+
+**A step the control refuses** (a fraction of an øre, an unknown account) is not an `allow`
+decision. Where your code calls `act` for a model, call `actAndRecord(agent, input, { audit, agentId })`
+instead: it writes an `agent.failed` row with the refusal sentence.
+
 **Your own rules** refuse with `throw new RuleRefusal("…")` (422 `server.rule`). Any other
 error a rule throws is rethrown, not sent to the caller. A request an agent raised records
 the person it worked for as `requestedFor`, so that person cannot decide it.

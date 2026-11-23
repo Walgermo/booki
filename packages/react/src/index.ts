@@ -285,6 +285,11 @@ export {
   type Parts,
   type PrimitiveHandle,
 } from "@ui-sdk/react/primitive";
-export { type AgentDecisionRow, type AgentPolicyOptions, isAllowed } from "@booki/primitives/agent-policy";
+export {
+  type AgentDecisionRow,
+  type AgentPolicyOptions,
+  actAndRecord,
+  isAllowed,
+} from "@booki/primitives/agent-policy";
 export type { BookiChangeDetails } from "./change-details.js";
 export { personOnly } from "@booki/primitives/person-only";

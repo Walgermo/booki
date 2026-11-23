@@ -289,3 +289,32 @@ describe("an agent never does more than the person it acts for", () => {
     expect(verdict.ok === false && verdict.message).toContain("arbeider for");
   });
 });
+
+describe("the specification", () => {
+  it("lists every decision that stays with a person, as PERSON_ONLY does", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { PERSON_ONLY } = await import("./server.js");
+    const spec = readFileSync(new URL("../../../spec/agent-contract.md", import.meta.url), "utf8");
+    const section = spec.slice(spec.indexOf("## 5."), spec.indexOf("## 6."));
+    const listed = [...section.matchAll(/^\s*\| `([a-z.-]+)` \|/gm)].map((m) => m[1]).sort();
+    expect(listed).toEqual([...PERSON_ONLY].sort());
+  });
+});
+
+describe("a delegation refusal", () => {
+  it("names the roles a person could hold, not the agent's own", () => {
+    const roles = [
+      { id: "accountant", name: "Accountant", permissions: ["payment.prepare"] },
+      { id: "bookkeeping-agent", name: "Bookkeeping agent", permissions: ["payment.prepare"] },
+      { id: "manager", name: "Manager", permissions: [] },
+    ];
+    const agent: ServerActor = { id: "bk", kind: "agent", roles: ["bookkeeping-agent"], onBehalfOf: "kari" };
+    const verdict = guard(
+      { actor: agent, roles, personOf: () => ({ id: "kari", roles: ["manager"] }) },
+      "payment.prepare",
+      () => true,
+    );
+    expect(verdict.ok === false && verdict.message).toContain("Accountant");
+    expect(verdict.ok === false && verdict.message).not.toContain("Bookkeeping agent");
+  });
+});

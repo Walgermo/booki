@@ -88,6 +88,14 @@ three.
    | `vat.submit` | Submit a VAT return |
    | `asset.dispose` | Dispose of a fixed asset |
    | `audit.sign-off` | Sign off audit work |
+   | `audit.review` | Review audit work |
+   | `audit.conclude` | Conclude an audit area |
+   | `audit.eqcr` | Quality review of an engagement |
+   | `audit.freeze` | Freeze an audit file |
+   | `finding.confirm` | Confirm an audit finding |
+   | `finding.withdraw` | Withdraw a confirmed finding |
+   | `request.send` | Send a request to the client |
+   | `request.decide` | Accept or reject a client's answer |
 
 2. An irreversible step that the company MAY let an agent take under its own
    rules (posting a voucher, paying an invoice under a limit) MUST be marked

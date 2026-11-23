@@ -1,6 +1,7 @@
 "use client";
 
-import type { AgentBridge } from "@booki/react";
+import { actAndRecord, type AgentBridge } from "@booki/react";
+import { logDecision } from "./agent";
 import { settled, takeRefusals } from "./writes";
 
 /**
@@ -41,7 +42,11 @@ const snapshot = (agent: AgentBridge) => agent.snapshot() as unknown as Entry[];
 async function each(agent: AgentBridge, steps: { step: Step; done: string }[], report: Report) {
   for (const { step, done } of steps) {
     takeRefusals();
-    const result = (await agent.act({ steps: [step] } as never)) as ActResult;
+    // actAndRecord: a step the control refuses gets an audit row, as one allow refused does.
+    const result = (await actAndRecord(agent, { steps: [step] } as never, {
+      audit: logDecision,
+      agentId: "bookkeeper",
+    })) as ActResult;
     // The control proposed; the server decides. Read its answer before the next step.
     await settled();
     const [refused] = takeRefusals();
