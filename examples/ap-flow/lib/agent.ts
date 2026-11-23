@@ -29,7 +29,7 @@ export const listenToDecisions = (listener: DecisionListener): (() => void) => {
     onDecision = () => {};
   };
 };
-const logDecision = (row: AgentDecisionRow) => onDecision(row);
+export const logDecision = (row: AgentDecisionRow) => onDecision(row);
 
 /**
  * The page's agent bridge, one per browser tab. The bridge is not a security

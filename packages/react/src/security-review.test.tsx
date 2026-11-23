@@ -54,3 +54,27 @@ describe("a person's decision under several confirm marks", () => {
     expect(isPersonOnly(long.trim().slice(0, 200))).toBe(true);
   });
 });
+
+describe("a step the control itself refuses", () => {
+  it("gets an audit row through actAndRecord, without the step's arguments", async () => {
+    const { AmountField } = await import("./amount-field.js");
+    const { actAndRecord } = await import("./index.js");
+    const rows: { action: string; detail?: string }[] = [];
+    const audit = (row: { action: string; detail?: string }) => rows.push(row);
+    const agent = createBookiAgent({ allow: () => true, audit, agentId: "bookkeeper" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    const ref = agent.snapshot().find((c) => c.component === "amount-field")!.ref;
+    const result = await actAndRecord(
+      agent,
+      { steps: [{ ref, action: "setMinor", args: [12.5] }] },
+      { audit, agentId: "bookkeeper" },
+    );
+    expect(result.ok).toBe(false);
+    expect(rows).toEqual([expect.objectContaining({ action: "agent.failed", actor: "agent:bookkeeper" })]);
+    expect(rows[0]!.detail).toMatch(/^setMinor: /);
+  });
+});

@@ -1,7 +1,8 @@
 "use client";
 
 import type Anthropic from "@anthropic-ai/sdk";
-import type { AgentBridge } from "@booki/react";
+import { actAndRecord, type AgentBridge } from "@booki/react";
+import { logDecision } from "./agent";
 import { settled, takeRefusals } from "./writes";
 
 type Block = Anthropic.Beta.BetaContentBlock;
@@ -52,7 +53,7 @@ async function runTool(agent: AgentBridge, use: ToolUse): Promise<{ content: str
         };
       }
       takeRefusals();
-      const result = (await agent.act({ steps } as never)) as {
+      const result = (await actAndRecord(agent, { steps } as never, { audit: logDecision, agentId: "bookkeeper" })) as {
         ok: boolean;
         error?: { message: string };
       };

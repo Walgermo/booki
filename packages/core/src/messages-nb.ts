@@ -141,6 +141,9 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "reconciliation.match-not-suggested": 'Avstemmingen "{id}" er {status}. Bare et forslag kan trekkes tilbake.',
   "agent.not-text": '{action} tar tekst, som "12345678903"; fikk {got}.',
   "agent.needs-person": 'Krever en person: "{confirm}". Be dem gjøre det selv.',
+  "agent-token.secret-short": "En hemmelighet for agenttokens har minst 32 tegn.",
+  "agent-token.ttl": "ttlSeconds er et helt tall fra 1 til 86400, ikke {value}.",
+  "agent-token.grant": "Et agenttoken trenger agentId og onBehalfOf.",
   "agent.person-only":
     "Dette er en persons beslutning, og en agent kan ikke ta den, uansett hva appen tillater: {confirm}.",
   "attestation.person-only":

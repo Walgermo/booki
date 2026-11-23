@@ -122,3 +122,38 @@ export function bookiRegisterTools<A>(register: Register<A>) {
     return register(agent, { allow: bookiAllow(options)! });
   };
 }
+
+type Actable = {
+  act: (
+    input: { steps: { ref: string; action: string; args?: unknown[] }[] },
+    options?: { signal?: AbortSignal },
+  ) => Promise<{ ok: boolean; error?: { step: number; message: string } }>;
+};
+
+/**
+ * `agent.act`, and an audit row for a step the control itself refused (a
+ * fraction of an øre, an account not in the chart): `bookiAllow` only sees
+ * what `allow` decided, not what the control did after. Use it where your
+ * code calls `act` for a model. The row holds the refusal sentence, which the
+ * bridge has already redacted for a secret field, never the step's arguments.
+ */
+export async function actAndRecord<A extends Actable>(
+  agent: A,
+  input: Parameters<A["act"]>[0],
+  options: Pick<AgentPolicyOptions, "audit" | "agentId" | "ruleVersion">,
+  actOptions?: { signal?: AbortSignal },
+): Promise<Awaited<ReturnType<A["act"]>>> {
+  const result = (await agent.act(input, actOptions)) as Awaited<ReturnType<A["act"]>>;
+  const failed = (result as { ok: boolean; error?: { step: number; message: string } }).error;
+  if (!(result as { ok: boolean }).ok && failed && options.audit) {
+    const step = input.steps[failed.step];
+    options.audit({
+      actor: `agent:${options.agentId ?? "bridge"}`,
+      action: "agent.failed",
+      target: step?.ref ?? "?",
+      detail: `${step?.action ?? "?"}: ${failed.message.replace(/\s+/g, " ").slice(0, 200)}`,
+      ...(options.ruleVersion ? { ruleVersion: options.ruleVersion } : {}),
+    });
+  }
+  return result;
+}

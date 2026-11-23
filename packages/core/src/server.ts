@@ -24,6 +24,7 @@
  * Framework-free: plain data in, plain data out. Works in Node, edge runtimes,
  * Deno and Bun.
  */
+export { type AgentClaims, type AgentGrant, issueAgentToken, verifyAgentToken } from "./agent-token.js";
 import { assertApproved, decide, type ApprovalDecision, type ApprovalLevel, type ApprovalRequest } from "./approval.js";
 import { assertReadyToClose, type CloseSummary, type CloseTask } from "./close.js";
 import { confirmFinding, type Finding } from "./findings.js";
@@ -301,7 +302,10 @@ function admit(context: GuardContext, permission: Permission): void {
         });
       }
       if (!can(person, roles, permission, { scope })) {
-        const able = roles.filter((role) => role.permissions.includes(permission)).map((role) => role.name);
+        // The roles a person could hold: an agent's own roles are not an answer for them.
+        const all = roles.filter((role) => role.permissions.includes(permission));
+        const forPeople = all.filter((role) => !actor.roles.includes(role.id));
+        const able = (forPeople.length ? forPeople : all).map((role) => role.name);
         throw new BookiError("server.delegation", {
           agent: String(actor.id),
           person: String(person.id),
