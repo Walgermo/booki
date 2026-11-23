@@ -6,6 +6,7 @@ import {
   type AgentDecision,
   type AgentPolicyOptions,
 } from "@booki/primitives/agent-policy";
+import type { MessageLanguage } from "@booki/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
@@ -13,6 +14,12 @@ type AgentBridge = ReturnType<typeof createAgent>;
 export type CreateBookiAgentOptions = AgentPolicyOptions & {
   /** How long a step waits for `allow`, in ms. Default five minutes. */
   timeout?: number;
+  /**
+   * The language of Booki's refusals in `act` results. Default `"en"`. With
+   * `"nb"` a refusal from a Booki control comes back in Norwegian; the bridge's
+   * own sentences ("Needs a person: …") stay as ui-sdk writes them.
+   */
+  language?: MessageLanguage;
 };
 
 /**
@@ -30,7 +37,36 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   // person: …", which tells the agent what to do next. Answering `false` here
   // would read as "The person said no" although nobody was asked.
   const allow = bookiAllow(options);
-  return createAgent(allow ? { timeout, allow } : { timeout });
+  const bridge = createAgent(allow ? { timeout, allow } : { timeout });
+  if (!options.language || options.language === "en") return bridge;
+  const language = options.language;
+  return {
+    ...bridge,
+    act: async (...args: Parameters<AgentBridge["act"]>) => {
+      const result = await bridge.act(...args);
+      // Loaded only for an agent that asked for another language: the catalogue is not small.
+      const { localize } = await import("@booki/core/messages");
+      return inLanguage(result, (text) => localize(text, language));
+    },
+  } as AgentBridge;
+}
+
+/** The same result with every refusal (`error.message`, at any depth) written in another language. */
+function inLanguage<T>(value: T, say: (text: string) => string): T {
+  if (Array.isArray(value)) return value.map((item) => inLanguage(item, say)) as T;
+  if (value === null || typeof value !== "object") return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, inner] of Object.entries(value as Record<string, unknown>)) {
+    if (
+      key === "error" &&
+      inner &&
+      typeof inner === "object" &&
+      typeof (inner as { message?: unknown }).message === "string"
+    ) {
+      out[key] = { ...(inner as object), message: say((inner as { message: string }).message) };
+    } else out[key] = inLanguage(inner, say);
+  }
+  return out as T;
 }
 
 /**

@@ -126,7 +126,9 @@ const drift = [
   { value: "200", label: "Prosjekt" },
 ]
 
-// An amount is integer minor units: 12500 is 125.00 NOK.
+// An amount is integer minor units: 12500 is 125.00 NOK. This field takes øre as typed; for a field
+// where the person types kroner ("125,00"), keep the text as a draft and parse it with parseToMinor,
+// as the install skill's useBookiField example does.
 function AmountField(props: {
   value: number
   onValueChange?: (minor: number, details: { source?: string }) => void
