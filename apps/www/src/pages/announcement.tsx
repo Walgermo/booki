@@ -611,8 +611,8 @@ export function AnnouncementPage() {
         </div>
         <p className="mt-10 mb-0 max-w-[68ch] text-sm text-muted-foreground">
           {t(
-            "Booki implements an open specification any ERP can adopt: what a screen gives an agent, what stays with a person, how every step is recorded and how the server checks it again.",
-            "Booki implementerer en åpen spesifikasjon ethvert ERP kan ta i bruk: hva et skjermbilde gir en agent, hva som forblir en persons, hvordan hvert steg registreres og hvordan serveren sjekker det igjen.",
+            "Booki implements a draft specification any ERP can adopt: what a screen gives an agent, what stays with a person, how every step is recorded and how the server checks it again.",
+            "Booki implementerer et utkast til spesifikasjon som ethvert ERP kan ta i bruk: hva et skjermbilde gir en agent, hva som forblir en persons, hvordan hvert steg registreres og hvordan serveren sjekker det igjen.",
           )}{" "}
           <a href={CONTRACT_URL} target="_blank" rel="noreferrer" className="site-link">
             {t("The Agent Contract for Accounting UIs", "Agentkontrakten for regnskaps-UI")}
