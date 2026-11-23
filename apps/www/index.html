@@ -2,7 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover: the page reaches under the notch and home indicator, and env(safe-area-inset-*) is no
+         longer 0. interactive-widget=resizes-content: on Android the keyboard resizes the page instead of covering it. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <!-- The browser's bar takes the page's colour: Paper or Night. data-color keeps each one for the theme toggle. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f4" data-scheme="light" data-color="#f6f6f4" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117" data-scheme="dark" data-color="#0d1117" />
     <script>
       // Paper or Night before the first paint: the stored choice, else the system.
       // Language before the first paint: the visitor's pick, else Norwegian for a Norwegian browser.
@@ -15,13 +23,17 @@
         var t = localStorage.getItem("booki-theme");
         var dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
         if (dark) document.documentElement.setAttribute("data-bk-theme", "dark");
+        // A stored choice may differ from the system: the browser's bar follows the choice.
+        if (t) {
+          var bars = document.querySelectorAll('meta[name="theme-color"]');
+          var pick = document.querySelector('meta[name="theme-color"][data-scheme="' + (dark ? "dark" : "light") + '"]');
+          for (var i = 0; pick && i < bars.length; i++) bars[i].setAttribute("content", pick.getAttribute("data-color"));
+        }
       } catch (e) {}
     </script>
     <link rel="preload" href="/fonts/albert-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f4" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Booki: agent-first UI for accounting and auditing" />
     <meta

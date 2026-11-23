@@ -50,12 +50,18 @@ function ApprovalGate({
           {/* The typed word is the person's confirmation: an agent may not type it either. */}
           <label data-slot="approval-gate-type" data-agent-confirm={personOnly("Attestation needs a person")}>
             <span>{profile.copy.typeToConfirm.replace("APPROVE", confirmWord)}</span>
-            {/* The gate is a dialog the person just opened to type this word: focus goes to it. */}
+            {/*
+              The gate is a dialog the person just opened to type this word. It is the first field, so the
+              dialog focuses it when opened with a mouse or keys, and leaves it alone when opened by touch:
+              on a phone the keyboard would cover what is being approved before it is read.
+            */}
             <Input
               value={typed}
               autoComplete="off"
-              // oxlint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="done"
               onValueChange={(v: string) => setTyped(v)}
             />
           </label>
