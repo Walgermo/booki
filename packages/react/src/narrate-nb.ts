@@ -1,3 +1,4 @@
+import { formatMoney } from "@booki/core/money";
 import type { AgentCursorState } from "@booki/primitives/agent-cursor";
 
 /** What the agent is doing, said the way a Norwegian accountant would say it. First match wins. */
@@ -56,7 +57,8 @@ const VERBS_NB: [RegExp, string][] = [
 
 /**
  * The agent cursor's label in Norwegian: a verb for the action and its first
- * plain argument. `AgentCursor` uses it by itself under a Norwegian profile;
+ * plain argument. An amount (`setMinor`) is shown as a person writes it,
+ * "setter beløp 1 250,00", not in minor units. `AgentCursor` uses it by itself under a Norwegian profile;
  * pass it as `narrate` to choose it yourself.
  */
 export function narrateNorwegian(state: AgentCursorState): string {
@@ -64,6 +66,9 @@ export function narrateNorwegian(state: AgentCursorState): string {
   if (!step) return state.action;
   const verb = VERBS_NB.find(([pattern]) => pattern.test(step.action))?.[1] ?? state.action;
   const first = step.args[0];
+  if (step.action === "setMinor" && typeof first === "number" && Number.isSafeInteger(first)) {
+    return `${verb} ${formatMoney(first, { currency: "NOK", locale: "nb-NO", withCurrency: false })}`;
+  }
   const arg = typeof first === "string" || typeof first === "number" ? ` ${String(first).slice(0, 24)}` : "";
   return `${verb}${arg}`;
 }

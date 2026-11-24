@@ -15,7 +15,7 @@ type Result = { ok: boolean; error?: { message: string } };
 describe("an agent under a Norwegian profile", () => {
   it("narrates the cursor in Norwegian, and in English under a US profile", async () => {
     for (const [country, said] of [
-      ["NO", /setter beløp 125000/],
+      ["NO", /setter beløp 1\s250,00/],
       ["US", /set minor 125000/],
     ] as const) {
       const cursor = createAgentCursor({ travel: 0, press: 0, linger: 10_000 });

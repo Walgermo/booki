@@ -24,8 +24,9 @@ export type CreateBookiAgentOptions = AgentPolicyOptions & {
   timeout?: number;
   /**
    * The language of Booki's refusals in `act` results. Default `"en"`. With
-   * `"nb"` a refusal from a Booki control comes back in Norwegian; the bridge's
-   * own sentences ("Needs a person: …") stay as ui-sdk writes them. History
+   * `"nb"` a refusal from a Booki control comes back in Norwegian, and so do the
+   * bridge's own ("Needs a person: …", "No component … on the page", "The person
+   * said no to …"); a sentence the catalogue does not know stays as written. History
    * (`createBookiHistory`) and WebMCP tools (`registerTools`) work with such an
    * agent; what they answer themselves is in ui-sdk's words.
    */
