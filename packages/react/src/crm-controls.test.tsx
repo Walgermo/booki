@@ -80,7 +80,9 @@ describe("DealPipeline", () => {
         missing: 0,
       },
     ]);
-    expect(entry().issues["D-2"][0]).toMatch(/nobody vouched for/);
+    expect(entry().issues["D-2"][0]).toMatch(/Deal "D-2" has an amount nobody vouched for/);
+    // On the card the deal reads by its name: a product's ids are often UUIDs.
+    expect(document.body.textContent).toMatch(/Deal "Support" has an amount nobody vouched for/);
 
     expect((await act("moveDeal", ["D-1", "quote"])).ok).toBe(true);
     expect(entry().deals[0].stageId).toBe("quote");

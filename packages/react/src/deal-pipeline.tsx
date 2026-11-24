@@ -214,7 +214,8 @@ function DealPipeline({
                               {issues.length ? (
                                 <ul data-slot="deal-pipeline-issues">
                                   {issues.map((issue) => (
-                                    <li key={issue}>{say(issue)}</li>
+                                    // The card names the deal; the sentence's id (often a UUID) reads as its name.
+                                    <li key={issue}>{say(issue).replaceAll(`"${deal.id}"`, `"${deal.name}"`)}</li>
                                   ))}
                                 </ul>
                               ) : null}
@@ -243,14 +244,16 @@ function DealPipeline({
                                   </DealPipelineMove>
                                   <DealPipelineWon
                                     value={buttonKey(deal.id, "won")}
+                                    data-variant="secondary"
                                     aria-label={`${copy.won}: ${deal.name}`}
                                   >
                                     {copy.won}
                                   </DealPipelineWon>
-                                  <span data-slot="deal-pipeline-lost">
+                                  <details data-slot="deal-pipeline-lost">
+                                    <summary>{copy.lost}</summary>
                                     <DealPipelineReason
                                       value={deal.id}
-                                      rows={1}
+                                      rows={2}
                                       aria-label={`${copy.reason}: ${deal.name}`}
                                       placeholder={copy.reason}
                                     />
@@ -260,7 +263,7 @@ function DealPipeline({
                                     >
                                       {copy.lost}
                                     </DealPipelineLost>
-                                  </span>
+                                  </details>
                                 </div>
                               )}
                             </li>
