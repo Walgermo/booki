@@ -107,6 +107,22 @@ const NB: Record<string, { title?: string; description: string }> = {
     description:
       "En kundes historikk og neste steg: samtaler, e-post, møter, notater og oppgaver. En agent logger og planlegger, merket som agentens; en samtale sier hva den kan kontrolleres mot; å fjerne noe er en persons.",
   },
+  "funnel-chart": {
+    description:
+      "Hvor mange avtaler som nådde hvert steg, konverteringen fra steget før og fra starten, og hvor flest faller fra. En agent leser hvert tall og borer seg ned i et steg.",
+  },
+  "forecast-chart": {
+    description:
+      "Vunnet, sikker, beste fall og vektet inntekt per måned eller kvartal, fra de samme avtalene som salgsløpet. Tapte avtaler og beløp uten kilde holdes utenfor, og avtaler uten dato navngis.",
+  },
+  "recurring-revenue": {
+    description:
+      "Løpende inntekter fra én dato til en annen: inngående, nye, økning, reduksjon, tapt og utgående, som går nøyaktig opp, som MRR eller ARR. Hver bevegelse navngir kundene sine.",
+  },
+  "stage-duration": {
+    description:
+      "Hvor lenge avtaler blir i hver fase: median og lengste opphold, et mål per fase, og avtalene som er over det.",
+  },
   "confirm-dialog": {
     description:
       "Et spørsmål en person svarer på før noe skjer: bokføre, betale, frigi. En agent kan lese det og avbryte, aldri si ja; bekreftelsesord og asynkront arbeid er innebygd.",

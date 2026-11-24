@@ -641,6 +641,33 @@ export const EN = {
     'Deal "{id}" has an amount nobody vouched for: it is left out of the totals until it is known or estimated, with a source.',
   "pipeline.issue.close-passed": 'Deal "{id}" was expected to close {date} and is still open.',
   "pipeline.issue.stale": 'Deal "{id}" has not changed stage in {days} days.',
+  "funnel.issue.no-id": "A funnel step has no id and is left out.",
+  "funnel.issue.twice": 'Funnel step "{id}" is given twice; the second is left out.',
+  "funnel.issue.count":
+    'Funnel step "{id}" has a count that is not a whole number 0 or above ({value}); it is left out.',
+  "funnel.issue.rises":
+    'Step "{id}" has more records than "{before}" before it. A funnel counts every record that reached a step, so it should never rise: check how the steps are counted.',
+  "funnel.no-step": 'No funnel step "{id}". Steps: {ids}.',
+  "recurring.date-format": 'A date is written YYYY-MM-DD, got "{value}".',
+  "recurring.two-amounts": 'Agreement "{id}" gives both mrrMinor and amountMinor: give one.',
+  "recurring.interval":
+    'Agreement "{id}": no interval "{value}". Intervals: {intervals}. A one-time amount is not recurring revenue.',
+  "recurring.amount-minor":
+    'Agreement "{id}": amountMinor is whole minor units per interval, 0 or above (12500 is 125.00); got {value}.',
+  "recurring.mrr-minor":
+    'Agreement "{id}": mrrMinor is whole minor units per month, 0 or above (12500 is 125.00); got {value}.',
+  "recurring.end-before-start": 'Agreement "{id}" ends before it starts.',
+  "recurring.range-order": "The bridge runs from {from} to {to}: the end comes before the start.",
+  "recurring.no-movement": 'No movement "{id}". Movements: {ids}.',
+  "recurring.no-currency": 'No agreements in "{value}". Currencies: {currencies}.',
+  "recurring.bad-view": 'The view is mrr or arr; got "{value}".',
+  "recurring.issue.other-currencies":
+    "Agreements in {others} are left out: only {currency} is shown, and currencies are never added together.",
+  "pipeline.grouping": 'No grouping "{value}". Groupings: {groupings}.',
+  "pipeline.range-date": 'A date in the range is written YYYY-MM-DD, got "{value}".',
+  "pipeline.range-order": "The range runs from {from} to {to}: the end comes before the start.",
+  "pipeline.no-stage-row": 'No stage "{id}" among the open stages. Stages: {ids}.',
+  "pipeline.no-period": 'No period "{id}". Periods: {ids}.',
   "activity.actor-required": "Logging or scheduling needs the id of whoever does it.",
   "activity.id-required": "An activity needs a non-empty text id.",
   "activity.field-text": 'Activity "{id}": {field} must be text, got {value}.',

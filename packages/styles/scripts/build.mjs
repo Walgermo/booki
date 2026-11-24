@@ -12,7 +12,7 @@ const PARTS = ["booki.css", "agent.css"];
 // into 62 copies of the scope list before. The build fails above these, so
 // it cannot grow back unnoticed. Set them to the measured size, rounded up to
 // the next 250 bytes, when a change makes base.css smaller or larger on purpose.
-const BASE_RAW_BUDGET = 58500;
+const BASE_RAW_BUDGET = 59750;
 const BASE_GZIP_BUDGET = 7500;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");

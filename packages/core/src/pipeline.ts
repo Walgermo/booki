@@ -351,3 +351,200 @@ export function findDeal(deals: readonly Deal[], id: unknown): Deal {
   if (!deal) throw new BookiError("pipeline.no-deal", { id: String(id), ids: ids(deals) });
   return deal;
 }
+
+export type ForecastGrouping = "month" | "quarter";
+
+export const FORECAST_GROUPINGS: readonly ForecastGrouping[] = ["month", "quarter"];
+
+export type ForecastPeriod = {
+  /** YYYY-MM for a month, YYYY-Qn for a quarter. */
+  period: string;
+  /** Won in the period, by when the deal was closed. */
+  wonMinor: number;
+  /** Open deals expected to close in the period, with a known value. */
+  committedMinor: number;
+  /** Open deals expected to close in the period, with an estimated value. */
+  bestCaseMinor: number;
+  /** Committed and best case, each times its stage's probability. */
+  weightedMinor: number;
+  /** Deals in the period: won, committed and best case. */
+  count: number;
+};
+
+export type PeriodForecast = {
+  currency: string;
+  grouping: ForecastGrouping;
+  periods: ForecastPeriod[];
+  /** Open deals with a counted value but no expected close date: left out of every period. */
+  undated: string[];
+  /** Open deals whose expected close date has passed: still in their period. */
+  overdue: string[];
+  /** Deals in another currency: left out. */
+  otherCurrency: string[];
+  /** Open deals with no amount, or one nobody vouched for (no source): left out of every period. */
+  unverified: string[];
+};
+
+/** The period a YYYY-MM-DD date falls in. */
+export function periodOf(date: string, grouping: ForecastGrouping): string {
+  const year = date.slice(0, 4);
+  const month = Number(date.slice(5, 7));
+  return grouping === "month" ? date.slice(0, 7) : `${year}-Q${Math.ceil(month / 3)}`;
+}
+
+function periodsBetween(from: string, to: string, grouping: ForecastGrouping): string[] {
+  const out: string[] = [];
+  let year = Number(from.slice(0, 4));
+  let month = Number(from.slice(5, 7));
+  const last = periodOf(to, grouping);
+  for (let guard = 0; guard < 600; guard += 1) {
+    const period = periodOf(`${year}-${String(month).padStart(2, "0")}-01`, grouping);
+    if (out.at(-1) !== period) out.push(period);
+    if (period === last) break;
+    month += grouping === "month" ? 1 : 3;
+    if (month > 12) {
+      month -= 12;
+      year += 1;
+    }
+  }
+  return out;
+}
+
+/**
+ * Won and expected revenue per month or quarter, in one currency. Won deals
+ * count by when they were closed, open deals by their expected close date,
+ * lost deals not at all. Only values that count (known or estimated, with a
+ * source) are summed.
+ */
+export function forecastByPeriod(
+  deals: readonly Deal[],
+  stages: readonly PipelineStage[],
+  options: { currency: string; grouping: ForecastGrouping; from: string; to: string; today: string },
+): PeriodForecast {
+  if (!FORECAST_GROUPINGS.includes(options.grouping)) {
+    throw new BookiError("pipeline.grouping", {
+      value: String(options.grouping),
+      groupings: FORECAST_GROUPINGS.join(", "),
+    });
+  }
+  for (const date of [options.from, options.to]) {
+    if (!realDate(String(date))) throw new BookiError("pipeline.range-date", { value: String(date) });
+  }
+  if (options.to < options.from) throw new BookiError("pipeline.range-order", { from: options.from, to: options.to });
+  const names = periodsBetween(options.from, options.to, options.grouping);
+  const rows = new Map<string, ForecastPeriod>(
+    names.map((period) => [
+      period,
+      { period, wonMinor: 0, committedMinor: 0, bestCaseMinor: 0, weightedMinor: 0, count: 0 },
+    ]),
+  );
+  const undated: string[] = [];
+  const overdue: string[] = [];
+  const otherCurrency: string[] = [];
+  const unverified: string[] = [];
+  for (const deal of deals) {
+    const stage = dealStage(deal, stages);
+    if (!stage || stage.outcome === "lost") continue;
+    if (!valueCounts(deal)) {
+      if (!stage.outcome) unverified.push(deal.id);
+      continue;
+    }
+    if (deal.currency !== options.currency) {
+      otherCurrency.push(deal.id);
+      continue;
+    }
+    const value = deal.valueMinor as number;
+    if (stage.outcome === "won") {
+      const row = deal.closedAt ? rows.get(periodOf(deal.closedAt.slice(0, 10), options.grouping)) : undefined;
+      if (row) {
+        row.wonMinor += value;
+        row.count += 1;
+      }
+      continue;
+    }
+    if (!deal.expectedClose) {
+      undated.push(deal.id);
+      continue;
+    }
+    if (deal.expectedClose < options.today) overdue.push(deal.id);
+    const row = rows.get(periodOf(deal.expectedClose, options.grouping));
+    if (!row) continue;
+    if (deal.valueStatus === "known") row.committedMinor += value;
+    else row.bestCaseMinor += value;
+    row.weightedMinor += weighted(value, stage.probability);
+    row.count += 1;
+  }
+  return {
+    currency: options.currency,
+    grouping: options.grouping,
+    periods: [...rows.values()],
+    undated,
+    overdue,
+    otherCurrency,
+    unverified,
+  };
+}
+
+/** One stay of a deal in a stage. */
+export type StageStay = {
+  dealId: string;
+  stageId: string;
+  /** When the deal entered the stage: ISO timestamp or YYYY-MM-DD. */
+  enteredAt: string;
+  /** When it left; left out while it is still there. */
+  leftAt?: string;
+};
+
+export type StageDuration = {
+  stageId: string;
+  name: string;
+  /** Stays counted: finished ones and ones still running. */
+  count: number;
+  /** Whole days, the middle stay; null with no stays. */
+  medianDays: number | null;
+  /** Whole days, the longest stay. */
+  longestDays: number | null;
+  /** The stage's target in whole days, when one is set. */
+  targetDays: number | null;
+  /** Deals in the stage now, longer than its target. */
+  overTarget: string[];
+  /** Deals in the stage now. */
+  current: string[];
+};
+
+/**
+ * How long deals stay in each stage, in whole days: the median and the
+ * longest stay, and which deals have been in their stage longer than its
+ * target. A stay still running counts until `today`.
+ */
+export function timeInStage(
+  stays: readonly StageStay[],
+  stages: readonly PipelineStage[],
+  today: string,
+  targets: Record<string, number> = {},
+): StageDuration[] {
+  return stages
+    .filter((stage) => !stage.outcome)
+    .map((stage) => {
+      const here = stays.filter((stay) => stay.stageId === stage.id);
+      const days = here
+        .map((stay) => Math.max(0, daysBetween(stay.enteredAt, stay.leftAt ?? today)))
+        .sort((a, b) => a - b);
+      const middle = days.length ? days[Math.floor((days.length - 1) / 2)]! : null;
+      const target = Number.isSafeInteger(targets[stage.id]) ? (targets[stage.id] as number) : null;
+      const current = here.filter((stay) => stay.leftAt === undefined);
+      return {
+        stageId: stage.id,
+        name: stage.name,
+        count: here.length,
+        medianDays: middle,
+        longestDays: days.length ? days[days.length - 1]! : null,
+        targetDays: target,
+        overTarget:
+          target === null
+            ? []
+            : current.filter((stay) => daysBetween(stay.enteredAt, today) > target).map((stay) => stay.dealId),
+        current: current.map((stay) => stay.dealId),
+      };
+    });
+}

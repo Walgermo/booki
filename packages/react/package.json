@@ -209,6 +209,22 @@
       "types": "./dist/activity-timeline.d.ts",
       "default": "./dist/activity-timeline.js"
     },
+    "./funnel-chart": {
+      "types": "./dist/funnel-chart.d.ts",
+      "default": "./dist/funnel-chart.js"
+    },
+    "./forecast-chart": {
+      "types": "./dist/forecast-chart.d.ts",
+      "default": "./dist/forecast-chart.js"
+    },
+    "./recurring-revenue": {
+      "types": "./dist/recurring-revenue.d.ts",
+      "default": "./dist/recurring-revenue.js"
+    },
+    "./stage-duration": {
+      "types": "./dist/stage-duration.d.ts",
+      "default": "./dist/stage-duration.js"
+    },
     "./fixed-asset-register": {
       "types": "./dist/fixed-asset-register.d.ts",
       "default": "./dist/fixed-asset-register.js"

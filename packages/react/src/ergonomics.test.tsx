@@ -425,6 +425,47 @@ const CONTROLS: Record<string, Control> = {
       ],
     },
   },
+  "funnel-chart": {
+    options: {
+      steps: [
+        { id: "lead", label: "Lead", count: 10 },
+        { id: "won", label: "Won", count: 2 },
+      ],
+    },
+    probes: { drill: { args: ["nope"], names: ["lead", "won"] } },
+  },
+  "forecast-chart": {
+    options: {
+      stages: [{ id: "quote", name: "Quote", probability: 50 }],
+      deals: [],
+      from: "2026-11-01",
+      to: "2026-12-31",
+      today: "2026-11-24",
+    },
+    probes: {
+      setGrouping: { args: ["week"], names: ["month", "quarter"] },
+      drill: { args: ["nope"], names: ["2026-11", "2026-12"] },
+    },
+  },
+  "recurring-revenue": {
+    options: {
+      agreements: [{ id: "A1", customerId: "c1", mrrMinor: 100, currency: "NOK", start: "2026-01-01" }],
+      from: "2026-03-31",
+      to: "2026-06-30",
+    },
+    probes: {
+      setView: { args: ["weekly"], names: ["mrr", "arr"] },
+      drill: { args: ["nope"], names: ["new", "expansion", "contraction", "churn"] },
+    },
+  },
+  "stage-duration": {
+    options: {
+      stages: [{ id: "lead", name: "Lead", probability: 10 }],
+      stays: [{ dealId: "D1", stageId: "lead", enteredAt: "2026-10-01" }],
+      today: "2026-11-24",
+    },
+    probes: { drill: { args: ["nope"], names: ["lead"] } },
+  },
   "close-checklist": {
     options: {
       defaultTasks: [

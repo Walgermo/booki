@@ -655,6 +655,61 @@
       "fixed-asset-register-table"
     ]
   },
+  "forecast-chart": {
+    "actions": ["drill", "setGrouping"],
+    "options": [
+      "currency",
+      "deals",
+      "defaultDrill",
+      "defaultGrouping",
+      "drill",
+      "from",
+      "grouping",
+      "onDrillChange",
+      "onGroupingChange",
+      "stages",
+      "to",
+      "today"
+    ],
+    "parts": ["grouping", "period", "root"],
+    "dataSlots": [
+      "forecast-chart-columns",
+      "forecast-chart-empty",
+      "forecast-chart-error",
+      "forecast-chart-figure",
+      "forecast-chart-groupings",
+      "forecast-chart-legend",
+      "forecast-chart-notes",
+      "forecast-chart-period",
+      "forecast-chart-segment",
+      "forecast-chart-stack",
+      "forecast-chart-summary",
+      "forecast-chart-table",
+      "forecast-chart-title",
+      "forecast-chart-toolbar"
+    ]
+  },
+  "funnel-chart": {
+    "actions": ["drill"],
+    "options": ["currency", "defaultDrill", "drill", "onDrillChange", "steps"],
+    "parts": ["root", "step"],
+    "dataSlots": [
+      "funnel-chart-bar",
+      "funnel-chart-between",
+      "funnel-chart-count",
+      "funnel-chart-empty",
+      "funnel-chart-error",
+      "funnel-chart-issues",
+      "funnel-chart-label",
+      "funnel-chart-rate",
+      "funnel-chart-row",
+      "funnel-chart-steps",
+      "funnel-chart-summary",
+      "funnel-chart-table",
+      "funnel-chart-title",
+      "funnel-chart-track"
+    ]
+  },
   "iban-input": {
     "actions": ["clear", "setIban"],
     "options": ["defaultValue", "description", "disabled", "label", "onValueChange", "readOnly", "value"],
@@ -864,6 +919,40 @@
       "visually-hidden"
     ]
   },
+  "recurring-revenue": {
+    "actions": ["drill", "setView"],
+    "options": [
+      "agreements",
+      "currency",
+      "defaultDrill",
+      "defaultView",
+      "drill",
+      "from",
+      "onDrillChange",
+      "onViewChange",
+      "to",
+      "view"
+    ],
+    "parts": ["movement", "root", "view"],
+    "dataSlots": [
+      "recurring-revenue-amount",
+      "recurring-revenue-bar",
+      "recurring-revenue-check",
+      "recurring-revenue-customers",
+      "recurring-revenue-error",
+      "recurring-revenue-figure",
+      "recurring-revenue-headline",
+      "recurring-revenue-issues",
+      "recurring-revenue-label",
+      "recurring-revenue-row",
+      "recurring-revenue-rows",
+      "recurring-revenue-title",
+      "recurring-revenue-toolbar",
+      "recurring-revenue-track",
+      "recurring-revenue-unit",
+      "recurring-revenue-views"
+    ]
+  },
   "sheet-stack": {
     "actions": ["back", "close"],
     "options": ["defaultSheets", "dock", "onSheetsChange", "sheets", "width"],
@@ -876,6 +965,27 @@
       "sheet-stack-stage",
       "sheet-stack-title",
       "sheet-stack-trail"
+    ]
+  },
+  "stage-duration": {
+    "actions": ["drill"],
+    "options": ["defaultDrill", "drill", "onDrillChange", "stages", "stays", "targets", "today"],
+    "parts": ["root", "stage"],
+    "dataSlots": [
+      "stage-duration-bar",
+      "stage-duration-empty",
+      "stage-duration-error",
+      "stage-duration-label",
+      "stage-duration-median",
+      "stage-duration-meta",
+      "stage-duration-over",
+      "stage-duration-range",
+      "stage-duration-row",
+      "stage-duration-rows",
+      "stage-duration-summary",
+      "stage-duration-target",
+      "stage-duration-title",
+      "stage-duration-track"
     ]
   },
   "supplier-invoice-inbox": {
