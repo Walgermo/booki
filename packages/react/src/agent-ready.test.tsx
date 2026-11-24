@@ -30,7 +30,7 @@ function PostingStrip() {
 
   return (
     <BookiLocaleProvider defaultCountry="NO">
-      <AmountField value={100_00} aria-label="Amount excl. tax" />
+      <AmountField defaultValue={100_00} aria-label="Amount excl. tax" />
       <TaxCodeSelect value="MVA25" />
       <AccountPicker
         accounts={[

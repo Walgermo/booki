@@ -219,7 +219,7 @@ export function derive(
     totals: shown.totals,
     // For the composed ledger's own render; not part of the agent's snapshot.
     pageRows: shown.rows as unknown[],
-    page: shown.page - 1,
+    page: shown.page,
   };
 }
 
