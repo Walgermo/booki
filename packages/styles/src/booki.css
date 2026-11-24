@@ -527,7 +527,8 @@
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
-  min-height: 2.5rem;
+  /* The root's border and padding wrap the input: together they are one control high. */
+  min-height: calc(var(--bk-control-h) - 2px - 0.3rem);
   font-family: var(--bk-mono);
   font-size: 1.0625rem;
   font-weight: var(--bk-font-weight-medium);
