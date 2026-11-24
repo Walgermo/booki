@@ -22,6 +22,12 @@ export type BookiFieldCodeOptions = {
   options?: BookiFieldCodeItem[];
   /** The field may hold no code: `setCode("")` or `setCode(null)` clears it. */
   allowEmpty?: boolean;
+  /**
+   * Values only a person may choose, such as a deal's won and lost stages. An
+   * agent's `setCode` to one of them is refused; a person's change (with its
+   * DOM event) goes through.
+   */
+  personOnly?: string[];
   disabled?: boolean;
   readOnly?: boolean;
   onValueChange?: (code: string, details: { reason: string; source?: string }) => void;
@@ -35,6 +41,8 @@ export type BookiFieldCodeState = {
   items: BookiFieldCodeItem[];
   itemsHint: string;
   allowEmpty: boolean;
+  /** The values only a person may choose. */
+  personOnly: string[];
   refusal: string | null;
   disabled: boolean;
   readOnly: boolean;
@@ -85,10 +93,11 @@ export const bookiFieldCode = definePrimitive({
     value: "string",
     options: "value",
     allowEmpty: "boolean",
+    personOnly: "value",
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["code", "items", "itemsHint", "refusal"],
+  controlled: ["code", "items", "itemsHint", "personOnly", "refusal"],
   state: (options: BookiFieldCodeOptions): BookiFieldCodeState => {
     const all = options.options ?? [];
     return {
@@ -97,6 +106,7 @@ export const bookiFieldCode = definePrimitive({
       items: shownItems(all),
       itemsHint: itemsHint(all),
       allowEmpty: options.allowEmpty ?? false,
+      personOnly: options.personOnly ?? [],
       refusal: null,
       ...lockState(options),
     };
@@ -104,6 +114,7 @@ export const bookiFieldCode = definePrimitive({
   sync: (options: BookiFieldCodeOptions): Partial<BookiFieldCodeState> => {
     const next: Partial<BookiFieldCodeState> = { ...lockState(options) };
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
+    if (options.personOnly !== undefined) next.personOnly = options.personOnly;
     if (options.value !== undefined) next.code = options.value;
     if (options.options !== undefined) {
       next.options = options.options;
@@ -131,12 +142,18 @@ export const bookiFieldCode = definePrimitive({
       /**
        * Agent and product path: one of the options, by its `value` or its label (any case).
        * With `allowEmpty`, "" or null clears it. Throws a sentence that lists each option as `value (label)`.
+       * A value in `personOnly` is refused unless the call carries a person's DOM event.
        */
       setCode: (code: string | null, event?: Event): boolean => {
         const { options, allowEmpty } = context.store.get();
         if (allowEmpty && (code === null || code === "")) return commit("", "clear", event);
         const option = optionFor(options, code);
         if (!option) refuseUnknown(options, code);
+        // An agent's call carries no DOM event; a person's change does.
+        const fromPerson = typeof Event !== "undefined" && event instanceof Event;
+        if (!fromPerson && context.store.get().personOnly.includes(option.value)) {
+          throw new BookiError("field.person-only-code", { item: named(option) });
+        }
         return commit(option.value, "set-code", event);
       },
       items: (): BookiFieldCodeItem[] => context.store.get().options,

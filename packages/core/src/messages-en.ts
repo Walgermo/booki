@@ -519,6 +519,7 @@ export const EN = {
     'No currency "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one.',
   "select.unknown-period": 'No period "{value}". Its items: {items}.',
   "select.unknown-attestation": 'No attestation status "{value}". Its items: {items}.',
+  "field.person-only-code": '"{item}" is a person\'s choice here. Ask them to pick it themselves.',
   "field.unknown-code": 'No option "{value}". The options, as value (label): {items}.',
   "field.unknown-code-more":
     'No option "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',

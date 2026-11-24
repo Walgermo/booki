@@ -544,6 +544,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Ingen valuta "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en.',
   "select.unknown-period": 'Ingen periode "{value}". Valg: {items}.',
   "select.unknown-attestation": 'Ingen attestasjonsstatus "{value}". Valg: {items}.',
+  "field.person-only-code": '"{item}" er et valg en person må ta her. Be dem velge det selv.',
   "field.unknown-code": 'Ingen valg "{value}". Valgene, som verdi (etikett): {items}.',
   "field.unknown-code-more":
     'Ingen valg "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',

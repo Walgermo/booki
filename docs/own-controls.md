@@ -174,6 +174,9 @@ function CostCentreField(props: {
   )
 }
 
+// Values only a person may choose: `personOnly: ["won", "lost"]` refuses an agent's setCode to
+// a deal's won or lost stage, and lets a person's change (with its DOM event) through.
+
 // The product owns the value: it passes the new one back, as a real select does.
 function CostCentreOwned(props: { onValueChange?: (code: string, details: { source?: string }) => void }) {
   const [code, setCode] = useState("100")

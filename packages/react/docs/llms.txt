@@ -82,7 +82,7 @@ Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`). 
 | `code` | a value from the closed `options` list | `setCode` | `code`, `items`, `itemsHint`, `refusal` |
 | `date` | ISO `YYYY-MM-DD`, or `""` | `setDate` | `date`, `refusal` |
 
-A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
+A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. A code field's `personOnly` lists values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused, a person's change with its DOM event goes through, and the snapshot shows the list. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
 
 ## Catalog
 

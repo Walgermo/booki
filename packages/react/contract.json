@@ -416,7 +416,7 @@
   },
   "currency-select": {
     "actions": ["clear", "setCurrency", "setValue"],
-    "options": ["currencies", "defaultValue", "disabled", "onValueChange", "readOnly", "value"],
+    "options": ["currencies", "defaultValue", "disabled", "label", "onValueChange", "readOnly", "value"],
     "parts": ["list", "option", "root", "select", "trigger"],
     "dataSlots": ["currency-select-value"]
   },
@@ -586,7 +586,7 @@
   },
   "field-code": {
     "actions": ["setCode"],
-    "options": ["allowEmpty", "disabled", "onValueChange", "options", "readOnly", "value"],
+    "options": ["allowEmpty", "disabled", "onValueChange", "options", "personOnly", "readOnly", "value"],
     "parts": ["root"],
     "dataSlots": ["field-code"]
   },

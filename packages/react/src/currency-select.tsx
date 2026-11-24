@@ -43,16 +43,18 @@ function CurrencySelect({
   ...props
 }: CurrencySelectProps) {
   const { country } = useBookiLocaleOptional();
+  const label = country === "NO" ? "Valuta" : "Currency";
   return (
     <CurrencySelectRoot
       value={value}
       defaultValue={defaultValue}
       currencies={currencies}
+      label={label}
       onValueChange={onValueChange}
       disabled={disabled}
       readOnly={readOnly}
       className={className}
-      aria-label={country === "NO" ? "Valuta" : "Currency"}
+      aria-label={label}
       {...props}
     >
       {(state: { value: string }) => (
