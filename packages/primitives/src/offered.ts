@@ -14,7 +14,7 @@ export const shownItems = (items: OfferedItem[]): OfferedItem[] => (items.length
 export const itemsHint = (items: OfferedItem[]): string =>
   items.length <= LISTED_WHOLE
     ? ""
-    : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists the first 50.`;
+    : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists 50 at a time, and from: 50 reads the next 50.`;
 
 /**
  * Throws the refusal for a value the list lacks: every item of a short list,

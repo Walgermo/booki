@@ -190,3 +190,44 @@ describe("attachAudit on a list of records", () => {
     expect(row.detail).not.toMatch(/D-1/);
   });
 });
+
+describe("expect, the bridge's check", () => {
+  it("asks no one, and a failed check writes no audit row while a refused change does", async () => {
+    const asked: string[] = [];
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({
+      agentId: "test",
+      allow: async (step) => {
+        asked.push(step.action);
+        return true;
+      },
+    });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField defaultValue={100_00} aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    const record = { audit: (row: AgentDecisionRow) => rows.push(row), agentId: "test" };
+    const holds = (await actAndRecord(
+      agent,
+      { steps: [{ ref: "Beløp", action: "expect", args: [100_00] }] },
+      record,
+    )) as Result;
+    const fails = (await actAndRecord(
+      agent,
+      { steps: [{ ref: "Beløp", action: "expect", args: [1] }] },
+      record,
+    )) as Result;
+    expect(holds.ok).toBe(true);
+    expect(fails.ok).toBe(false);
+    expect(asked).toEqual([]);
+    expect(rows).toEqual([]);
+    const refused = (await actAndRecord(
+      agent,
+      { steps: [{ ref: "Beløp", action: "setMinor", args: [1.5] }] },
+      record,
+    )) as Result;
+    expect(refused.ok).toBe(false);
+    expect(rows.map((row) => row.action)).toEqual(["agent.failed"]);
+  });
+});

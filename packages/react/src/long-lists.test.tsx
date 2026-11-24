@@ -38,6 +38,31 @@ describe("a chart of accounts an agent works with", () => {
     expect(JSON.stringify(agent.snapshot()).length).toBeLessThan(800);
   });
 
+  it("agrees with the bridge's own count, and pages through query with from", async () => {
+    const { agent, entry } = setup(long);
+    expect((entry() as Entry & { more?: number }).more).toBe(181);
+    expect(entry().itemsHint).toContain("from: 50");
+    type Found = { items: { value: string }[]; more?: number }[];
+    const first = (await agent.query({ within: entry().ref })) as unknown as Found;
+    const next = (await agent.query({ within: entry().ref, from: 50 })) as unknown as Found;
+    expect(first[0]!.items).toHaveLength(50);
+    expect(first[0]!.more).toBe(131);
+    expect(next[0]!.items[0]!.value).toBe(long[50]!.number);
+    expect(next[0]!.more).toBe(81);
+  });
+
+  it("is checked with expect, by value, without changing it", async () => {
+    const { agent, entry } = setup(long);
+    await agent.act({ steps: [{ ref: entry().ref, action: "setAccount", args: ["6801"] }] });
+    type Result = { ok: boolean; error?: { message: string } };
+    const holds = (await agent.act({ steps: [{ ref: entry().ref, action: "expect", args: ["6801"] }] })) as Result;
+    expect(holds.ok).toBe(true);
+    const fails = (await agent.act({ steps: [{ ref: entry().ref, action: "expect", args: ["1000"] }] })) as Result;
+    expect(fails.ok).toBe(false);
+    expect(fails.error?.message).toContain('"6801"');
+    expect(entry().value).toBe("6801");
+  });
+
   it("is found by number and by word through query, and can be set", async () => {
     const { agent, entry } = setup(long);
     for (const text of ["6801", "Kontorrekvisita"]) {

@@ -262,6 +262,26 @@ takes the actor from the body.
   server's refusal back to the model with the result.
 - A press that starts something async answers `ok: true` when it has started. Read the
   outcome from the next snapshot.
+- A `set` step that leaves the value as it was fails: `setMinor on Beløp (c1) didn't take: it is
+  still 10000.` A controlled field whose parent never takes the change can't be set by an agent,
+  so pass the change on (`onValueChange`). A parent that takes it after a request of its own has
+  about a second.
+- `expect` checks a field and changes nothing: `{ ref: "Beløp", action: "expect", args: [312500] }`.
+  It compares the field's `value` (minor units on `AmountField`, the account number on
+  `AccountPicker`), and a check that doesn't hold stops the call, so the press after it runs only
+  when every value is right. It asks `allow` nothing and `actAndRecord` writes no audit row for it.
+  A record component (`DataTable`, `LedgerTable`, `DealPipeline`) has no single value: read it
+  from the snapshot instead.
+
+```ts
+await agent.act({ steps: [
+  { ref: "Beløp", action: "setMinor", args: [312500] },
+  { ref: "Konto", action: "setAccount", args: ["6800"] },
+  { ref: "Beløp", action: "expect", args: [312500] },
+  { ref: "Konto", action: "expect", args: ["6800"] },
+  { ref: "Bilag", action: "press", args: ["Lagre utkast"] },
+] })
+```
 
 `examples/ap-flow` does both (`lib/writes.ts`, `lib/script.ts`, `lib/model-agent.ts`):
 https://github.com/Walgermo/booki/tree/main/examples/ap-flow
@@ -445,7 +465,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 | InvoiceNumberInput | `@booki/react` | document / invoice number |
 | AttestationStatus | `@booki/react` | `setStatus`; approve/reject via confirm press |
 | TaxCodeSelect | `@booki/react` | closed `items` |
-| AccountPicker | `@booki/react` | closed chart; over 30 accounts are not in the snapshot: `query({ within, text })` finds one by number or whole word |
+| AccountPicker | `@booki/react` | closed chart; over 30 accounts are not in the snapshot (`more` gives the count): `query({ within, text })` finds one by number or whole word, and `query({ within, from: 50 })` reads the next 50 |
 | CurrencySelect | `@booki/react` | closed NOK/USD |
 
 Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,

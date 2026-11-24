@@ -53,7 +53,7 @@ const shownItems = (items: BookiFieldCodeItem[]): BookiFieldCodeItem[] => (items
 const itemsHint = (items: BookiFieldCodeItem[]): string =>
   items.length <= LISTED_WHOLE
     ? ""
-    : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists the first 50.`;
+    : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists 50 at a time, and from: 50 reads the next 50.`;
 
 /** How an option is named in a refusal: the value `setCode` takes, then its label when that differs. */
 const named = (item: BookiFieldCodeItem): string =>

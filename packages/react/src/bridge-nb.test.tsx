@@ -1,5 +1,6 @@
 import { cleanup, render } from "@testing-library/react";
 import { Button } from "@ui-sdk/react/button";
+import { NumberInput, NumberInputControl, NumberInputGroup } from "@ui-sdk/react/number-input";
 import { afterEach, describe, expect, it } from "vitest";
 import { AmountField } from "./amount-field.js";
 import { createBookiAgent } from "./booki-agent.js";
@@ -62,5 +63,31 @@ describe("the bridge's own sentences with language nb", () => {
     screen();
     const result = (await agent.act({ steps: [{ ref: "Bokfør", action: "press" }] })) as Result;
     expect(result.error?.message).toBe('The person said no to "Bokføre bilaget?".');
+  });
+
+  it("says a change didn't take, and what a failed check found, in Norwegian", async () => {
+    const agent = createBookiAgent({ agentId: "test", language: "nb" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField value={100_00} aria-label="Fast beløp" />
+      </BookiLocaleProvider>,
+    );
+    const set = (await agent.act({ steps: [{ ref: "Fast beløp", action: "setMinor", args: [5_00] }] })) as Result;
+    expect(set.error?.message).toMatch(/^setMinor på Fast beløp \(c\d+\) tok ikke: verdien er fortsatt 10000\.$/);
+    const check = (await agent.act({ steps: [{ ref: "Fast beløp", action: "expect", args: [5_00] }] })) as Result;
+    expect(check.error?.message).toMatch(/^Fast beløp \(c\d+\) er 10000, ikke 500\.$/);
+  });
+
+  it("refuses a number outside min and max in Norwegian", async () => {
+    const agent = createBookiAgent({ agentId: "test", language: "nb" });
+    render(
+      <NumberInput defaultValue={2} min={1} max={20} aria-label="Antall">
+        <NumberInputGroup>
+          <NumberInputControl />
+        </NumberInputGroup>
+      </NumberInput>,
+    );
+    const result = (await agent.act({ steps: [{ ref: "Antall", action: "setValue", args: [25] }] })) as Result;
+    expect(result.error?.message).toMatch(/^setValue på Antall \(c\d+\) tar et tall fra 1 til 20, ikke 25\.$/);
   });
 });

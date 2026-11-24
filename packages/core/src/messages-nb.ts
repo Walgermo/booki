@@ -736,4 +736,14 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "bridge.pressed-running": 'Trykket på "{button}". Handlingen kjører fortsatt.',
   "bridge.pressed-after-opening-running": 'Trykket på "{button}" etter å ha åpnet {ref}. Handlingen kjører fortsatt.',
   "bridge.still-running": "{action} kjører fortsatt.",
+  "bridge.didnt-take": "{action} på {name} ({ref}) tok ikke: verdien er fortsatt {value}.",
+  "bridge.didnt-take-step":
+    "{action} på {name} ({ref}) tok ikke: verdien er fortsatt {value}, og den går i steg på {step}.",
+  "bridge.took-other": "{action} på {name} ({ref}) ble {value}, ikke {asked}. Verdien er {value} nå.",
+  "bridge.took-other-step":
+    "{action} på {name} ({ref}) ble {value}, ikke {asked}: den går i steg på {step}. Verdien er {value} nå.",
+  "bridge.expect-failed": "{name} ({ref}) er {value}, ikke {expected}.",
+  "bridge.number-range": "setValue på {name} ({ref}) tar et tall fra {min} til {max}, ikke {value}.",
+  "bridge.number-min": "setValue på {name} ({ref}) tar et tall på {min} eller mer, ikke {value}.",
+  "bridge.number-max": "setValue på {name} ({ref}) tar et tall på {max} eller mindre, ikke {value}.",
 };
