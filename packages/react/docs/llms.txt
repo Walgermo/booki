@@ -69,6 +69,10 @@ Amounts are always integer minor units, for reading and writing: the AmountField
 
 History: AmountField reports changes on key `minor`, VoucherComposer on `lines`, OrganizationNumberInput on `digits`. `createBookiHistory` records these by default, so `undoSource("agent")` / `seek` restore them through `setMinor` / `setLines` / `setDigits`. With a history of your own, pass `keys: BOOKI_HISTORY_KEYS`. Secret fields (bank account, IBAN, KID) are recorded as redacted and are reported as not restored, by design. An undo is the person's: `attachAudit` records it under `by` (default `"person"`), and `isHistoryRestoring()` is true while the values go back, because they report `source: "agent"` (ui-sdk restores through the bridge).
 
+## Trying WebMCP in Chrome
+
+Chrome with WebMCP for testing (`chrome://flags/#enable-webmcp-testing` or `--enable-features=WebMCPTesting`) gives the page `document.modelContext`: `getTools()` lists the registered tools with their hints, `executeTool(tool, input)` calls one with an input object, and the agent receives the result as JSON text. Checked in Chrome 158 against `registerTools`.
+
 ## Irreversible actions
 
 Controls that move or post money carry `data-agent-confirm`. Without `allow`, those steps fail with "Needs a person".

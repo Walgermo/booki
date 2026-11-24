@@ -205,6 +205,13 @@ if (typeof window !== "undefined") {
 }
 ```
 
+**Trying the WebMCP tools in Chrome.** Start Chrome with WebMCP for testing
+(`chrome://flags/#enable-webmcp-testing`, or `--enable-features=WebMCPTesting`) and open
+your page. In the console, `await document.modelContext.getTools()` lists the tools, and
+`await document.modelContext.executeTool(tool, { steps: [...] })` calls one; Chrome hands
+the agent the result as JSON text. Checked in Chrome 158: `snapshot`, `act` and `query`
+work, and a press on a person's button comes back as "This is a person's decision …".
+
 Connect the app's dialog and the signed-in person once, from a component near the root:
 
 ```tsx
