@@ -135,7 +135,7 @@ A refusal is a sentence the agent can act on: it names the unit, the options tha
 | BankAccountInput | `@booki/react/bank-account-input` | `setKontonummer` / `setRouting` / `setAccount` / `clear` — `isValid`, secret |
 | PaymentReferenceInput | `@booki/react/payment-reference-input` | `setReference`, `generateKid`, `clear` — `isValid`; a KID is always secret, a memo only with `secretReference` |
 | TaxCodeSelect | `@booki/react/tax-code-select` | `setTaxCode`, `clear` — closed `items`, snapshot `percent` |
-| AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart; over 30 accounts `items` is empty and `itemsHint` says how to `query({ within, text })` |
+| AccountPicker | `@booki/react/account-picker` | `setAccount`, `clear` — closed chart; over 30 accounts `items` is empty, `more` is the count and `itemsHint` says how to `query({ within, text })`; `from: 50` reads the next 50 |
 | CurrencySelect | `@booki/react/currency-select` | `setCurrency`, `clear` — closed NOK/USD |
 | OrganizationNumberInput | `@booki/react/organization-number-input` | `setOrganizationNumber`, `clear` — orgnr mod11 / EIN |
 | IbanInput | `@booki/react/iban-input` | `setIban`, `clear` — `isValid`, secret; NO → kontonummer |
@@ -201,6 +201,12 @@ Refusals and issues stay English in state and in `act` errors, which is what an 
 - **Countries:** profiles for `NO`, `US`, `SE`, `DK`, `GB`, `DE`. The last four are starters with English labels. Any other: `defineProfile(base, overrides)` from `@booki/core/locale`, passed as `<BookiLocaleProvider profiles={{ FI }}>`.
 - **Currencies:** `@booki/core/fx` has `convertMinor`, `findRate`, `revalue`. Rates are whole millionths (`11.5` is `11500000`). A voucher line with `foreign` is not postable unless its base amount is exactly the converted amount.
 - **Roles:** wrap the app in `<BookiAccessProvider actor={{ id, roles }} entity={...}>`. Every workflow control (approval, payment, close, period, invoice, supplier invoice, expense, evidence, VAT return, fixed assets, audit workpaper, audit findings, client requests, deal pipeline, activity timeline) then takes the actor from it and refuses a person's button their role does not allow, naming the role it takes. Permissions: `voucher.post`, `invoice.finalize`, `supplier-invoice.approve`, `expense.approve`, `evidence.remove`, `approval.decide`, `payment.approve`, `payment.release`, `reconciliation.approve`, `period.close`, `period.adjust-closed`, `close.sign-off`, `vat.prepare`, `vat.submit`, `asset.run-depreciation`, `asset.dispose`, `audit.prepare`, `audit.sign-off`, `audit.review`, `audit.conclude`, `audit.eqcr`, `audit.freeze`, `finding.raise`, `finding.confirm`, `finding.withdraw`, `request.draft`, `request.send`, `request.decide`, `deal.close`, `activity.remove`. Roles per engagement: `actor.scopes` by id, and `scope` in the check. `@booki/core/permissions` has `can`, `assertCan`, `STANDARD_ROLES`, `STANDARD_DUTY_RULES`. The server must still check.
+
+## Checking a step: `expect`
+
+`{ ref, action: "expect", args: [value] }` checks a field's `value` and changes nothing (minor units on `AmountField`, the number on `AccountPicker`, the code on `TaxCodeSelect`). A check that doesn't hold stops the call, so put it before the press that saves. It asks `allow` nothing, and `actAndRecord` writes no audit row for it. Record components (`DataTable`, `LedgerTable`, `DealPipeline`) have no single value: read them from the snapshot.
+
+A `set` step that leaves the value as it was fails (`didn't take: it is still …`), and one that lands on another value says what it is now. A controlled field must pass the change on, or an agent can't set it. With `language: "nb"` these come back in Norwegian, as the rest of the bridge's sentences do.
 
 ## Two more bridge behaviours
 

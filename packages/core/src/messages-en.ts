@@ -709,4 +709,14 @@ export const EN = {
   "bridge.pressed-running": 'Pressed "{button}". Its action is still running.',
   "bridge.pressed-after-opening-running": 'Pressed "{button}", after opening {ref}. Its action is still running.',
   "bridge.still-running": "{action} is still running.",
+  "bridge.didnt-take": "{action} on {name} ({ref}) didn't take: it is still {value}.",
+  "bridge.didnt-take-step":
+    "{action} on {name} ({ref}) didn't take: it is still {value}, and it moves in steps of {step}.",
+  "bridge.took-other": "{action} on {name} ({ref}) took {value}, not {asked}. It is {value} now.",
+  "bridge.took-other-step":
+    "{action} on {name} ({ref}) took {value}, not {asked}: it moves in steps of {step}. It is {value} now.",
+  "bridge.expect-failed": "{name} ({ref}) is {value}, not {expected}.",
+  "bridge.number-range": "setValue on {name} ({ref}) takes a number from {min} to {max}, not {value}.",
+  "bridge.number-min": "setValue on {name} ({ref}) takes a number of {min} or more, not {value}.",
+  "bridge.number-max": "setValue on {name} ({ref}) takes a number of {max} or less, not {value}.",
 } as const;
