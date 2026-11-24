@@ -126,7 +126,7 @@ describe("AgentCursor", () => {
     expect(overlay.getAttribute("aria-hidden")).toBe("true");
     expect(overlay.getAttribute("data-phase")).toBe("done");
     expect(document.querySelector('[data-slot="agent-cursor-label"]')?.textContent).toMatch(
-      /Agent · setter beløp 12500/,
+      /Agent · setter beløp 125,00/,
     );
   });
 

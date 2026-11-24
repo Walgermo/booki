@@ -600,4 +600,21 @@ export const EN = {
   "request.issue.overdue": 'Request "{id}" was due {due} and is still waiting for the client.',
   "request.issue.awaiting-decision": 'Request "{id}" is answered; a person judges whether the answer is enough.',
   "request.no-request": 'No client request "{id}". Requests: {ids}.',
+  // The agent bridge's own sentences (ui-sdk), written exactly as ui-sdk writes them, so `localize`
+  // can read them back. Booki never throws these; `createBookiAgent({ language })` translates them.
+  "bridge.no-component": 'No component "{ref}" on the page. Its labels: {labels}.',
+  "bridge.no-component-behind":
+    'No component "{ref}" on the page. Its labels: {labels}. It may be behind one of these, which a step can open first: {closed}.',
+  "bridge.needs-person-press": 'Needs a person: "{confirm}". Ask them to press "{button}" themselves.',
+  "bridge.needs-person-change": 'Needs a person: "{confirm}". Ask them to make this change themselves.',
+  "bridge.person-said-no": 'The person said no to "{confirm}".',
+  "bridge.app-refused": "The app refused {action} on {ref}.",
+  "bridge.cancelled": "{action} on {ref} was cancelled.",
+  "bridge.no-answer": "No answer to {action} on {ref} in {seconds} seconds.",
+  "bridge.no-button": 'No button "{text}" in {ref}. Buttons: {buttons}.',
+  "bridge.button-disabled": '"{button}" in {ref} is disabled now.',
+  "bridge.disabled": "{component} {ref} is disabled now.",
+  "bridge.no-item": 'No item "{item}" in {name}. Its items: {items}.',
+  "bridge.needs-ref": "A step needs a ref: a component's ref from snapshot, or its label.",
+  "bridge.needs-action": 'A step on "{ref}" needs an action, like "press".',
 } as const;

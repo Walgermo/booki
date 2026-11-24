@@ -53,7 +53,18 @@ let compiled: Compiled[] | undefined;
  * only these may run past the end of a sentence; any other placeholder stops
  * at one, so a list of issues is not read as one long issue.
  */
-const SENTENCE_PARAMS = new Set(["issues", "reasons", "reason", "exceptions", "message"]);
+// The bridge's lists of labels and buttons are page text, which can hold a
+// sentence of its own.
+const SENTENCE_PARAMS = new Set([
+  "issues",
+  "reasons",
+  "reason",
+  "exceptions",
+  "message",
+  "labels",
+  "buttons",
+  "closed",
+]);
 
 const WITHIN_SENTENCE = `(?:(?![.!?:;]\\s+["'(A-ZÆØÅ])[\\s\\S])*?`;
 
