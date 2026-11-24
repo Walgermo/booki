@@ -1,6 +1,6 @@
 {
   "name": "@booki/vue",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Booki for Vue (experimental) — agent-first accounting controls as Vue 3 components: the same rules, state and agent actions as @booki/react.",
   "type": "module",
   "license": "MIT",

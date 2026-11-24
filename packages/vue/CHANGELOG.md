@@ -1,5 +1,13 @@
 # @booki/vue
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`d7816ae`](https://github.com/Walgermo/booki/commit/d7816ae204780a08b4b1097699e57aaf47002626)]:
+  - @booki/core@0.1.2
+  - @booki/primitives@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
