@@ -54,7 +54,25 @@ decimalFromMinor(123450, "NOK")    // "1234.50"
 minorFromDecimal("1234.505", "NOK") // refused: a rounding nobody chose
 ```
 
-Never go through a float (`Math.round(kroner * 100)`). For display,
+Never go through a float (`Math.round(kroner * 100)`). supabase-js and
+PostgREST hand a `numeric` column over as a JS number (`125000.5`), not as
+text. Then use the number's own digits, which `fromMajor` does:
+
+```ts
+import { decimalFromMinor, fromMajor } from "@booki/core/money"
+
+fromMajor(125000.5, "NOK").minor   // 12500050
+decimalFromMinor(12500050, "NOK")  // "125000.50", send this back as the column's value
+```
+
+A deal or quote in any currency: give `CurrencySelect` the list your product
+takes (`currencies={["NOK", "EUR", "USD", "SEK"]}`); the agent's refusal names
+them. `AmountField` follows the `currency` you pass it.
+
+`@booki/styles/shadcn.css` makes Booki's fields shadcn's height (`h-9`). If
+your inputs are another height, set `--bk-control-h` to it after the import.
+
+For display,
 `formatMoney(value, { locale: "nb-NO", zero: "–", accounting: true })` shows
 zero as a dash and negatives in parentheses.
 

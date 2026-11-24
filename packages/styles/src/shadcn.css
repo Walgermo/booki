@@ -30,6 +30,8 @@
   --bk-radius-sm: calc(var(--radius) - 2px);
   --bk-radius-lg: calc(var(--radius) + 2px);
   --bk-font: var(--font-sans);
+  /* shadcn's Input and SelectTrigger are h-9. If yours are h-8, set 2rem. */
+  --bk-control-h: 2.25rem;
   --bk-mono: var(--font-mono);
   --bk-series-1: var(--chart-1);
   --bk-series-2: var(--chart-2);
@@ -41,4 +43,11 @@
      Booki's own teal is not mixed in: unvalidated against your five, it can
      sit next to one of them (shadcn's default --chart-2 is a teal). */
   --bk-series-6: var(--chart-6, var(--muted-foreground));
+}
+
+/* A finger still gets 44px. */
+@media (pointer: coarse) {
+  :root {
+    --bk-control-h: 2.75rem;
+  }
 }

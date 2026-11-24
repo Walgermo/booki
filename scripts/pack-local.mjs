@@ -61,4 +61,7 @@ pnpm add ${[...wanted, ...pinned].join(" ")}
 
 npm: one command.
 
-npm install ${[...files.map(({ file }) => shown(file)), ...pinned].join(" ")}`);
+npm install ${[...files.map(({ file }) => shown(file)), ...pinned].join(" ")}
+
+Packing again later: run the same add or install command again. The file names stay the same,
+so pnpm install keeps the build it already has.`);
