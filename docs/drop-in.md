@@ -1,10 +1,8 @@
 # Booki in an existing Next.js and shadcn/ui app
 
 What it takes to add Booki to a product that already has its own design
-system, tables, money format, roles and agents. Written from fitting Booki
-into a large Next.js 16 audit product (React Server Components, shadcn/ui on
-Base UI, Tailwind 4, TanStack Table, Supabase). Start with one screen; the rest
-of the app stays as it is.
+system, tables, money format, roles and agents. Start with one screen; the
+rest of the app stays as it is.
 
 ## 1. Server Components
 
