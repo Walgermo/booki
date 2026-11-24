@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { IRREVERSIBLE, looksLikeIconName } from "../src/audit.js";
+import { IRREVERSIBLE, looksLikeIconName, samePage } from "../src/audit.js";
 import { toHtml, toJson } from "../src/report.js";
 import { RULES } from "../src/rules.js";
 import { score } from "../src/score.js";
@@ -141,5 +141,14 @@ describe("reports", () => {
   it("leaves the full snapshot out of the JSON unless asked", () => {
     expect(JSON.parse(toJson(report))).toMatchObject({ score: 95, snapshotIncluded: false });
     expect(JSON.parse(toJson(report, { snapshot: true })).snapshot).toBe(report.snapshot);
+  });
+});
+
+describe("samePage", () => {
+  it("ignores the query, the hash and a closing slash", () => {
+    expect(samePage("http://localhost:3000/screen/?tab=2#x", "http://localhost:3000/screen")).toBe(true);
+  });
+  it("tells a sign-in page from the screen asked for", () => {
+    expect(samePage("http://localhost:3000/login?next=%2Fscreen", "http://localhost:3000/screen")).toBe(false);
   });
 });

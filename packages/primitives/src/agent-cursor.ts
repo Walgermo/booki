@@ -133,6 +133,18 @@ function describe(step: AgentCursorStep): string {
   return `${verb}${arg}`;
 }
 
+/**
+ * Where the cursor's label fits beside the pointer at `x` in a viewport
+ * `width` wide: to the right, or, near the right edge, to the left (`flip`),
+ * and how many pixels it has (`room`) before it would leave the window.
+ */
+export function cursorLabelRoom(x: number, width: number): { flip: boolean; room: number } {
+  const right = width - x - 30;
+  const left = x - 24;
+  const flip = right < 220 && left > right;
+  return { flip, room: Math.max(80, Math.floor(flip ? left : right)) };
+}
+
 export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursorController {
   const travel = options.travel ?? 420;
   const press = options.press ?? 160;

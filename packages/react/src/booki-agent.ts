@@ -19,6 +19,24 @@ type AgentBridge = ReturnType<typeof createAgent>;
 const bridges = new WeakMap<AgentBridge, AgentBridge>();
 const bridgeOf = (agent: AgentBridge): AgentBridge => bridges.get(agent) ?? agent;
 
+/**
+ * Who an undo running on a bridge is for. ui-sdk's history puts values back
+ * through the bridge, so the change reports `source: "agent"`; this says it
+ * was a person's undo.
+ */
+const restorers = new WeakMap<AgentBridge, string>();
+let restoringCount = 0;
+
+/**
+ * True while a Booki history (`createBookiHistory`, `createHistory`) is putting
+ * values back for an undo or a seek. Those changes report `source: "agent"`,
+ * because ui-sdk restores through the bridge; check this in your own change
+ * callback to record them as the person's undo, not the agent's work.
+ */
+function isHistoryRestoring(): boolean {
+  return restoringCount > 0;
+}
+
 export type CreateBookiAgentOptions = AgentPolicyOptions & {
   /** How long a step waits for `allow`, in ms. Default five minutes. */
   timeout?: number;
@@ -26,7 +44,8 @@ export type CreateBookiAgentOptions = AgentPolicyOptions & {
    * The language of Booki's refusals in `act` results. Default `"en"`. With
    * `"nb"` a refusal from a Booki control comes back in Norwegian, and so do the
    * bridge's own ("Needs a person: …", "No component … on the page", "The person
-   * said no to …"); a sentence the catalogue does not know stays as written. History
+   * said no to …"), and so does a step's own sentence (`Pressed "…".`); a sentence the
+   * catalogue does not know stays as written. History
    * (`createBookiHistory`) and WebMCP tools (`registerTools`) work with such an
    * agent; what they answer themselves is in ui-sdk's words.
    */
@@ -64,7 +83,10 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   return localized;
 }
 
-/** The same result with every refusal (`error.message`, at any depth) written in another language. */
+/**
+ * The same result with every refusal (`error.message`, at any depth) and every
+ * step's own sentence (`result`, like `Pressed "Post".`) written in another language.
+ */
 function inLanguage<T>(value: T, say: (text: string) => string): T {
   if (Array.isArray(value)) return value.map((item) => inLanguage(item, say)) as T;
   if (value === null || typeof value !== "object") return value;
@@ -77,6 +99,9 @@ function inLanguage<T>(value: T, say: (text: string) => string): T {
       typeof (inner as { message?: unknown }).message === "string"
     ) {
       out[key] = { ...(inner as object), message: say((inner as { message: string }).message) };
+    } else if (key === "result" && typeof inner === "string") {
+      // A control's own answer comes back as it is when the catalogue does not know it.
+      out[key] = say(inner);
     } else out[key] = inLanguage(inner, say);
   }
   return out as T;
@@ -148,15 +173,18 @@ function attachAudit(
   const agentId = options.agentId ?? "bridge";
   const ruleVersion = options.ruleVersion;
 
+  const bridge = bridgeOf(agent);
   return agent.subscribe((change) => {
     if (change.source !== "agent") return;
     // A value with secrets is reported on `<key>Shown`, the copy without them.
     const key = change.key.endsWith("Shown") ? change.key.slice(0, -"Shown".length) : change.key;
+    // An undo goes through the bridge too, but it is the person's.
+    const undoneBy = restorers.get(bridge);
     push({
-      actor: `agent:${agentId}`,
+      actor: undoneBy ?? `agent:${agentId}`,
       action: domainAction(change.component, key),
       target: change.label ?? change.ref,
-      detail: `${key}=${auditValue(change.value)} (was ${auditValue(change.previous)})`,
+      detail: `${key}=${auditValue(change.value)} (was ${auditValue(change.previous)})${undoneBy ? ", undo" : ""}`,
       ruleVersion,
     });
   });
@@ -179,22 +207,53 @@ async function proposeChanges(agent: AgentBridge, changes: Parameters<typeof sta
  */
 const BOOKI_HISTORY_KEYS = ["value", "checked", "pressed", "minor", "lines", "digits", "matches"];
 
+export type BookiHistoryOptions = NonNullable<Parameters<typeof createBridgeHistory>[1]> & {
+  /**
+   * Who an undo or a seek is for, in `attachAudit` rows: the person's actor id,
+   * like `"person:kari"`, or a function that returns the one signed in at the
+   * moment of the undo. Default `"person"`.
+   */
+  by?: string | (() => string | undefined);
+};
+
 /**
  * History bound to a finance agent (undo agent work, describe entries).
  * Records Booki's keys by default (see `BOOKI_HISTORY_KEYS`); pass `keys` to
  * replace the list.
  */
-function createBookiHistory(agent: AgentBridge, options?: Parameters<typeof createHistory>[1]) {
+function createBookiHistory(agent: AgentBridge, options?: BookiHistoryOptions) {
   return createHistory(agent, { keys: BOOKI_HISTORY_KEYS, ...options });
 }
 
 /**
  * ui-sdk's `createHistory`, for any agent `createBookiAgent` made, also one with
  * a `language`: undo and redo run through the bridge itself, so their own
- * results are in ui-sdk's words.
+ * results are in ui-sdk's words. While `seek` or `undoSource` puts values
+ * back, `attachAudit` records the changes under `by` (the person), not the
+ * agent, and `isHistoryRestoring()` is true.
  */
-function createHistory(agent: AgentBridge, options?: Parameters<typeof createBridgeHistory>[1]) {
-  return createBridgeHistory(bridgeOf(agent), options);
+function createHistory(agent: AgentBridge, options: BookiHistoryOptions = {}) {
+  const { by, ...rest } = options;
+  const bridge = bridgeOf(agent);
+  const history = createBridgeHistory(bridge, rest);
+  const asPerson = async <T>(run: () => Promise<T>): Promise<T> => {
+    const who = (typeof by === "function" ? by() : by) || "person";
+    const before = restorers.get(bridge);
+    restorers.set(bridge, who);
+    restoringCount++;
+    try {
+      return await run();
+    } finally {
+      restoringCount--;
+      if (before === undefined) restorers.delete(bridge);
+      else restorers.set(bridge, before);
+    }
+  };
+  return {
+    ...history,
+    seek: (to: number) => asPerson(() => history.seek(to)),
+    undoSource: (source: string) => asPerson(() => history.undoSource(source)),
+  };
 }
 
 export {
@@ -204,6 +263,7 @@ export {
   createBookiHistory,
   createHistory,
   describeEntry,
+  isHistoryRestoring,
   proposeChanges,
   registerTools,
   stageChanges,

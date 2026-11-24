@@ -1,4 +1,9 @@
-import { createAgentCursor, type AgentCursorController, type AgentCursorState } from "@booki/primitives/agent-cursor";
+import {
+  createAgentCursor,
+  cursorLabelRoom,
+  type AgentCursorController,
+  type AgentCursorState,
+} from "@booki/primitives/agent-cursor";
 
 export { createAgentCursor, type AgentCursorController, type AgentCursorState };
 
@@ -105,7 +110,13 @@ export class BookiAgentCursorElement extends ElementBase {
       this.#ring.style.width = `${box.width + 8}px`;
       this.#ring.style.height = `${box.height + 8}px`;
     }
-    if (point) this.#pointer.style.transform = `translate(${point.x}px, ${point.y}px)`;
+    if (point) {
+      this.#pointer.style.transform = `translate(${point.x}px, ${point.y}px)`;
+      // Near the right edge the label goes left of the pointer, and it never runs out of the window.
+      const fit = cursorLabelRoom(point.x, window.innerWidth);
+      this.#pointer.toggleAttribute("data-flip", fit.flip);
+      this.#pointer.style.setProperty("--agent-cursor-room", `${fit.room}px`);
+    }
     const said = this.narrate ? this.narrate(state) : state.action;
     this.#action.textContent = state.action ? ` · ${said}${state.target ? ` · ${state.target}` : ""}` : "";
   }

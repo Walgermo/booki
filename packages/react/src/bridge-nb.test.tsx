@@ -46,6 +46,17 @@ describe("the bridge's own sentences with language nb", () => {
     expect(result.error?.message).toBe('Krever en person: "Bokføre bilaget?". Be dem trykke "Bokfør" selv.');
   });
 
+  it("says what a step did in Norwegian, not only what it refused", async () => {
+    const agent = createBookiAgent({ agentId: "test", language: "nb", allow: () => true });
+    screen();
+    const result = (await agent.act({ steps: [{ ref: "Bokfør", action: "press" }] })) as Result & {
+      results?: Array<{ result?: unknown }>;
+    };
+    expect(result.ok).toBe(true);
+    expect(JSON.stringify(result)).toContain('Trykket på \\"Bokfør\\".');
+    expect(JSON.stringify(result)).not.toContain("Pressed");
+  });
+
   it("leaves the same sentences in English without a language", async () => {
     const agent = createBookiAgent({ agentId: "test", allow: () => false });
     screen();

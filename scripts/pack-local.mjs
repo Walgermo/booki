@@ -41,6 +41,14 @@ while (app !== dirname(app) && !existsSync(join(app, "pnpm-workspace.yaml")) && 
 const inApp = app !== dirname(app) && app !== root;
 const shown = (file) => (inApp ? `./${relative(app, file)}` : file);
 const wanted = files.filter(({ name }) => name !== "primitives").map(({ name }) => `@booki/${name}`);
+// The peers each package names, at the exact version Booki is built and tested with: ui-sdk is a beta.
+const peers = new Map();
+for (const { name } of files) {
+  const manifest = JSON.parse(readFileSync(join(root, "packages", name, "package.json"), "utf8"));
+  for (const [peer, range] of Object.entries(manifest.peerDependencies ?? {}))
+    if (peer.startsWith("@ui-sdk/")) peers.set(peer, range);
+}
+const pinned = [...peers].map(([peer, range]) => `${peer}@${range}`);
 
 console.log(`Packed ${files.length} packages into ${out}
 
@@ -49,8 +57,8 @@ pnpm: add to pnpm-workspace.yaml, then run the command.
 overrides:
 ${files.map(({ name, file }) => `  "@booki/${name}": "file:${shown(file)}"`).join("\n")}
 
-pnpm add ${wanted.join(" ")}
+pnpm add ${[...wanted, ...pinned].join(" ")}
 
 npm: one command.
 
-npm install ${files.map(({ file }) => shown(file)).join(" ")}`);
+npm install ${[...files.map(({ file }) => shown(file)), ...pinned].join(" ")}`);
