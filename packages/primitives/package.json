@@ -90,6 +90,14 @@
       "types": "./dist/client-requests.d.ts",
       "default": "./dist/client-requests.js"
     },
+    "./deal-pipeline": {
+      "types": "./dist/deal-pipeline.d.ts",
+      "default": "./dist/deal-pipeline.js"
+    },
+    "./activity-timeline": {
+      "types": "./dist/activity-timeline.d.ts",
+      "default": "./dist/activity-timeline.js"
+    },
     "./close-checklist": {
       "types": "./dist/close-checklist.d.ts",
       "default": "./dist/close-checklist.js"

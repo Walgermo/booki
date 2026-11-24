@@ -27,6 +27,8 @@ export default defineConfig({
     "src/bar-chart.ts",
     "src/cashflow-waterfall.ts",
     "src/client-requests.ts",
+    "src/deal-pipeline.ts",
+    "src/activity-timeline.ts",
     "src/close-checklist.ts",
     "src/currency-select.ts",
     "src/data-table.ts",

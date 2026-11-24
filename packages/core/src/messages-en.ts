@@ -28,6 +28,8 @@ export const EN = {
   "word.answered": "answered",
   "word.sent": "sent",
   "word.open": "open",
+  "word.won": "won",
+  "word.lost": "lost",
   "word.soft-closed": "soft-closed",
   "word.hard-closed": "hard-closed",
   "word.suggested": "suggested",
@@ -609,6 +611,52 @@ export const EN = {
   "request.issue.overdue": 'Request "{id}" was due {due} and is still waiting for the client.',
   "request.issue.awaiting-decision": 'Request "{id}" is answered; a person judges whether the answer is enough.',
   "request.no-request": 'No client request "{id}". Requests: {ids}.',
+  "pipeline.no-stage": 'No stage "{stage}" in the pipeline. Stages: {stages}.',
+  "pipeline.stage-id": "A pipeline stage needs a non-empty id.",
+  "pipeline.stage-twice": 'The pipeline lists stage "{stage}" twice.',
+  "pipeline.probability": 'Stage "{stage}": the probability is a whole percent from 0 to 100, got {value}.',
+  "pipeline.closed": 'Deal "{id}" is {outcome}. A person reopens it before it moves.',
+  "pipeline.outcome-needs-person":
+    'Moving deal "{id}" to {stage} marks it {outcome}. That is a person\'s decision: ask them to close it.',
+  "pipeline.actor-required": "Closing or reopening a deal needs the id of the person who does it.",
+  "pipeline.no-outcome-stage": "The pipeline has no {outcome} stage.",
+  "pipeline.lost-reason": 'Marking deal "{id}" lost needs a reason.',
+  "pipeline.not-closed": 'Deal "{id}" is open; there is nothing to reopen.',
+  "pipeline.value-not-object":
+    'Deal "{id}": the value is an object, like { valueMinor: 12500000, currency: "NOK", valueStatus: "known", valueSource: "Quote 114" }.',
+  "pipeline.unknown-field": 'Deal "{id}": no value field "{field}". Fields: {fields}.',
+  "pipeline.value-minor":
+    'Deal "{id}": valueMinor is a whole, non-negative amount in minor units (12500 is 125.00), or null; got {value}.',
+  "pipeline.currency": 'Deal "{id}": the currency is a three-letter code like NOK, got "{value}".',
+  "pipeline.value-status": 'Deal "{id}": no value status "{status}". Statuses: {statuses}.',
+  "pipeline.value-needs-source":
+    'Deal "{id}": a {status} value needs both an amount and its source (valueSource), such as a quote number.',
+  "pipeline.date-format": 'Deal "{id}": the date is written YYYY-MM-DD, got "{value}".',
+  "pipeline.no-deal": 'No deal "{id}". Deals: {ids}.',
+  "pipeline.no-owner": 'Deal "{id}": no owner "{owner}". Owners: {owners}.',
+  "pipeline.issue.no-stage": 'Deal "{id}" is in stage "{stage}", which the pipeline does not list.',
+  "pipeline.issue.no-value": 'Deal "{id}" has no value.',
+  "pipeline.issue.unverified":
+    'Deal "{id}" has an amount nobody vouched for: it is left out of the totals until it is known or estimated, with a source.',
+  "pipeline.issue.close-passed": 'Deal "{id}" was expected to close {date} and is still open.',
+  "pipeline.issue.stale": 'Deal "{id}" has not changed stage in {days} days.',
+  "activity.actor-required": "Logging or scheduling needs the id of whoever does it.",
+  "activity.id-required": "An activity needs a non-empty text id.",
+  "activity.field-text": 'Activity "{id}": {field} must be text, got {value}.',
+  "activity.field-empty": 'Activity "{id}": {field} cannot be empty.',
+  "activity.kind":
+    'Activity "{id}": no kind "{kind}" to log. Kinds: {kinds}. Something still to come is a task: scheduleTask.',
+  "activity.at-format":
+    'Activity "{id}": when it happened is written YYYY-MM-DD or as an ISO time like 2026-03-02T09:00:00Z, got "{value}".',
+  "activity.in-future": 'Activity "{id}" is dated {at}, which has not happened yet. Schedule a task instead.',
+  "activity.due-date-format": 'Activity "{id}": the due date is written YYYY-MM-DD, got "{value}".',
+  "activity.not-task": 'Activity "{id}" is a {kind}, not a task.',
+  "activity.task-done": 'Task "{id}" was already done at {at}.',
+  "activity.no-activity": 'No activity "{id}". Activities: {ids}.',
+  "activity.no-assignee": 'Task "{id}": no assignee "{assignee}". People: {people}.',
+  "activity.issue.no-evidence":
+    'Activity "{id}" has nothing to check it against: no calendar event, call log or minutes.',
+  "activity.issue.overdue": 'Task "{id}" was due {due} and is not done.',
   // The agent bridge's own sentences (ui-sdk), written exactly as ui-sdk writes them, so `localize`
   // can read them back. Booki never throws these; `createBookiAgent({ language })` translates them.
   "bridge.no-component": 'No component "{ref}" on the page. Its labels: {labels}.',

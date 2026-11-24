@@ -23,7 +23,7 @@ function specPermissions(): string[] {
 describe("person-only permissions", () => {
   it("match the table in spec/agent-contract.md section 5", () => {
     const fromSpec = specPermissions();
-    expect(fromSpec).toHaveLength(21);
+    expect(fromSpec).toHaveLength(22);
     expect([...PERSON_ONLY_PERMISSIONS].sort()).toEqual([...fromSpec].sort());
   });
 });

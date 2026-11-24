@@ -99,6 +99,14 @@ const NB: Record<string, { title?: string; description: string }> = {
     description:
       "Forespørsler til klienten, med frister og svar. En agent lager utkast og registrerer svar; en person sender, purrer og vurderer. E-postadressen når aldri agenten.",
   },
+  "deal-pipeline": {
+    description:
+      "En salgstavle: avtaler i faser, summen per fase og valuta og en vektet prognose. En agent flytter, verdsetter og fordeler avtaler; en verdi uten kilde vises, men summeres aldri; vunnet og tapt er en persons.",
+  },
+  "activity-timeline": {
+    description:
+      "En kundes historikk og neste steg: samtaler, e-post, møter, notater og oppgaver. En agent logger og planlegger, merket som agentens; en samtale sier hva den kan kontrolleres mot; å fjerne noe er en persons.",
+  },
   "confirm-dialog": {
     description:
       "Et spørsmål en person svarer på før noe skjer: bokføre, betale, frigi. En agent kan lese det og avbryte, aldri si ja; bekreftelsesord og asynkront arbeid er innebygd.",

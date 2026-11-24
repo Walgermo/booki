@@ -267,6 +267,8 @@ export * from "./sheet-stack.js";
 export * from "./confirm-dialog.js";
 export * from "./toasts.js";
 export * from "./client-requests.js";
+export * from "./deal-pipeline.js";
+export * from "./activity-timeline.js";
 export * from "./fixed-asset-register.js";
 export * from "./data-table.js";
 export * from "./trend-chart.js";

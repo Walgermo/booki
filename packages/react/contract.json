@@ -21,6 +21,39 @@
     "parts": ["list", "option", "root", "select", "trigger"],
     "dataSlots": ["accounting-period-label", "accounting-period-value"]
   },
+  "activity-timeline": {
+    "actions": ["completeTask", "logActivity", "rescheduleTask", "scheduleTask"],
+    "options": [
+      "activities",
+      "actor",
+      "agentActor",
+      "defaultActivities",
+      "denied",
+      "onActivitiesChange",
+      "people",
+      "today"
+    ],
+    "parts": ["complete", "remove", "root"],
+    "dataSlots": [
+      "activity-timeline-actions",
+      "activity-timeline-at",
+      "activity-timeline-body",
+      "activity-timeline-due",
+      "activity-timeline-empty",
+      "activity-timeline-error",
+      "activity-timeline-evidence",
+      "activity-timeline-head",
+      "activity-timeline-heading",
+      "activity-timeline-history",
+      "activity-timeline-issues",
+      "activity-timeline-items",
+      "activity-timeline-kind",
+      "activity-timeline-meta",
+      "activity-timeline-status",
+      "activity-timeline-subject",
+      "activity-timeline-tasks"
+    ]
+  },
   "aged-balances": {
     "actions": [
       "back",
@@ -438,6 +471,37 @@
       "data-table-toolbar",
       "data-table-totals",
       "visually-hidden"
+    ]
+  },
+  "deal-pipeline": {
+    "actions": ["moveDeal", "setExpectedClose", "setOwner", "setValue"],
+    "options": ["actor", "deals", "defaultDeals", "denied", "onDealsChange", "owners", "stages", "staleDays", "today"],
+    "parts": ["lost", "move", "reason", "reopen", "root", "won"],
+    "dataSlots": [
+      "deal-pipeline-actions",
+      "deal-pipeline-board",
+      "deal-pipeline-closed",
+      "deal-pipeline-deal",
+      "deal-pipeline-deal-company",
+      "deal-pipeline-deal-head",
+      "deal-pipeline-deal-meta",
+      "deal-pipeline-deal-name",
+      "deal-pipeline-deal-source",
+      "deal-pipeline-deal-status",
+      "deal-pipeline-deal-value",
+      "deal-pipeline-deals",
+      "deal-pipeline-empty",
+      "deal-pipeline-error",
+      "deal-pipeline-forecast",
+      "deal-pipeline-issues",
+      "deal-pipeline-label",
+      "deal-pipeline-lost",
+      "deal-pipeline-stage",
+      "deal-pipeline-stage-head",
+      "deal-pipeline-stage-meta",
+      "deal-pipeline-stage-name",
+      "deal-pipeline-stage-total",
+      "deal-pipeline-stage-unverified"
     ]
   },
   "document-signoff": {

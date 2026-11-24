@@ -355,6 +355,76 @@ const CONTROLS: Record<string, Control> = {
       assertAnswered: { args: ["nope"], names: ["R-1"] },
     },
   },
+  "deal-pipeline": {
+    options: {
+      stages: [
+        { id: "lead", name: "Lead", probability: 10 },
+        { id: "won", name: "Won", probability: 100, outcome: "won" },
+      ],
+      defaultDeals: [
+        { id: "D-1", name: "Licence", stageId: "lead", valueMinor: null, currency: "NOK", valueStatus: "unknown" },
+      ],
+      owners: [{ id: "u1", name: "Kari Nordmann" }],
+      today: "2026-11-24",
+    },
+    probes: {
+      moveDeal: [
+        { args: ["nope", "lead"], names: ["D-1"] },
+        { args: ["D-1", "nope"], names: ["lead", "won"] },
+      ],
+      setValue: [
+        {
+          object: (extra) => ["D-1", { valueMinor: 100, ...extra }],
+          fields: ["valueMinor", "currency", "valueStatus", "valueSource"],
+          format: "dealFormat",
+        },
+        { args: ["D-1", { valueStatus: "sure" }], names: ["known", "estimate", "unknown"] },
+        { args: ["D-1", { valueMinor: 12.5 }], names: ["minor units", "12500"], format: "dealFormat" },
+      ],
+      setExpectedClose: { args: ["D-1", "soon"], names: ["YYYY-MM-DD"], format: "dealFormat" },
+      setOwner: { args: ["D-1", "nope"], names: ["u1", "Kari Nordmann"] },
+    },
+  },
+  "activity-timeline": {
+    options: {
+      defaultActivities: [
+        {
+          id: "T-1",
+          kind: "task",
+          subject: "Send quote",
+          at: "2026-11-10T13:00:00Z",
+          by: "kari",
+          dueDate: "2026-11-20",
+        },
+      ],
+      people: [{ id: "u1", name: "Kari Nordmann" }],
+      today: "2026-11-24",
+    },
+    probes: {
+      logActivity: [
+        {
+          object: (extra) => [{ kind: "note", subject: "Budget in Q1", ...extra }],
+          fields: ["kind", "subject", "body", "at", "evidence"],
+          format: "activityFormat",
+        },
+        { args: [{ kind: "visit", subject: "x" }], names: ["call", "email", "meeting", "note"] },
+        { args: [{ kind: "note", subject: "x", at: "yesterday" }], names: ["YYYY-MM-DD"], format: "activityFormat" },
+      ],
+      scheduleTask: [
+        {
+          object: (extra) => [{ subject: "Follow up", dueDate: "2026-12-01", ...extra }],
+          fields: ["subject", "dueDate", "body", "assigneeId"],
+          format: "activityFormat",
+        },
+        { args: [{ subject: "x", dueDate: "2026-12-01", assigneeId: "nope" }], names: ["u1", "Kari Nordmann"] },
+      ],
+      completeTask: { args: ["nope"], names: ["T-1"] },
+      rescheduleTask: [
+        { args: ["nope", "2026-12-01"], names: ["T-1"] },
+        { args: ["T-1", "soon"], names: ["YYYY-MM-DD"] },
+      ],
+    },
+  },
   "close-checklist": {
     options: {
       defaultTasks: [

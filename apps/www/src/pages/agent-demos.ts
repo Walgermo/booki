@@ -568,6 +568,42 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     ),
     refused("client-requests", "send", ["R-3"]),
   ],
+  "deal-pipeline": () => [
+    act(
+      "deal-pipeline",
+      "setValue",
+      ["D-2", { valueStatus: "estimate", valueSource: "Samtale 18. nov." }],
+      b("Gave D-2's amount a source, so it counts.", "Ga beløpet på D-2 en kilde, så det telles med."),
+    ),
+    act(
+      "deal-pipeline",
+      "moveDeal",
+      ["D-2", "tilbud"],
+      b("Moved D-2 to Tilbud sendt.", "Flyttet D-2 til Tilbud sendt."),
+    ),
+    read("deal-pipeline", (e) => {
+      const nok = list<{ currency: string; weightedMinor: number }>(e?.forecast).find((t) => t.currency === "NOK");
+      const kr = ((nok?.weightedMinor ?? 0) / 100).toLocaleString("nb-NO");
+      return b(`Reads the weighted forecast: NOK ${kr}.`, `Leser den vektede prognosen: ${kr} kr.`);
+    }),
+    refused("deal-pipeline", "moveDeal", ["D-1", "vunnet"]),
+  ],
+  "activity-timeline": () => [
+    act(
+      "activity-timeline",
+      "logActivity",
+      [{ kind: "note", subject: "Kunden vil starte i januar" }],
+      b("Logged a note.", "Logget et notat."),
+    ),
+    act("activity-timeline", "completeTask", ["T-1"], b("Marked T-1 done.", "Markerte T-1 som gjort.")),
+    act(
+      "activity-timeline",
+      "scheduleTask",
+      [{ subject: "Ring om oppstart", dueDate: "2026-12-02", assigneeId: "kari" }],
+      b("Scheduled a call for 2 December.", "Planla en samtale 2. desember."),
+    ),
+    refused("activity-timeline", "remove", ["A-2"]),
+  ],
   "confirm-dialog": () => [
     act("alert-dialog", "setOpen", [true], b("Opened the question.", "Åpnet spørsmålet.")),
     read("alert-dialog", (e) =>
@@ -822,6 +858,8 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   "audit-workpaper": [1040, 872],
   "audit-findings": [1632, 944],
   "client-requests": [1192, 848],
+  "deal-pipeline": [1400, 760],
+  "activity-timeline": [1040, 880],
   "confirm-dialog": [88, 96],
   toasts: [88, 96],
   "document-signoff": [592, 336],

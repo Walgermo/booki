@@ -1,6 +1,8 @@
 import { Button } from "@ui-sdk/react/button";
 import { drawSample, startWorkpaper } from "@booki/core/audit";
 import { NO_VAT_SCHEMA_EXAMPLE } from "@booki/core/vat-return";
+import type { Activity } from "@booki/core/activity";
+import type { Deal, PipelineStage } from "@booki/core/pipeline";
 import {
   AgedBalances,
   AgingChart,
@@ -13,6 +15,8 @@ import {
   AuditWorkpaper,
   BookiToasts,
   ClientRequests,
+  DealPipeline,
+  ActivityTimeline,
   ConfirmDialog,
   DocumentSignoff,
   EvidenceList,
@@ -219,6 +223,87 @@ function SheetStackPreview() {
   );
 }
 
+const PIPELINE_STAGES: PipelineStage[] = [
+  { id: "kvalifisering", name: "Kvalifisering", probability: 10 },
+  { id: "tilbud", name: "Tilbud sendt", probability: 50 },
+  { id: "forhandling", name: "Forhandling", probability: 70 },
+  { id: "vunnet", name: "Vunnet", probability: 100, outcome: "won" },
+  { id: "tapt", name: "Tapt", probability: 0, outcome: "lost" },
+];
+const PIPELINE_OWNERS = [
+  { id: "kari", name: "Kari Nordmann" },
+  { id: "ola", name: "Ola Hansen" },
+];
+const PIPELINE_DEALS: Deal[] = [
+  {
+    id: "D-1",
+    name: "Regnskapslisens 2027",
+    company: "Fjordkraft Bygg AS",
+    stageId: "tilbud",
+    valueMinor: 180_000_00,
+    currency: "NOK",
+    valueStatus: "known",
+    valueSource: "Tilbud 2026-114",
+    ownerId: "kari",
+    expectedClose: "2026-12-15",
+    stageChangedAt: "2026-11-10T09:00:00Z",
+  },
+  {
+    id: "D-2",
+    name: "Lønnstjenester",
+    company: "Nordlys Logistikk AS",
+    stageId: "kvalifisering",
+    valueMinor: 60_000_00,
+    currency: "NOK",
+    valueStatus: "unknown",
+    ownerId: "ola",
+    stageChangedAt: "2026-09-20T09:00:00Z",
+  },
+  {
+    id: "D-3",
+    name: "Konsernrapportering",
+    company: "Havbris Holding AS",
+    stageId: "forhandling",
+    valueMinor: 25_000_00,
+    currency: "EUR",
+    valueStatus: "estimate",
+    valueSource: "Møte 4. nov.",
+    ownerId: "kari",
+    expectedClose: "2026-11-30",
+    stageChangedAt: "2026-11-18T09:00:00Z",
+  },
+];
+const TIMELINE: Activity[] = [
+  {
+    id: "A-1",
+    kind: "meeting",
+    subject: "Demo av rapportmodulen",
+    at: "2026-11-04T13:00:00Z",
+    by: "kari",
+    evidence: "Kalender 4. nov.",
+  },
+  { id: "A-2", kind: "email", subject: "Sendte tilbud 2026-114", at: "2026-11-10T08:30:00Z", by: "kari" },
+  { id: "A-3", kind: "call", subject: "Oppfølging av tilbudet", at: "2026-11-18T10:15:00Z", by: "kari" },
+  {
+    id: "T-1",
+    kind: "task",
+    subject: "Avklar oppstartsdato",
+    at: "2026-11-18T10:20:00Z",
+    by: "kari",
+    dueDate: "2026-11-20",
+    assigneeId: "kari",
+  },
+  {
+    id: "T-2",
+    kind: "task",
+    subject: "Send avtaleutkast",
+    at: "2026-11-18T10:21:00Z",
+    by: "kari",
+    dueDate: "2026-11-28",
+    assigneeId: "ola",
+  },
+];
+
 const CLIENT_REQUESTS: ClientRequest[] = [
   {
     id: "R-1",
@@ -344,6 +429,18 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
   "document-signoff": () => <DocumentSignoff defaultDocument={WORKPAPER_DOCUMENT} actor="kari" actorName="Kari" />,
   "sheet-stack": () => <SheetStackPreview />,
   "client-requests": () => <ClientRequests defaultRequests={CLIENT_REQUESTS} today="2026-11-15" actor="nina" />,
+  "deal-pipeline": () => (
+    <DealPipeline
+      stages={PIPELINE_STAGES}
+      defaultDeals={PIPELINE_DEALS}
+      owners={PIPELINE_OWNERS}
+      today="2026-11-24"
+      actor="kari"
+    />
+  ),
+  "activity-timeline": () => (
+    <ActivityTimeline defaultActivities={TIMELINE} people={PIPELINE_OWNERS} today="2026-11-24" actor="kari" />
+  ),
   "fixed-asset-register": () => <FixedAssetRegister defaultAssets={ASSETS} defaultPeriod="2026-10" />,
   "data-table": () => (
     <DataTable

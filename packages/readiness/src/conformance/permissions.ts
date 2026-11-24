@@ -25,4 +25,5 @@ export const PERSON_ONLY_PERMISSIONS: readonly string[] = [
   "finding.withdraw",
   "request.send",
   "request.decide",
+  "deal.close",
 ];
