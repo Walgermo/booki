@@ -143,6 +143,14 @@
       "types": "./dist/activity.d.ts",
       "default": "./dist/activity.js"
     },
+    "./recurring": {
+      "types": "./dist/recurring.d.ts",
+      "default": "./dist/recurring.js"
+    },
+    "./funnel": {
+      "types": "./dist/funnel.d.ts",
+      "default": "./dist/funnel.js"
+    },
     "./fixed-assets": {
       "types": "./dist/fixed-assets.d.ts",
       "default": "./dist/fixed-assets.js"

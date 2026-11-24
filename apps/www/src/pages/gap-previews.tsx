@@ -2,7 +2,8 @@ import { Button } from "@ui-sdk/react/button";
 import { drawSample, startWorkpaper } from "@booki/core/audit";
 import { NO_VAT_SCHEMA_EXAMPLE } from "@booki/core/vat-return";
 import type { Activity } from "@booki/core/activity";
-import type { Deal, PipelineStage } from "@booki/core/pipeline";
+import type { Deal, PipelineStage, StageStay } from "@booki/core/pipeline";
+import type { RecurringAgreement } from "@booki/core/recurring";
 import {
   AgedBalances,
   AgingChart,
@@ -16,6 +17,10 @@ import {
   BookiToasts,
   ClientRequests,
   DealPipeline,
+  FunnelChart,
+  ForecastChart,
+  RecurringRevenue,
+  StageDurationChart,
   ActivityTimeline,
   ConfirmDialog,
   DocumentSignoff,
@@ -273,6 +278,76 @@ const PIPELINE_DEALS: Deal[] = [
     stageChangedAt: "2026-11-18T09:00:00Z",
   },
 ];
+const FUNNEL_STEPS = [
+  { id: "lead", label: "Lead", count: 240 },
+  { id: "meeting", label: "Møte", count: 96 },
+  { id: "tilbud", label: "Tilbud sendt", count: 58 },
+  { id: "forhandling", label: "Forhandling", count: 31 },
+  { id: "vunnet", label: "Vunnet", count: 17, valueMinor: 2_340_000_00 },
+];
+const FORECAST_DEALS: Deal[] = [
+  ...PIPELINE_DEALS,
+  {
+    id: "D-4",
+    name: "Årsoppgjør",
+    stageId: "vunnet",
+    valueMinor: 95_000_00,
+    currency: "NOK",
+    valueStatus: "known",
+    valueSource: "Ordre 88",
+    closedAt: "2026-11-12T10:00:00Z",
+  },
+  {
+    id: "D-5",
+    name: "Revisjon 2027",
+    stageId: "forhandling",
+    valueMinor: 140_000_00,
+    currency: "NOK",
+    valueStatus: "estimate",
+    valueSource: "Møte 18. nov.",
+    expectedClose: "2027-01-20",
+  },
+  {
+    id: "D-6",
+    name: "Rådgivning",
+    stageId: "tilbud",
+    valueMinor: 48_000_00,
+    currency: "NOK",
+    valueStatus: "known",
+    valueSource: "Tilbud 2026-121",
+    expectedClose: "2026-12-10",
+  },
+];
+const AGREEMENTS: RecurringAgreement[] = [
+  { id: "K-1", customerId: "Fjordkraft Bygg AS", mrrMinor: 12_500_00, currency: "NOK", start: "2025-09-01" },
+  { id: "K-2", customerId: "Fjordkraft Bygg AS", mrrMinor: 2_500_00, currency: "NOK", start: "2026-10-01" },
+  {
+    id: "K-3",
+    customerId: "Nordlys Logistikk AS",
+    mrrMinor: 6_000_00,
+    currency: "NOK",
+    start: "2025-01-01",
+    end: "2026-09-30",
+  },
+  { id: "K-4", customerId: "Havbris Holding AS", mrrMinor: 9_000_00, currency: "NOK", start: "2026-08-01" },
+  {
+    id: "K-5",
+    customerId: "Lysaker Eiendom AS",
+    mrrMinor: 8_000_00,
+    currency: "NOK",
+    start: "2025-03-01",
+    end: "2026-07-31",
+  },
+  { id: "K-6", customerId: "Lysaker Eiendom AS", mrrMinor: 5_500_00, currency: "NOK", start: "2026-08-01" },
+];
+const STAYS: StageStay[] = [
+  { dealId: "Regnskapslisens 2027", stageId: "kvalifisering", enteredAt: "2026-10-01", leftAt: "2026-10-09" },
+  { dealId: "Regnskapslisens 2027", stageId: "tilbud", enteredAt: "2026-11-10" },
+  { dealId: "Lønnstjenester", stageId: "kvalifisering", enteredAt: "2026-09-20" },
+  { dealId: "Konsernrapportering", stageId: "kvalifisering", enteredAt: "2026-09-02", leftAt: "2026-09-16" },
+  { dealId: "Konsernrapportering", stageId: "tilbud", enteredAt: "2026-09-16", leftAt: "2026-11-18" },
+  { dealId: "Konsernrapportering", stageId: "forhandling", enteredAt: "2026-11-18" },
+];
 const TIMELINE: Activity[] = [
   {
     id: "A-1",
@@ -436,6 +511,28 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
       owners={PIPELINE_OWNERS}
       today="2026-11-24"
       actor="kari"
+    />
+  ),
+  "funnel-chart": () => <FunnelChart steps={FUNNEL_STEPS} currency="NOK" />,
+  "forecast-chart": () => (
+    <ForecastChart
+      deals={FORECAST_DEALS}
+      stages={PIPELINE_STAGES}
+      from="2026-10-01"
+      to="2027-03-31"
+      today="2026-11-24"
+      currency="NOK"
+    />
+  ),
+  "recurring-revenue": () => (
+    <RecurringRevenue agreements={AGREEMENTS} from="2026-06-30" to="2026-11-30" currency="NOK" />
+  ),
+  "stage-duration": () => (
+    <StageDurationChart
+      stays={STAYS}
+      stages={PIPELINE_STAGES}
+      targets={{ kvalifisering: 14, tilbud: 30, forhandling: 21 }}
+      today="2026-11-24"
     />
   ),
   "activity-timeline": () => (

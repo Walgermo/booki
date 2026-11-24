@@ -290,6 +290,38 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki/react"),
   },
   {
+    name: "funnel-chart",
+    title: "FunnelChart",
+    description:
+      "How many deals reached each stage, the conversion from the step before and from the start, and where the most are lost. An agent reads every figure and drills into a step.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
+    name: "forecast-chart",
+    title: "ForecastChart",
+    description:
+      "Won, committed, best case and weighted revenue per month or quarter, from the same deals as the pipeline. Lost deals and amounts without a source are left out, and undated deals are named.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
+    name: "recurring-revenue",
+    title: "RecurringRevenue",
+    description:
+      "Recurring revenue from one date to another: opening, new, expansion, contraction, churn and closing, adding up exactly, as MRR or ARR. Each movement names its customers.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
+    name: "stage-duration",
+    title: "StageDurationChart",
+    description:
+      "How long deals stay in each stage: the median and the longest stay, a target per stage, and the deals over it.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
     name: "confirm-dialog",
     title: "ConfirmDialog",
     description:

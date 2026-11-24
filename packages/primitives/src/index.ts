@@ -191,6 +191,10 @@ export {
   ACTIVITY_FORMAT,
   activityTimeline,
 } from "./activity-timeline.js";
+export { type Options as FunnelChartOptions, funnelChart } from "./funnel-chart.js";
+export { type Options as ForecastChartOptions, forecastChart } from "./forecast-chart.js";
+export { type Options as RecurringRevenueOptions, recurringRevenue } from "./recurring-revenue.js";
+export { type Options as StageDurationOptions, stageDuration } from "./stage-duration.js";
 export {
   type Options as CloseChecklistOptions,
   closeChecklist,

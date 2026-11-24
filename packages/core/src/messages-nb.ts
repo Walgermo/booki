@@ -670,6 +670,33 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Avtalen "{id}" har et beløp ingen har gått god for: det holdes utenfor summene til det er kjent eller estimert, med kilde.',
   "pipeline.issue.close-passed": 'Avtalen "{id}" skulle lukkes {date} og er fortsatt åpen.',
   "pipeline.issue.stale": 'Avtalen "{id}" har ikke byttet fase på {days} dager.',
+  "funnel.issue.no-id": "Et steg i trakten har ingen id og holdes utenfor.",
+  "funnel.issue.twice": 'Steget "{id}" i trakten står to ganger; det andre holdes utenfor.',
+  "funnel.issue.count":
+    'Steget "{id}" i trakten har et antall som ikke er et helt tall fra 0 ({value}); det holdes utenfor.',
+  "funnel.issue.rises":
+    'Steget "{id}" har flere enn "{before}" foran seg. En trakt teller alle som nådde et steg, så den skal aldri stige: sjekk hvordan stegene telles.',
+  "funnel.no-step": 'Ikke noe steg "{id}" i trakten. Steg: {ids}.',
+  "recurring.date-format": 'En dato skrives ÅÅÅÅ-MM-DD (YYYY-MM-DD), fikk "{value}".',
+  "recurring.two-amounts": 'Avtalen "{id}" har både mrrMinor og amountMinor: oppgi én.',
+  "recurring.interval":
+    'Avtale "{id}": intet intervall "{value}". Intervaller: {intervals}. Et engangsbeløp er ikke løpende inntekt.',
+  "recurring.amount-minor":
+    'Avtale "{id}": amountMinor er hele minste enheter per intervall, fra 0 (12500 er 125,00); fikk {value}.',
+  "recurring.mrr-minor":
+    'Avtale "{id}": mrrMinor er hele minste enheter per måned, fra 0 (12500 er 125,00); fikk {value}.',
+  "recurring.end-before-start": 'Avtalen "{id}" slutter før den starter.',
+  "recurring.range-order": "Broen går fra {from} til {to}: slutten kommer før starten.",
+  "recurring.no-movement": 'Ingen bevegelse "{id}". Bevegelser: {ids}.',
+  "recurring.no-currency": 'Ingen avtaler i "{value}". Valutaer: {currencies}.',
+  "recurring.bad-view": 'Visningen er mrr eller arr; fikk "{value}".',
+  "recurring.issue.other-currencies":
+    "Avtaler i {others} holdes utenfor: bare {currency} vises, og valutaer legges aldri sammen.",
+  "pipeline.grouping": 'Ingen gruppering "{value}". Grupperinger: {groupings}.',
+  "pipeline.range-date": 'En dato i perioden skrives ÅÅÅÅ-MM-DD (YYYY-MM-DD), fikk "{value}".',
+  "pipeline.range-order": "Perioden går fra {from} til {to}: slutten kommer før starten.",
+  "pipeline.no-stage-row": 'Ingen fase "{id}" blant de åpne fasene. Faser: {ids}.',
+  "pipeline.no-period": 'Ingen periode "{id}". Perioder: {ids}.',
   "activity.actor-required": "Å logge eller planlegge krever id-en til den som gjør det.",
   "activity.id-required": "En aktivitet må ha en id som ikke er tom.",
   "activity.field-text": 'Aktivitet "{id}": {field} må være tekst, fikk {value}.',

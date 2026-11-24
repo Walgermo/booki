@@ -32,6 +32,8 @@ export default defineConfig({
     "src/client-request.ts",
     "src/pipeline.ts",
     "src/activity.ts",
+    "src/recurring.ts",
+    "src/funnel.ts",
     "src/fixed-assets.ts",
     "src/fx.ts",
     "src/permissions.ts",

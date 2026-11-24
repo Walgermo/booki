@@ -604,6 +604,50 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     ),
     refused("activity-timeline", "remove", ["A-2"]),
   ],
+  "funnel-chart": () => [
+    read("funnel-chart", (e) => {
+      const steps = list<{ label: string; overallConversionPct: number }>(e?.steps);
+      const last = steps.at(-1);
+      return b(
+        `Reads the funnel: ${last?.overallConversionPct ?? 0} % of leads were won.`,
+        `Leser trakten: ${String(last?.overallConversionPct ?? 0).replace(".", ",")} % av leadene ble vunnet.`,
+      );
+    }),
+    act("funnel-chart", "drill", ["meeting"], b("Drilled into the meeting step.", "Boret seg ned i møtesteget.")),
+    refused("funnel-chart", "drill", ["demo"]),
+  ],
+  "forecast-chart": () => [
+    act("forecast-chart", "setGrouping", ["quarter"], b("Grouped by quarter.", "Grupperte per kvartal.")),
+    read("forecast-chart", (e) => {
+      const weighted = ((e?.totals as { weightedMinor?: number } | undefined)?.weightedMinor ?? 0) / 100;
+      return b(
+        `Reads the weighted forecast: NOK ${weighted.toLocaleString("en-US")}.`,
+        `Leser den vektede prognosen: ${weighted.toLocaleString("nb-NO")} kr.`,
+      );
+    }),
+    refused("forecast-chart", "setGrouping", ["week"]),
+  ],
+  "recurring-revenue": () => [
+    act("recurring-revenue", "drill", ["churn"], b("Drilled into churn.", "Boret seg ned i tapt.")),
+    act("recurring-revenue", "setView", ["arr"], b("Switched to ARR.", "Byttet til ARR.")),
+    read("recurring-revenue", (e) =>
+      b(
+        `Reads that opening plus the movements equals closing: ${String(e?.reconciles)}.`,
+        `Leser at inngående pluss bevegelsene er utgående: ${e?.reconciles ? "ja" : "nei"}.`,
+      ),
+    ),
+    refused("recurring-revenue", "setView", ["weekly"]),
+  ],
+  "stage-duration": () => [
+    read("stage-duration", (e) =>
+      b(
+        `Reads the deals over target: ${list<string>(e?.overTarget).join(", ") || "none"}.`,
+        `Leser avtalene over målet: ${list<string>(e?.overTarget).join(", ") || "ingen"}.`,
+      ),
+    ),
+    act("stage-duration", "drill", ["tilbud"], b("Drilled into Tilbud sendt.", "Boret seg ned i Tilbud sendt.")),
+    refused("stage-duration", "drill", ["vunnet"]),
+  ],
   "confirm-dialog": () => [
     act("alert-dialog", "setOpen", [true], b("Opened the question.", "Åpnet spørsmålet.")),
     read("alert-dialog", (e) =>
@@ -860,6 +904,10 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   "client-requests": [1192, 848],
   "deal-pipeline": [1400, 760],
   "activity-timeline": [1040, 880],
+  "funnel-chart": [560, 520],
+  "forecast-chart": [640, 600],
+  "recurring-revenue": [560, 520],
+  "stage-duration": [520, 480],
   "confirm-dialog": [88, 96],
   toasts: [88, 96],
   "document-signoff": [592, 336],
