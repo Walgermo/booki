@@ -1,6 +1,6 @@
 {
   "name": "@booki/readiness",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Agent readiness check for accounting screens: what stops an AI agent on a page, scored 0-100 against the Agent Contract, with fixes.",
   "type": "module",
   "license": "MIT",
