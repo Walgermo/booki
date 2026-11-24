@@ -1,6 +1,6 @@
 {
   "name": "@booki/web",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Booki for Web Components (experimental) — agent-first accounting controls as custom elements, for any framework or none: Angular, server-rendered pages, plain HTML.",
   "type": "module",
   "license": "MIT",
