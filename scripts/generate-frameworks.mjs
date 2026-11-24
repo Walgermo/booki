@@ -22,7 +22,7 @@ function writeIfChanged(file, content) {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const reactSrc = path.join(root, "packages/react/src");
-const VERSION = "0.1.0-beta.16";
+const VERSION = "0.1.0-beta.17";
 
 const FRAMEWORKS = [
   {
@@ -40,8 +40,7 @@ const FRAMEWORKS = [
     about: "Svelte components",
     libs: { svelte: "^5.33.0" },
     partType: { from: "svelte", name: "Component<any>" },
-    // @ui-sdk/svelte imports "./create-parts" without ".js": https://github.com/vercel-labs/ui/issues/1027
-    note: 'Load it through Vite with the Svelte plugin (SvelteKit has it). For server rendering, keep both packages in the server bundle: `ssr: { noExternal: ["@booki/svelte", "@ui-sdk/svelte"] }`. Left external, or imported from plain Node, `@ui-sdk/svelte` fails: it imports its own folders by directory and leaves that to the bundler.',
+    note: "Load it through Vite with the Svelte plugin (SvelteKit has it), as with any Svelte component library.",
   },
   {
     id: "solid",

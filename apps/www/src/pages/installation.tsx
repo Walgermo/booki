@@ -20,7 +20,7 @@ const NEEDS = [
     },
   ],
   [
-    { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.16", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.16" },
+    { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.17", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.17" },
     {
       en: "Peer dependencies; pnpm and npm install them for you.",
       nb: "Peer-avhengigheter; pnpm og npm installerer dem for deg.",

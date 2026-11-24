@@ -113,7 +113,7 @@ describe('registerTools with allow: "bridge"', () => {
         <AmountField aria-label="Beløp" />
       </BookiLocaleProvider>,
     );
-    expect(tools.map((tool) => tool.name)).toEqual(["acme_snapshot", "acme_act", "acme_query"]);
+    expect(tools.map((tool) => tool.name)).toEqual(["acme_act", "acme_query", "acme_snapshot"]);
     const act = tools.find((tool) => tool.name === "acme_act")!;
     const refused = (await act.execute({ steps: [{ ref: "Beløp", action: "setMinor", args: [12.5] }] })) as Result;
     expect(refused.error?.message).toMatch(/heltall/);

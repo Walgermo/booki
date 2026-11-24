@@ -69,7 +69,7 @@ pnpm add @booki/core @booki/react @booki/styles
 Requires React 19+ for `@booki/react`. Other stacks: `@booki/web` (custom elements; Angular,
 server-rendered pages), `@booki/vue`, `@booki/svelte`, `@booki/solid`, all with the same
 controls and actions. Add `@ui-sdk/core` and the `@ui-sdk` package for your framework
-(`@ui-sdk/react`) as direct dependencies of the app, both at exactly `0.1.0-beta.16`. The
+(`@ui-sdk/react`) as direct dependencies of the app, both at exactly `0.1.0-beta.17`. The
 bridge and controls come from them, and the guide imports `Button` from `@ui-sdk/react/button`,
 which `@booki/react` does not re-export. Add both together: adding only `@ui-sdk/react` has
 made pnpm drop `@ui-sdk/core` from the lockfile.

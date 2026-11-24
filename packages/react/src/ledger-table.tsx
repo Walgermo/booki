@@ -180,6 +180,7 @@ type RootState = {
   voucherSummary: LedgerVoucherSummary | null;
   from: string | null;
   to: string | null;
+  /** The page on screen, 1-based, the same as `table.page`. */
   page: number;
   pageSize: number;
   total: number;
