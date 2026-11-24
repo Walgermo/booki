@@ -146,8 +146,8 @@ describe("server guards", () => {
 describe("audit engagements", () => {
   // Roles per engagement: partner on one, quality reviewer on another.
   const tone: ServerActor = { id: "tone", kind: "person", roles: [], scopes: { o1: ["partner"], o2: ["eqcr"] } };
-  const regnhild: ServerActor = {
-    id: "regnhild",
+  const assistant: ServerActor = {
+    id: "assistant",
     kind: "agent",
     roles: ["partner"],
     onBehalfOf: "tone",
@@ -163,7 +163,7 @@ describe("audit engagements", () => {
 
   it("keeps reviewing, concluding, the quality review and freezing with people", () => {
     for (const permission of ["audit.review", "audit.conclude", "audit.eqcr", "audit.freeze"]) {
-      expect(guard({ actor: regnhild }, permission, () => "ok")).toMatchObject({
+      expect(guard({ actor: assistant }, permission, () => "ok")).toMatchObject({
         ok: false,
         status: 403,
         code: "server.person-only",
@@ -212,7 +212,7 @@ describe("audit engagements", () => {
       throw new BookiError("close.not-ready", { issues: ["Two actions are not done"] });
     });
     expect(warned).toEqual({ ok: true, value: undefined, actor: "tone", warnings: ["Two actions are not done"] });
-    expect(advise({ actor: regnhild }, "audit.conclude", () => "ok")).toMatchObject({
+    expect(advise({ actor: assistant }, "audit.conclude", () => "ok")).toMatchObject({
       ok: false,
       code: "server.person-only",
     });
@@ -225,8 +225,8 @@ describe("audit engagements", () => {
   });
 
   it("actorRecord keeps whose session, which client and which grant", () => {
-    expect(actorRecord(regnhild)).toEqual({
-      actor: "agent:regnhild",
+    expect(actorRecord(assistant)).toEqual({
+      actor: "agent:assistant",
       kind: "agent",
       onBehalfOf: "tone",
       clientId: "mcp:claude",
