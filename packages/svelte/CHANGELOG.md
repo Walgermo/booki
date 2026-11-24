@@ -1,5 +1,13 @@
 # @booki/svelte
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`520026a`](https://github.com/Walgermo/booki/commit/520026a6eea792c8186387a7dbc285b97628de36)]:
+  - @booki/primitives@0.1.4
+  - @booki/core@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes

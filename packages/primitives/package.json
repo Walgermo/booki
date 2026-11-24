@@ -1,6 +1,6 @@
 {
   "name": "@booki/primitives",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Booki primitives — every Booki control as a framework-free ui-sdk definition: options, state, agent actions and parts. Render them with React, Web Components, Vue, Svelte or Solid.",
   "type": "module",
   "license": "MIT",
