@@ -502,7 +502,7 @@
   gap: 0.35rem;
   grid-template-columns: auto 1fr;
   align-items: center;
-  padding: 0.15rem;
+  padding: 0 0.15rem;
   border: 1px solid var(--bk-border);
   border-radius: var(--bk-radius);
   background: var(--bk-card);
@@ -527,8 +527,9 @@
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
-  /* The root's border and padding wrap the input: together they are one control high. */
-  min-height: calc(var(--bk-control-h) - 2px - 0.3rem);
+  /* Inside the root's 1px border: together they are one control high. */
+  min-height: calc(var(--bk-control-h) - 2px);
+  padding-block: 0;
   font-family: var(--bk-mono);
   font-size: 1.0625rem;
   font-weight: var(--bk-font-weight-medium);
