@@ -22,6 +22,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
     n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: n < 10 ? 1 : 0 });
   const times = (n: number) => `${number(n)}×`;
   const markRef = useRef<HTMLSpanElement | null>(null);
+  const proofRef = useRef<HTMLDivElement | null>(null);
   return (
     <section className="site-ledger grid grid-cols-[minmax(0,1fr)] gap-16 pt-[76px] pb-16 md:gap-28 md:pb-24">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
@@ -75,10 +76,13 @@ export function Hero({ agent }: { agent: LandingAgent }) {
 
       {/* The product on a stage, like a photograph on a backdrop. */}
       <div className="erp-stage">
-        <ErpWindow agent={agent} from={markRef} />
+        <ErpWindow agent={agent} from={markRef} to={proofRef} />
       </div>
 
-      <ProofStrip />
+      {/* After the demo, the agent's cursor goes on to the measured figures. */}
+      <div ref={proofRef}>
+        <ProofStrip />
+      </div>
     </section>
   );
 }

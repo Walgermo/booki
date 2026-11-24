@@ -44,6 +44,9 @@ const NAV = ["Oversikt", "Bilag", "Faktura", "Leverandører", "Bank", "Lønn", "
 
 type Phase = "idle" | "running" | "waiting" | "posted";
 
+/** Input that stops the countdown: the visitor is doing something of their own. */
+const INPUTS = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
+
 /**
  * The hero's demo: an ordinary ERP screen in a browser window, with Booki's
  * VoucherComposer where the voucher form was. When the window scrolls into
@@ -53,12 +56,24 @@ type Phase = "idle" | "running" | "waiting" | "posted";
  * rule (balanced, dated, under 50 000 kr) answers the marked Post step, so no
  * person is in the loop. The cursor shows each step as it happens.
  */
-export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObject<HTMLElement | null> }) {
+export function ErpWindow({
+  agent,
+  from,
+  to,
+}: {
+  agent: LandingAgent;
+  /** Where the cursor starts: the hero's marked word. */
+  from?: RefObject<HTMLElement | null>;
+  /** Where the cursor goes after the demo: the measured figures below it. */
+  to?: RefObject<HTMLElement | null>;
+}) {
   const { t } = useLang();
   const [lines, setLines] = useState<VoucherLine[]>([]);
   const [phase, setPhase] = useState<Phase>("idle");
   const frame = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+  // The visitor stopped the countdown: the demo waits for them to start it.
+  const [skipped, setSkipped] = useState(false);
 
   /** One agent step on the voucher, then a beat for the eye. */
   async function step(action: string, args: unknown[] = [], ref = LABEL) {
@@ -88,6 +103,7 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
     const post = await step("press", [], POST);
     byAgent.current = false;
     if (!post.ok) setPhase("waiting");
+    return post.ok;
   }
 
   // The company's rule: a balanced, dated voucher under 50 000 kr is posted by
@@ -116,7 +132,8 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
     const word = from?.current;
     if (!word) return;
     const id = window.setTimeout(() => {
-      if (started.current && phase !== "idle") return;
+      // Once the countdown or the demo has begun, the cursor is theirs.
+      if (started.current) return;
       cursor.rest(word, t("starts here", "starter her"));
     }, titleLanded.ms);
     return () => window.clearTimeout(id);
@@ -127,32 +144,126 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
   // On a phone the window sits below the hero, under the fold: waiting for it to show
   // means the visitor has scrolled the hero's word away, and the cursor never leads from
   // it. There it starts once the title has landed, and its first step scrolls the window
-  // into view while the cursor glides down from the word. A visitor who has already
-  // scrolled keeps the page: the cursor follows instead of scrolling it.
+  // into view while the cursor glides down from the word.
+  //
+  // Before it starts, the cursor counts down on the word, and any scroll, tap, click or
+  // key stops it: motion the visitor did not ask for gives way to them at once. After
+  // the demo, the cursor goes on to the measured figures below the window.
   useEffect(() => {
     const node = frame.current;
     if (!node) return;
-    const start = () => {
+    let cancelled = false;
+    // Set once the countdown is on screen; until then a cleanup (React runs effects twice
+    // in development) hands the start back to the next run of this effect.
+    let began = false;
+    let stop = () => {};
+    const tap = window.matchMedia?.("(pointer: coarse)").matches;
+    const countdown = (seconds: number) =>
+      new Promise<boolean>((resolve) => {
+        const word = from?.current;
+        if (!word) return resolve(true);
+        let left = seconds;
+        let tick = 0;
+        let done = false;
+        const show = () =>
+          cursor.rest(
+            word,
+            tap
+              ? t(`Starts in ${left} · scroll or tap to skip`, `Starter om ${left} · rull eller trykk for å hoppe over`)
+              : t(
+                  `Starts in ${left} · scroll or click to skip`,
+                  `Starter om ${left} · rull eller klikk for å hoppe over`,
+                ),
+          );
+        const finish = (go: boolean) => {
+          if (done) return;
+          done = true;
+          window.clearInterval(tick);
+          for (const type of INPUTS) window.removeEventListener(type, skip);
+          resolve(go);
+        };
+        const skip = () => {
+          cursor.rest(word, t("Skipped · run it below when you like", "Hoppet over · kjør den nedenfor når du vil"));
+          cursor.settle(true);
+          finish(false);
+        };
+        stop = () => finish(false);
+        // A beat of grace: a scroll still coasting from reaching the demo is not a "skip".
+        window.setTimeout(() => {
+          if (!done) for (const type of INPUTS) window.addEventListener(type, skip, { passive: true, once: true });
+        }, 300);
+        show();
+        tick = window.setInterval(() => {
+          left -= 1;
+          if (left > 0) show();
+          else {
+            cursor.rest(word, t("Starting now", "Starter nå"));
+            finish(true);
+          }
+        }, 1000);
+      });
+    // The visitor scrolling during the demo keeps the page: the last move only follows.
+    let tookOver = false;
+    const took = () => {
+      tookOver = true;
+    };
+    const toFigures = async () => {
+      const figures = to?.current?.querySelector("dt") ?? to?.current;
+      if (!figures || cancelled) return;
+      // Straight on, before the last step's ring fades: the pointer glides down while
+      // the page scrolls, and follows the figures until they settle.
+      if (!tookOver) {
+        const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        figures.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
+      }
+      cursor.rest(figures, t("Measured on real tasks", "Målt på ekte oppgaver"));
+      await wait(2600);
+      cursor.settle(true);
+    };
+    const start = async () => {
       if (started.current) return;
       started.current = true;
-      void wait(titleLanded.ms + 1400)
-        .then(whenCursorFree)
-        .then(run);
+      await wait(titleLanded.ms);
+      if (cancelled) return;
+      began = true;
+      if (!(await countdown(3))) {
+        if (!cancelled) setSkipped(true);
+        return;
+      }
+      await whenCursorFree();
+      if (cancelled) return;
+      window.addEventListener("wheel", took, { passive: true });
+      window.addEventListener("touchmove", took, { passive: true });
+      try {
+        if (await run()) await toFigures();
+      } finally {
+        window.removeEventListener("wheel", took);
+        window.removeEventListener("touchmove", took);
+      }
     };
     if (window.matchMedia?.("(max-width: 767px)").matches) {
-      start();
-      return;
+      void start();
+      return () => {
+        cancelled = true;
+        if (!began) started.current = false;
+        stop();
+      };
     }
     const seen = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         seen.disconnect();
-        start();
+        void start();
       },
       { threshold: 0.2 },
     );
     seen.observe(node);
-    return () => seen.disconnect();
+    return () => {
+      cancelled = true;
+      if (!began) started.current = false;
+      stop();
+      seen.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -313,6 +424,17 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
                     )}
                   </span>
                 )}
+                {phase === "idle" && skipped ? (
+                  <SdkButton
+                    className="site-link site-text-button text-sm"
+                    onClick={() => {
+                      setSkipped(false);
+                      void run();
+                    }}
+                  >
+                    {t("Run the demo", "Kjør demoen")}
+                  </SdkButton>
+                ) : null}
                 {phase === "waiting" || phase === "posted" ? (
                   <SdkButton
                     className="site-link site-text-button text-sm"
