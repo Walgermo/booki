@@ -1,6 +1,6 @@
 {
   "name": "@booki/styles",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Booki default look — Paper and Ink tokens and data-slot styles, with the agent cursor. Optional.",
   "type": "module",
   "license": "MIT",
