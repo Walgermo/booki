@@ -1,0 +1,35 @@
+{
+  "name": "@booki/example-crm",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A sales CRM with Booki in Next.js: pipeline board, deal value with its source, activity timeline, forecast, funnel, time in stage and recurring revenue, a server guard on every write, and an agent that runs common sales tasks.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --port 3200",
+    "build": "next build",
+    "start": "next start --port 3200",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@booki/core": "workspace:*",
+    "@booki/react": "workspace:*",
+    "@booki/styles": "workspace:*",
+    "@ui-sdk/core": "0.1.0-beta.16",
+    "@ui-sdk/react": "0.1.0-beta.16",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^31.0.1",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}

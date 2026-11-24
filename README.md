@@ -62,7 +62,8 @@ pnpm install && pnpm dev
 
 Open http://localhost:5173 for the docs and the demo.
 `pnpm --filter @booki/example-ap-flow dev` runs [the accounts-payable example](examples/ap-flow)
-at http://localhost:3100.
+at http://localhost:3100, and `pnpm --filter @booki/example-crm dev` [the sales CRM
+example](examples/crm) at http://localhost:3200.
 
 - **In your app, by hand:** `pnpm pack:local` in a clone packs Booki as npm
   would deliver it and prints how to add it
@@ -170,6 +171,10 @@ own for the rest. No ERP connectors: your backend stays yours.
 - **[Supplier invoice to payment](examples/ap-flow)** (Next.js): inbox,
   approval, payment batch, release and bank reconciliation. Four people, an
   agent with its own credential, and a server guard on every write.
+- **[A sales CRM](examples/crm)** (Next.js): pipeline board, deal value with its
+  source, activity timeline, forecast, funnel, time in stage and recurring
+  revenue, with an agent that runs common sales tasks and a server that keeps
+  closing a deal for a person.
 - **[The demo company](https://booki.dev/demo)**: an accounting product built
   only from Booki controls, with an agent on each screen (`apps/www`).
 - **[A one-screen pilot](docs/pilot.md)**: two weeks to measure an agent on
