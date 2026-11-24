@@ -67,6 +67,8 @@ export type BookiFieldCodeArgs = {
   options: BookiFieldCodeItem[];
   /** The field may hold no code: `setCode("")` or `setCode(null)` clears it to `""`. */
   allowEmpty?: boolean;
+  /** Values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused. */
+  personOnly?: string[];
   onValueChange?: (code: string, details: FieldDetails) => void;
   label: string;
   disabled?: boolean;

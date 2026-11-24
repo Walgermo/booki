@@ -20,6 +20,8 @@ export type CurrencySelectOptions = {
   value?: string;
   defaultValue?: string;
   currencies?: readonly string[];
+  /** Names the trigger and list for assistive tech. Defaults to "Currency". */
+  label?: string;
   disabled?: boolean;
   readOnly?: boolean;
   onValueChange?: (currency: string) => void;
@@ -49,6 +51,7 @@ export const currencySelect = definePrimitive({
     value: "string",
     defaultValue: "string",
     currencies: "value",
+    label: "string",
     ...lockOptions,
     onValueChange: "callback",
   },
@@ -62,12 +65,13 @@ export const currencySelect = definePrimitive({
       itemsHint: itemsHint(toItems(currencies)),
       currencies,
       ...lockState(options),
-      label: "Currency",
+      label: options.label ?? "Currency",
       ...pickerState(value),
     };
   },
   sync: (options: CurrencySelectOptions): Partial<CurrencySelectState> => {
     const partial: Partial<CurrencySelectState> = { ...lockState(options) };
+    if (options.label !== undefined) partial.label = options.label;
     if (options.currencies !== undefined) {
       partial.currencies = [...options.currencies];
       partial.items = shownItems(toItems(options.currencies));

@@ -7,6 +7,7 @@ import { currencySelect } from "@booki/primitives/currency-select";
 import { taxCodeSelect } from "@booki/primitives/tax-code-select";
 import { AccountPicker } from "./account-picker.js";
 import { createBookiAgent } from "./booki-agent.js";
+import { CurrencySelect } from "./currency-select.js";
 import { BookiLocaleProvider } from "./locale.js";
 import { TaxCodeSelect } from "./tax-code-select.js";
 
@@ -425,5 +426,28 @@ describe("an agent naming an account", () => {
     };
     expect(unknown.ok).toBe(false);
     expect(unknown.error?.message).toMatch(/No account "9999"\. Its items: .*1500/);
+  });
+});
+
+describe("CurrencySelect's trigger", () => {
+  it("is named in the person's language, like the group around it", () => {
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <CurrencySelect currencies={["NOK", "EUR"]} />
+      </BookiLocaleProvider>,
+    );
+    const trigger = document.querySelector('[data-slot="currency-select"] [role="combobox"]') as HTMLElement;
+    expect(trigger.getAttribute("aria-label")).toBe("Valuta");
+    cleanup();
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <CurrencySelect currencies={["USD"]} />
+      </BookiLocaleProvider>,
+    );
+    expect(
+      (document.querySelector('[data-slot="currency-select"] [role="combobox"]') as HTMLElement).getAttribute(
+        "aria-label",
+      ),
+    ).toBe("Currency");
   });
 });

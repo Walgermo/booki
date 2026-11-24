@@ -247,3 +247,75 @@ describe("useBookiField through the agent bridge", () => {
     expect(entry.actions ?? []).toEqual([]);
   });
 });
+
+describe("a code field with values only a person may choose", () => {
+  const stages = [
+    { value: "lead", label: "Lead" },
+    { value: "won", label: "Vunnet" },
+    { value: "lost", label: "Tapt" },
+  ];
+
+  function Stage({ onValueChange }: { onValueChange?: (code: string, details: { source?: string }) => void }) {
+    const [code, setCode] = useState("lead");
+    return useBookiField(
+      {
+        kind: "code",
+        value: code,
+        options: stages,
+        personOnly: ["won", "lost"],
+        label: "Steg",
+        onValueChange: (next, details) => {
+          setCode(next);
+          onValueChange?.(next, details);
+        },
+      },
+      ({ value, change, refusal }) => (
+        <div>
+          <select aria-label="Steg-velger" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)}>
+            {stages.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          {refusal ? <p role="alert">{refusal}</p> : null}
+        </div>
+      ),
+    );
+  }
+
+  it("refuses an agent's step to one of them, by value or label, and names it", async () => {
+    const agent = createBookiAgent({ agentId: "test" });
+    render(<Stage />);
+    const entry = agent.snapshot().find((c) => c.component === "field-code") as unknown as Record<string, unknown>;
+    expect(entry.personOnly).toEqual(["won", "lost"]);
+    for (const asked of ["won", "Vunnet"]) {
+      const result = (await agent.act({ steps: [{ ref: "Steg", action: "setCode", args: [asked] }] })) as {
+        ok: boolean;
+        error?: { message: string };
+      };
+      expect(result.ok).toBe(false);
+      expect(result.error?.message).toMatch(/"won \(Vunnet\)" is a person's choice here/);
+    }
+    expect((screen.getByLabelText("Steg-velger") as HTMLSelectElement).value).toBe("lead");
+  });
+
+  it("lets a person choose it through the product's own select", () => {
+    const heard = vi.fn();
+    render(<Stage onValueChange={heard} />);
+    fireEvent.change(screen.getByLabelText("Steg-velger"), { target: { value: "won" } });
+    expect((screen.getByLabelText("Steg-velger") as HTMLSelectElement).value).toBe("won");
+    expect(heard.mock.calls[0]![1].source).not.toBe("agent");
+  });
+
+  it("refuses it framework-free too, when no event comes with the call", () => {
+    const view = mount(bookiFieldCode as never, { options: stages, personOnly: ["won"] } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(() => api.setCode!("won")).toThrow(/person's choice/);
+      expect(api.setCode!("lost")).toBe(true);
+    } finally {
+      view.unmount();
+    }
+  });
+});
