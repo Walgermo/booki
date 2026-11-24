@@ -140,11 +140,10 @@ export function ErpWindow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Start once, when the window is on screen; a visit that never gets there runs nothing.
-  // On a phone the window sits below the hero, under the fold: waiting for it to show
-  // means the visitor has scrolled the hero's word away, and the cursor never leads from
-  // it. There it starts once the title has landed, and its first step scrolls the window
-  // into view while the cursor glides down from the word.
+  // Start once. The window often sits below the fold (a phone, a laptop): waiting for
+  // it to show would mean the visitor has scrolled the hero's word away, and the cursor
+  // never leads from it. So it starts once the title has landed, and its first step
+  // scrolls the window into view while the cursor glides down from the word.
   //
   // Before it starts, the cursor counts down on the word, and any scroll, tap, click or
   // key stops it: motion the visitor did not ask for gives way to them at once. After
@@ -220,13 +219,13 @@ export function ErpWindow({
       await wait(2600);
       cursor.settle(true);
     };
-    const start = async () => {
+    const start = async (count: boolean) => {
       if (started.current) return;
       started.current = true;
       await wait(titleLanded.ms);
       if (cancelled) return;
       began = true;
-      if (!(await countdown(3))) {
+      if (count && !(await countdown(3))) {
         if (!cancelled) setSkipped(true);
         return;
       }
@@ -241,27 +240,32 @@ export function ErpWindow({
         window.removeEventListener("touchmove", took);
       }
     };
-    if (window.matchMedia?.("(max-width: 767px)").matches) {
-      void start();
-      return () => {
-        cancelled = true;
-        if (!began) started.current = false;
-        stop();
-      };
+    const cleanup = () => {
+      cancelled = true;
+      if (!began) started.current = false;
+      stop();
+    };
+    // The title is on screen (the usual first view, at any width): count down on its
+    // word now, and let the first step bring the window into view. Waiting until the
+    // window shows would mean waiting for the visitor to scroll, and their scroll would
+    // then skip a countdown they cannot see.
+    const word = from?.current?.getBoundingClientRect();
+    if (word && word.bottom > 0 && word.top < window.innerHeight) {
+      void start(true);
+      return cleanup;
     }
+    // Opened further down the page: no title to count down on, so start when the window shows.
     const seen = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         seen.disconnect();
-        void start();
+        void start(false);
       },
       { threshold: 0.2 },
     );
     seen.observe(node);
     return () => {
-      cancelled = true;
-      if (!began) started.current = false;
-      stop();
+      cleanup();
       seen.disconnect();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
