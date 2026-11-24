@@ -69,6 +69,11 @@ export type Report = {
   };
   bridge: BridgeReport;
   snapshot: string;
+  /**
+   * The address asked for, when the page sent the browser somewhere else (a
+   * sign-in page, say): `url` is then the page that was measured.
+   */
+  redirectedFrom?: string;
 };
 
 export type AuditOptions = {
@@ -234,11 +239,25 @@ export function bookiControlFor(role: string, info: ElementInfo | null): string 
   return undefined;
 }
 
+/** Whether two addresses name one page: the same origin and path, whatever the query or hash. */
+export function samePage(a: string, b: string): boolean {
+  try {
+    const x = new URL(a);
+    const y = new URL(b);
+    const trim = (p: string) => p.replace(/\/+$/, "") || "/";
+    return x.origin === y.origin && trim(x.pathname) === trim(y.pathname);
+  } catch {
+    return a === b;
+  }
+}
+
 /** Opens the page and checks what stops an agent there. */
 export async function audit(input: string, options: AuditOptions = {}): Promise<Report> {
   const target = toTarget(input);
   const { page, close } = await open(target, options);
   try {
+    const landed = page.url();
+    if (!samePage(landed, target)) return { ...(await check(page, landed)), redirectedFrom: target };
     return await check(page, target);
   } finally {
     await close();

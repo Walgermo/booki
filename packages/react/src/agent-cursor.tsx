@@ -1,5 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
-import type { AgentCursorController, AgentCursorState } from "@booki/primitives/agent-cursor";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { cursorLabelRoom, type AgentCursorController, type AgentCursorState } from "@booki/primitives/agent-cursor";
 import { useBookiLocaleOptional } from "./locale.js";
 import { narrateNorwegian } from "./narrate-nb.js";
 
@@ -49,6 +49,8 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
   const first = state.phase !== "idle" && view.previous === "idle";
 
   const { box, point } = state;
+  // Near the right edge the label goes left of the pointer, and it never runs out of the window.
+  const fit = point && typeof window !== "undefined" ? cursorLabelRoom(point.x, window.innerWidth) : undefined;
   return (
     <div
       data-slot="agent-cursor"
@@ -68,7 +70,16 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
         />
       ) : null}
       {point ? (
-        <span data-slot="agent-cursor-pointer" style={{ transform: `translate(${point.x}px, ${point.y}px)` }}>
+        <span
+          data-slot="agent-cursor-pointer"
+          data-flip={fit?.flip ? "" : undefined}
+          style={
+            {
+              transform: `translate(${point.x}px, ${point.y}px)`,
+              "--agent-cursor-room": fit ? `${fit.room}px` : undefined,
+            } as CSSProperties
+          }
+        >
           <svg data-slot="agent-cursor-arrow" viewBox="0 0 20 22" width="20" height="22">
             <path d="M2 1.5 L2 18.5 L6.6 14.3 L9.6 20.6 L12.6 19.2 L9.7 13.1 L16 12.6 Z" />
           </svg>

@@ -283,3 +283,39 @@ describe("localize", () => {
     );
   });
 });
+
+describe("status words and closing stops (pilot 7)", () => {
+  it("writes a record's status in the person's language", () => {
+    const error = new BookiError("finding.not-draft", { id: "f1", status: "confirmed" });
+    expect(localize(error, "nb")).toContain("bekreftet");
+    expect(localize(error, "nb")).not.toContain("confirmed");
+    expect(localize(error.message, "nb")).toContain("bekreftet");
+    expect(localize(new BookiError("finding.not-draft", { id: "f1", status: "withdrawn" }), "nb")).toContain(
+      "trukket tilbake",
+    );
+    expect(localize(new BookiError("invoice.locked", { number: "1001", status: "finalized" }), "nb")).toContain(
+      "ferdigstilt",
+    );
+  });
+
+  it("keeps a quoted status as the agent sent it", () => {
+    expect(msgIn("nb", "period.not-a-status", { status: "open" })).toContain('"open"');
+  });
+
+  it("says a record has no status rather than showing the placeholder", () => {
+    const en = msg("finding.not-draft", { id: "f1" });
+    expect(en).not.toContain("{status}");
+    expect(en).toContain("without a status");
+    expect(msgIn("nb", "finding.not-draft", { id: "f1" })).toContain("uten status");
+  });
+
+  it("ends a sentence once when its last param is a question", () => {
+    const en = msg("agent.person-only", { confirm: "Approve the invoice?" });
+    expect(en.endsWith("Approve the invoice?")).toBe(true);
+    const nb = localize(en, "nb");
+    expect(nb).not.toBe(en);
+    expect(nb.endsWith("?")).toBe(true);
+    expect(nb).not.toContain("?.");
+    expect(msg("agent.person-only", { confirm: "Approve the invoice" }).endsWith("invoice.")).toBe(true);
+  });
+});

@@ -167,3 +167,17 @@ describe("readiness checks on fixture pages", () => {
     expect(report.metrics.snapshotTokens).toBe(Math.ceil(report.metrics.snapshotChars / 4));
   });
 });
+
+describe("a page that sends the browser on", () => {
+  it("measures where it landed, and says so", async () => {
+    const report = await audit(fixture("redirects"), { wait: 50 });
+    expect(report.redirectedFrom).toMatch(/redirects\.html$/);
+    expect(report.url).toMatch(/clean\.html$/);
+    const { toConsole } = await import("../src/report.js");
+    expect(toConsole(report)).toMatch(/--storage-state/);
+  });
+
+  it("does not flag the page it was asked for", async () => {
+    expect((await run("clean")).redirectedFrom).toBeUndefined();
+  });
+});

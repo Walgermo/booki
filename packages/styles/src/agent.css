@@ -225,7 +225,8 @@
   position: absolute;
   top: 20px;
   left: 14px;
-  max-width: 22rem;
+  /* --agent-cursor-room: the pixels left before the window's edge, set beside the pointer. */
+  max-width: min(22rem, var(--agent-cursor-room, 22rem));
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0.2rem 0.5rem;
@@ -238,6 +239,12 @@
   line-height: 1.35;
   white-space: nowrap;
   box-shadow: var(--bk-shadow-float);
+}
+
+/* Near the right edge the label sits left of the pointer. */
+[data-slot="agent-cursor-pointer"][data-flip] [data-slot="agent-cursor-label"] {
+  left: auto;
+  right: -6px;
 }
 
 [data-slot="agent-cursor-action"] {

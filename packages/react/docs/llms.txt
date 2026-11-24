@@ -38,7 +38,7 @@ attachAudit(agent, (event) => auditLog.push(event), {
   agentId: "bookkeeper",
   ruleVersion: "posting-1",
 })
-const history = createBookiHistory(agent)
+const history = createBookiHistory(agent, { by: () => "person:" + signedInId() })
 registerTools(agent, { allow: (step) => !step.confirm })
 
 agent.snapshot()
@@ -65,7 +65,7 @@ Prefer domain actions (`setMinor`, `setTaxCode`, `setAccount`, `setKontonummer`,
 
 Amounts are always integer minor units, for reading and writing: the AmountField snapshot's `value` / `minor` is what `setMinor` takes (12500 = 125.00). AmountField has no agent `setValue`, and `setMinor` rejects decimals, text such as "125.00", unsafe integers and amounts outside `minMinor` (default 0) / `maxMinor`. Voucher amounts follow the same rule: non-negative integer minor units, and a line has a debit or a credit, not both.
 
-History: AmountField reports changes on key `minor`, VoucherComposer on `lines`, OrganizationNumberInput on `digits`. `createBookiHistory` records these by default, so `undoSource("agent")` / `seek` restore them through `setMinor` / `setLines` / `setDigits`. With a history of your own, pass `keys: BOOKI_HISTORY_KEYS`. Secret fields (bank account, IBAN, KID) are recorded as redacted and are reported as not restored, by design.
+History: AmountField reports changes on key `minor`, VoucherComposer on `lines`, OrganizationNumberInput on `digits`. `createBookiHistory` records these by default, so `undoSource("agent")` / `seek` restore them through `setMinor` / `setLines` / `setDigits`. With a history of your own, pass `keys: BOOKI_HISTORY_KEYS`. Secret fields (bank account, IBAN, KID) are recorded as redacted and are reported as not restored, by design. An undo is the person's: `attachAudit` records it under `by` (default `"person"`), and `isHistoryRestoring()` is true while the values go back, because they report `source: "agent"` (ui-sdk restores through the bridge).
 
 ## Irreversible actions
 

@@ -41,7 +41,13 @@ export const MESSAGES: Readonly<Record<MessageCode, MessageTemplate>> = Object.f
 
 /** The sentence for a code in a given language. */
 export function msgIn(language: MessageLanguage, code: MessageCode, params: MessageParams = {}): string {
-  return render(language === "nb" ? NB[code] : EN[code], params, language, localize);
+  const template = language === "nb" ? NB[code] : EN[code];
+  // A quoted status is the value the agent sent, written as it must send it; any other is a
+  // record's state, which reads in the person's language (the `word.*` codes).
+  const quotedStatus = /["«]\{status\}["»]/.test(template);
+  return render(template, params, language, (text, lang, name) =>
+    name === "status" && quotedStatus ? text : localize(text, lang),
+  );
 }
 
 type Compiled = { code: MessageCode; pattern: RegExp; names: string[]; literal: number; needle: string };
@@ -97,7 +103,8 @@ function compile(): Compiled[] {
       last = (match.index ?? 0) + match[0].length;
     }
     const tail = template.slice(last);
-    source += `${escapeRegex(tail)}$`;
+    // `render` leaves out a closing stop after a param that ends in its own.
+    source += tail === "." && last > 0 ? "\\.?$" : `${escapeRegex(tail)}$`;
     literal += tail.length;
     if (tail.length > needle.length) needle = tail;
     out.push({ code, pattern: new RegExp(source), names, literal, needle });

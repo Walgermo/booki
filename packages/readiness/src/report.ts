@@ -29,6 +29,7 @@ export function toConsole(report: Report): string {
   const colour = report.score >= 85 ? green : report.score >= 60 ? yellow : red;
   const out: string[] = [];
   out.push(`${bold("Agent readiness")}  ${report.url}`);
+  if (report.redirectedFrom) out.push(yellow(redirectNote(report)));
   out.push(
     `${colour(bold(`${report.score}/100`))} ${colour(report.grade)}  ${dim(`· ${report.findings.length} findings · snapshot ≈ ${report.metrics.snapshotTokens.toLocaleString("en-US")} tokens · bridge: ${bridgeLine(report)}`)}`,
   );
@@ -71,6 +72,11 @@ function groupByRule(findings: Finding[]): Map<RuleId, Finding[]> {
   const map = new Map<RuleId, Finding[]>();
   for (const f of findings) map.set(f.rule, [...(map.get(f.rule) ?? []), f]);
   return map;
+}
+
+/** Says the page measured is not the one asked for, and how to measure that one. */
+export function redirectNote(report: Report): string {
+  return `Measured ${report.url}, not ${report.redirectedFrom}: the page sent the browser on, often to sign in. For a screen behind a sign-in, pass --storage-state <file> of a signed-in session (or --profile <dir>).`;
 }
 
 export function toHtml(report: Report): string {
@@ -169,6 +175,7 @@ details pre { white-space: pre-wrap; font: 12px/1.4 ui-monospace, Menlo, monospa
 <main>
 <h1>Agent readiness</h1>
 <p class="url">${esc(report.title)} · <a href="${esc(report.url)}">${esc(report.url)}</a> · ${esc(report.checkedAt.slice(0, 16).replace("T", " "))} UTC</p>
+${report.redirectedFrom ? `<p class="redirect"><strong>${esc(redirectNote(report))}</strong></p>` : ""}
 
 <div class="summary">
   <div class="score tone-${tone}">${report.score}<small>/100</small><div style="font-size:15px;font-weight:600;margin-top:6px">${esc(report.grade)}</div></div>

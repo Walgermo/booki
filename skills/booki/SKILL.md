@@ -140,6 +140,7 @@ import {
   createAgentCursor,
   attachAudit,
   createBookiHistory,
+  isHistoryRestoring,
   registerTools,
   withRecordedAct,
 } from "@booki/react"
@@ -182,7 +183,8 @@ export const agent = createBookiAgent({
   language: "nb",
 })
 
-export const history = createBookiHistory(agent)
+// An undo is the person's: attachAudit records it under them, not the agent.
+export const history = createBookiHistory(agent, { by: () => personId() })
 
 if (typeof window !== "undefined") {
   attachAudit(agent, audit, { agentId: "bookkeeper", ruleVersion: "posting-1" })
@@ -225,14 +227,18 @@ carries, and it must come from the change itself:
 ```tsx
 <SupplierInvoiceInbox
   invoices={invoices}
-  onInvoicesChange={(next, { source }) => save(next, source === "agent" ? "agent" : "person")}
+  onInvoicesChange={(next, { source }) =>
+    save(next, source === "agent" && !isHistoryRestoring() ? "agent" : "person")
+  }
 />
 ```
 
 Every `on…Change` gets `{ reason, source }`, and a `Button` from `@ui-sdk/react/button`
 gives `onClick(event, { source })`. Don't keep an "agent is running" flag: the person can
 click while the agent's step waits for its pointer or for `allow`, and their click would
-be recorded as the agent's. If the person's click changes the control first, the agent's
+be recorded as the agent's. An undo through `history` also reports `source: "agent"`, because
+ui-sdk puts the values back through the bridge; `isHistoryRestoring()` is true while it does, so
+the write is the person's. If the person's click changes the control first, the agent's
 waiting step then fails ("disabled now", or a refusal naming the new state): the person's
 action wins, and the agent reads the screen again. `save` sends the agent's writes with a token your server
 issued for the agent (short-lived, naming the person as `onBehalfOf`); the server never
@@ -307,6 +313,20 @@ rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor uni
 
 A free-text field (a description, a note) needs no Booki kind: `Input` from
 `@ui-sdk/react/input` is already on the bridge, with `setValue`, under its accessible name.
+It renders without styles, and `@booki/styles` styles only Booki's own controls, so give it
+your design system's classes: `<Input className={inputClasses} />`, with the classes your own
+input uses (for shadcn/ui, those of its `Input`).
+
+A field that saves when the person leaves it (on blur) never saves an agent's change: the
+agent sets the value and moves on, so nothing blurs. Save in the change callback when the
+change is the agent's:
+
+```tsx
+onValueChange={(next, details) => {
+  setValue(next)
+  if (details.source === "agent") save(next) // a person's edit still saves on blur
+}}
+```
 
 Keep what the person types as text and parse it exactly; `Number()` and `* 100` lose øre.
 `parseToMinor` reads "12," as 12,00, so while the text still ends in a separator the person is
@@ -377,6 +397,7 @@ const staged = await proposeChanges(agent, [
 
 `createBookiHistory` records Booki's keys (`minor`, `lines`, `digits` plus the
 bridge's defaults), so `history.undoSource("agent")` restores amounts in minor units.
+The undo is recorded under `by` (the person), not the agent.
 With a history of your own, pass `keys: BOOKI_HISTORY_KEYS`. Secret fields
 (bank, IBAN, KID) can't be restored and are reported back.
 
@@ -429,6 +450,10 @@ Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
 - Posting / attestation paths append audit events; use `actor: agent:…` when
   `subscribe` reports `source === "agent"`
 - Irreversible money moves: `data-agent-confirm` + gate in `allow`
+- A button that already opens the product's own confirm dialog asks the person twice when
+  the agent presses it: once in `allow`, once in the dialog. `allow` has asked by then, so
+  skip the dialog for the agent's press:
+  `onClick={(event, { source }) => (source === "agent" ? remove() : openConfirm(remove))}`
 - Bank / KID: `data-agent-secret` (snapshots show `[redacted]`)
 - Approvals, sign-offs, finalizing and releasing are never agent actions. Pass
   `actor` (the signed-in person's id) so decisions are recorded as theirs
@@ -523,7 +548,11 @@ submit) are refused for an agent even when its roles allow them.
    shows it; a marked step waits for a person; the audit log has `agent:bookkeeper`.
    Then run the readiness audit from the clone against the running screen (it only
    reads): `pnpm --dir ../booki readiness <url of the screen> --timeout 120000` (a dev
-   server compiling the page the first time needs the longer timeout). It names fields
+   server compiling the page the first time needs the longer timeout). A screen behind a
+   sign-in needs a signed-in session, or it measures the sign-in page: save one with
+   `npx playwright codegen --save-storage=session.json <url>` (sign in, then close the
+   window) and add `--storage-state session.json`. The audit says so when the page sent it
+   somewhere else. Keep `session.json` out of git. It names fields
    an agent cannot tell apart, irreversible buttons without `data-agent-confirm`, and
    secrets in the snapshot. It never clicks, so a form behind a button is not measured:
    open it with your own Playwright step and call `check(page)` from `@booki/readiness`

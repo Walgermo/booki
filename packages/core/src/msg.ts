@@ -25,8 +25,11 @@ const JOINERS: { suffix: string; join: Record<MessageLanguage, string> }[] = [
   { suffix: "CommaList", join: { en: ", ", nb: ", " } },
 ];
 
-/** Translates a param that is itself a sentence. English needs none. */
-export type Translate = (text: string, language: MessageLanguage) => string;
+/** Translates a param that is itself a sentence, or a word such as a status. English needs none. */
+export type Translate = (text: string, language: MessageLanguage, name?: string) => string;
+
+/** What a sentence says where a record's status is missing. */
+const NO_STATUS: Record<MessageLanguage, string> = { en: "without a status", nb: "uten status" };
 
 function paramText(
   name: string,
@@ -34,8 +37,8 @@ function paramText(
   language: MessageLanguage,
   translate: Translate,
 ): string | undefined {
-  if (value === undefined) return undefined;
-  const t = (item: string) => (language === "en" ? item : translate(item, language));
+  if (value === undefined || value === null) return name === "status" ? NO_STATUS[language] : undefined;
+  const t = (item: string) => (language === "en" ? item : translate(item, language, name));
   const joiner = JOINERS.find((item) => name.endsWith(item.suffix));
   if (joiner) {
     const items = Array.isArray(value) ? (value as readonly string[]) : String(value).split(joiner.join.en);
@@ -53,10 +56,13 @@ export function render(
   language: MessageLanguage,
   translate: Translate = (text) => text,
 ): string {
-  return template.replace(
+  const out = template.replace(
     PLACEHOLDER,
     (whole, name: string) => paramText(name, params[name], language, translate) ?? whole,
   );
+  // A sentence that ends in a param which is a question or a sentence of its own takes no
+  // second stop: "…: Approve the invoice?", not "…?.".
+  return template.endsWith("}.") && /[.?!…]\.$/.test(out) ? out.slice(0, -1) : out;
 }
 
 /** The English sentence for a code. Core uses it for every sentence it writes. */
