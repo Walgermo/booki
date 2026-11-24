@@ -1,4 +1,4 @@
-import { createHistory, describeEntry, stageChanges } from "@ui-sdk/react/history";
+import { createHistory as createBridgeHistory, describeEntry, stageChanges } from "@ui-sdk/react/history";
 import { createAgent, registerTools as registerBridgeTools } from "@ui-sdk/react/agent";
 import {
   bookiAllow,
@@ -11,13 +11,23 @@ import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
 
+/**
+ * The bridge `createAgent` made, behind an agent that answers in another
+ * language. ui-sdk's history and WebMCP tools find the bridge's internals by
+ * the object and the `act` that `createAgent` returned, so they get that one.
+ */
+const bridges = new WeakMap<AgentBridge, AgentBridge>();
+const bridgeOf = (agent: AgentBridge): AgentBridge => bridges.get(agent) ?? agent;
+
 export type CreateBookiAgentOptions = AgentPolicyOptions & {
   /** How long a step waits for `allow`, in ms. Default five minutes. */
   timeout?: number;
   /**
    * The language of Booki's refusals in `act` results. Default `"en"`. With
    * `"nb"` a refusal from a Booki control comes back in Norwegian; the bridge's
-   * own sentences ("Needs a person: …") stay as ui-sdk writes them.
+   * own sentences ("Needs a person: …") stay as ui-sdk writes them. History
+   * (`createBookiHistory`) and WebMCP tools (`registerTools`) work with such an
+   * agent; what they answer themselves is in ui-sdk's words.
    */
   language?: MessageLanguage;
 };
@@ -40,7 +50,7 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   const bridge = createAgent(allow ? { timeout, allow } : { timeout });
   if (!options.language || options.language === "en") return bridge;
   const language = options.language;
-  return {
+  const localized = {
     ...bridge,
     act: async (...args: Parameters<AgentBridge["act"]>) => {
       const result = await bridge.act(...args);
@@ -49,6 +59,8 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
       return inLanguage(result, (text) => localize(text, language));
     },
   } as AgentBridge;
+  bridges.set(localized, bridge);
+  return localized;
 }
 
 /** The same result with every refusal (`error.message`, at any depth) written in another language. */
@@ -73,7 +85,9 @@ function inLanguage<T>(value: T, say: (text: string) => string): T {
  * Registers the agent's tools with the browser's own agent (WebMCP). `allow`
  * decides each step; a person's decision is refused whatever it says.
  */
-const registerTools = bookiRegisterTools(registerBridgeTools);
+const registerTools = bookiRegisterTools<AgentBridge>((agent, options) =>
+  registerBridgeTools(bridgeOf(agent), options),
+);
 
 export type AttachAuditPush = (event: Omit<AuditEvent, "id" | "at">) => void;
 
@@ -171,6 +185,15 @@ const BOOKI_HISTORY_KEYS = ["value", "checked", "pressed", "minor", "lines", "di
  */
 function createBookiHistory(agent: AgentBridge, options?: Parameters<typeof createHistory>[1]) {
   return createHistory(agent, { keys: BOOKI_HISTORY_KEYS, ...options });
+}
+
+/**
+ * ui-sdk's `createHistory`, for any agent `createBookiAgent` made, also one with
+ * a `language`: undo and redo run through the bridge itself, so their own
+ * results are in ui-sdk's words.
+ */
+function createHistory(agent: AgentBridge, options?: Parameters<typeof createBridgeHistory>[1]) {
+  return createBridgeHistory(bridgeOf(agent), options);
 }
 
 export {
