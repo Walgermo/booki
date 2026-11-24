@@ -1,12 +1,16 @@
 import { createHistory as createBridgeHistory, describeEntry, stageChanges } from "@ui-sdk/react/history";
-import { createAgent, registerTools as registerBridgeTools } from "@ui-sdk/react/agent";
+import { agentTools, createAgent, registerTools as registerBridgeTools } from "@ui-sdk/react/agent";
+import { elementOf } from "@ui-sdk/react/observe";
 import {
+  actAndRecord,
   bookiAllow,
   bookiRegisterTools,
+  markRefused,
   type AgentDecision,
   type AgentPolicyOptions,
 } from "@booki/primitives/agent-policy";
-import type { MessageLanguage } from "@booki/core/msg";
+import { isPersonOnly } from "@booki/primitives/person-only";
+import { BookiError, type MessageLanguage } from "@booki/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
@@ -61,26 +65,103 @@ export type CreateBookiAgentOptions = AgentPolicyOptions & {
  * surface as `createAgent`.
  */
 function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
-  const { timeout } = options;
+  const { timeout, agentId = "bridge", ruleVersion } = options;
   // With neither `allow` nor `audit`, leave it unset: the bridge then runs
   // unmarked steps and refuses `data-agent-confirm` steps with "Needs a
   // person: …", which tells the agent what to do next. Answering `false` here
   // would read as "The person said no" although nobody was asked.
   const allow = bookiAllow(options);
   const bridge = createAgent(allow ? { timeout, allow } : { timeout });
-  if (!options.language || options.language === "en") return bridge;
-  const language = options.language;
-  const localized = {
-    ...bridge,
-    act: async (...args: Parameters<AgentBridge["act"]>) => {
-      const result = await bridge.act(...args);
-      // Loaded only for an agent that asked for another language: the catalogue is not small.
-      const { localize } = await import("@booki/core/messages");
-      return inLanguage(result, (text) => localize(text, language));
-    },
-  } as AgentBridge;
-  bridges.set(localized, bridge);
-  return localized;
+  const language = options.language && options.language !== "en" ? options.language : undefined;
+
+  /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
+  const run = async (input: ActInput, actOptions?: ActOptions) => {
+    const lone = input.steps.length === 1 ? input.steps[0] : undefined;
+    if (lone) currentStep.set(bridge, lone.action);
+    try {
+      return await bridge.act(input as never, actOptions);
+    } finally {
+      if (lone) currentStep.delete(bridge);
+    }
+  };
+
+  const act = async (input: ActInput, actOptions?: ActOptions) => {
+    let result = (await run(input, actOptions)) as ActResult;
+    // A press on a Booki control's button that is a person's decision (sign off,
+    // release): the bridge answers "nothing to press now", which tells the agent
+    // nothing and leaves no trace. Checked after the call, when the button is on
+    // the page even if an earlier step in it made the button appear.
+    const failed = result.ok ? undefined : result.error;
+    const step = failed ? input.steps?.[failed.step] : undefined;
+    const person = step ? personOnlyPress(bridge, step) : null;
+    if (failed && step && person) {
+      markRefused({ ref: step.ref, label: person.entry.label, action: step.action });
+      options.audit?.({
+        actor: `agent:${agentId}`,
+        action: "agent.person-only",
+        target: person.entry.label ?? person.entry.ref,
+        detail: `${person.entry.component}.press: ${person.confirm}`,
+        ...(ruleVersion ? { ruleVersion } : {}),
+      });
+      result = {
+        ...result,
+        error: { ...failed, message: new BookiError("agent.person-only", { confirm: person.confirm }).message },
+      };
+    }
+    if (!language) return result;
+    // Loaded only for an agent that asked for another language: the catalogue is not small.
+    const { localize } = await import("@booki/core/messages");
+    return inLanguage(result, (text) => localize(text, language));
+  };
+
+  const agent = { ...bridge, act } as AgentBridge;
+  bridges.set(agent, bridge);
+  return agent;
+}
+
+type ActInput = { steps: { ref: string; action: string; args?: unknown[] }[] };
+type ActOptions = { signal?: AbortSignal };
+type ActResult = { ok: boolean; steps?: unknown[]; error?: { step: number; message: string } } & Record<
+  string,
+  unknown
+>;
+type Entry = { ref: string; label?: string; component: string; actions?: string[] };
+
+/** The step a lone `act` is running, by bridge, for `attachAudit` to name in its rows. */
+const currentStep = new WeakMap<AgentBridge, string>();
+
+/**
+ * When a press step names a button on a Booki control that is a person's
+ * decision, the confirm sentence and the control; otherwise null. Controls
+ * that take `press` themselves (a ui-sdk Button) are left to the bridge, whose
+ * `allow` refuses a person's decision already.
+ */
+function personOnlyPress(
+  bridge: AgentBridge,
+  step: ActInput["steps"][number],
+): { confirm: string; entry: Entry } | null {
+  if (step.action !== "press") return null;
+  const text = String(step.args?.[0] ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  if (!text) return null;
+  const entries = bridge.snapshot() as unknown as Entry[];
+  const entry =
+    entries.find((item) => item.ref === step.ref) ??
+    entries.find((item) => item.label === step.ref) ??
+    entries.find((item) => item.component === step.ref);
+  if (!entry || entry.actions?.includes("press")) return null;
+  const root = elementOf(entry.ref);
+  if (!root) return null;
+  for (const button of root.querySelectorAll("button, [role='button']")) {
+    const own = (button.textContent ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    const label = (button.getAttribute("aria-label") ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    if (own !== text && label !== text && !label.startsWith(`${text}:`)) continue;
+    const confirm = button.closest("[data-agent-confirm]")?.getAttribute("data-agent-confirm");
+    if (confirm && isPersonOnly(confirm)) return { confirm, entry };
+  }
+  return null;
 }
 
 /**
@@ -107,13 +188,69 @@ function inLanguage<T>(value: T, say: (text: string) => string): T {
   return out as T;
 }
 
-/**
- * Registers the agent's tools with the browser's own agent (WebMCP). `allow`
- * decides each step; a person's decision is refused whatever it says.
- */
-const registerTools = bookiRegisterTools<AgentBridge>((agent, options) =>
+export type RegisterToolsOptions = Omit<AgentPolicyOptions, "allow"> & {
+  /**
+   * Decides each step the browser's agent takes. `"bridge"`: the agent's own
+   * `allow` (from `createBookiAgent`) decides, once, and Booki registers the
+   * tools itself, so they answer in the agent's language and, with `audit`, a
+   * control's own refusals are recorded. A function: a second gate after the
+   * bridge's, through ui-sdk's registration. Give the same dialog to both and
+   * the person is asked twice.
+   */
+  allow: NonNullable<AgentPolicyOptions["allow"]> | "bridge";
+  /** Prefix for the tool names, like `"acme"` for `acme_snapshot`, `acme_act`, `acme_query`. Needs `allow: "bridge"`. */
+  prefix?: string;
+};
+
+const registerWithGate = bookiRegisterTools<AgentBridge>((agent, options) =>
   registerBridgeTools(bridgeOf(agent), options),
 );
+
+/**
+ * Registers the agent's tools with the browser's own agent (WebMCP): `snapshot`,
+ * `act` and `query`. A person's decision is refused whatever `allow` says. The
+ * browser's agent acts in the person's session: keep this off until your
+ * server can tell it from the person.
+ */
+function registerTools(agent: AgentBridge, options: RegisterToolsOptions): () => void {
+  if (options?.allow !== "bridge") {
+    if (options?.prefix) throw new Error('registerTools: a prefix needs allow: "bridge".');
+    return registerWithGate(agent, options as never);
+  }
+  const prefix = options.prefix ? `${String(options.prefix).replace(/[^A-Za-z0-9_-]/g, "")}_` : "";
+  const context = (globalThis as { document?: { modelContext?: ModelContext } }).document?.modelContext;
+  const controller = new AbortController();
+  const act = (input: ActInput, signal?: AbortSignal) =>
+    options.audit
+      ? actAndRecord(agent as never, input as never, options, { signal })
+      : agent.act(input as never, { signal });
+  for (const tool of agentTools) {
+    const definition = {
+      ...tool,
+      name: `${prefix}${tool.name}`,
+      // Labels and text come from the page, which can hold what users wrote,
+      // and `act` can press any button, like one that deletes.
+      annotations: {
+        readOnlyHint: tool.name !== "act",
+        untrustedContentHint: true,
+        consequentialHint: tool.name === "act",
+      },
+      execute: (input: unknown, call?: { signal?: AbortSignal }) =>
+        tool.name === "act"
+          ? act(input as ActInput, call?.signal)
+          : (agent as unknown as Record<string, (input: unknown) => unknown>)[tool.name]!(input),
+    };
+    try {
+      // A browser may answer with a promise or with nothing.
+      void Promise.resolve(context?.registerTool(definition, { signal: controller.signal })).catch(() => {});
+    } catch {
+      /* Not allowed here: the page works without the tools. */
+    }
+  }
+  return () => controller.abort();
+}
+
+type ModelContext = { registerTool: (tool: unknown, options: { signal: AbortSignal }) => unknown };
 
 export type AttachAuditPush = (event: Omit<AuditEvent, "id" | "at">) => void;
 
@@ -146,7 +283,7 @@ function domainAction(component: string, key: string): string {
 }
 
 /** A change's value as audit text: objects as JSON (not "[object Object]"), capped. */
-function auditValue(value: unknown): string {
+function auditValue(value: unknown, max = 200): string {
   let text: string;
   if (value === null || typeof value !== "object") text = String(value);
   else {
@@ -156,7 +293,57 @@ function auditValue(value: unknown): string {
       text = String(value);
     }
   }
-  return text.length > 200 ? `${text.slice(0, 199)}…` : text;
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+type Row = { id: string | number } & Record<string, unknown>;
+const isRows = (value: unknown): value is Row[] =>
+  Array.isArray(value) &&
+  value.every(
+    (item) => item && typeof item === "object" && (typeof item.id === "string" || typeof item.id === "number"),
+  );
+const isPlain = (value: unknown): value is Record<string, unknown> =>
+  value !== null && typeof value === "object" && !Array.isArray(value);
+const same = (a: unknown, b: unknown) => auditValue(a, 10_000) === auditValue(b, 10_000);
+
+/** What changed between two lists of records, by id: added, removed, and each changed field. */
+function rowChanges(next: Row[], before: Row[]): string[] {
+  const out: string[] = [];
+  for (const row of next) {
+    const old = before.find((item) => item.id === row.id);
+    if (!old) {
+      out.push(`+${row.id}`);
+      continue;
+    }
+    const fields = Object.keys({ ...old, ...row })
+      .filter((key) => !same(row[key], old[key]))
+      .map((key) => `${key}=${auditValue(row[key], 40)} (was ${auditValue(old[key], 40)})`);
+    if (fields.length) out.push(`${row.id}: ${fields.join(", ")}`);
+  }
+  for (const old of before) if (!next.some((row) => row.id === old.id)) out.push(`-${old.id}`);
+  return out;
+}
+
+/**
+ * A change in words a person can follow: for a list of records, what changed
+ * per record; for a record (a workpaper, a claim), each field that changed,
+ * and for its lists, the same per record. Anything else as before.
+ */
+function changeText(key: string, value: unknown, previous: unknown): string {
+  let parts: string[] | null = null;
+  if (isRows(value) && isRows(previous)) parts = rowChanges(value, previous);
+  else if (isPlain(value) && isPlain(previous)) {
+    parts = [];
+    for (const field of Object.keys({ ...previous, ...value })) {
+      const now = value[field];
+      const was = previous[field];
+      if (same(now, was)) continue;
+      if (isRows(now) && isRows(was)) parts.push(...rowChanges(now, was).map((line) => `${field} ${line}`));
+      else parts.push(`${field}=${auditValue(now, 60)} (was ${auditValue(was, 60)})`);
+    }
+  }
+  if (!parts || parts.length === 0) return `${key}=${auditValue(value)} (was ${auditValue(previous)})`;
+  return auditValue(parts.join("; ").replace(/^"|"$/g, ""), 200).replace(/^"|"$/g, "");
 }
 
 /**
@@ -180,11 +367,13 @@ function attachAudit(
     const key = change.key.endsWith("Shown") ? change.key.slice(0, -"Shown".length) : change.key;
     // An undo goes through the bridge too, but it is the person's.
     const undoneBy = restorers.get(bridge);
+    // The step a lone `act` ran, so the row says what the agent did, not only what changed.
+    const step = undoneBy ? undefined : currentStep.get(bridge);
     push({
       actor: undoneBy ?? `agent:${agentId}`,
       action: domainAction(change.component, key),
       target: change.label ?? change.ref,
-      detail: `${key}=${auditValue(change.value)} (was ${auditValue(change.previous)})${undoneBy ? ", undo" : ""}`,
+      detail: `${step ? `${step}: ` : ""}${changeText(key, change.value, change.previous)}${undoneBy ? ", undo" : ""}`,
       ruleVersion,
     });
   });
@@ -195,7 +384,7 @@ function attachAudit(
  * Thin alias over UI SDK `stageChanges` (async).
  */
 async function proposeChanges(agent: AgentBridge, changes: Parameters<typeof stageChanges>[1]) {
-  return stageChanges(agent, changes);
+  return stageChanges(bridgeOf(agent), changes);
 }
 
 /**

@@ -106,7 +106,8 @@ if (typeof window !== "undefined") {
   Object.assign(window, { agent });
 
   // The same snapshot / act / query tools, for the browser's own agent: it gets the cursor too.
-  const unregister = registerTools(agent, { allow: allowWithCursor });
+  // The bridge's allow (with the cursor) decides; a second one here would lead the cursor twice.
+  const unregister = registerTools(agent, { allow: "bridge" });
 
   if (import.meta.hot) {
     import.meta.hot.dispose(unregister);
