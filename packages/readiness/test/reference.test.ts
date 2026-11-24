@@ -213,8 +213,8 @@ describe("reference: server", () => {
     expect(ref.server(person, "expense.approve")).toEqual({ status: 200 });
   });
 
-  it("lists 21 unique person-only permissions", () => {
-    expect(PERSON_ONLY_PERMISSIONS).toHaveLength(21);
-    expect(new Set(PERSON_ONLY_PERMISSIONS).size).toBe(21);
+  it("lists 22 unique person-only permissions", () => {
+    expect(PERSON_ONLY_PERMISSIONS).toHaveLength(22);
+    expect(new Set(PERSON_ONLY_PERMISSIONS).size).toBe(22);
   });
 });

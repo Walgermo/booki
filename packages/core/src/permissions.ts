@@ -41,6 +41,10 @@ export const PERMISSIONS = [
   "request.send",
   /** Judge whether the client's answer is sufficient. */
   "request.decide",
+  /** Mark a deal won or lost, or reopen it (a person's: it closes the deal). */
+  "deal.close",
+  /** Remove a logged call, email, meeting, note or task from a customer's history. */
+  "activity.remove",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number] | (string & {});
@@ -174,6 +178,7 @@ export const STANDARD_ROLES: Role[] = [
     ],
   },
   { id: "eqcr", name: "Quality reviewer", permissions: ["audit.eqcr"] },
+  { id: "sales", name: "Sales", permissions: ["deal.close", "activity.remove"] },
 ];
 
 /** The roles an actor holds here: their own, and those of the scope named, if any. */

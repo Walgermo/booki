@@ -1,6 +1,7 @@
 [
   "account-picker",
   "accounting-period-select",
+  "activity-timeline",
   "aged-balances",
   "aging-chart",
   "amount-field",
@@ -16,6 +17,7 @@
   "close-checklist",
   "currency-select",
   "data-table",
+  "deal-pipeline",
   "document-signoff",
   "evidence-list",
   "expense-claim",

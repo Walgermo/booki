@@ -32,6 +32,8 @@ export * from "./findings.js";
 export * from "./sheet-stack.js";
 export * from "./document-signoff.js";
 export * from "./client-request.js";
+export * from "./pipeline.js";
+export * from "./activity.js";
 export * from "./fixed-assets.js";
 export * from "./messages.js";
 export * from "./table.js";

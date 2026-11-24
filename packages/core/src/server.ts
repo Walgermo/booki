@@ -34,6 +34,7 @@ import { isIsoDate } from "./iso-date.js";
 import { localize, msgIn, type MessageLanguage } from "./messages.js";
 import { BookiError, isBookiError, msg } from "./msg.js";
 import { releaseBatch, type PaymentBatch } from "./payment-batch.js";
+import { closeDeal, type Deal, type DealOutcome, type PipelineStage } from "./pipeline.js";
 import {
   STANDARD_DUTY_RULES,
   STANDARD_ROLES,
@@ -141,6 +142,7 @@ export const PERSON_ONLY: readonly Permission[] = [
   "finding.withdraw",
   "request.send",
   "request.decide",
+  "deal.close",
 ];
 
 /** How an actor appears in the audit trail: `agent:bookkeeper` or the person's id. */
@@ -394,6 +396,16 @@ export function guardReleasePayments(
 /** Close a period: every task done and every sign-off in. */
 export function guardClosePeriod(context: GuardContext, input: { tasks: CloseTask[] }): Verdict<CloseSummary> {
   return guard(context, "period.close", () => assertReadyToClose(input.tasks));
+}
+
+/** Mark a deal won or lost: a person's, recorded under their id. Lost needs a reason. */
+export function guardCloseDeal(
+  context: GuardContext,
+  input: { deal: Deal; stages: PipelineStage[]; outcome: DealOutcome; at: string; reason?: string },
+): Verdict<Deal> {
+  return guard(context, "deal.close", () =>
+    closeDeal(input.deal, input.stages, input.outcome, context.actor!.id, input.at, input.reason),
+  );
 }
 
 /** Confirm an audit finding: a person's, recorded under their id. Warnings (`findingIssues`) do not refuse it. */

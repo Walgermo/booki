@@ -180,6 +180,18 @@ export {
   clientRequests,
 } from "./client-requests.js";
 export {
+  type Options as DealPipelineOptions,
+  type PipelineOwner,
+  DEAL_FORMAT,
+  dealPipeline,
+} from "./deal-pipeline.js";
+export {
+  type Options as ActivityTimelineOptions,
+  type TimelinePerson,
+  ACTIVITY_FORMAT,
+  activityTimeline,
+} from "./activity-timeline.js";
+export {
   type Options as CloseChecklistOptions,
   closeChecklist,
 } from "./close-checklist.js";

@@ -274,6 +274,22 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki/react"),
   },
   {
+    name: "deal-pipeline",
+    title: "DealPipeline",
+    description:
+      "A sales board: deals in stages, each stage's totals per currency and a weighted forecast. An agent moves, values and assigns deals; a value without a source is shown, never summed; won and lost are a person's.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
+    name: "activity-timeline",
+    title: "ActivityTimeline",
+    description:
+      "A customer's history and next steps: calls, emails, meetings, notes and tasks. An agent logs and schedules, marked as the agent's; a call says what it can be checked against; removing an entry is a person's.",
+    group: "React",
+    install: installCmd("@booki/react"),
+  },
+  {
     name: "confirm-dialog",
     title: "ConfirmDialog",
     description:

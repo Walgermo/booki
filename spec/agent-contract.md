@@ -100,6 +100,7 @@ three.
    | `finding.withdraw` | Withdraw a confirmed finding |
    | `request.send` | Send a request to the client |
    | `request.decide` | Accept or reject a client's answer |
+   | `deal.close` | Mark a sales deal won or lost, or reopen it |
 
 2. An irreversible step that the company MAY let an agent take under its own
    rules (posting a voucher, paying an invoice under a limit) MUST be marked

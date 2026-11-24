@@ -1,0 +1,142 @@
+/* ── Activity timeline (customer history and tasks) ──────────────────── */
+
+[data-slot="activity-timeline"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="activity-timeline-status"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="activity-timeline"][data-overdue] [data-slot="activity-timeline-status"] {
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  color: var(--bk-warning);
+}
+
+:is([data-slot="activity-timeline-tasks"], [data-slot="activity-timeline-history"]) {
+  display: grid;
+  gap: var(--bk-gap);
+  min-width: 0;
+}
+
+[data-slot="activity-timeline-heading"] {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.02em;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="activity-timeline-empty"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="activity-timeline-items"] {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="activity-timeline-items"] > li {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+[data-slot="activity-timeline-items"] > li + li {
+  border-top: 1px solid var(--bk-border);
+}
+
+/* What an agent logged or scheduled carries the agent's mark. */
+[data-slot="activity-timeline-items"] > li[data-by="agent"] {
+  box-shadow: inset 2px 0 0 var(--bk-signal);
+}
+
+[data-slot="activity-timeline-head"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem var(--bk-gap);
+  min-width: 0;
+}
+
+[data-slot="activity-timeline-kind"] {
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-sm);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="activity-timeline-subject"] {
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+:is([data-slot="activity-timeline-at"], [data-slot="activity-timeline-due"]) {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="activity-timeline-due"][data-overdue] {
+  font-weight: var(--bk-font-weight-medium);
+  color: var(--bk-warning);
+}
+
+[data-slot="activity-timeline-body"] {
+  margin: 0;
+  max-width: 70ch;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+[data-slot="activity-timeline-meta"] {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="activity-timeline-evidence"] {
+  font-family: var(--bk-mono);
+  overflow-wrap: anywhere;
+}
+
+[data-slot="activity-timeline-issues"] {
+  margin: 0;
+  padding: 0.375rem 0.5rem 0.375rem 1.5rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+  font-size: 0.75rem;
+}
+
+[data-slot="activity-timeline-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+[data-slot="activity-timeline-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
