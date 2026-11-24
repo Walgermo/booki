@@ -124,17 +124,30 @@ export function ErpWindow({ agent, from }: { agent: LandingAgent; from?: RefObje
   }, []);
 
   // Start once, when the window is on screen; a visit that never gets there runs nothing.
+  // On a phone the window sits below the hero, under the fold: waiting for it to show
+  // means the visitor has scrolled the hero's word away, and the cursor never leads from
+  // it. There it starts once the title has landed, and its first step scrolls the window
+  // into view while the cursor glides down from the word. A visitor who has already
+  // scrolled keeps the page: the cursor follows instead of scrolling it.
   useEffect(() => {
     const node = frame.current;
     if (!node) return;
+    const start = () => {
+      if (started.current) return;
+      started.current = true;
+      void wait(titleLanded.ms + 1400)
+        .then(whenCursorFree)
+        .then(run);
+    };
+    if (window.matchMedia?.("(max-width: 767px)").matches) {
+      start();
+      return;
+    }
     const seen = new IntersectionObserver(
       ([entry]) => {
-        if (!entry?.isIntersecting || started.current) return;
-        started.current = true;
+        if (!entry?.isIntersecting) return;
         seen.disconnect();
-        void wait(titleLanded.ms + 1400)
-          .then(whenCursorFree)
-          .then(run);
+        start();
       },
       { threshold: 0.2 },
     );
