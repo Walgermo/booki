@@ -190,8 +190,10 @@ if (typeof window !== "undefined") {
   attachAudit(agent, audit, { agentId: "bookkeeper", ruleVersion: "posting-1" })
   // Browser agents (WebMCP) get the same tools, cursor and rules. A person's own
   // browser agent acts in their session: turn this on when the server can tell it apart.
+  // allow: "bridge": the bridge's allow above decides, once (a second allow here would
+  // ask the person twice). The prefix keeps the tool names apart from other tools on the page.
   if (process.env.NEXT_PUBLIC_BOOKI_WEBMCP === "on") {
-    registerTools(agent, { allow: cursor.wrap(allow), audit, agentId: "browser" })
+    registerTools(agent, { allow: "bridge", prefix: "app", audit, agentId: "browser" })
   }
   // Console and devtools: window.agent.snapshot(). Not in production. Its act records
   // a step the control refuses, as actAndRecord does. window.agent exists before a screen

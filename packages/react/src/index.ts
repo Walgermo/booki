@@ -161,6 +161,7 @@ export {
   type AttachAuditPush,
   type AgentDecision,
   type CreateBookiAgentOptions,
+  type RegisterToolsOptions,
 } from "./booki-agent.js";
 export {
   AgentPresence,

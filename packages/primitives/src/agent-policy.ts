@@ -55,6 +55,15 @@ export type AgentPolicyOptions = {
 let sequence = 0;
 const refusedSteps: { seq: number; ref: string; label?: string; action: string }[] = [];
 
+/**
+ * Notes a step refused outside `bookiAllow` (a person-only press the bridge
+ * caught before running it), so `actAndRecord` does not record it a second time.
+ */
+export function markRefused(step: { ref: string; label?: string; action: string }): void {
+  refusedSteps.push({ seq: ++sequence, ref: step.ref, label: step.label, action: step.action });
+  if (refusedSteps.length > 50) refusedSteps.shift();
+}
+
 /** True when a decision lets the step run. */
 export const isAllowed = (decision: AgentDecision): boolean =>
   typeof decision === "object" && decision !== null ? decision.allow === true : decision === true;
