@@ -30,8 +30,11 @@ Requires React 19+ for `@booki-aui/react`. Every control is defined once in `pac
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
 ```
+
+The `@ui-sdk` packages are pinned exactly, so add them in the same command as Booki (see the
+README's release-age note). Do not change those pins by hand.
 
 ```tsx
 import { BookiLocaleProvider } from "@booki-aui/react"

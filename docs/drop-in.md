@@ -115,11 +115,11 @@ your own error shape if you have one.
 Many products write their audit trail with database triggers that take the actor from the
 session user. Such a trail has no place for "agent X, acting for person Y": without a change,
 an agent's write is saved as the person's own, and the agent shows up only in a server log.
-`actorRecord(actor)` gives the three things to keep (`actor`, `kind`, `onBehalfOf`, plus
-`grantId` and `clientId` when the actor has them). Two ways to keep them:
+`actorRecord(actor)` gives the things to keep (`actor`, `kind`, `onBehalfOf`, plus `grantId` and
+`clientId` when the actor has them). Two ways to keep them:
 
-- **Add columns or a JSON column.** Give the audit table `actor_kind`, `on_behalf_of` and
-  `grant_id` columns, or one `actor jsonb` column that holds `actorRecord(actor)` as it is.
+- **Add columns or a JSON column.** Give the audit table `actor_kind`, `on_behalf_of`, `grant_id`
+  and `client_id` columns, or one `actor jsonb` column that holds `actorRecord(actor)` as it is.
   The application writes them itself, in the same write as the change.
 - **Set the request's audit context before the write.** Keep the trigger as it is, and let
   the request say who is acting: `set_config` with `is_local = true` sets a value for the current
@@ -139,6 +139,7 @@ create table audit_event (
   actor_kind   text        not null,          -- 'person' or 'agent'
   on_behalf_of text,                          -- the person an agent acted for
   grant_id     text,
+  client_id    text,
   old_row      jsonb,
   new_row      jsonb,
   at           timestamptz not null default now()
@@ -148,7 +149,7 @@ create or replace function record_audit() returns trigger
 language plpgsql as $$
 begin
   insert into audit_event
-    (table_name, row_id, operation, actor, actor_kind, on_behalf_of, grant_id, old_row, new_row)
+    (table_name, row_id, operation, actor, actor_kind, on_behalf_of, grant_id, client_id, old_row, new_row)
   values (
     TG_TABLE_NAME,
     case when TG_OP = 'DELETE' then OLD.id::text else NEW.id::text end,
@@ -157,6 +158,7 @@ begin
     coalesce(nullif(current_setting('app.actor_kind', true), ''), 'person'),
     nullif(current_setting('app.on_behalf_of', true), ''),
     nullif(current_setting('app.grant_id', true), ''),
+    nullif(current_setting('app.client_id', true), ''),
     case when TG_OP <> 'INSERT' then to_jsonb(OLD) end,
     case when TG_OP <> 'DELETE' then to_jsonb(NEW) end
   );
@@ -170,18 +172,21 @@ create trigger invoices_audit
 ```
 
 The write path sets the context in the same transaction as the change. It takes the values from
-the guard's verdict (`actorRecord(verdict.actor)`), never from the request body:
+the actor the request's token resolved to (the `actor` passed to `guard`), never from the request
+body. `verdict.actor` is only the label string, so it cannot fill the record:
 
 ```ts
-const record = actorRecord(verdict.actor) // { actor, kind, onBehalfOf?, grantId?, clientId? }
+// `actor` is the ServerActor your sign-in resolved for this request, the same one passed to guard
+const record = actorRecord(actor) // { actor, kind, onBehalfOf?, grantId?, clientId? }
 
 await db.transaction(async (tx) => {
   await tx.query(
     `select set_config('app.actor', $1, true),
             set_config('app.actor_kind', $2, true),
             set_config('app.on_behalf_of', $3, true),
-            set_config('app.grant_id', $4, true)`,
-    [record.actor, record.kind, record.onBehalfOf ?? "", record.grantId ?? ""],
+            set_config('app.grant_id', $4, true),
+            set_config('app.client_id', $5, true)`,
+    [record.actor, record.kind, record.onBehalfOf ?? "", record.grantId ?? "", record.clientId ?? ""],
   )
   await tx.query("update invoices set status = $1 where id = $2", [status, invoiceId])
 })

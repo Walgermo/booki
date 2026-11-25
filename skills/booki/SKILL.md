@@ -223,11 +223,18 @@ function ConnectAgent() {
 
 If your confirm dialog comes from a client provider (a `<ConfirmProvider>` in a providers file), render
 `BookiRoot` inside that provider, and put `ConnectAgent` inside it too, or the hook has nothing to read.
-The person still comes from the server layout:
+The person still comes from the server layout. `BookiRoot` is defined in the next section, and
+`ConfirmProvider` is your app's own confirm-dialog provider. Import them from where your app keeps them:
 
 ```tsx
 // app/providers.tsx
 "use client"
+
+import type { ReactNode } from "react"
+import { ConfirmProvider } from "your-app/confirm" // your app's confirm-dialog provider
+import { BookiRoot } from "your-app/booki-root" // the BookiRoot defined in the next section
+import { ConnectAgent } from "your-app/connect-agent" // the ConnectAgent defined above
+type User = { id: string; name: string; roles: string[] } // the same shape as in the next section
 
 export function Providers({ user, children }: { user: User; children: ReactNode }) {
   return (

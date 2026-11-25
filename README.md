@@ -37,7 +37,13 @@ and stop where a person has to decide. Your server checks the same rules again.
 ## Quick start
 
 Booki is on npm as `@booki-aui/*`, before 1.0: the API may still change between
-releases. What comes next is in [`ROADMAP.md`](ROADMAP.md). Install it yourself:
+releases. What comes next is in [`ROADMAP.md`](ROADMAP.md).
+
+To install it, run this in your app (it is one command, and the `@ui-sdk` versions are pinned):
+
+```bash
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+```
 
 **A minimum release age can refuse a new release.** Booki and its `@ui-sdk` packages
 are new when they come out, and Booki pins the `@ui-sdk` packages exactly. An app with a
@@ -45,10 +51,6 @@ minimum release age (pnpm `minimumReleaseAge`, or Renovate's `minimumReleaseAge`
 them for its first days, with `ERR_PNPM_NO_MATURE_MATCHING_VERSION`. Then either install the
 previous Booki release, with the `@ui-sdk` version it pins, or ask the owner of the app for an
 exception for exactly those versions, on a branch. Don't change the exact pin in `package.json`.
-
-```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
-```
 
 Add the `@ui-sdk` packages in the same command as Booki. Adding only one of them has made pnpm
 drop the other from the lockfile.
