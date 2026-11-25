@@ -1,5 +1,11 @@
 # @booki/core
 
+## 0.4.1
+
+### Patch Changes
+
+- [#146](https://github.com/Walgermo/booki/pull/146) [`33ad13c`](https://github.com/Walgermo/booki/commit/33ad13c47dfb54f263a5dc7a3a345085e8b46d16) Thanks [@Walgermo](https://github.com/Walgermo)! - With `language: "nb"`, a failed multi-step call whose first step failed now ends in Norwegian too: "Send det på nytt med …" (it stayed English unless steps before it had run). "Its labels: none." for a page with no labels is translated as well.
+
 ## 0.4.0
 
 ### Minor Changes
