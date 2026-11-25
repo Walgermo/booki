@@ -9,7 +9,7 @@ agent actions as `@booki-aui/react`, for any framework or none. Use it in Angula
 in pages rendered on the server, or in plain HTML.
 
 ```bash
-pnpm add @booki-aui/web @booki-aui/styles
+pnpm add @booki-aui/web @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/web@0.1.0-beta.17
 ```
 
 ```html

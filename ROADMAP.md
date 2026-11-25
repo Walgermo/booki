@@ -1,6 +1,6 @@
 # Roadmap
 
-Booki is pre-1.0: it is on npm as `@booki-aui/*` (0.2.0), and the API still changes between releases. This file is a plan, not a promise. The work itself is tracked in the [issue list](https://github.com/Walgermo/booki/issues), and the [Support section of the README](README.md#support) says what is supported today and what is experimental.
+Booki is pre-1.0: it is on npm as `@booki-aui/*`, and the API still changes between releases. This file is a plan, not a promise. The work itself is tracked in the [issue list](https://github.com/Walgermo/booki/issues), and the [Support section of the README](README.md#support) says what is supported today and what is experimental.
 
 ## What v1 needs
 
@@ -8,6 +8,7 @@ Booki is pre-1.0: it is on npm as `@booki-aui/*` (0.2.0), and the API still chan
 - [#29](https://github.com/Walgermo/booki/issues/29) Rate limit on `/api/agent`: the endpoint stays off on booki.dev until it has a real rate limit.
 - [#24](https://github.com/Walgermo/booki/issues/24) Agent Contract: the spec is marked a draft, and a conformance suite and a reference implementation are in `@booki-aui/readiness`. Left: a way to run the suite against a live page, and a second, independent implementation.
 - [#25](https://github.com/Walgermo/booki/issues/25) Migration guide for one screen, with times from the product pilot: a team should see what moving one existing screen takes, in real figures.
+- Releases go back to staged publishing, so each version again carries a person's approval on npm ([RELEASING.md](RELEASING.md)). Until v1 they are published straight from the release workflow.
 
 ## After v1
 
@@ -23,8 +24,6 @@ Benchmarks:
 Product:
 
 - [#28](https://github.com/Walgermo/booki/issues/28) WebMCP: record a control's own refusals, not only the ones the bridge sees.
-- [#30](https://github.com/Walgermo/booki/issues/30) Decide whether a US memo reference is secret, the way a Norwegian KID is.
-- [#31](https://github.com/Walgermo/booki/issues/31) A smaller base stylesheet. The raw size is down by a third; the scope list is still repeated in about 45 rules.
 
 ## Not planned
 

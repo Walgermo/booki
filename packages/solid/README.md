@@ -9,7 +9,7 @@ actions as `@booki-aui/react`, generated from the same framework-free definition
 in `@booki-aui/primitives`.
 
 ```bash
-pnpm add @booki-aui/solid @booki-aui/styles
+pnpm add @booki-aui/solid @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/solid@0.1.0-beta.17
 ```
 
 Each control is a namespace of parts, like `AmountField.Root` and

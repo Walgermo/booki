@@ -139,7 +139,6 @@ import {
   createAgentCursor,
   attachAudit,
   createBookiHistory,
-  isHistoryRestoring,
   registerTools,
   withRecordedAct,
 } from "@booki-aui/react"
@@ -263,7 +262,9 @@ export function Providers({ user, children }: { user: User; children: ReactNode 
 Take the first snapshot after the screen has rendered: `window.agent` exists before a screen
 has registered its controls.
 
-(In Vite: `import.meta.env.DEV` and `import.meta.env.VITE_BOOKI_WEBMCP`.)
+In Vite, `process` does not exist: replace the two checks with
+`import.meta.env.VITE_BOOKI_WEBMCP === "on"` and `import.meta.env.DEV`. `isHistoryRestoring`
+(imported where a change is saved, below) is not needed in this file.
 
 ### Whose write it is
 

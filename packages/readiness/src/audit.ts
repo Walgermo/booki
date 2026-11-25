@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -106,7 +107,8 @@ export type AuditOptions = {
   timeout?: number;
 };
 
-export const VERSION = "0.1.0";
+/** The installed tool's own version, as the JSON report states it. */
+export const VERSION: string = (createRequire(import.meta.url)("../package.json") as { version: string }).version;
 
 const FIELD_ROLES = new Set([
   "textbox",
