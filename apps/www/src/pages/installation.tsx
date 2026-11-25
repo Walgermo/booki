@@ -19,8 +19,8 @@ const NEEDS = [
   [
     { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.17", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.17" },
     {
-      en: "Peer dependencies; pnpm and npm install them for you.",
-      nb: "Peer-avhengigheter; pnpm og npm installerer dem for deg.",
+      en: "Add both exact versions in the same command.",
+      nb: "Legg til begge de eksakte versjonene i samme kommando.",
     },
   ],
   [
@@ -29,7 +29,11 @@ const NEEDS = [
   ],
 ] as const;
 
-const ADD = "pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles";
+const PACKAGES = [
+  "@booki-aui/core @booki-aui/react",
+  "@booki-aui/styles @ui-sdk/core@0.1.0-beta.17",
+  "@ui-sdk/react@0.1.0-beta.17",
+].join(" ");
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"
 import "@booki-aui/styles"
@@ -91,7 +95,7 @@ const agent = createBookiAgent({ agentId: "bookkeeper", allow })
 Object.assign(window, { agent })
 
 // The same snapshot / act / query tools, for the browser's own agent.
-const unregister = registerTools(agent, { allow })
+const unregister = registerTools(agent, { allow: "bridge" })
 
 if (import.meta.hot) {
   import.meta.hot.dispose(unregister)
@@ -103,17 +107,36 @@ const MAIN = `// Create the agent bridge before anything renders, so it sees eve
 import "./agent"
 import { createRoot } from "react-dom/client"`;
 
-const CONFIRM = `import { setPersonPrompt } from "./agent"
+const CONFIRM = `import { useEffect } from "react"
+import { Button } from "@ui-sdk/react/button"
+import { personOnly } from "@booki-aui/react"
+import { setPersonPrompt } from "./agent"
 
-// Once, where your confirmation dialog lives.
-useEffect(() => setPersonPrompt((text) => confirmDialog.ask(text)), [])
+type Props = {
+  saveDraft: () => void
+  postVoucher: () => void
+}
 
-<button
-  data-agent-confirm="Posts voucher 1042 to the ledger. This cannot be undone."
-  onClick={postVoucher}
->
-  Post voucher
-</button>`;
+export function VoucherActions({ saveDraft, postVoucher }: Props) {
+  useEffect(() => setPersonPrompt((text) => window.confirm(text)), [])
+
+  return (
+    <>
+      <Button
+        data-agent-confirm="Save changes to draft 1042?"
+        onClick={saveDraft}
+      >
+        Save draft
+      </Button>
+      <Button
+        data-agent-confirm={personOnly("Post voucher 1042?")}
+        onClick={postVoucher}
+      >
+        Post voucher
+      </Button>
+    </>
+  )
+}`;
 
 const CHECK = `window.agent.snapshot()
 
@@ -126,7 +149,7 @@ export function InstallationPage() {
   const { lang, t } = useLang();
   const p = "m-0 max-w-prose text-sm text-muted-foreground";
   return (
-    <article>
+    <article className="installation-guide">
       <h1 className="site-page-title mt-0 mb-0">
         {t("Add Booki to a React product", "Legg Booki inn i et React-produkt")}
       </h1>
@@ -141,8 +164,8 @@ export function InstallationPage() {
         id="install"
         title={t("Install", "Installer")}
         note={t(
-          "Three packages from npm. Their peer dependencies come along.",
-          "Tre pakker fra npm. Avhengighetene de trenger, følger med.",
+          "Install Booki and the pinned UI SDK packages together.",
+          "Installer Booki og de låste UI SDK-pakkene sammen.",
         )}
       >
         <ul className="site-rows mb-6">
@@ -153,11 +176,12 @@ export function InstallationPage() {
             </li>
           ))}
         </ul>
-        <InstallBlock label={t("In your product", "I produktet ditt")} command={ADD} />
+        <InstallBlock label="npm" command={`npm install ${PACKAGES}`} />
+        <InstallBlock label="pnpm" command={`pnpm add ${PACKAGES}`} />
         <p className={p}>
           {t(
-            "With npm, the same three after npm install. @booki-aui/styles is the optional default look.",
-            "Med npm er det de samme tre etter npm install. @booki-aui/styles er det valgfrie standardutseendet.",
+            "The optional @booki-aui/styles package provides the default look.",
+            "Den valgfrie pakken @booki-aui/styles gir standardutseendet.",
           )}
         </p>
       </Section>
@@ -273,30 +297,34 @@ export function InstallationPage() {
       >
         <p className="mt-0 mb-0 max-w-prose text-sm text-muted-foreground">
           {t(
-            "Mark every control that posts, pays or approves with ",
-            "Merk hver kontroll som bokfører, betaler eller godkjenner med ",
+            "Mark the draft save with data-agent-confirm so it can run after the person agrees. Posting the voucher is a person's action. ",
+            "Merk lagring av utkastet med data-agent-confirm slik at agenten kan lagre etter samtykke. Bokføring er en handling personen må utføre. ",
           )}
-          <code>data-agent-confirm</code>
+          <code>personOnly</code>{" "}
           {t(
-            " and a sentence that says what it does. The bridge passes that sentence to ",
-            " og en setning som sier hva den gjør. Broen sender den setningen til ",
+            "makes the bridge refuse that action even if the policy allows other marked steps.",
+            "gjør at broen avviser handlingen selv om reglene tillater andre merkede steg.",
           )}
-          <code>allow</code> {t("as", "som")} <code>step.confirm</code>.{" "}
-          {t("Show it to the person and return their answer.", "Vis den til personen og returner svaret.")}
         </p>
-        <InstallBlock label={t("A screen that posts", "Et skjermbilde som bokfører")} command={CONFIRM} />
+        <InstallBlock label={t("On a voucher screen", "På et bilagsskjermbilde")} command={CONFIRM} />
+        <p className={p}>
+          {t("The bridge passes ", "Broen sender ")}
+          <code>step.confirm</code>
+          {t(" to its ", " til sin ")}
+          <code>allow</code>
+          {t(
+            " callback. The example refuses marked steps until a prompt is registered. WebMCP delegates to the same callback with ",
+            ". Eksemplet avviser merkede steg frem til en dialog er registrert. WebMCP bruker den samme funksjonen med ",
+          )}
+          <code>{'allow: "bridge"'}</code>
+          {t(", so the person is asked once.", ", slik at personen blir spurt én gang.")}
+        </p>
         <p className={p}>
           {t(
-            "While no prompt is registered, marked steps are refused. An ",
-            "Så lenge ingen prompt er registrert, avvises merkede steg. En ",
+            "Enforce person-only decisions on the server too. Pass the authenticated actor to the write guard from ",
+            "Håndhev handlingene som krever en person også på serveren. Send den autentiserte aktøren til skrivevakten fra ",
           )}
-          <code>allow</code>
-          {t(" that returns true without reading ", " som returnerer true uten å lese ")}
-          <code>step.confirm</code>
-          {t(" answers yes for the person, so read it in every ", " svarer ja på personens vegne, så les den i hver ")}
-          <code>allow</code>
-          {t(" you write, including the one you pass to ", " du skriver, også den du gir til ")}
-          <code>registerTools</code>.
+          <code>@booki-aui/core/server</code>.
         </p>
       </Section>
 

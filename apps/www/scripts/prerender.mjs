@@ -203,7 +203,7 @@ function toMarkdown(body, { url, title, description }) {
   const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
   const root = doc.querySelector("main") ?? doc.body;
   for (const el of root.querySelectorAll(
-    "nav, header, footer, svg, script, style, [aria-hidden='true'], [hidden], button",
+    "nav, header, footer, svg, script, style, [aria-hidden='true'], [hidden], [data-markdown-hidden], button",
   )) {
     el.remove();
   }
@@ -235,7 +235,8 @@ function toMarkdown(body, { url, title, description }) {
     if (tag === "p" || tag === "figcaption" || tag === "dt" || tag === "dd" || tag === "caption") {
       return void (text() && blocks.push(text()));
     }
-    if (tag === "pre") return void blocks.push(`\`\`\`\n${node.textContent.trim()}\n\`\`\``);
+    if (tag === "pre")
+      return void blocks.push(`\`\`\`${node.dataset.language ?? ""}\n${node.textContent.trim()}\n\`\`\``);
     if (tag === "ul" || tag === "ol") {
       const items = [...node.children].filter((li) => li.tagName === "LI");
       const lines = items.map(
@@ -336,12 +337,7 @@ for (const url of urls) {
   const own = meta && meta.title.en !== template.match(/<title>([^<]*)<\/title>/)?.[1];
   const fallback = own ? null : firstHeading(body);
   const title = own ? meta.title.en : fallback?.title ? `${fallback.title} · Booki` : "Booki";
-  const found = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
-  // A control's one-line summary is too short for a search result: say what every Booki control is.
-  const description =
-    url.startsWith("/docs/") && found.length < 70
-      ? `${found.replace(/\.?$/, ".")} A React control a person uses like any form and an agent operates by name, under your rules.`
-      : found;
+  const description = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
   const markdownPath = url === "/" ? "/index.md" : `${url}.md`;
   const html = withMeta(template, { url, title, description: snippet(description), markdownPath })
     .replace("</head>", `    ${structuredData(url, { title, description: snippet(description), body })}\n  </head>`)

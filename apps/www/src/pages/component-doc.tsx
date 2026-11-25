@@ -39,6 +39,7 @@ import { SiteAgentCursor } from "../components/site-agent-cursor";
 import { InstallBlock } from "../components/install-block";
 import { Preview } from "../components/preview";
 import { PREVIEW_RESERVE } from "./agent-demos";
+import { controlExample, usesBridge } from "./control-examples";
 import { GAP_PREVIEWS } from "./gap-previews";
 import {
   ApprovalChainPreview,
@@ -80,6 +81,9 @@ export function ComponentDocPage() {
     return <Navigate to="/docs" replace />;
   }
 
+  const example = controlExample(name, { country, profile });
+  const bridgeExample = usesBridge(name);
+
   // A component that fills the row (two tables) stacks; the rest sit beside
   // what the agent sees, which is the point of the page.
   const stacked = [
@@ -101,28 +105,52 @@ export function ComponentDocPage() {
       <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
       <div
         className={
-          stacked ? "mt-8 grid gap-8" : "mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] xl:items-start"
+          stacked || name === "money"
+            ? "mt-8 grid gap-8"
+            : "mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] xl:items-start"
         }
       >
         <Preview
           sheetRef={sheet}
           reserve={PREVIEW_RESERVE[name]}
-          above={<AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} />}
+          above={
+            name !== "money" ? <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} /> : undefined
+          }
         >
           <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
         </Preview>
-        <AgentView key={`${name}-${country}-${run}`} scope={sheet} />
+        {name !== "money" && <AgentView key={`${name}-${country}-${run}`} scope={sheet} />}
       </div>
       {item.install ? (
         <InstallBlock label={t("Install", "Installer")} command={item.install} className="mt-10 mb-0 max-w-prose" />
       ) : null}
-      <p className="mt-4 mb-0 max-w-prose text-sm text-muted-foreground">
-        {t("Import from ", "Importer fra ")}
-        <code>@booki-aui/react</code> {t("(or", "(eller")} <code>@booki-aui/core</code>).{" "}
-        {t("The look is optional: ", "Utseendet er valgfritt: ")}
-        <code>import &quot;@booki-aui/styles&quot;</code>. {t("Country profile: ", "Landprofil: ")}
-        <strong>{country}</strong>.
-      </p>
+      <section className="control-example mt-8 max-w-prose" aria-labelledby="example-title">
+        <h2 id="example-title" className="text-lg font-medium">
+          {bridgeExample ? t("Try the bridge", "Prøv agentbroen") : t("Usage example", "Brukseksempel")}
+        </h2>
+        {bridgeExample && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t(
+              "Open this page in a browser and run the example in the console with a fresh preview. Read the current ref from the snapshot before acting.",
+              "Åpne siden i en nettleser og kjør eksemplet i konsollen med en fersk forhåndsvisning. Les gjeldende ref fra øyeblikksbildet før du gjør en handling.",
+            )}
+          </p>
+        )}
+        <InstallBlock
+          label={bridgeExample ? t("Console", "Konsoll") : example.language === "jsx" ? "JSX" : "JavaScript"}
+          command={example.code}
+          language={example.language}
+        />
+        <p className="mt-2 text-sm text-muted-foreground">{example.result[lang]}</p>
+      </section>
+      {item.group === "React" && (
+        <p className="mt-4 mb-0 max-w-prose text-sm text-muted-foreground">
+          {t("Import from ", "Importer fra ")}
+          <code>@booki-aui/react</code>.{" "}
+          {t("For Booki's default styling, add ", "For Bookis standardutseende, legg til ")}
+          <code>import &quot;@booki-aui/styles&quot;</code>.
+        </p>
+      )}
     </article>
   );
 }
@@ -290,15 +318,15 @@ function renderPreview(
             {
               id: "1",
               at: "2026-11-20T09:12:00Z",
-              actor: "agent:attestation",
+              actor: "nina",
               action: "approve",
               target: t("Voucher 1042", "Bilag 1042"),
-              detail: t("Attested through the agent bridge", "Attestert gjennom agentbroen"),
+              detail: t("Reviewed and attested", "Gjennomgått og attestert"),
             },
             {
               id: "2",
               at: "2026-11-20T09:10:00Z",
-              actor: "kari",
+              actor: "agent:bookkeeper",
               action: "update",
               target: `${t("Account", "Konto")} ${profile.accounts.bank.number}`,
               detail: t("Changed the amount", "Endret beløpet"),

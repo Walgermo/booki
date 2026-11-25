@@ -180,7 +180,7 @@ function AgentDemoRun({
   const stopLabels = [t("Stop", "Stopp"), t("Reset", "Tilbakestill")];
 
   return (
-    <div className="grid min-w-0 gap-3">
+    <div data-markdown-hidden className="grid min-w-0 gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="primary" disabled={running} aria-label={runLabels[runShown]} onClick={() => void run()}>
           <Same show={runShown} labels={runLabels} />
