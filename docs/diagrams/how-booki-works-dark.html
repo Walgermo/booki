@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>How Booki works</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Albert+Sans:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #0d1117;
+      --color-ink: #e7eaee;
+      --color-muted: #9da2a9;
+      --color-rule: rgba(231,234,238,0.12);
+      --font-sans: 'Albert Sans', ui-sans-serif, system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+    .frame { max-width: 1200px; width: 100%; min-width: 0; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+    .sub { color: var(--color-muted); font-size: 0.875rem; max-width: 72ch; margin-bottom: 1.5rem; }
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--color-rule);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+    svg { width: 100%; min-width: 1080px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Architecture · Booki</p>
+    <h1>How Booki works</h1>
+    <p class="sub">One definition per control, one bridge for the agent, and the same rules again on your server. Lime marks only what is the agent&#x27;s.</p>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1080 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="how-booki-works-dark-title how-booki-works-dark-desc">
+        <title id="how-booki-works-dark-title">How Booki works</title>
+        <desc id="how-booki-works-dark-desc">A control is defined once in @booki/primitives with rules from @booki/core, wrapped for React and generated for Web Components, Vue, Svelte and Solid; an agent reads and acts through createBookiAgent, which records audit rows and refuses a person&#x27;s decisions, and @booki/core/server checks every write again.</desc>
+        <defs>
+<marker id="how-booki-works-dark-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#9da2a9"/></marker>
+<marker id="how-booki-works-dark-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#cee747"/></marker>
+<marker id="how-booki-works-dark-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#92b2eb"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#0d1117"/>
+<rect x="40" y="144" width="480" height="144" rx="8" fill="rgba(231,234,238,0.02)" stroke="rgba(231,234,238,0.16)" stroke-width="0.8"/>
+<rect x="52" y="148" width="156" height="12" rx="2" fill="#0d1117"/>
+<text x="130.0" y="157" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">DEFINED ONCE · NO FRAMEWORK</text>
+<rect x="552" y="448" width="480" height="128" rx="8" fill="rgba(231,234,238,0.02)" stroke="rgba(231,234,238,0.16)" stroke-width="0.8"/>
+<rect x="564" y="452" width="72" height="12" rx="2" fill="#0d1117"/>
+<text x="600.0" y="461" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">YOUR SERVER</text>
+<path d="M 248,224 H 312" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 504,224 H 568" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 408,272 V 336" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 600,272 V 368 Q 600,376 592,376 H 504" fill="none" stroke="#9da2a9" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 664,112 V 176" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 888,112 V 176" fill="none" stroke="#cee747" stroke-width="1.4" marker-end="url(#how-booki-works-dark-arrow-accent)"/>
+<path d="M 952,112 V 156" fill="none" stroke="#f47b74" stroke-width="1.2" stroke-dasharray="4,3"/>
+<line x1="942" y1="158" x2="962" y2="158" stroke="#f47b74" stroke-width="1.8"/>
+<path d="M 824,224 H 760" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 920,288 V 336" fill="none" stroke="#9da2a9" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow)"/>
+<path d="M 712,272 V 480" fill="none" stroke="#92b2eb" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow-link)"/>
+<path d="M 152,272 V 512 Q 152,520 160,520 H 568" fill="none" stroke="#9da2a9" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#how-booki-works-dark-arrow)"/>
+<rect x="262.0" y="204" width="36" height="12" rx="2" fill="#0d1117"/>
+<text x="280" y="213" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">RULES</text>
+<rect x="518.0" y="204" width="36" height="12" rx="2" fill="#0d1117"/>
+<text x="536" y="213" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WRAPS</text>
+<rect x="416.0" y="298" width="60" height="12" rx="2" fill="#0d1117"/>
+<text x="446.0" y="307" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GENERATED</text>
+<rect x="526.0" y="356" width="52" height="12" rx="2" fill="#0d1117"/>
+<text x="552" y="365" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PART MAP</text>
+<rect x="672.0" y="138" width="60" height="12" rx="2" fill="#0d1117"/>
+<text x="702.0" y="147" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DATA-SLOT</text>
+<rect x="792.0" y="138" width="88" height="12" rx="2" fill="#0d1117"/>
+<text x="836.0" y="147" fill="#cee747" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">SNAPSHOT · ACT</text>
+<rect x="960.0" y="128" width="68" height="12" rx="2" fill="#0d1117"/>
+<text x="994.0" y="137" fill="#f47b74" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">PERSON-ONLY</text>
+<rect x="768.0" y="204" width="48" height="12" rx="2" fill="#0d1117"/>
+<text x="792" y="213" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ACTIONS</text>
+<rect x="928.0" y="306" width="68" height="12" rx="2" fill="#0d1117"/>
+<text x="962.0" y="315" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">ATTACHAUDIT</text>
+<rect x="720.0" y="370" width="68" height="12" rx="2" fill="#0d1117"/>
+<text x="754.0" y="379" fill="#92b2eb" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">EVERY WRITE</text>
+<rect x="328.0" y="500" width="64" height="12" rx="2" fill="#0d1117"/>
+<text x="360" y="509" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">SAME RULES</text>
+<rect x="568" y="40" width="192" height="72" rx="6" fill="#0d1117"/>
+<rect x="568" y="40" width="192" height="72" rx="6" fill="#0d1117" stroke="#9da2a9" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="576" y="46" width="52" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="602.0" y="55" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">OPTIONAL</text>
+<text x="664.0" y="80" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">@booki/styles</text>
+<text x="664.0" y="98" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">data-slot · --bk-* tokens</text>
+<rect x="824" y="40" width="192" height="72" rx="6" fill="#0d1117"/>
+<rect x="824" y="40" width="192" height="72" rx="6" fill="#06080e" stroke="#2a2e35" stroke-width="1"/>
+<rect x="832" y="46" width="36" height="12" rx="2" fill="none" stroke="#979ba3" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="850.0" y="55" fill="#979ba3" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">AGENT</text>
+<text x="920.0" y="80" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">Agent</text>
+<text x="920.0" y="98" fill="#979ba3" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">any model · page or WebMCP</text>
+<rect x="56" y="176" width="192" height="96" rx="6" fill="#0d1117"/>
+<rect x="56" y="176" width="192" height="96" rx="6" fill="#151a21" stroke="#e7eaee" stroke-width="1"/>
+<rect x="64" y="182" width="32" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="80.0" y="191" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+<text x="152.0" y="216" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">@booki/core</text>
+<text x="152.0" y="234" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">money in minor units</text>
+<text x="152.0" y="248" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">country profiles · validators</text>
+<text x="152.0" y="262" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">messages catalogue en / nb</text>
+<rect x="312" y="176" width="192" height="96" rx="6" fill="#0d1117"/>
+<rect x="312" y="176" width="192" height="96" rx="6" fill="#151a21" stroke="#e7eaee" stroke-width="1"/>
+<rect x="320" y="182" width="40" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="340.0" y="191" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">DEFINE</text>
+<text x="408.0" y="216" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">@booki/primitives</text>
+<text x="408.0" y="234" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">definePrimitive per control</text>
+<text x="408.0" y="248" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">state · actions · rules</text>
+<text x="408.0" y="262" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">no framework</text>
+<rect x="568" y="176" width="192" height="96" rx="6" fill="#0d1117"/>
+<rect x="568" y="176" width="192" height="96" rx="6" fill="#151a21" stroke="#e7eaee" stroke-width="1"/>
+<rect x="576" y="182" width="36" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="594.0" y="191" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">REACT</text>
+<text x="664.0" y="216" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">@booki/react</text>
+<text x="664.0" y="234" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">createParts · React 19</text>
+<text x="664.0" y="248" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">AgentCursor · AuditTrail</text>
+<rect x="824" y="176" width="192" height="112" rx="6" fill="#0d1117"/>
+<rect x="824" y="176" width="192" height="112" rx="6" fill="#232d10" stroke="#cee747" stroke-width="1.2"/>
+<rect x="832" y="182" width="40" height="12" rx="2" fill="none" stroke="#cee747" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="852.0" y="191" fill="#cee747" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">BRIDGE</text>
+<text x="920.0" y="216" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">createBookiAgent</text>
+<text x="920.0" y="234" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">wraps ui-sdk createAgent</text>
+<text x="920.0" y="248" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">snapshot · act · query</text>
+<text x="920.0" y="262" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">allow · data-agent-confirm</text>
+<text x="920.0" y="276" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">registerTools → WebMCP</text>
+<rect x="312" y="336" width="192" height="80" rx="6" fill="#0d1117"/>
+<rect x="312" y="336" width="192" height="80" rx="6" fill="#151a21" stroke="#e7eaee" stroke-width="1"/>
+<rect x="320" y="342" width="56" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="348.0" y="351" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">GENERATED</text>
+<text x="408.0" y="376" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">Generated packages</text>
+<text x="408.0" y="394" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/web · @booki/vue</text>
+<text x="408.0" y="408" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/svelte · @booki/solid</text>
+<rect x="824" y="336" width="192" height="80" rx="6" fill="#0d1117"/>
+<rect x="824" y="336" width="192" height="80" rx="6" fill="#1c2128" stroke="#9da2a9" stroke-width="1"/>
+<rect x="832" y="342" width="28" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="846.0" y="351" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">LOG</text>
+<text x="920.0" y="376" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">Audit trail</text>
+<text x="920.0" y="394" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">attachAudit · source agent</text>
+<text x="920.0" y="408" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">actor: agent:bookkeeper</text>
+<rect x="568" y="480" width="448" height="80" rx="6" fill="#0d1117"/>
+<rect x="568" y="480" width="448" height="80" rx="6" fill="#151a21" stroke="#e7eaee" stroke-width="1"/>
+<rect x="576" y="486" width="36" height="12" rx="2" fill="none" stroke="#9da2a9" stroke-opacity="0.55" stroke-width="0.8"/>
+<text x="594.0" y="495" fill="#9da2a9" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">GUARD</text>
+<text x="792.0" y="520" fill="#e7eaee" font-size="12" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" text-anchor="middle" font-weight="600">@booki/core/server</text>
+<text x="792.0" y="538" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">guard · advise · actorRecord on each write route</text>
+<text x="792.0" y="552" fill="#9da2a9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">kind &quot;agent&quot; + PERSON_ONLY → refused, 403</text>
+<line x1="40" y1="600" x2="1040" y2="600" stroke="rgba(231,234,238,0.12)" stroke-width="0.8"/>
+<text x="40" y="620" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEGEND</text>
+<path d="M 112,616 H 140" fill="none" stroke="#cee747" stroke-width="1.4" marker-end="url(#how-booki-works-dark-arrow-accent)"/>
+<text x="148" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">AGENT PATH</text>
+<path d="M 256,616 H 284" fill="none" stroke="#92b2eb" stroke-width="1.2" marker-end="url(#how-booki-works-dark-arrow-link)"/>
+<text x="292" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">HTTP WRITE</text>
+<path d="M 400,616 H 428" fill="none" stroke="#9da2a9" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#how-booki-works-dark-arrow)"/>
+<text x="436" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">SAME CODE, READ</text>
+<path d="M 576,616 H 600" fill="none" stroke="#f47b74" stroke-width="1.2" stroke-dasharray="4,3"/>
+<line x1="602" y1="608" x2="602" y2="624" stroke="#f47b74" stroke-width="1.8"/>
+<text x="612" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">REFUSED</text>
+<rect x="704" y="610" width="20" height="12" rx="2" fill="#06080e" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="732" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">INK · MACHINE</text>
+<rect x="856" y="610" width="20" height="12" rx="2" fill="#232d10" stroke="#cee747" stroke-width="1"/>
+<text x="884" y="619" fill="#9da2a9" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">AGENT&#x27;S OWN</text>
+      </svg>
+    </div>
+    <footer>Checked against packages/primitives, packages/react/src/booki-agent.ts, packages/core/src/server.ts, packages/web/scripts/generate.mjs and scripts/generate-frameworks.mjs. Colours: Paper and Ink tokens from packages/styles/src/booki.css.</footer>
+  </div>
+</body>
+</html>
