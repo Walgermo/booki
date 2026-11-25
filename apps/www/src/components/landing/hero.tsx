@@ -60,7 +60,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           </div>
           <div>
             <dt>{times(kpi.faster.median)}</dt>
-            <TimeMark ratio={kpi.faster.median} />
+            <TimeMark ratio={kpi.faster.median} without={t("without", "uten")} withBooki={t("with", "med")} />
             <dd>{t("faster", "raskere")}</dd>
           </div>
           <div>

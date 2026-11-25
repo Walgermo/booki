@@ -43,29 +43,44 @@ export function TokensMark({
   );
 }
 
-/** Faster: a race, the same task on two lanes; with Booki it finishes at 1/ratio of the way. */
-export function TimeMark({ ratio }: { ratio: number }) {
+/** Faster: one race on two lanes, labelled; with Booki the run finishes at 1/ratio of the way. */
+export function TimeMark({ ratio, without, withBooki }: { ratio: number; without: string; withBooki: string }) {
   return (
     <span className="kpi-mark kpi-mark--time" aria-hidden="true">
-      <span className="kpi-mark__lane" />
+      <span className="kpi-mark__who">{without}</span>
       <span className="kpi-mark__lane">
-        <span className="kpi-mark__run" style={{ "--share": `${100 / ratio}%` } as CSSProperties} />
+        <span className="kpi-mark__run" style={{ "--share": "100%" } as CSSProperties} />
+      </span>
+      <span className="kpi-mark__who" data-on="">
+        {withBooki}
+      </span>
+      <span className="kpi-mark__lane">
+        <span className="kpi-mark__run" data-on="" style={{ "--share": `${100 / ratio}%` } as CSSProperties} />
       </span>
     </span>
   );
 }
 
-/** Cheaper: a stack of coins the task cost without Booki, and the one coin it cost with it. */
+/** One coin, drawn with its edge, at the bottom y of its rim. */
+function Coin({ x, y, on }: { x: number; y: number; on?: boolean }) {
+  return (
+    <g className={on ? "kpi-mark__spent" : "kpi-mark__coin"}>
+      <path d={`M${x - 9} ${y - 2} v2 a9 2.6 0 0 0 18 0 v-2`} />
+      <ellipse cx={x} cy={y - 2} rx="9" ry="2.6" />
+    </g>
+  );
+}
+
+/** Cheaper: the stack of coins the task cost without Booki, and the one coin it cost with it. */
 export function CostMark({ ratio }: { ratio: number }) {
   const count = Math.max(2, Math.round(ratio));
-  const step = 2.2;
   return (
     <span className="kpi-mark kpi-mark--cost" aria-hidden="true">
-      <svg viewBox="0 0 64 34" width="64" height="34">
+      <svg viewBox="0 0 60 34" width="60" height="34">
         {Array.from({ length: count }, (_, i) => (
-          <ellipse key={i} cx="20" cy={30 - i * step} rx="10" ry="3" className="kpi-mark__coin" />
+          <Coin key={i} x={16} y={31 - i * 2.1} />
         ))}
-        <ellipse cx="48" cy="30" rx="10" ry="3" className="kpi-mark__spent" />
+        <Coin x={44} y={31} on />
       </svg>
     </span>
   );
