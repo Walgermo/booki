@@ -2,7 +2,6 @@ import { TextLink } from "@booki-aui/react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
 import { ErpWindow } from "./agentify-erp";
 import { HeroTitle } from "./hero-title";
@@ -33,14 +32,6 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             "Med Booki bruker mennesker og agenter de samme feltene og knappene i appen deres. Dere bestemmer hva agenten får gjøre.",
           )}
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <Button asChild size="lg">
-            <a href="#invoice-demo">{t("See Booki in action", "Se Booki i bruk")}</a>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link to="/docs/installation">{t("Install packages", "Installer pakkene")}</Link>
-          </Button>
-        </div>
         <div className="mt-4 grid justify-items-center gap-2">
           <PromptButton prompt={AGENT_PROMPT} />
           <p className="m-0 text-sm text-muted-foreground">
