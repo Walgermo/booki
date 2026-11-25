@@ -41,6 +41,14 @@ describe("readiness checks on fixture pages", () => {
     expect(toConsole(report)).toMatch(/no score/);
   });
 
+  it("does not pass an empty bridge on a page with fields of its own", async () => {
+    const report = await run("empty-bridge-fields");
+    expect(report.bridge.components).toBe(0);
+    expect(report.measured).toBe(true);
+    expect(tally(report)).toEqual({ "bridge-missing": 1, "field-not-on-bridge": 3 });
+    expect(report.score).toBeLessThan(100);
+  });
+
   it("still scores a page with fields but no bridge", async () => {
     const report = await run("no-bridge");
     expect(report.measured).toBe(true);

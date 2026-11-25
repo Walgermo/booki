@@ -387,7 +387,10 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
     .filter((c) => !c.offPage && c.component !== "more")
     .map((c) => ({ component: String(c.component ?? ""), label: typeof c.label === "string" ? c.label : "" }));
   const truncated = raw.components.some((c) => c.component === "more");
-  if (hasBridge && entries.length && !truncated) {
+  // A window.agent that answers with no controls is still a snapshot to compare
+  // against: every field is then missing from it. WebMCP tools alone give none.
+  const hasSnapshot = entries.length > 0 || bridge.source === "window.agent";
+  if ((hasBridge || bridge.source === "window.agent") && hasSnapshot && !truncated) {
     const norm = (text: string) => text.replace(/\s+/g, " ").trim().toLowerCase();
     const labels = new Set(entries.map((e) => norm(e.label)).filter(Boolean));
     const seenGroups = new Set<string>();
