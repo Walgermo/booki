@@ -367,6 +367,20 @@
   margin: 1.75rem 0 0;
 }
 
+/* Four figures: two by two on a phone, with the rule only between the pairs. */
+@media (max-width: 560px) {
+  .landing-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    row-gap: 1.25rem;
+  }
+
+  .landing-hero__stats > div:nth-child(odd) {
+    border-left: 0;
+  }
+}
+
 .landing-hero__stats > div {
   display: grid;
   gap: 0.5rem;
@@ -391,6 +405,154 @@
   margin: 0;
   font-size: 0.875rem;
   color: var(--bk-muted-fg);
+}
+
+/*
+  The marks above the figures (kpi-marks.tsx): faint is what a screen without
+  Booki took, ink is what it took with Booki. Same height for all four, so the
+  figures stay on one line; ink only, lime stays the agent's.
+*/
+.landing-hero__stats > div {
+  justify-items: center;
+}
+
+.kpi-mark {
+  --faint: color-mix(in oklab, var(--bk-fg) 16%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  margin-bottom: 0.25rem;
+}
+
+/* Tool calls: little call boxes, one filled. */
+.kpi-mark--calls {
+  display: grid;
+  grid-template-columns: repeat(7, 7px);
+  align-content: center;
+  gap: 3px;
+}
+
+.kpi-mark--calls i,
+.kpi-mark--cost i {
+  display: block;
+  animation: kpi-in 360ms ease-out both;
+  animation-delay: calc(var(--i) * 18ms);
+}
+
+.kpi-mark--calls i {
+  width: 7px;
+  height: 7px;
+  border-radius: 1.5px;
+  box-shadow: inset 0 0 0 1px var(--faint);
+}
+
+.kpi-mark--calls i[data-on] {
+  background: var(--bk-fg);
+  box-shadow: none;
+}
+
+/* Tokens: a strip of chips, a sliver read. */
+.kpi-mark--tokens {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 112px;
+}
+
+.kpi-mark__strip {
+  position: relative;
+  height: 8px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(to right, var(--faint) 0 5px, transparent 5px 7px);
+}
+
+.kpi-mark__read {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: max(var(--share), 3px);
+  border-radius: 2px;
+  background: var(--bk-fg);
+  animation: kpi-grow 600ms 200ms ease-out both;
+}
+
+.kpi-mark__ends {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--bk-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  color: var(--bk-muted-fg);
+}
+
+.kpi-mark__ends b {
+  font-weight: 600;
+  color: var(--bk-fg);
+}
+
+/* Faster: a stopwatch, the lap filled. */
+.kpi-mark__crown {
+  fill: var(--faint);
+}
+
+.kpi-mark__dial {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 3;
+}
+
+.kpi-mark__lap {
+  fill: var(--bk-fg);
+  transform-origin: 16px 18px;
+  animation: kpi-lap 600ms 200ms ease-out both;
+}
+
+/* Cheaper: a row of coins, one spent. */
+.kpi-mark--cost {
+  padding-left: 6px;
+}
+
+.kpi-mark--cost i {
+  width: 14px;
+  height: 14px;
+  margin-left: -6px;
+  border-radius: 999px;
+  background: var(--bk-bg);
+  box-shadow: inset 0 0 0 1.5px var(--faint);
+}
+
+.kpi-mark--cost i[data-on] {
+  position: relative;
+  z-index: 1;
+  background: var(--bk-fg);
+  box-shadow: 0 0 0 2px var(--bk-bg);
+}
+
+@keyframes kpi-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@keyframes kpi-grow {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes kpi-lap {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-mark *,
+  .kpi-mark__lap {
+    animation: none !important;
+  }
 }
 
 /* What the figures were measured on: a caption, quieter than the hook. */

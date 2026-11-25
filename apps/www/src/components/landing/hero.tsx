@@ -6,6 +6,7 @@ import { proofKpis } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
 import { ErpWindow } from "./agentify-erp";
 import { HeroTitle } from "./hero-title";
+import { CallsMark, CostMark, TimeMark, TokensMark } from "./kpi-marks";
 import { PromptButton } from "./prompt-button";
 import { ProofStrip } from "./proof-strip";
 import { AGENT_PROMPT, REPO_URL, type LandingAgent } from "./shared";
@@ -21,6 +22,10 @@ export function Hero({ agent }: { agent: LandingAgent }) {
   const number = (n: number) =>
     n.toLocaleString(lang === "nb" ? "nb-NO" : "en-US", { maximumFractionDigits: n < 10 ? 1 : 0 });
   const times = (n: number) => `${number(n)}×`;
+  // "95 %": how much less of something Booki needed, rounded down so it never says more than was measured.
+  const fewer = ({ before, after }: { before: number; after: number }) =>
+    `${Math.floor((1 - after / before) * 100)}${t("%", " %")}`;
+  const thousands = (n: number) => `${number(n / 1000)}k`;
   const markRef = useRef<HTMLSpanElement | null>(null);
   const proofRef = useRef<HTMLDivElement | null>(null);
   return (
@@ -41,21 +46,33 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         <p className="landing-hero__hook">
           {t("Make your code agentic with Booki.", "Gjør koden deres agentisk med Booki.")}
         </p>
-        {/* One figure per measurement, the median; the ranges are in the strip below the demo. */}
+        {/* Four figures, one per measurement, each the median over the same pairs; the ranges are in the strip below the demo. */}
         <dl className="landing-hero__stats">
           <div>
-            <dt>{times(kpi.cheaper.median)}</dt>
-            <dd>{t("cheaper", "billigere")}</dd>
+            <CallsMark {...kpi.calls} />
+            <dt>{fewer(kpi.calls)}</dt>
+            <dd>{t("fewer tool calls", "færre verktøykall")}</dd>
           </div>
           <div>
+            <TokensMark {...kpi.tokens} format={thousands} />
+            <dt>{fewer(kpi.tokens)}</dt>
+            <dd>{t("fewer tokens", "færre tokens")}</dd>
+          </div>
+          <div>
+            <TimeMark ratio={kpi.faster.median} />
             <dt>{times(kpi.faster.median)}</dt>
             <dd>{t("faster", "raskere")}</dd>
+          </div>
+          <div>
+            <CostMark ratio={kpi.cheaper.median} />
+            <dt>{times(kpi.cheaper.median)}</dt>
+            <dd>{t("cheaper", "billigere")}</dd>
           </div>
         </dl>
         <p className="landing-hero__source">
           {t(
-            `Measured on ${kpi.tasks} tasks, with the same model.`,
-            `Målt på ${kpi.tasks} oppgaver, med samme modell.`,
+            `Medians over ${kpi.tasks} tasks and ${kpi.models} models, against the same screens without Booki.`,
+            `Medianer over ${kpi.tasks} oppgaver og ${kpi.models} modeller, mot de samme skjermene uten Booki.`,
           )}
         </p>
         {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 28 to the figures, 56 to the button. */}
