@@ -11,8 +11,8 @@ import { usePageMeta, useLang, type PageMeta } from "@/lib/lang";
 
 const META: PageMeta = {
   title: {
-    en: "Announcing agent-first UI with Booki",
-    nb: "Vi lanserer agent-first UI med Booki",
+    en: "Agent-first UI with Booki is here",
+    nb: "Agent-first UI med Booki er her",
   },
   description: {
     en: "Booki is an open-source UI library a person and an agent use together: controls an agent operates by name, under your rules, with every step in the audit trail and the same rules on your server.",
@@ -45,7 +45,7 @@ export function AnnouncementPage() {
     <main className="site-article">
       <header className="site-article__head">
         <p className="site-kicker">
-          {t("Announcement", "Lansering")} · <time dateTime="2026-11-22">{published}</time> · Stian Walgermo
+          {t("Announcement", "Lansering")} · <time dateTime="2026-11-22">{published}</time>
         </p>
         <h1 className="site-article__title">
           {/* A no-break hyphen, so "agent-first" never splits over two lines. */}
@@ -68,7 +68,7 @@ export function AnnouncementPage() {
           `Medianer over ${kpi.tasks} oppgaver og ${kpi.models} modeller, fem kjøringer hver, mot de samme skjermbildene uten Booki, ${f.runDate}.`,
         )}{" "}
         <a href="#measured" className="site-link">
-          {t("How we measured", "Slik målte vi")}
+          {t("How it was measured", "Slik ble det målt")}
         </a>
       </p>
 
@@ -112,7 +112,7 @@ export function AnnouncementPage() {
       </div>
 
       <section className="site-article__section" aria-labelledby="measured">
-        <h2 id="measured">{t("How we measured", "Slik målte vi")}</h2>
+        <h2 id="measured">{t("How it was measured", "Slik ble det målt")}</h2>
         <p>
           {t(
             `The same tasks on screens rebuilt from two accounting systems, and on Booki: Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs per screen and model, the result checked after every run. Cost at list price. The screens use invented data and were never run against the real systems, so your own will differ; the pilot measures them. Every page, script and call is in the repository: pnpm proof.`,

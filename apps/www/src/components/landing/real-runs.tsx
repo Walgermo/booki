@@ -26,8 +26,8 @@ export function RealRuns({ task }: { task: BenchTask }) {
         <p className="site-kicker m-0">{t("With real models", "Med ekte modeller")}</p>
         <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
           {t(
-            "The same task given to a model through the browser tools on each screen, run five times each. Right means the books ended up correct, checked after every run. Time is end to end, the model's own time included; cost is what the gateway billed at list price. Every model we ran is shown. The large models were right on both, so for them Booki saves cost and time; for the cheap ones it is whether the books come out right.",
-            "Samme oppgave gitt til en modell gjennom nettleserverktøyene på hver skjerm, fem ganger hver. Riktig betyr at regnskapet ble riktig, sjekket etter hver kjøring. Tiden er fra start til slutt, med modellens egen tid; kostnaden er det gatewayen fakturerte til listepris. Alle modellene vi kjørte er med. De store modellene fikk det riktig på begge, så for dem sparer Booki kostnad og tid; for de billige er forskjellen om regnskapet blir riktig.",
+            "The same task given to a model through the browser tools on each screen, run five times each. Right means the books ended up correct, checked after every run. Time is end to end, the model's own time included; cost is what the gateway billed at list price. Every model that was run is shown. The large models were right on both, so for them Booki saves cost and time; for the cheap ones it is whether the books come out right.",
+            "Samme oppgave gitt til en modell gjennom nettleserverktøyene på hver skjerm, fem ganger hver. Riktig betyr at regnskapet ble riktig, sjekket etter hver kjøring. Tiden er fra start til slutt, med modellens egen tid; kostnaden er det gatewayen fakturerte til listepris. Alle modellene som ble kjørt, er med. De store modellene fikk det riktig på begge, så for dem sparer Booki kostnad og tid; for de billige er forskjellen om regnskapet blir riktig.",
           )}
         </p>
       </div>

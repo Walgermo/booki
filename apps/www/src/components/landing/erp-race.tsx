@@ -292,8 +292,8 @@ function EstimateFigures({ task, t, max }: { task: BenchTask; t: number; max: nu
           <span className="font-medium">{tr(`saved per ${int(RUNS)} runs`, `spart per ${int(RUNS)} kjøringer`)}</span>
           <span className="text-sm text-muted-foreground">
             {tr(
-              `${usd(perRun(raw))} against ${usd(perRun(acc))} for ${int(RUNS)} ${what} at Opus 5.5 prices. Caching on their side, none on ours: our runs are too short to cache.`,
-              `${usd(perRun(raw))} mot ${usd(perRun(acc))} for ${int(RUNS)} ${what} med Opus 5.5-priser. Caching for de gjenskapte skjermbildene, ingen for Booki: kjøringene våre er for korte til å caches.`,
+              `${usd(perRun(raw))} against ${usd(perRun(acc))} for ${int(RUNS)} ${what} at Opus 5.5 prices. Caching on the rebuilt screens, none on Booki: its runs are too short to cache.`,
+              `${usd(perRun(raw))} mot ${usd(perRun(acc))} for ${int(RUNS)} ${what} med Opus 5.5-priser. Caching for de gjenskapte skjermbildene, ingen for Booki: kjøringene er for korte til å caches.`,
             )}
           </span>
         </dd>
@@ -336,8 +336,8 @@ export function ErpRace() {
         "Testet på skjermbilder gjenskapt fra to norske regnskapssystemer",
       )}
       note={tr(
-        "The same task, done by an agent on screens we rebuilt from Tripletex and DNB Regnskap, and on Booki. Not run against the products themselves.",
-        "Samme oppgave, gjort av en agent på skjermbilder vi har gjenskapt fra Tripletex og DNB Regnskap, og på Booki. Ikke kjørt mot selve produktene.",
+        "The same task, done by an agent on screens rebuilt from Tripletex and DNB Regnskap, and on Booki. Not run against the products themselves.",
+        "Samme oppgave, gjort av en agent på skjermbilder gjenskapt fra Tripletex og DNB Regnskap, og på Booki. Ikke kjørt mot selve produktene.",
       )}
     >
       <div className="grid gap-8">
