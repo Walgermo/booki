@@ -1,15 +1,15 @@
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import type { BookiChangeDetails } from "./change-details.js";
 import {
   type BankLine,
   type OpenPost,
   type ReconciliationMatch,
   type ReconciliationSummary,
-} from "@booki/core/reconciliation";
+} from "@booki-aui/core/reconciliation";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
-import { bankReconciliation } from "@booki/primitives/bank-reconciliation";
+import { bankReconciliation } from "@booki-aui/primitives/bank-reconciliation";
 
 const parts = createParts(bankReconciliation, {
   root: "div",

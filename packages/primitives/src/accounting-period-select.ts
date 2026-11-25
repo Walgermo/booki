@@ -5,8 +5,8 @@ import {
   periodItemsForYear,
   yearPeriod,
   type PeriodGranularity,
-} from "@booki/core/period";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/period";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";

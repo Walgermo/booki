@@ -1,4 +1,4 @@
-import type { ApprovalLevel, ApprovalRequest } from "@booki/core/approval";
+import type { ApprovalLevel, ApprovalRequest } from "@booki-aui/core/approval";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ApprovalChain } from "./approval-chain.js";

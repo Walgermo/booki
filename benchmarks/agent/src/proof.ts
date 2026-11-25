@@ -76,7 +76,9 @@ async function siteIsUp(url: string) {
 }
 
 if (!apiSide && !(await siteIsUp(values.url!))) {
-  console.error(`Nothing answers at ${values.url}. Start the site first: pnpm --filter @booki/www dev -- --port 5183`);
+  console.error(
+    `Nothing answers at ${values.url}. Start the site first: pnpm --filter @booki-aui/www dev -- --port 5183`,
+  );
   process.exit(1);
 }
 

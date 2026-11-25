@@ -1,5 +1,11 @@
-import { BookiError } from "@booki/core/msg";
-import { MAX_PAGE_SIZE, defaultQuery, type SortDirection, type TableColumn, type TableQuery } from "@booki/core/table";
+import { BookiError } from "@booki-aui/core/msg";
+import {
+  MAX_PAGE_SIZE,
+  defaultQuery,
+  type SortDirection,
+  type TableColumn,
+  type TableQuery,
+} from "@booki-aui/core/table";
 
 /**
  * The table behaviour Booki's list controls share with `DataTable`: one

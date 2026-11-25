@@ -1,6 +1,6 @@
-import { closest, LISTED_WHOLE } from "@booki/core/closest";
-import { BookiError } from "@booki/core/msg";
-import { lockOptions, lockState } from "@booki/primitives/lock";
+import { closest, LISTED_WHOLE } from "@booki-aui/core/closest";
+import { BookiError } from "@booki-aui/core/msg";
+import { lockOptions, lockState } from "@booki-aui/primitives/lock";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 
 /**
@@ -8,9 +8,9 @@ import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
  * value is one of a closed list. The snapshot lists the items of a short list
  * and none of a long one; `query({ within })` searches all of them.
  *
- * The list helpers are those of `@booki/primitives/offered` (`shownItems`,
+ * The list helpers are those of `@booki-aui/primitives/offered` (`shownItems`,
  * `itemsHint`, `refuseUnknown`). That module has no subpath export, so they
- * are written out here from the same `@booki/core/closest` helpers.
+ * are written out here from the same `@booki-aui/core/closest` helpers.
  *
  * Renders as `<div role="group" data-slot="field-code">`.
  */

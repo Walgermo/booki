@@ -1,4 +1,4 @@
-import { getBookiProfile, type CountryCode, type BookiLocaleProfile } from "@booki/core/locale";
+import { getBookiProfile, type CountryCode, type BookiLocaleProfile } from "@booki-aui/core/locale";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { preloadNorwegian } from "./say.js";
 

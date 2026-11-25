@@ -1,12 +1,12 @@
-import { BookiError } from "@booki/core/msg";
-import { lockOptions, lockState } from "@booki/primitives/lock";
+import { BookiError } from "@booki-aui/core/msg";
+import { lockOptions, lockState } from "@booki-aui/primitives/lock";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 
 /**
  * The date kind of `useBookiField`: a date field the product already has,
  * held as an ISO `YYYY-MM-DD` string.
  *
- * `isIsoDate` is that of `@booki/core/iso-date`, which has no subpath export,
+ * `isIsoDate` is that of `@booki-aui/core/iso-date`, which has no subpath export,
  * so it is written out here: a date must match the pattern and read back the
  * same, so "2026-02-30" is refused.
  *

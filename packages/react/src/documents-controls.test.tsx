@@ -1,6 +1,6 @@
-import type { Attachment, AttachmentFile } from "@booki/core/attachments";
-import type { ExpenseClaim as Claim, ExpensePolicy } from "@booki/core/expense";
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
+import type { Attachment, AttachmentFile } from "@booki-aui/core/attachments";
+import type { ExpenseClaim as Claim, ExpensePolicy } from "@booki-aui/core/expense";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";

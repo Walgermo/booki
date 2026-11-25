@@ -1,11 +1,11 @@
-import type { ClientRecipient, ClientRequest, ClientRequestStatus } from "@booki/core/client-request";
+import type { ClientRecipient, ClientRequest, ClientRequestStatus } from "@booki-aui/core/client-request";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { buttonKey, clientRequests } from "@booki/primitives/client-requests";
+import { buttonKey, clientRequests } from "@booki-aui/primitives/client-requests";
 
 const parts = createParts(clientRequests, {
   root: "div",

@@ -1,4 +1,4 @@
-import { BookiLocaleProvider, AgentPresence } from "@booki/react";
+import { BookiLocaleProvider, AgentPresence } from "@booki-aui/react";
 
 import { agent } from "@/agent";
 import { SITE_META, usePageMeta, type PageMeta } from "@/lib/lang";

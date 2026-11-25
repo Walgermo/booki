@@ -1,6 +1,6 @@
-import type { OpenItem } from "@booki/core/aging";
-import type { LedgerEntry } from "@booki/core/ledger";
-import { GENERIC_VAT_SCHEMA_EXAMPLE, type VatReturnFiling, type VatTransaction } from "@booki/core/vat-return";
+import type { OpenItem } from "@booki-aui/core/aging";
+import type { LedgerEntry } from "@booki-aui/core/ledger";
+import { GENERIC_VAT_SCHEMA_EXAMPLE, type VatReturnFiling, type VatTransaction } from "@booki-aui/core/vat-return";
 import { checkPattern, mount, settle } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";

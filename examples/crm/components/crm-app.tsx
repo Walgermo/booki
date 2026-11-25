@@ -1,7 +1,7 @@
 "use client";
 
-import { reachedCounts } from "@booki/core/funnel";
-import type { StageStay } from "@booki/core/pipeline";
+import { reachedCounts } from "@booki-aui/core/funnel";
+import type { StageStay } from "@booki-aui/core/pipeline";
 import {
   AgentCursor,
   AgentPresence,
@@ -13,7 +13,7 @@ import {
   FunnelChart,
   RecurringRevenue,
   StageDurationChart,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { Answer, Crm, Write } from "@/lib/crm";
 import { agentWorking, cursor, listenToDecisions, pageAgent } from "@/lib/agent";

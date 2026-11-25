@@ -38,13 +38,13 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^1.11.0
         version: 1.11.0(zod@4.6.7)
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@booki/react':
+      '@booki-aui/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@booki/styles':
+      '@booki-aui/styles':
         specifier: workspace:*
         version: link:../../packages/styles
       '@fontsource-variable/albert-sans':
@@ -105,7 +105,7 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^1.11.0
         version: 1.11.0(zod@4.6.7)
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@modelcontextprotocol/sdk':
@@ -136,13 +136,13 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^1.12.0
         version: 1.12.0(zod@4.6.7)
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@booki/react':
+      '@booki-aui/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@booki/styles':
+      '@booki-aui/styles':
         specifier: workspace:*
         version: link:../../packages/styles
       '@ui-sdk/core':
@@ -200,13 +200,13 @@ importers:
       '@ai-sdk/react':
         specifier: ^4.0.186
         version: 4.0.186(react@19.3.1)(zod@4.6.7)
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@booki/react':
+      '@booki-aui/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@booki/styles':
+      '@booki-aui/styles':
         specifier: workspace:*
         version: link:../../packages/styles
       '@ui-sdk/core':
@@ -276,7 +276,7 @@ importers:
 
   packages/primitives:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -298,10 +298,10 @@ importers:
 
   packages/react:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
-      '@booki/primitives':
+      '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
     devDependencies:
@@ -369,10 +369,10 @@ importers:
 
   packages/solid:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
-      '@booki/primitives':
+      '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
     devDependencies:
@@ -403,10 +403,10 @@ importers:
 
   packages/svelte:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
-      '@booki/primitives':
+      '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
     devDependencies:
@@ -428,10 +428,10 @@ importers:
 
   packages/vue:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
-      '@booki/primitives':
+      '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
     devDependencies:
@@ -453,10 +453,10 @@ importers:
 
   packages/web:
     dependencies:
-      '@booki/core':
+      '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
-      '@booki/primitives':
+      '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
     devDependencies:

@@ -1,5 +1,5 @@
-import type { VoucherLine } from "@booki/core/voucher";
-import { AmountField, TaxCodeSelect, VoucherComposer } from "@booki/react";
+import type { VoucherLine } from "@booki-aui/core/voucher";
+import { AmountField, TaxCodeSelect, VoucherComposer } from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useState } from "react";
 

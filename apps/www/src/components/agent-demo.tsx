@@ -1,6 +1,6 @@
-import { localize } from "@booki/core/messages";
-import { formatMoney, money } from "@booki/core/money";
-import { useBookiLocale } from "@booki/react";
+import { localize } from "@booki-aui/core/messages";
+import { formatMoney, money } from "@booki-aui/core/money";
+import { useBookiLocale } from "@booki-aui/react";
 import { elementOf } from "@ui-sdk/react/observe";
 import { useEffect, useRef, useState, type RefObject } from "react";
 

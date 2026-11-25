@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   acceptAnswer,
   assertAnswered,
@@ -14,8 +14,8 @@ import {
   type ClientRequest,
   type ClientRequestPatch,
   type RedactedClientRequest,
-} from "@booki/core/client-request";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/client-request";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { checkFields, commitSecret, recordOf } from "./fields.js";

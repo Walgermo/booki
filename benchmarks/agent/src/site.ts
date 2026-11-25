@@ -40,7 +40,7 @@ export async function startSite({ build }: { build: boolean }): Promise<Site> {
 
   console.log(`Starting the site on ${url}…`);
   // Its own process group, so stopping it also stops Vite under pnpm.
-  const child = spawn("pnpm", ["--filter", "@booki/www", "exec", "vite", "--port", String(PORT), "--strictPort"], {
+  const child = spawn("pnpm", ["--filter", "@booki-aui/www", "exec", "vite", "--port", String(PORT), "--strictPort"], {
     cwd: REPO_ROOT,
     detached: true,
     stdio: ["ignore", "pipe", "pipe"],

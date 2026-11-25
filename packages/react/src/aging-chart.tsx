@@ -1,12 +1,12 @@
-import { localToday } from "@booki/core/financial-date";
-import { type AgingBucket, type OpenItem, type OpenItemKind } from "@booki/core/aging";
-import { formatMoney, money } from "@booki/core/money";
+import { localToday } from "@booki-aui/core/financial-date";
+import { type AgingBucket, type OpenItem, type OpenItemKind } from "@booki-aui/core/aging";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState } from "react";
 import { formatPercent, observeWidth, seriesColor, wholeAbove } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type Details, DEFAULT_TOP, report, derive, agingChart } from "@booki/primitives/aging-chart";
+import { type Details, DEFAULT_TOP, report, derive, agingChart } from "@booki-aui/primitives/aging-chart";
 
 const parts = createParts(agingChart, { root: "div", bucket: "button", clear: "button" });
 const AgingChartRoot = parts.Root;
@@ -374,4 +374,4 @@ function truncate(text: string, max: number): string {
 
 export { AgingChart, AgingChartBucket, AgingChartClear, AgingChartRoot, agingChart };
 
-export { type AgingBucketTotal, type AgingChartDrilled } from "@booki/primitives/aging-chart";
+export { type AgingBucketTotal, type AgingChartDrilled } from "@booki-aui/primitives/aging-chart";

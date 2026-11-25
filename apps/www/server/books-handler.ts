@@ -1,5 +1,5 @@
 /**
- * The demo company's write API, guarded by `@booki/core/server`: the same rules
+ * The demo company's write API, guarded by `@booki-aui/core/server`: the same rules
  * the screens enforce, checked again where it counts. Served at /api/books by
  * the Vite dev server and by api/books.ts in production.
  *
@@ -7,7 +7,7 @@
  * These tokens are fixed demo sessions; a real app uses its own sign-in, and
  * gives an agent a credential of its own so the server knows it is an agent.
  */
-import { approveBatch, type PaymentBatch } from "@booki/core/payment-batch";
+import { approveBatch, type PaymentBatch } from "@booki-aui/core/payment-batch";
 import {
   guardDecideApproval,
   guardPostVoucher,
@@ -15,9 +15,9 @@ import {
   toHttp,
   type GuardContext,
   type ServerActor,
-} from "@booki/core/server";
-import type { ApprovalLevel, ApprovalRequest } from "@booki/core/approval";
-import { createVoucherLine, type VoucherLine } from "@booki/core/voucher";
+} from "@booki-aui/core/server";
+import type { ApprovalLevel, ApprovalRequest } from "@booki-aui/core/approval";
+import { createVoucherLine, type VoucherLine } from "@booki-aui/core/voucher";
 
 /** Demo sessions: token → the actor the sign-in established. */
 const SESSIONS: Record<string, ServerActor> = {

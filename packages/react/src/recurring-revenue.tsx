@@ -1,4 +1,4 @@
-import { formatMoney } from "@booki/core/money";
+import { formatMoney } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
@@ -9,7 +9,7 @@ import {
   type RecurringAgreement,
   type RecurringMovement,
   type RecurringView,
-} from "@booki/primitives/recurring-revenue";
+} from "@booki-aui/primitives/recurring-revenue";
 
 const parts = createParts(recurringRevenue, { root: "div", view: "button", movement: "button" });
 const RecurringRevenueRoot = parts.Root;

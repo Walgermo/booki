@@ -8,7 +8,7 @@ import { StrictMode } from "react";
 import { prerenderToNodeStream } from "react-dom/static";
 import { StaticRouter } from "react-router-dom";
 
-import { BookiLocaleProvider } from "@booki/react";
+import { BookiLocaleProvider } from "@booki-aui/react";
 import { App } from "./App";
 import { LangProvider, SITE_META, renderedPageMeta, type PageMeta } from "./lib/lang";
 

@@ -7,14 +7,14 @@ import {
   type FixedAsset,
   type RunAccount,
   type ScheduleEntry,
-} from "@booki/core/fixed-assets";
-import { formatMoney, money } from "@booki/core/money";
-import { formatPeriod } from "@booki/core/period";
+} from "@booki-aui/core/fixed-assets";
+import { formatMoney, money } from "@booki-aui/core/money";
+import { formatPeriod } from "@booki-aui/core/period";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type AssetRow, fixedAssetRegister } from "@booki/primitives/fixed-asset-register";
+import { type AssetRow, fixedAssetRegister } from "@booki-aui/primitives/fixed-asset-register";
 
 const parts = createParts(fixedAssetRegister, {
   root: "div",
@@ -533,4 +533,4 @@ export {
 };
 export type { DepreciationRun, Disposal, FixedAsset, RunAccount, ScheduleEntry };
 
-export { type AssetRow } from "@booki/primitives/fixed-asset-register";
+export { type AssetRow } from "@booki-aui/primitives/fixed-asset-register";

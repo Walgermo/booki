@@ -1,4 +1,4 @@
-import { AmountField, BankAccountInput, BookiLocaleProvider, TaxCodeSelect } from "@booki/react";
+import { AmountField, BankAccountInput, BookiLocaleProvider, TaxCodeSelect } from "@booki-aui/react";
 import { elementOf } from "@ui-sdk/react/observe";
 import { SegmentedControl, SegmentedControlIndicator, SegmentedControlItem } from "@ui-sdk/react/segmented-control";
 import { useEffect, useRef, useState, type CSSProperties } from "react";

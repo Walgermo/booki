@@ -1,10 +1,10 @@
-import { isValidOrganizationNumber, type OrganizationNumberKind } from "@booki/core/organization-number";
+import { isValidOrganizationNumber, type OrganizationNumberKind } from "@booki-aui/core/organization-number";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { organizationNumber } from "@booki/primitives/organization-number-input";
+import { organizationNumber } from "@booki-aui/primitives/organization-number-input";
 
 const parts = createParts(organizationNumber, {
   root: "div",

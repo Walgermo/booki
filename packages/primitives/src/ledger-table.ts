@@ -7,9 +7,9 @@ import {
   type LedgerEntry,
   type TrialBalanceRow,
   type Variance,
-} from "@booki/core/ledger";
-import { BookiError } from "@booki/core/msg";
-import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/ledger";
+import { BookiError } from "@booki-aui/core/msg";
+import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import {
   createChange,
   createRovingFocus,

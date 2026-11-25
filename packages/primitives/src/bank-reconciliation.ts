@@ -6,8 +6,8 @@ import {
   type BankLine,
   type OpenPost,
   type ReconciliationMatch,
-} from "@booki/core/reconciliation";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/reconciliation";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 
 export type BankReconciliationOptions = {

@@ -1,5 +1,5 @@
 import { createChange, definePrimitive } from "@ui-sdk/core";
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { waterfall, type WaterfallInput, type WaterfallStep } from "./chart-math.js";
 
 export type Details = { reason: string; source?: string; cancel?: () => void };

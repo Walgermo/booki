@@ -302,6 +302,6 @@ export {
   actAndRecord,
   withRecordedAct,
   isAllowed,
-} from "@booki/primitives/agent-policy";
+} from "@booki-aui/primitives/agent-policy";
 export type { BookiChangeDetails } from "./change-details.js";
-export { personOnly } from "@booki/primitives/person-only";
+export { personOnly } from "@booki-aui/primitives/person-only";

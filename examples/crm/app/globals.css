@@ -1,6 +1,6 @@
 /* Booki under your utilities: its own look in a cascade layer, Tailwind on top. */
 @layer theme, base, booki, components, utilities;
-@import "@booki/styles" layer(booki);
+@import "@booki-aui/styles" layer(booki);
 @import "tailwindcss";
 
 body {

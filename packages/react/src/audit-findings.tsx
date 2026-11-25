@@ -6,7 +6,7 @@ import {
   type FindingBasis,
   type FindingCategory,
   type FindingStatus,
-} from "@booki/core/findings";
+} from "@booki-aui/core/findings";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
@@ -14,7 +14,7 @@ import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { MoneyAmount } from "./money-amount.js";
 import { useSay } from "./say.js";
-import { auditFindings, buttonKey, type FindingEvidence } from "@booki/primitives/audit-findings";
+import { auditFindings, buttonKey, type FindingEvidence } from "@booki-aui/primitives/audit-findings";
 
 const parts = createParts(auditFindings, {
   root: "div",

@@ -1,9 +1,9 @@
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useId } from "react";
 import { formatPercent, linePath, linearScale, periodName, type Direction, type PeriodValue } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { type KpiGood, derive, kpiStat } from "@booki/primitives/kpi-stat";
+import { type KpiGood, derive, kpiStat } from "@booki-aui/primitives/kpi-stat";
 
 const parts = createParts(kpiStat, { root: "div" });
 const KpiStatRoot = parts.Root;
@@ -162,4 +162,4 @@ function KpiStat({
 
 export { KpiStat, KpiStatRoot, kpiStat };
 
-export { type KpiGood } from "@booki/primitives/kpi-stat";
+export { type KpiGood } from "@booki-aui/primitives/kpi-stat";

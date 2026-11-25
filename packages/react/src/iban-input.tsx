@@ -1,9 +1,9 @@
-import { isValidIban } from "@booki/core/iban";
+import { isValidIban } from "@booki-aui/core/iban";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
-import { ibanInput } from "@booki/primitives/iban-input";
+import { ibanInput } from "@booki-aui/primitives/iban-input";
 
 const parts = createParts(ibanInput, {
   root: "div",

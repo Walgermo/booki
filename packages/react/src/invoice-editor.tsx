@@ -5,15 +5,15 @@ import {
   type InvoiceLine,
   type InvoiceTotals,
   type TaxCategory,
-} from "@booki/core/invoice";
+} from "@booki-aui/core/invoice";
 import type { BookiChangeDetails } from "./change-details.js";
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
-import { invoiceEditor } from "@booki/primitives/invoice-editor";
+import { invoiceEditor } from "@booki-aui/primitives/invoice-editor";
 
 const parts = createParts(invoiceEditor, {
   root: "div",
@@ -253,4 +253,4 @@ export {
 };
 export type { Invoice, InvoiceLine, TaxCategory };
 
-export { type InvoiceLinePatch } from "@booki/primitives/invoice-editor";
+export { type InvoiceLinePatch } from "@booki-aui/primitives/invoice-editor";

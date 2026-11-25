@@ -1,12 +1,12 @@
-import { digitsOnly, isValidKontonummer } from "@booki/core/kontonummer";
-import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki/core/routing-number";
+import { digitsOnly, isValidKontonummer } from "@booki-aui/core/kontonummer";
+import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki-aui/core/routing-number";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { IbanInput } from "./iban-input.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { type BankAccountValue, bankAccount } from "@booki/primitives/bank-account-input";
+import { type BankAccountValue, bankAccount } from "@booki-aui/primitives/bank-account-input";
 
 const parts = createParts(bankAccount, {
   root: "div",
@@ -166,4 +166,4 @@ export {
   bankAccount,
 };
 
-export { type BankAccountValue } from "@booki/primitives/bank-account-input";
+export { type BankAccountValue } from "@booki-aui/primitives/bank-account-input";

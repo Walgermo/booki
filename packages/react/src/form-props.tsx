@@ -31,7 +31,7 @@ export {
   selectLockAttrs,
   type LockOptions,
   type LockState,
-} from "@booki/primitives/lock";
+} from "@booki-aui/primitives/lock";
 
 /** The hidden input that carries a control's canonical value into a form. */
 export function FormValue({ name, value, disabled }: { name?: string; value: string | number; disabled?: boolean }) {

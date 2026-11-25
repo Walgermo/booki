@@ -1,7 +1,7 @@
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import type { BookiChangeDetails } from "./change-details.js";
-import { type PaymentBatch as Batch, type PaymentItem } from "@booki/core/payment-batch";
-import { matchingRows, type TableColumn, type TableQuery } from "@booki/core/table";
+import { type PaymentBatch as Batch, type PaymentItem } from "@booki-aui/core/payment-batch";
+import { matchingRows, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -9,7 +9,7 @@ import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
-import { DEFAULT_PAGE_SIZE, paymentBatch, paymentColumns } from "@booki/primitives/payment-batch";
+import { DEFAULT_PAGE_SIZE, paymentBatch, paymentColumns } from "@booki-aui/primitives/payment-batch";
 
 const parts = createParts(paymentBatch, {
   root: "div",
@@ -342,4 +342,4 @@ export {
 };
 export type { Batch as PaymentBatchData, PaymentItem };
 
-export { type PaymentSummary } from "@booki/primitives/payment-batch";
+export { type PaymentSummary } from "@booki-aui/primitives/payment-batch";

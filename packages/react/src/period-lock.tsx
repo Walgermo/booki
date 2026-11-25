@@ -1,12 +1,12 @@
-import { formatPeriod } from "@booki/core/period";
+import { formatPeriod } from "@booki-aui/core/period";
 import type { BookiChangeDetails } from "./change-details.js";
-import { type PeriodState, type PeriodStatus } from "@booki/core/period-lock";
+import { type PeriodState, type PeriodStatus } from "@booki-aui/core/period-lock";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
-import { periodLock } from "@booki/primitives/period-lock";
+import { periodLock } from "@booki-aui/primitives/period-lock";
 
 const parts = createParts(periodLock, { root: "div", set: "button" });
 const PeriodLockRoot = parts.Root;

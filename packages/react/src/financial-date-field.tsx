@@ -1,10 +1,10 @@
-import { type FinancialDateKind } from "@booki/core/financial-date";
+import { type FinancialDateKind } from "@booki-aui/core/financial-date";
 import { Field, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { financialDate } from "@booki/primitives/financial-date-field";
+import { financialDate } from "@booki-aui/primitives/financial-date-field";
 
 const parts = createParts(financialDate, {
   root: "div",

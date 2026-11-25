@@ -1,12 +1,12 @@
-import { localize } from "@booki/core/messages";
-import { approvalState } from "@booki/core/approval";
-import { summarizeClose } from "@booki/core/close";
-import { invoiceIssues } from "@booki/core/invoice";
-import { batchIssues, currentApprovals } from "@booki/core/payment-batch";
-import { suggestMatches, type BankLine, type OpenPost, type ReconciliationMatch } from "@booki/core/reconciliation";
-import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
-import { NO_VAT_SCHEMA_EXAMPLE, DRAFT_VAT_FILING } from "@booki/core/vat-return";
-import { EMPTY_WORKPAPER } from "@booki/core/audit";
+import { localize } from "@booki-aui/core/messages";
+import { approvalState } from "@booki-aui/core/approval";
+import { summarizeClose } from "@booki-aui/core/close";
+import { invoiceIssues } from "@booki-aui/core/invoice";
+import { batchIssues, currentApprovals } from "@booki-aui/core/payment-batch";
+import { suggestMatches, type BankLine, type OpenPost, type ReconciliationMatch } from "@booki-aui/core/reconciliation";
+import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
+import { NO_VAT_SCHEMA_EXAMPLE, DRAFT_VAT_FILING } from "@booki-aui/core/vat-return";
+import { EMPTY_WORKPAPER } from "@booki-aui/core/audit";
 import {
   BookiAccessProvider,
   BookiLocaleProvider,
@@ -36,7 +36,7 @@ import {
   type Invoice,
   type PaymentBatchData,
   type PeriodState,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { Button as GateButton } from "@ui-sdk/react/button";
 import { useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";

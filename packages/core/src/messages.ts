@@ -1,5 +1,5 @@
 /**
- * Every sentence `@booki/core` writes for a person, in English and
+ * Every sentence `@booki-aui/core` writes for a person, in English and
  * Norwegian bokmål.
  *
  * Core renders the English template with `msg` and throws `BookiError`, so the

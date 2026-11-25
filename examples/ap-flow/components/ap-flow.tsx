@@ -8,7 +8,7 @@ import {
   BookiLocaleProvider,
   PaymentBatch,
   SupplierInvoiceInbox,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useCallback, useEffect, useState } from "react";
 import { cursor, listenToDecisions } from "@/lib/agent";

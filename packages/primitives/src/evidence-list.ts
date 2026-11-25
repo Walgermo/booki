@@ -7,8 +7,8 @@ import {
   type Attachment,
   type AttachmentFile,
   type AttachmentKind,
-} from "@booki/core/attachments";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/attachments";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

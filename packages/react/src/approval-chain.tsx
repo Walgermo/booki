@@ -3,14 +3,14 @@ import {
   type ApprovalLevel,
   type ApprovalRequest,
   type ApprovalState,
-} from "@booki/core/approval";
+} from "@booki-aui/core/approval";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { useSay } from "./say.js";
-import { approvalChain } from "@booki/primitives/approval-chain";
+import { approvalChain } from "@booki-aui/primitives/approval-chain";
 
 const parts = createParts(approvalChain, {
   root: "div",

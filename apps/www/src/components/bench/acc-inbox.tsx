@@ -1,5 +1,5 @@
-import { supplierInvoiceIssues, type SupplierInvoice } from "@booki/core/supplier-invoice";
-import { SupplierInvoiceInbox } from "@booki/react";
+import { supplierInvoiceIssues, type SupplierInvoice } from "@booki-aui/core/supplier-invoice";
+import { SupplierInvoiceInbox } from "@booki-aui/react";
 import { useState } from "react";
 import { useEndState } from "./end-state";
 

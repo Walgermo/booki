@@ -28,7 +28,7 @@ const costCentre = definePrimitive({
     };
   },
   slots: (slot) => ({
-    // data-booki: take @booki/styles' base look for fields and buttons, like Booki's own controls.
+    // data-booki: take @booki-aui/styles' base look for fields and buttons, like Booki's own controls.
     root: slot({ role: "group", attrs: () => ({ "data-booki": "" }) }),
     select: slot({
       attrs: (state) => ({ value: state.value, "aria-label": "Cost centre" }),

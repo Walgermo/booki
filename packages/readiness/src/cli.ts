@@ -6,7 +6,7 @@ import { parseArgs } from "node:util";
 import { audit, type AuditOptions } from "./audit.js";
 import { toConsole, toHtml, toJson } from "./report.js";
 
-const HELP = `Usage: npx @booki/readiness <url | file.html> [options]
+const HELP = `Usage: npx @booki-aui/readiness <url | file.html> [options]
 
 Checks what stops an AI agent on a screen and scores it 0-100 against the
 Agent Contract.

@@ -1,21 +1,21 @@
-# @booki/web
+# @booki-aui/web
 
-Experimental. This package is less tested than `@booki/react`, and its API may
+Experimental. This package is less tested than `@booki-aui/react`, and its API may
 change between releases. See the
 [Support section](https://github.com/Walgermo/booki#support) of the README.
 
 Agent-first accounting controls as custom elements: the same rules, state and
-agent actions as `@booki/react`, for any framework or none. Use it in Angular,
+agent actions as `@booki-aui/react`, for any framework or none. Use it in Angular,
 in pages rendered on the server, or in plain HTML.
 
 ```bash
-pnpm add @booki/web @booki/styles
+pnpm add @booki-aui/web @booki-aui/styles
 ```
 
 ```html
 <script type="module">
-  import "@booki/web/amount-field"
-  import { createBookiAgent, registerTools } from "@booki/web"
+  import "@booki-aui/web/amount-field"
+  import { createBookiAgent, registerTools } from "@booki-aui/web"
 
   const allow = (step) => !step.confirm // marked steps (post, pay) go to a person
   const agent = createBookiAgent({ agentId: "bookkeeper", allow })
@@ -40,7 +40,7 @@ Custom elements need one schema entry:
 
 ```ts
 import { CUSTOM_ELEMENTS_SCHEMA, Component } from "@angular/core"
-import "@booki/web/amount-field"
+import "@booki-aui/web/amount-field"
 
 @Component({
   selector: "app-voucher",
@@ -62,7 +62,7 @@ export class VoucherComponent {
 ```html
 <booki-agent-cursor label="Agent"></booki-agent-cursor>
 <script type="module">
-  import { createAgentCursor, createBookiAgent } from "@booki/web"
+  import { createAgentCursor, createBookiAgent } from "@booki-aui/web"
   const cursor = createAgentCursor()
   const agent = createBookiAgent({ allow: cursor.wrap(allow) })
   document.querySelector("booki-agent-cursor").cursor = cursor
@@ -70,7 +70,7 @@ export class VoucherComponent {
 ```
 
 Before each step the pointer goes to the control and presses, then your
-`allow` decides; `@booki/styles` draws it. Set `element.narrate = (state) =>
+`allow` decides; `@booki-aui/styles` draws it. Set `element.narrate = (state) =>
 "…"` to say the step in your language. It works the same from Vue, Svelte or
 Solid.
 

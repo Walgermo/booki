@@ -8,9 +8,9 @@ import {
   markRefused,
   type AgentDecision,
   type AgentPolicyOptions,
-} from "@booki/primitives/agent-policy";
-import { isPersonOnly } from "@booki/primitives/person-only";
-import { BookiError, type MessageLanguage } from "@booki/core/msg";
+} from "@booki-aui/primitives/agent-policy";
+import { isPersonOnly } from "@booki-aui/primitives/person-only";
+import { BookiError, type MessageLanguage } from "@booki-aui/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
@@ -111,7 +111,7 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
     }
     if (!language) return result;
     // Loaded only for an agent that asked for another language: the catalogue is not small.
-    const { localize } = await import("@booki/core/messages");
+    const { localize } = await import("@booki-aui/core/messages");
     return inLanguage(result, (text) => localize(text, language));
   };
 

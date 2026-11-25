@@ -1,5 +1,5 @@
-import type { ReconciliationMatch } from "@booki/core/reconciliation";
-import { BankReconciliation } from "@booki/react";
+import type { ReconciliationMatch } from "@booki-aui/core/reconciliation";
+import { BankReconciliation } from "@booki-aui/react";
 import { useState } from "react";
 import { useEndState } from "./end-state";
 

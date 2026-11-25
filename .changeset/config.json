@@ -4,14 +4,14 @@
   "commit": false,
   "fixed": [
     [
-      "@booki/core",
-      "@booki/primitives",
-      "@booki/react",
-      "@booki/styles",
-      "@booki/web",
-      "@booki/vue",
-      "@booki/svelte",
-      "@booki/solid"
+      "@booki-aui/core",
+      "@booki-aui/primitives",
+      "@booki-aui/react",
+      "@booki-aui/styles",
+      "@booki-aui/web",
+      "@booki-aui/vue",
+      "@booki-aui/svelte",
+      "@booki-aui/solid"
     ]
   ],
   "linked": [],

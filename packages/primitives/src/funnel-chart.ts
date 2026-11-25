@@ -1,4 +1,4 @@
-import { funnel, type FunnelStep, type FunnelStepInput } from "@booki/core/funnel";
+import { funnel, type FunnelStep, type FunnelStepInput } from "@booki-aui/core/funnel";
 import { definePrimitive } from "@ui-sdk/core";
 import { createDrill, shownIn } from "./drill.js";
 

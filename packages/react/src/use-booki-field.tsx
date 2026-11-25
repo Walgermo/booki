@@ -1,6 +1,6 @@
 "use client";
 
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { type PrimitiveHandle, usePart, usePrimitive } from "@ui-sdk/react/primitive";
 import type { ReactElement, ReactNode } from "react";
 import { bookiFieldAmount } from "./use-booki-field-amount.js";
@@ -23,7 +23,7 @@ export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
  *   ))
  *
  * For an amount, keep what the person types as text and parse it with
- * `parseToMinor` from `@booki/core/money`: the install guide has the example.
+ * `parseToMinor` from `@booki-aui/core/money`: the install guide has the example.
  *
  * A person's change calls `change(next, event)`, which is the same function the
  * agent's action calls: a refusal comes back as `false` and is shown as

@@ -1,6 +1,6 @@
 "use client";
 
-import { localize } from "@booki/core/messages";
+import { localize } from "@booki-aui/core/messages";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { pageAgent } from "@/lib/agent";
 import { askModelAgent, modelAgentStatus, type ModelEvent } from "@/lib/model-agent";

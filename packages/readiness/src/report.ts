@@ -212,7 +212,7 @@ ${sections}
   <details><summary>Show the snapshot</summary><pre>${esc(report.snapshot)}</pre></details>
 </div>
 
-<p class="muted">@booki/readiness ${esc(report.tool.version)} · checks reference the Agent Contract (spec/agent-contract.md).</p>
+<p class="muted">@booki-aui/readiness ${esc(report.tool.version)} · checks reference the Agent Contract (spec/agent-contract.md).</p>
 </main>
 </body>
 </html>

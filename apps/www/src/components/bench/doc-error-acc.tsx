@@ -1,6 +1,6 @@
-import { isValidKid } from "@booki/core/kid";
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
-import { SupplierInvoiceInbox } from "@booki/react";
+import { isValidKid } from "@booki-aui/core/kid";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
+import { SupplierInvoiceInbox } from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useEndState } from "./end-state";

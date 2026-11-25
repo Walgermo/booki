@@ -1,4 +1,4 @@
-import { createBookiAgent, createAgentCursor, registerTools } from "@booki/react";
+import { createBookiAgent, createAgentCursor, registerTools } from "@booki-aui/react";
 import { useEffect } from "react";
 
 /**

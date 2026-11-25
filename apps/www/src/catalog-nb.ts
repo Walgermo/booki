@@ -6,8 +6,14 @@ import type { Lang } from "./lib/lang";
  * title (AmountField is what you import); pages and groups get Norwegian names.
  */
 const NB: Record<string, { title?: string; description: string }> = {
-  introduction: { title: "Oversikt", description: "Pakkekart og inngangspunkter for @booki/core, react og styles." },
-  installation: { title: "Installasjon", description: "Installer @booki/core, @booki/react og valgfrie stiler." },
+  introduction: {
+    title: "Oversikt",
+    description: "Pakkekart og inngangspunkter for @booki-aui/core, react og styles.",
+  },
+  installation: {
+    title: "Installasjon",
+    description: "Installer @booki-aui/core, @booki-aui/react og valgfrie stiler.",
+  },
   examples: {
     title: "Eksempler",
     description:
@@ -27,7 +33,7 @@ const NB: Record<string, { title?: string; description: string }> = {
     title: "For ERP-team",
     description: "Hva en pilot på ett skjermbilde krever, og hva som ikke er klart ennå.",
   },
-  money: { title: "Penger", description: "Money-hjelpere for heltall i øre fra @booki/core." },
+  money: { title: "Penger", description: "Money-hjelpere for heltall i øre fra @booki-aui/core." },
   "amount-field": {
     description: "definePrimitive-beløp: agenten bruker setMinor / clear; heltall i øre inn og ut.",
   },

@@ -23,7 +23,7 @@ pnpm dev
 `pnpm dev`, `pnpm test` and `pnpm typecheck` build the packages first when
 their `dist` is missing or older than their source, so a fresh clone works
 straight away. The packages find each other through `dist`; if you run a
-command inside one package (`pnpm --filter @booki/react test`) after changing
+command inside one package (`pnpm --filter @booki-aui/react test`) after changing
 another, run `pnpm ensure-built` first.
 
 The site runs at http://localhost:5173. The "ask it yourself" box needs
@@ -51,7 +51,7 @@ regenerates it and fails on a difference. That is every control file in
 - **The public contract only grows.** Removing or renaming an agent action,
   option, part or `data-slot` fails `packages/react/src/contract.test.tsx`.
   After an intended addition:
-  `UPDATE_CONTRACT=1 pnpm --filter @booki/react exec vitest run src/contract.test.tsx`.
+  `UPDATE_CONTRACT=1 pnpm --filter @booki-aui/react exec vitest run src/contract.test.tsx`.
 - **Every agent action has an ergonomics probe** in
   `packages/react/src/ergonomics.test.tsx`: unknown fields and ids are refused
   with what exists, from the message catalogue.
@@ -78,7 +78,7 @@ To see test coverage, run:
 pnpm coverage
 ```
 
-It runs the tests of `@booki/core`, `@booki/primitives` and `@booki/react` with
+It runs the tests of `@booki-aui/core`, `@booki-aui/primitives` and `@booki-aui/react` with
 coverage and writes the reports to `packages/*/coverage`. `pnpm test` does not
 measure coverage. In CI, the job summary shows a table per package. On `main`,
 CI also updates the coverage badge in the README. There is no coverage

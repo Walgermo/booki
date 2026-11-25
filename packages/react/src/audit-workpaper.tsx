@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import type { BookiChangeDetails } from "./change-details.js";
 import {
   SAMPLE_METHODS,
@@ -12,14 +12,14 @@ import {
   type TickMark,
   type Workpaper,
   type WorkpaperItem,
-} from "@booki/core/audit";
-import { formatMoney, money } from "@booki/core/money";
+} from "@booki-aui/core/audit";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { signed, auditWorkpaper } from "@booki/primitives/audit-workpaper";
+import { signed, auditWorkpaper } from "@booki-aui/primitives/audit-workpaper";
 
 const parts = createParts(auditWorkpaper, {
   root: "div",
@@ -519,4 +519,4 @@ export type {
   WorkpaperItem,
 };
 
-export { type DrawSampleOptions } from "@booki/primitives/audit-workpaper";
+export { type DrawSampleOptions } from "@booki-aui/primitives/audit-workpaper";

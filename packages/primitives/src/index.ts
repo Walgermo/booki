@@ -1,5 +1,5 @@
 /**
- * @booki/primitives: every Booki control's ui-sdk definition, with its option
+ * @booki-aui/primitives: every Booki control's ui-sdk definition, with its option
  * and state types and its pure helpers. No framework: render a definition
  * with the `createParts` of @ui-sdk/react, @ui-sdk/web, @ui-sdk/vue,
  * @ui-sdk/svelte or @ui-sdk/solid.
@@ -7,7 +7,7 @@
  * Generic names that several controls share (`Options`, `Details`) are
  * exported here under the control's name, e.g. `PeriodLockOptions`. Helpers
  * that share a name (`derive`, `EMPTY`, ...) are only on each control's own
- * entry, e.g. `@booki/primitives/period-lock`.
+ * entry, e.g. `@booki-aui/primitives/period-lock`.
  */
 
 // Brings ui-sdk's public renderer types into the build, so the emitted

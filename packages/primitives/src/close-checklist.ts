@@ -5,7 +5,7 @@ import {
   signOffCloseTask,
   summarizeClose,
   type CloseTask,
-} from "@booki/core/close";
+} from "@booki-aui/core/close";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

@@ -1,8 +1,14 @@
 "use client";
 
-import type { Activity } from "@booki/core/activity";
-import type { Deal, DealValueStatus } from "@booki/core/pipeline";
-import { ActivityTimeline, AmountField, CurrencySelect, useBookiField, type BookiChangeDetails } from "@booki/react";
+import type { Activity } from "@booki-aui/core/activity";
+import type { Deal, DealValueStatus } from "@booki-aui/core/pipeline";
+import {
+  ActivityTimeline,
+  AmountField,
+  CurrencySelect,
+  useBookiField,
+  type BookiChangeDetails,
+} from "@booki-aui/react";
 import { useState } from "react";
 import { CURRENCIES } from "@/lib/data";
 import { AGENT_ID, OWNERS } from "@/lib/people";

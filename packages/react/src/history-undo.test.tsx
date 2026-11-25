@@ -1,4 +1,4 @@
-import type { VoucherLine } from "@booki/core/voucher";
+import type { VoucherLine } from "@booki-aui/core/voucher";
 import { cleanup, render } from "@testing-library/react";
 import { type ReactNode, useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";

@@ -1,6 +1,6 @@
-import { assertPostingAllowed, type PeriodState } from "@booki/core/period-lock";
-import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
-import { FinancialDateField, PeriodLock, VoucherComposer, useBookiLocale } from "@booki/react";
+import { assertPostingAllowed, type PeriodState } from "@booki-aui/core/period-lock";
+import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
+import { FinancialDateField, PeriodLock, VoucherComposer, useBookiLocale } from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { Input } from "@ui-sdk/react/input";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";

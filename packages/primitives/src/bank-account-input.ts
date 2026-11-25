@@ -1,10 +1,10 @@
-import { digitsOnly, formatKontonummer, isValidKontonummer } from "@booki/core/kontonummer";
+import { digitsOnly, formatKontonummer, isValidKontonummer } from "@booki-aui/core/kontonummer";
 import {
   formatRoutingNumber,
   formatUsAccountNumber,
   isValidRoutingNumber,
   isValidUsAccountNumber,
-} from "@booki/core/routing-number";
+} from "@booki-aui/core/routing-number";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 import { asEvent, textOf } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";

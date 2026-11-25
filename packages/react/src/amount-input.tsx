@@ -1,4 +1,4 @@
-import { money, type Money } from "@booki/core/money";
+import { money, type Money } from "@booki-aui/core/money";
 import { AmountField, type AmountFieldProps } from "./amount-field.js";
 
 export type AmountInputProps = Omit<AmountFieldProps, "onValueChange"> & {

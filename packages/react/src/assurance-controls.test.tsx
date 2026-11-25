@@ -1,5 +1,5 @@
-import type { PopulationItem, TickMark, Workpaper } from "@booki/core/audit";
-import type { DepreciationRun, Disposal, FixedAsset } from "@booki/core/fixed-assets";
+import type { PopulationItem, TickMark, Workpaper } from "@booki-aui/core/audit";
+import type { DepreciationRun, Disposal, FixedAsset } from "@booki-aui/core/fixed-assets";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";

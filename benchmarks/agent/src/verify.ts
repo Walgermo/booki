@@ -3,7 +3,7 @@
  * own `evaluate` (never shown to the model) and says, check by check, whether
  * the page holds what the task asked for.
  */
-import { vatPostings } from "@booki/core/voucher";
+import { vatPostings } from "@booki-aui/core/voucher";
 import type { Session } from "./session.js";
 
 /** The Norwegian profile's VAT codes, as the Booki voucher page uses them. */

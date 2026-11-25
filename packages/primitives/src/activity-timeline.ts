@@ -1,5 +1,5 @@
-import { BookiError } from "@booki/core/msg";
-import { localToday } from "@booki/core/financial-date";
+import { BookiError } from "@booki-aui/core/msg";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   activityIssues,
   completeTask,
@@ -13,7 +13,7 @@ import {
   timeline,
   type Activity,
   type ActivityKind,
-} from "@booki/core/activity";
+} from "@booki-aui/core/activity";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { asEvent, checkFields, recordOf } from "./fields.js";

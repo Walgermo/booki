@@ -1,9 +1,9 @@
 import { Button } from "@ui-sdk/react/button";
-import { drawSample, startWorkpaper } from "@booki/core/audit";
-import { NO_VAT_SCHEMA_EXAMPLE } from "@booki/core/vat-return";
-import type { Activity } from "@booki/core/activity";
-import type { Deal, PipelineStage, StageStay } from "@booki/core/pipeline";
-import type { RecurringAgreement } from "@booki/core/recurring";
+import { drawSample, startWorkpaper } from "@booki-aui/core/audit";
+import { NO_VAT_SCHEMA_EXAMPLE } from "@booki-aui/core/vat-return";
+import type { Activity } from "@booki-aui/core/activity";
+import type { Deal, PipelineStage, StageStay } from "@booki-aui/core/pipeline";
+import type { RecurringAgreement } from "@booki-aui/core/recurring";
 import {
   AgedBalances,
   AgingChart,
@@ -32,7 +32,7 @@ import {
   LedgerTable,
   SupplierInvoiceInbox,
   VatReturn,
-} from "@booki/react";
+} from "@booki-aui/react";
 
 import {
   ASSETS,
@@ -51,7 +51,7 @@ import {
   VAT_TRANSACTIONS,
 } from "@/lib/demo-data";
 import { CASHFLOW, COST_BY_ACCOUNT, COSTS, OPENING, REVENUE, series } from "@/components/erp-dashboard";
-import type { ClientRequest, Finding, SignableDocument, StackSheet } from "@booki/react";
+import type { ClientRequest, Finding, SignableDocument, StackSheet } from "@booki-aui/react";
 import { useState, useSyncExternalStore, type ReactNode } from "react";
 
 // Made-up engagement: no real company or person.

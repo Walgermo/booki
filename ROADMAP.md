@@ -6,7 +6,7 @@ Booki is pre-1.0: the API still changes, and nothing is on npm until v1 has run 
 
 - [#27](https://github.com/Walgermo/booki/issues/27) External security review of the server guard: the guard that refuses agent writes should be checked by someone outside the project before v1 is called safe.
 - [#29](https://github.com/Walgermo/booki/issues/29) Rate limit on `/api/agent`: the endpoint stays off on booki.dev until it has a real rate limit.
-- [#24](https://github.com/Walgermo/booki/issues/24) Agent Contract: the spec is marked a draft, and a conformance suite and a reference implementation are in `@booki/readiness`. Left: a way to run the suite against a live page, and a second, independent implementation.
+- [#24](https://github.com/Walgermo/booki/issues/24) Agent Contract: the spec is marked a draft, and a conformance suite and a reference implementation are in `@booki-aui/readiness`. Left: a way to run the suite against a live page, and a second, independent implementation.
 - [#25](https://github.com/Walgermo/booki/issues/25) Migration guide for one screen, with times from the product pilot: a team should see what moving one existing screen takes, in real figures.
 - [#32](https://github.com/Walgermo/booki/issues/32) Publish to npm after v1 has run in a real product: the packages go to npm once a real product has used them.
 

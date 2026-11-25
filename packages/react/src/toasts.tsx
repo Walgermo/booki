@@ -10,7 +10,7 @@ import {
 } from "@ui-sdk/react/toast";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import type { AgentBridge } from "./booki-agent.js";
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createBookiHistory } from "./booki-agent.js";
 import { useBookiLocaleOptional } from "./locale.js";
 

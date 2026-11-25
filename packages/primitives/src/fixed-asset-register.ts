@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   accumulatedDepreciation,
   assertRunnable,
@@ -13,10 +13,10 @@ import {
   type FixedAsset,
   type RunAccount,
   type ScheduleEntry,
-} from "@booki/core/fixed-assets";
-import { BookiError } from "@booki/core/msg";
-import { parseToMinor } from "@booki/core/money";
-import { periodBounds } from "@booki/core/period";
+} from "@booki-aui/core/fixed-assets";
+import { BookiError } from "@booki-aui/core/msg";
+import { parseToMinor } from "@booki-aui/core/money";
+import { periodBounds } from "@booki-aui/core/period";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import * as primitives from "./index.js";
 
 /**
- * @booki/primitives is the one definition every framework renders, so it may
+ * @booki-aui/primitives is the one definition every framework renders, so it may
  * not depend on any of them. A file here that imports React, or ui-sdk's
  * React bindings, fails this test.
  */

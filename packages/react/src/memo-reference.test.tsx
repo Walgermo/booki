@@ -1,5 +1,5 @@
-import type { PaymentBatch as Batch } from "@booki/core/payment-batch";
-import { paymentBatch } from "@booki/primitives/payment-batch";
+import type { PaymentBatch as Batch } from "@booki-aui/core/payment-batch";
+import { paymentBatch } from "@booki-aui/primitives/payment-batch";
 import { cleanup, render } from "@testing-library/react";
 import { mount } from "@ui-sdk/core/testing";
 import { afterEach, describe, expect, it } from "vitest";

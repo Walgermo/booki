@@ -1,9 +1,9 @@
-import type { TaxCode } from "@booki/core/locale";
+import type { TaxCode } from "@booki-aui/core/locale";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { taxCodeSelect } from "@booki/primitives/tax-code-select";
+import { taxCodeSelect } from "@booki-aui/primitives/tax-code-select";
 
 const parts = createParts(taxCodeSelect, {
   root: "div",
@@ -18,7 +18,7 @@ const TaxCodeSelectRoot = parts.Root;
 const TaxCodeSelectTrigger = parts.Trigger;
 const TaxCodeSelectList = parts.List;
 const TaxCodeSelectOption = parts.Option;
-/** The native `<select>` fallback, shown by @booki/styles on touch screens. */
+/** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
 const TaxCodeSelectControl = parts.Select;
 
 export type TaxCodeSelectProps = {

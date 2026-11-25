@@ -10,7 +10,7 @@ pnpm install
 ```
 
 ```bash
-pnpm --filter @booki/example-ap-flow dev
+pnpm --filter @booki-aui/example-ap-flow dev
 ```
 
 Open http://localhost:3100. Sign in as one of the four people with the
@@ -36,7 +36,7 @@ secret field is never the agent's to confirm.
 
 - **`lib/books.ts`: the server decides.** Each screen proposes a whole new
   list; the server compares it with what it holds and lets through only the
-  transitions this actor may make, through `@booki/core/server`'s `guard`.
+  transitions this actor may make, through `@booki-aui/core/server`'s `guard`.
   The approver comes from the credential, never from the request body. A
   refusal changes nothing and lands in the audit trail.
 - **`lib/people.ts`: the agent has its own credential.** `agent:nina` is the
@@ -65,7 +65,7 @@ secret field is never the agent's to confirm.
 ## Tests
 
 ```bash
-pnpm --filter @booki/example-ap-flow test
+pnpm --filter @booki-aui/example-ap-flow test
 ```
 
 `test/books.test.ts` checks the server's rules on their own;

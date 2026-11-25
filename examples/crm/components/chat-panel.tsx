@@ -1,6 +1,6 @@
 "use client";
 
-import { localize } from "@booki/core/messages";
+import { localize } from "@booki-aui/core/messages";
 import { useState } from "react";
 import { MAX_TOOL_ROUNDS, stoppedAtLimit, useAssistant } from "@/lib/assistant";
 import { nameOf } from "@/lib/people";

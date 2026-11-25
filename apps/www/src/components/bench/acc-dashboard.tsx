@@ -1,4 +1,4 @@
-import { AgingChart, BarChart, KpiStat, TrendChart } from "@booki/react";
+import { AgingChart, BarChart, KpiStat, TrendChart } from "@booki-aui/react";
 
 import { COSTS, REVENUE, series } from "@/components/erp-dashboard";
 import { RECEIVABLES } from "@/lib/demo-data";

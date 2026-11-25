@@ -144,8 +144,8 @@ const PILOT = (t: T): { step: string; detail: string }[] => [
   {
     step: t("Keep your backend", "Behold backenden"),
     detail: t(
-      "Each control reports changes through callbacks such as onInvoicesChange, and you save the way you do today. Your API checks the same rules with @booki/core/server.",
-      "Hver kontroll melder endringer gjennom callbacks som onInvoicesChange, og dere lagrer slik dere gjør i dag. API-et deres sjekker de samme reglene med @booki/core/server.",
+      "Each control reports changes through callbacks such as onInvoicesChange, and you save the way you do today. Your API checks the same rules with @booki-aui/core/server.",
+      "Hver kontroll melder endringer gjennom callbacks som onInvoicesChange, og dere lagrer slik dere gjør i dag. API-et deres sjekker de samme reglene med @booki-aui/core/server.",
     ),
   },
   {
@@ -241,8 +241,8 @@ const STACK = (t: T): { label: string; text: string }[] => [
   {
     label: t("Size", "Størrelse"),
     text: t(
-      "AmountField is 14.7 kB gzip, the whole of @booki/react 99.7 kB, plus 15 kB for the agent bridge. Import per control: @booki/react/amount-field.",
-      "AmountField er 14,7 kB gzip, hele @booki/react 99,7 kB, pluss 15 kB for agentbroen. Importer per kontroll: @booki/react/amount-field.",
+      "AmountField is 14.7 kB gzip, the whole of @booki-aui/react 99.7 kB, plus 15 kB for the agent bridge. Import per control: @booki-aui/react/amount-field.",
+      "AmountField er 14,7 kB gzip, hele @booki-aui/react 99,7 kB, pluss 15 kB for agentbroen. Importer per kontroll: @booki-aui/react/amount-field.",
     ),
   },
   {
@@ -309,13 +309,13 @@ const SECURITY = (t: T): { label: string; text: string }[] => [
   {
     label: t("Your server", "Serveren deres"),
     text: t(
-      "Still decides. The screen checks role, period and approvals for speed and clarity; @booki/core/server runs the same rules in your API, with the caller your sign-in established. An agent with every role is still refused a person's decision.",
-      "Bestemmer fortsatt. Skjermbildet sjekker rolle, periode og attesteringer for fart og tydelighet; @booki/core/server kjører de samme reglene i API-et deres, med den innloggingen deres har fastslått som avsender. En agent får fortsatt nei til beslutninger som er forbeholdt en person, uansett roller.",
+      "Still decides. The screen checks role, period and approvals for speed and clarity; @booki-aui/core/server runs the same rules in your API, with the caller your sign-in established. An agent with every role is still refused a person's decision.",
+      "Bestemmer fortsatt. Skjermbildet sjekker rolle, periode og attesteringer for fart og tydelighet; @booki-aui/core/server kjører de samme reglene i API-et deres, med den innloggingen deres har fastslått som avsender. En agent får fortsatt nei til beslutninger som er forbeholdt en person, uansett roller.",
     ),
   },
 ];
 
-const SERVER_EXAMPLE = `import { guardPostVoucher, toHttp } from "@booki/core/server"
+const SERVER_EXAMPLE = `import { guardPostVoucher, toHttp } from "@booki-aui/core/server"
 
 // POST /api/vouchers. Who is calling comes from your sign-in, never from the body.
 export async function POST(request: Request) {
@@ -333,8 +333,8 @@ export async function POST(request: Request) {
 }
 `;
 
-const WRAP = `import { createChange, createParts, definePrimitive } from "@booki/react"
-import { amountField } from "@booki/primitives/amount-field"
+const WRAP = `import { createChange, createParts, definePrimitive } from "@booki-aui/react"
+import { amountField } from "@booki-aui/primitives/amount-field"
 
 // A Booki control under your own names and tags: the primitive, your parts.
 export const Belop = createParts(amountField, { root: "div", currency: "span", input: "input" })
@@ -429,8 +429,8 @@ const SAMPLE = `import {
   SupplierInvoiceInbox,
   attachAudit,
   createBookiAgent,
-} from "@booki/react"
-import "@booki/styles"
+} from "@booki-aui/react"
+import "@booki-aui/styles"
 
 const agent = createBookiAgent({ agentId: "assistant" })
 attachAudit(agent, (event) => api.audit.append(event), "assistant")
@@ -669,7 +669,7 @@ export function ErpTeamsPage() {
         <ServerRules />
         <div className="mt-6">
           <CodeDisclosure
-            title={t("An API route with @booki/core/server", "En API-rute med @booki/core/server")}
+            title={t("An API route with @booki-aui/core/server", "En API-rute med @booki-aui/core/server")}
             source={SERVER_EXAMPLE}
           />
         </div>

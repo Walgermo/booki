@@ -108,5 +108,5 @@ writeFileSync(
 writeFileSync(join(root, "dist/css.d.ts"), "export {};\n");
 writeFileSync(join(root, "dist/shadcn.css"), readFileSync(join(root, "src/shadcn.css"), "utf8"));
 console.log(
-  `Built @booki/styles → dist/booki.css (${Math.round(css.length / 1024)} KB), layered.css, base.css (${(base.length / 1024).toFixed(1)} KB raw, ${(baseGzip / 1024).toFixed(1)} KB gzip), controls/*.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,
+  `Built @booki-aui/styles → dist/booki.css (${Math.round(css.length / 1024)} KB), layered.css, base.css (${(base.length / 1024).toFixed(1)} KB raw, ${(baseGzip / 1024).toFixed(1)} KB gzip), controls/*.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,
 );

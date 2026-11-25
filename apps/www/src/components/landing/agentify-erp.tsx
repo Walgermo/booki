@@ -1,4 +1,4 @@
-import { money } from "@booki/core/money";
+import { money } from "@booki-aui/core/money";
 import {
   AccountingPeriodSelect,
   BookiLocaleProvider,
@@ -8,7 +8,7 @@ import {
   VoucherComposer,
   type AccountOption,
   type VoucherLine,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { useEffect, useRef, useState, type RefObject } from "react";
 
 import { cursor, setStepPolicy, whenCursorFree } from "@/agent";

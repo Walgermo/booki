@@ -1,6 +1,6 @@
-import type { CloseTask } from "@booki/core/close";
-import { assertPostingAllowed, type PeriodState } from "@booki/core/period-lock";
-import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
+import type { CloseTask } from "@booki-aui/core/close";
+import { assertPostingAllowed, type PeriodState } from "@booki-aui/core/period-lock";
+import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
 import {
   CloseChecklist,
   DataTable,
@@ -8,7 +8,7 @@ import {
   PeriodLock,
   VoucherComposer,
   useBookiLocale,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useEffect, useRef, useState } from "react";
 

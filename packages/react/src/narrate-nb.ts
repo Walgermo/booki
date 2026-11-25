@@ -1,5 +1,5 @@
-import { formatMoney } from "@booki/core/money";
-import type { AgentCursorState } from "@booki/primitives/agent-cursor";
+import { formatMoney } from "@booki-aui/core/money";
+import type { AgentCursorState } from "@booki-aui/primitives/agent-cursor";
 
 /** What the agent is doing, said the way a Norwegian accountant would say it. First match wins. */
 const VERBS_NB: [RegExp, string][] = [

@@ -1,5 +1,5 @@
-import { formatMoney } from "@booki/core/money";
-import type { Deal, PipelineStage } from "@booki/core/pipeline";
+import { formatMoney } from "@booki-aui/core/money";
+import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
 import { createParts } from "@ui-sdk/react/primitive";
 import { compactMoney, periodName } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -10,7 +10,7 @@ import {
   type Details,
   type ForecastGrouping,
   type ForecastPeriod,
-} from "@booki/primitives/forecast-chart";
+} from "@booki-aui/primitives/forecast-chart";
 
 const parts = createParts(forecastChart, { root: "div", grouping: "button", period: "button" });
 const ForecastChartRoot = parts.Root;

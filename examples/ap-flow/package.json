@@ -1,5 +1,5 @@
 {
-  "name": "@booki/example-ap-flow",
+  "name": "@booki-aui/example-ap-flow",
   "private": true,
   "version": "0.0.0",
   "description": "Supplier invoice to payment with Booki in Next.js: inbox, approval, payment batch, bank reconciliation, a server guard on every write and an agent that works the flow.",
@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.12.0",
-    "@booki/core": "workspace:*",
-    "@booki/react": "workspace:*",
-    "@booki/styles": "workspace:*",
+    "@booki-aui/core": "workspace:*",
+    "@booki-aui/react": "workspace:*",
+    "@booki-aui/styles": "workspace:*",
     "@ui-sdk/core": "0.1.0-beta.17",
     "@ui-sdk/react": "0.1.0-beta.17",
     "next": "16.4.6",

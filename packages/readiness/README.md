@@ -1,4 +1,4 @@
-# @booki/readiness
+# @booki-aui/readiness
 
 What stops an AI agent on your screen, scored 0–100, with the fix for each
 finding.
@@ -10,12 +10,12 @@ accessibility snapshot Playwright gives a model) and the way a bridge agent
 does (`window.agent` or WebMCP tools), and reports every place an agent has to
 guess, read pixels, see a secret or press an irreversible button unchecked.
 Each check enforces a rule of the [Agent Contract](https://github.com/Walgermo/booki/blob/main/spec/agent-contract.md).
-The package also has two subpaths: `@booki/readiness/conformance`, a suite that
+The package also has two subpaths: `@booki-aui/readiness/conformance`, a suite that
 tests a bridge against the contract in-process ([Conformance suite](#conformance-suite)),
-and `@booki/readiness/reference`, a small reference implementation of the contract.
+and `@booki-aui/readiness/reference`, a small reference implementation of the contract.
 
 ```bash
-npx @booki/readiness https://app.example.com/vouchers/new --storage-state session.json --out report.html
+npx @booki-aui/readiness https://app.example.com/vouchers/new --storage-state session.json --out report.html
 ```
 
 ```
@@ -39,7 +39,7 @@ JSON:   /…/report.json
 ## Usage
 
 ```bash
-npx @booki/readiness <url | file.html> [options]
+npx @booki-aui/readiness <url | file.html> [options]
 ```
 
 | Option | What it does |
@@ -68,7 +68,7 @@ clicks, types or submits, so it is safe to run against a live company.
 
   ```bash
   npx playwright codegen --save-storage=session.json https://app.example.com
-  npx @booki/readiness https://app.example.com/vouchers/new --storage-state session.json
+  npx @booki-aui/readiness https://app.example.com/vouchers/new --storage-state session.json
   ```
 
 - **Your browser profile.** Pass a copy of a Chrome profile directory with
@@ -86,7 +86,7 @@ those states and check them as their own pages, or open them in your own script
 ### From code
 
 ```ts
-import { audit, toHtml, toJson } from "@booki/readiness"
+import { audit, toHtml, toJson } from "@booki-aui/readiness"
 
 const report = await audit("https://app.example.com/vouchers/new", { storageState: "session.json" })
 console.log(report.score, report.findings.length)
@@ -103,7 +103,7 @@ Playwright, then hand the page to `check`:
 
 ```ts
 import { chromium } from "playwright-core"
-import { check, toConsole } from "@booki/readiness"
+import { check, toConsole } from "@booki-aui/readiness"
 
 const browser = await chromium.launch({ channel: "chrome" })
 const page = await browser.newPage({ storageState: "session.json" })
@@ -120,16 +120,16 @@ click is your step, not the tool's. It needs no setup in the page.
 
 ## Conformance suite
 
-`@booki/readiness/conformance` tests the bridge of a screen against the
+`@booki-aui/readiness/conformance` tests the bridge of a screen against the
 [Agent Contract](https://github.com/Walgermo/booki/blob/main/spec/agent-contract.md)
 (sections 2 to 7). It is in-process: it calls `act()`, so run it on test data,
 never on a live company. The browser audit above only reads a page; this suite
-changes state. `@booki/readiness/reference` is a small implementation of the
+changes state. `@booki-aui/readiness/reference` is a small implementation of the
 contract without Booki or ui-sdk, which the suite passes.
 
 ```ts
-import { runConformance, formatConformance } from '@booki/readiness/conformance'
-import { createReference } from '@booki/readiness/reference'
+import { runConformance, formatConformance } from '@booki-aui/readiness/conformance'
+import { createReference } from '@booki-aui/readiness/reference'
 
 const { bridge, server } = createReference()
 const report = await runConformance({ bridge, server, drive: { ref: 'Amount', action: 'setMinor', args: [155000] } })
@@ -267,7 +267,7 @@ To measure them again:
 
 ```bash
 pnpm build
-pnpm --filter @booki/www exec vite preview --port 4317 --strictPort &
+pnpm --filter @booki-aui/www exec vite preview --port 4317 --strictPort &
 pnpm readiness http://localhost:4317/bench/voucher-raw --no-report
 ```
 
@@ -286,9 +286,9 @@ pnpm readiness http://localhost:4317/bench/voucher-raw --no-report
 ## Development
 
 ```bash
-pnpm --filter @booki/readiness test       # fixtures of small pages with known problems
-pnpm --filter @booki/readiness typecheck
-pnpm --filter @booki/readiness build
+pnpm --filter @booki-aui/readiness test       # fixtures of small pages with known problems
+pnpm --filter @booki-aui/readiness typecheck
+pnpm --filter @booki-aui/readiness build
 ```
 
 The tests open each fixture in `test/fixtures/` in Chrome and assert that each

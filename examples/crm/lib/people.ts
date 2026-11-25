@@ -1,5 +1,5 @@
-import { STANDARD_ROLES, type Actor, type Role } from "@booki/core/permissions";
-import type { ServerActor } from "@booki/core/server";
+import { STANDARD_ROLES, type Actor, type Role } from "@booki-aui/core/permissions";
+import type { ServerActor } from "@booki-aui/core/server";
 
 /**
  * The company's roles. Booki's `sales` role closes deals and removes

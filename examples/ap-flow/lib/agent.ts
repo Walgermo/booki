@@ -1,6 +1,6 @@
 "use client";
 
-import { createAgentCursor, createBookiAgent, type AgentBridge, type AgentDecisionRow } from "@booki/react";
+import { createAgentCursor, createBookiAgent, type AgentBridge, type AgentDecisionRow } from "@booki-aui/react";
 
 /**
  * The agent's visible pointer: it leads every step, so the person sees where

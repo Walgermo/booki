@@ -3,7 +3,7 @@ import {
   cursorLabelRoom,
   type AgentCursorController,
   type AgentCursorState,
-} from "@booki/primitives/agent-cursor";
+} from "@booki-aui/primitives/agent-cursor";
 
 export { createAgentCursor, type AgentCursorController, type AgentCursorState };
 
@@ -19,8 +19,8 @@ const SVG = "http://www.w3.org/2000/svg";
  * document.querySelector("booki-agent-cursor").cursor = cursor
  * ```
  *
- * The markup and `data-slot` names match @booki/react's `AgentCursor`, so
- * @booki/styles draws both. `label` sets the name on it; `narrate` (a
+ * The markup and `data-slot` names match @booki-aui/react's `AgentCursor`, so
+ * @booki-aui/styles draws both. `label` sets the name on it; `narrate` (a
  * property) may turn the step into words in your language.
  */
 // Importing the package on a server (SSR, tests in Node) must not throw: the

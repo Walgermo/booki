@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   assertReadyForSignOff,
   drawSample,
@@ -25,10 +25,10 @@ import {
   type TestResult,
   type TickMark,
   type Workpaper,
-} from "@booki/core/audit";
-import { parseToMinor } from "@booki/core/money";
+} from "@booki-aui/core/audit";
+import { parseToMinor } from "@booki-aui/core/money";
 import { createChange, definePrimitive } from "@ui-sdk/core";
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { refuseDenied } from "./access.js";
 import { checkFields } from "./fields.js";
 

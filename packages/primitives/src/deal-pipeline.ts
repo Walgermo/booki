@@ -1,5 +1,5 @@
-import { localToday } from "@booki/core/financial-date";
-import { BookiError } from "@booki/core/msg";
+import { localToday } from "@booki-aui/core/financial-date";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   assertStages,
   closeDeal,
@@ -17,7 +17,7 @@ import {
   type DealValuePatch,
   type PipelineStage,
   type StageSummary,
-} from "@booki/core/pipeline";
+} from "@booki-aui/core/pipeline";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { asEvent, checkFields, recordOf } from "./fields.js";

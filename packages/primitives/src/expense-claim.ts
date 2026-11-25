@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   acceptException,
   addExpenseLine,
@@ -17,8 +17,8 @@ import {
   type ExpensePolicy,
   type ExpenseRule,
   type PolicyException,
-} from "@booki/core/expense";
-import { minorDigitsFor, parseToMinor } from "@booki/core/money";
+} from "@booki-aui/core/expense";
+import { minorDigitsFor, parseToMinor } from "@booki-aui/core/money";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

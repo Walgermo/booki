@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { localize } from "@booki/core/messages";
-import { GENERIC_VAT_SCHEMA_EXAMPLE } from "@booki/core/vat-return";
+import { localize } from "@booki-aui/core/messages";
+import { GENERIC_VAT_SCHEMA_EXAMPLE } from "@booki-aui/core/vat-return";
 import { mount } from "@ui-sdk/core/testing";
 import { describe, expect, it } from "vitest";
 import * as library from "./index.js";
@@ -45,7 +45,7 @@ const FREE_TEXT = { none: "free text; an empty string clears it" } as const;
 const RESTORE = { none: "restores a value from history or staging; checked like the edits it restores" } as const;
 const FREE_DIGITS = { none: "takes digits; the snapshot says isValid instead of refusing a partial number" } as const;
 
-/** The table actions every list control shares through `@booki/core/table`. */
+/** The table actions every list control shares through `@booki-aui/core/table`. */
 function tableProbes(column: string, pages = "1"): Record<string, Probe | Probe[]> {
   return {
     setSort: [

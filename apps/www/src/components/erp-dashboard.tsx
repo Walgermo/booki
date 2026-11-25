@@ -1,4 +1,4 @@
-import { AgingChart, BarChart, CashflowWaterfall, KpiStat, TrendChart } from "@booki/react";
+import { AgingChart, BarChart, CashflowWaterfall, KpiStat, TrendChart } from "@booki-aui/react";
 
 import { RECEIVABLES } from "@/lib/demo-data";
 

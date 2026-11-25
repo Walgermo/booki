@@ -1,4 +1,4 @@
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   defaultQuery as baseQuery,
   MAX_PAGE_SIZE,
@@ -6,7 +6,7 @@ import {
   type SortDirection,
   type TableColumn,
   type TableQuery,
-} from "@booki/core/table";
+} from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { QUERY_FORMAT } from "./fields.js";
 
@@ -20,7 +20,7 @@ function idList(ids: unknown): string[] {
 }
 
 /**
- * A column: the shared definition from `@booki/core/table`, plus how a person
+ * A column: the shared definition from `@booki-aui/core/table`, plus how a person
  * sees the cell. `Cell` is what the framework renders (React: `ReactNode`).
  */
 export type DataTableColumn<Row, Cell = unknown> = TableColumn<Row> & {

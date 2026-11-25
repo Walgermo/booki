@@ -1,6 +1,6 @@
-import type { Activity } from "@booki/core/activity";
-import type { Deal, PipelineStage, StageStay } from "@booki/core/pipeline";
-import type { RecurringAgreement } from "@booki/core/recurring";
+import type { Activity } from "@booki-aui/core/activity";
+import type { Deal, PipelineStage, StageStay } from "@booki-aui/core/pipeline";
+import type { RecurringAgreement } from "@booki-aui/core/recurring";
 
 /**
  * The example's day and its sales data. A fixed date keeps the reports and the

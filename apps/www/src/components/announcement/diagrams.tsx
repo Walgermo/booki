@@ -146,7 +146,7 @@ export function OneStep() {
     { name: t("Booki control", "Booki-kontroll"), detail: "AmountField" },
     { name: t("Your rule", "Regelen deres"), detail: t("allow · person", "allow · person") },
     { name: t("Audit trail", "Revisjonsspor"), detail: "attachAudit" },
-    { name: t("Your server", "Serveren deres"), detail: "@booki/core/server" },
+    { name: t("Your server", "Serveren deres"), detail: "@booki-aui/core/server" },
   ];
   const W = 960;
   const lane = (i: number) => 96 + i * 192;

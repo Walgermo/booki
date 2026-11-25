@@ -1,4 +1,4 @@
-import type { OpenItem } from "@booki/core/aging";
+import type { OpenItem } from "@booki-aui/core/aging";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";
@@ -728,8 +728,8 @@ describe("CashflowWaterfall", () => {
 
 describe("more series than hues", () => {
   it("folds every series past the fifth into one Other line, and never repeats a hue", async () => {
-    const { clean, OTHER_SERIES } = await import("@booki/primitives/trend-chart");
-    const { seriesColor } = await import("@booki/primitives/chart-math");
+    const { clean, OTHER_SERIES } = await import("@booki-aui/primitives/trend-chart");
+    const { seriesColor } = await import("@booki-aui/primitives/chart-math");
     const series = Array.from({ length: 8 }, (_, i) => ({
       id: `s${i}`,
       name: `S${i}`,

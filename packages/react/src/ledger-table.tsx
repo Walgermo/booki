@@ -4,9 +4,9 @@ import {
   type AccountLedgerRow,
   type LedgerEntry,
   type TrialBalanceRow,
-} from "@booki/core/ledger";
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
-import { matchingRows, type TableColumn, type TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/ledger";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
+import { matchingRows, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useMemo, type ReactNode } from "react";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
@@ -23,7 +23,7 @@ import {
   columnsOf,
   range,
   ledgerTable,
-} from "@booki/primitives/ledger-table";
+} from "@booki-aui/primitives/ledger-table";
 
 const parts = createParts(ledgerTable, {
   root: "div",
@@ -674,4 +674,4 @@ export {
   type LedgerView,
   type LedgerDocument,
   type LedgerVoucherSummary,
-} from "@booki/primitives/ledger-table";
+} from "@booki-aui/primitives/ledger-table";

@@ -1,5 +1,5 @@
-import type { SignableDocument } from "@booki/core/document-signoff";
-import type { StackSheet } from "@booki/core/sheet-stack";
+import type { SignableDocument } from "@booki-aui/core/document-signoff";
+import type { StackSheet } from "@booki-aui/core/sheet-stack";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";

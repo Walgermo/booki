@@ -8,8 +8,8 @@
  * and your theme has no variable for that.
  *
  *   @layer theme, base, booki, components, utilities;
- *   @import "@booki/styles" layer(booki);
- *   @import "@booki/styles/shadcn.css" layer(booki);
+ *   @import "@booki-aui/styles" layer(booki);
+ *   @import "@booki-aui/styles/shadcn.css" layer(booki);
  */
 :root {
   --bk-bg: var(--background);

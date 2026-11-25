@@ -1,7 +1,7 @@
 // Builds the packages whose dist is missing or older than their source, and
 // every package built on them. The workspace packages find each other through
 // dist, so a fresh clone or a stale dist fails with "Cannot find module
-// '@booki/core/…'" in typecheck and tests. `pnpm test`, `pnpm typecheck` and
+// '@booki-aui/core/…'" in typecheck and tests. `pnpm test`, `pnpm typecheck` and
 // `pnpm dev` run this first; when everything is current it does nothing.
 //
 //   node scripts/ensure-built.mjs           build what is stale
@@ -66,7 +66,7 @@ if (process.argv.includes("--check")) {
   console.log(`Stale: ${list.join(", ")}. Run: node scripts/ensure-built.mjs`);
   process.exit(1);
 }
-console.log(`Building ${list.map((name) => `@booki/${name}`).join(", ")} (dist missing or older than src)…`);
+console.log(`Building ${list.map((name) => `@booki-aui/${name}`).join(", ")} (dist missing or older than src)…`);
 const run = (args) => execFileSync("pnpm", args, { cwd: root, stdio: "inherit" });
 if (list.some((name) => GENERATED_FROM.has(name))) run(["generate:frameworks"]);
-for (const name of list) run(["--filter", `@booki/${name}`, "build"]);
+for (const name of list) run(["--filter", `@booki-aui/${name}`, "build"]);

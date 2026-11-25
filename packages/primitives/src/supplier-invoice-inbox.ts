@@ -1,5 +1,5 @@
-import { minorDigitsFor, parseToMinor } from "@booki/core/money";
-import { BookiError } from "@booki/core/msg";
+import { minorDigitsFor, parseToMinor } from "@booki-aui/core/money";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   approveSupplierInvoice,
   assertApprovable,
@@ -17,8 +17,8 @@ import {
   type SupplierInvoiceCoding,
   type SupplierInvoiceContext,
   type SupplierInvoiceField,
-} from "@booki/core/supplier-invoice";
-import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/supplier-invoice";
+import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";

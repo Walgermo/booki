@@ -1,10 +1,10 @@
-import { formatMoney, fromMajor, type Money } from "@booki/core/money";
+import { formatMoney, fromMajor, type Money } from "@booki-aui/core/money";
 import { Button } from "@ui-sdk/react/button";
 import { Input } from "@ui-sdk/react/input";
 import { useState } from "react";
 import { MoneyAmount } from "./money-amount.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { personOnly } from "@booki/primitives/person-only";
+import { personOnly } from "@booki-aui/primitives/person-only";
 
 export type PaymentConfirmProps = {
   payee: string;

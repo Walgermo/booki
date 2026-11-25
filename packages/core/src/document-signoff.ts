@@ -9,7 +9,7 @@
  * way, so it shows what the signer knew. Technical facts always stop a
  * signature: unsaved or conflicting work, or a document with nothing in it.
  * Withdrawing a signature is never blocked. Who may sign is the caller's (roles,
- * `@booki/core/server`); the four-eyes rule is checked here, because it is
+ * `@booki-aui/core/server`); the four-eyes rule is checked here, because it is
  * about the document's own history.
  */
 import { BookiError, type MessageCode } from "./msg.js";

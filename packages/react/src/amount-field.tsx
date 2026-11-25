@@ -2,7 +2,7 @@ import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { amountField } from "@booki/primitives/amount-field";
+import { amountField } from "@booki-aui/primitives/amount-field";
 
 const parts = createParts(amountField, {
   root: "div",

@@ -11,7 +11,7 @@ pnpm install
 ```
 
 ```bash
-pnpm --filter @booki/example-crm dev
+pnpm --filter @booki-aui/example-crm dev
 ```
 
 Open http://localhost:3200. Sign in as one of the two people with the switch
@@ -108,7 +108,7 @@ works as before.
 ## Tests
 
 ```bash
-pnpm --filter @booki/example-crm test
+pnpm --filter @booki-aui/example-crm test
 ```
 
 `test/crm.test.ts` checks the server's rules on their own. `test/tasks.test.tsx`

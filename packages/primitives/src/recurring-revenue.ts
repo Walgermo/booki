@@ -1,4 +1,4 @@
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   RECURRING_MOVEMENTS,
   assertAgreements,
@@ -7,7 +7,7 @@ import {
   recurringIssues,
   type RecurringAgreement,
   type RecurringMovement,
-} from "@booki/core/recurring";
+} from "@booki-aui/core/recurring";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { createDrill, shownIn } from "./drill.js";
 

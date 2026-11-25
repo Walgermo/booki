@@ -9,7 +9,7 @@ import {
 import { Input } from "@ui-sdk/react/input";
 import { useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
-import { personOnly } from "@booki/primitives/person-only";
+import { personOnly } from "@booki-aui/primitives/person-only";
 
 export type ApprovalGateProps = {
   title?: string;

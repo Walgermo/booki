@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 
-type Localize = typeof import("@booki/core/messages").localize;
+type Localize = typeof import("@booki-aui/core/messages").localize;
 
 // The Norwegian catalogue loads the first time a Norwegian screen needs it, so
 // an English page never downloads it. English needs no catalogue: core's
@@ -10,7 +10,7 @@ let loaded: Localize | null = null;
 let loading: Promise<Localize> | null = null;
 
 function loadLocalize(): Promise<Localize> {
-  loading ??= import("@booki/core/messages").then((module) => (loaded = module.localize));
+  loading ??= import("@booki-aui/core/messages").then((module) => (loaded = module.localize));
   return loading;
 }
 
@@ -20,7 +20,7 @@ export function preloadNorwegian(): Promise<unknown> {
 }
 
 /**
- * Turns a refusal or an issue from `@booki/core` into the person's language.
+ * Turns a refusal or an issue from `@booki-aui/core` into the person's language.
  * State keeps the English sentence, which is what an agent reads; only what
  * the screen shows is translated. Text it does not know comes back unchanged.
  * In Norwegian, the first render after the page opens may show English for

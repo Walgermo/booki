@@ -1,5 +1,5 @@
-import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
-import { FinancialDateField, VoucherComposer, useBookiLocale } from "@booki/react";
+import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
+import { FinancialDateField, VoucherComposer, useBookiLocale } from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useEndState } from "./end-state";
@@ -12,7 +12,7 @@ import { HARD_ACCOUNTS, PARTIAL_VAT_RULE } from "./hard-data";
  * The partial-VAT voucher on Booki, with the same composer as the other
  * voucher screens and no helper for the deduction. The composer treats a
  * line with a VAT code as a gross amount and splits the full VAT on that
- * rate (see vatPostings in @booki/core/voucher); it has no option for a
+ * rate (see vatPostings in @booki-aui/core/voucher); it has no option for a
  * share of the VAT. So the lines here are entered as they stand, without a
  * VAT code. The agent posts on its own when the voucher meets the company's
  * rule: it balances, it is dated, and it is at most 50 000 kr.
