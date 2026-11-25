@@ -194,8 +194,8 @@ export function PromptButton({ prompt }: { prompt: string }) {
             </p>
             <p className="prompt-slip__then">
               {t(
-                "It installs Booki, swaps your money and account fields for agent-ready controls, and shows you the agent working in your app.",
-                "Den installerer Booki, bytter beløps- og kontofeltene til agentklare kontroller, og viser dere agenten i arbeid i appen deres.",
+                "The prompt asks your coding agent to integrate Booki wherever it fits across your app and test which tasks an agent can carry out with the permissions you give it.",
+                "Prompten ber kodeagenten bruke Booki der det passer i hele appen og teste hvilke oppgaver en agent kan utføre med tilgangene dere gir den.",
               )}
             </p>
             <p className="prompt-slip__agents">Claude Code · Cursor · Codex · Copilot</p>

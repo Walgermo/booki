@@ -12,7 +12,7 @@ import { BookiLocaleProvider } from "@booki-aui/react";
 import { App } from "./App";
 import { LangProvider, SITE_META, renderedPageMeta, type PageMeta } from "./lib/lang";
 
-/** The setup prompt the Install button copies, also served as /prompt.md for agents. */
+/** The setup prompt the homepage copies, also served as /prompt.md for agents. */
 export { AGENT_PROMPT } from "./components/landing/shared";
 
 export async function render(url: string): Promise<{ html: string; meta: PageMeta }> {

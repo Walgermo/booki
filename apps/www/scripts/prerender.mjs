@@ -282,7 +282,7 @@ function llmsTxt(pages) {
     "",
     "## For coding agents",
     "",
-    `- [Setup prompt](${site}/prompt.md): what the Install button copies; paste it into a coding agent in your app`,
+    `- [Setup prompt](${site}/prompt.md): the prompt the homepage copies for your coding agent to integrate Booki across your app`,
     `- [Booki skill](${site}/skills/booki/SKILL.md): how to install and wire Booki in an app`,
     "- [Control catalogue](https://raw.githubusercontent.com/Walgermo/booki/main/packages/react/docs/llms.txt): every control and its agent actions",
     "- [Agent Contract](https://raw.githubusercontent.com/Walgermo/booki/main/spec/agent-contract.md): the draft specification (one implementation so far)",

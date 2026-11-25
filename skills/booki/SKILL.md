@@ -610,24 +610,30 @@ submit) are refused for an agent even when its roles allow them.
 
 ## 7. Implementation checklist
 
-1. Detect the stack (Vite/Next, package manager, existing providers, auth).
+1. Detect the stack, package manager, existing providers and auth. Walk the app's
+   routes and main workflows. Map each interaction to an appropriate catalog
+   control or primitive, starting with shared components. Note which actions each
+   role can take and which decisions require a person.
 2. Add the packages (section 1); import `@booki-aui/styles` once at the root if using the default look
    (map `--bk-*` tokens to the product's own).
 3. Root: `BookiLocaleProvider`, `BookiAccessProvider` with the signed-in person,
    `AgentPresence` and `AgentCursor`.
 4. One bridge in `src/agent.ts`: `createBookiAgent` + `cursor.wrap(allow)`,
    `attachAudit`, `createBookiHistory`, `registerTools`.
-5. Replace ad-hoc amount, bank, KID, date, account and voucher inputs with Booki
-   controls; lists with `DataTable`; dashboard figures with the chart controls.
-   An amount, code, account number or date field you keep: `useBookiField`. For the rest, define
-   primitives and create their parts.
+5. Implement the matches wherever those workflows occur. For example, use
+   `DataTable` for lists, chart controls for dashboards, or `DealPipeline` for
+   a sales pipeline. On financial screens, use the relevant money, bank, date
+   or voucher controls. Preserve the app's styling, validation and keyboard
+   behavior. For existing controls, follow “Your own components” above.
 6. Mark posts, payments and SCA with `data-agent-confirm`; approving, signing off,
    finalizing and releasing stay a person's buttons. Guard the same writes in the API
    with `@booki-aui/core/server`.
 7. Own posting state in one place (no two writers).
-8. Prove it in the running app: `window.agent.snapshot()` lists the screen's
-   controls with named actions; one `agent.act` sets an amount and the cursor
-   shows it; a marked step waits for a person; the audit log has `agent:bookkeeper`.
+8. Verify each adapted workflow in the running app with test data.
+   Use `window.agent.snapshot()` to discover the controls and their actions.
+   Exercise a representative task, such as filtering a list or setting an amount,
+   and check the resulting UI state. For writes, verify the agent's identity in
+   the audit log and test the applicable refusals and confirmation steps.
    Then run the readiness audit against the running screen (it only reads, and uses
    the installed Chrome): `npx @booki-aui/readiness <url of the screen> --timeout 120000` (a dev
    server compiling the page the first time needs the longer timeout). A screen behind a
