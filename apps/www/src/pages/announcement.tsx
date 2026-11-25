@@ -35,7 +35,7 @@ export function AnnouncementPage() {
   usePageMeta(META);
   const f = formatters(lang);
   const kpi = proofKpis();
-  const published = new Date("2026-11-22").toLocaleDateString(lang === "nb" ? "nb-NO" : "en-GB", {
+  const published = new Date("2026-11-25").toLocaleDateString(lang === "nb" ? "nb-NO" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -45,7 +45,7 @@ export function AnnouncementPage() {
     <main className="site-article">
       <header className="site-article__head">
         <p className="site-kicker">
-          {t("Announcement", "Lansering")} · <time dateTime="2026-11-22">{published}</time>
+          {t("Announcement", "Lansering")} · <time dateTime="2026-11-25">{published}</time>
         </p>
         <h1 className="site-article__title">
           {/* A no-break hyphen, so "agent-first" never splits over two lines. */}
