@@ -35,7 +35,10 @@ try {
     });
     const methods = ["snapshot", "query", "WebMCP snapshot", "WebMCP query"];
     for (const [index, result] of discovery.entries()) {
-      assert.ok(result.every((entry) => !entry.offPage), methods[index]);
+      assert.ok(
+        result.every((entry) => !entry.offPage),
+        methods[index],
+      );
       const fields = result.filter((entry) => entry.component === "amount-field");
       assert.equal(fields.length, 1, methods[index]);
       assert.equal(fields[0].label, label);
