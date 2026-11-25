@@ -12,14 +12,19 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.107",
+    "@ai-sdk/mcp": "^2.0.104",
+    "@ai-sdk/react": "^4.0.186",
     "@booki/core": "workspace:*",
     "@booki/react": "workspace:*",
     "@booki/styles": "workspace:*",
     "@ui-sdk/core": "0.1.0-beta.17",
     "@ui-sdk/react": "0.1.0-beta.17",
+    "ai": "^7.0.181",
     "next": "16.4.6",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.5",

@@ -30,7 +30,41 @@ in Norwegian; the code is commented in English.
 
 Each task reports what it did and what waits for a person. The scripted agent
 needs no key and runs the same every time; a model uses the same bridge
-(`snapshot`, then `act`), as in the accounts-payable example.
+(`snapshot`, then `act`), as the chat below shows.
+
+## Ask the agent (WebMCP)
+
+Below the tasks, **Spør agenten** is a chat with a model. You type "flytt
+Konsernrapportering til forhandling" and the board moves. There are no
+screenshots, no clicks, and no tools written for this app: Booki's
+`registerTools` offers the page's own `snapshot`, `act` and `query` through
+WebMCP, and [AI SDK's WebMCP client](https://ai-sdk.dev/cookbook/next/webmcp-tools)
+reads them from the page and hands them to the model.
+
+1. In Chrome, turn on `chrome://flags/#enable-webmcp-testing` and relaunch.
+2. Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`.
+3. Start the dev server and open http://localhost:3200.
+
+How it fits together:
+
+- **`lib/assistant.ts`, in the tab.** `registerTools(pageAgent(), { allow:
+  "bridge", prefix: "crm", agentId, audit })` registers `crm_snapshot`,
+  `crm_act` and `crm_query`. `createMCPClient` with
+  `Experimental_WebMCPTransport` lists them before each message and runs each
+  tool call the model makes.
+- **`lib/chat.ts`, on the server.** `createMCPTools` turns the definitions the
+  page sent into the model's tools, with no `execute`: running them belongs to
+  the tab. It takes only the three `crm_` tools, and runs only on a local
+  development server, since the example has no sign-in in front of the model.
+- **The same rules as the tasks.** A tool call goes through the same bridge:
+  marking a deal won or lost and removing an activity are refused as a
+  person's, the refusal comes back as a sentence the model passes on, every
+  refusal reaches the audit trail, and every change goes to the server with
+  the agent's credential, because it reports `source: "agent"`.
+
+The chat is experimental on both sides (WebMCP in Chrome, the transport in
+AI SDK). Without WebMCP it says how to turn it on and the rest of the page
+works as before.
 
 ## What to look at
 
@@ -68,3 +102,7 @@ pnpm --filter @booki/example-crm test
 `test/crm.test.ts` checks the server's rules on their own. `test/tasks.test.tsx`
 renders the page, runs each task through the bridge and checks what reached
 the server, with the page's `fetch` going straight to the real handler.
+`test/assistant.test.tsx` opens AI SDK's WebMCP client on the page's tools,
+with WebMCP as the browser gives it, and checks that a model's tool calls move
+a deal as the agent and are refused closing one; and that the chat route runs
+only locally and takes only the page's own tools.

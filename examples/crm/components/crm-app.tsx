@@ -21,6 +21,7 @@ import { AGREEMENTS, COMPANIES, HISTORY, OPEN_STAGES, PAST_STAYS, STAGES, STAGE_
 import { OWNERS, PEOPLE, ROLES, nameOf, type PersonId } from "@/lib/people";
 import { track } from "@/lib/writes";
 import { AgentPanel } from "./agent-panel";
+import { ChatPanel } from "./chat-panel";
 import { DealPanel } from "./deal-panel";
 
 /**
@@ -207,8 +208,9 @@ export function CrmApp({ initial }: { initial: Crm }) {
               />
             </section>
           </main>
-          <aside className="min-w-0">
+          <aside className="grid min-w-0 content-start gap-4">
             <AgentPanel me={me} dealId={deal.id} />
+            <ChatPanel me={me} />
           </aside>
         </div>
       </BookiAccessProvider>
