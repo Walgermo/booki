@@ -78,6 +78,8 @@ try {
 
   await page.locator('nav:visible a[href="/docs/financial-date-field"]').click();
   await page.waitForURL("**/docs/financial-date-field");
+  await page.getByRole("heading", { name: "FinancialDateField", exact: true }).waitFor();
+  await page.locator('input[type="date"]').first().waitFor();
   const result = await page.evaluate(async () => ({
     snapshot: window.agent.snapshot(),
     dates: await window.agent.query({ kind: "financial-date" }),
