@@ -3778,7 +3778,7 @@ main {
   padding: 0 0.875rem 0 0;
   border-radius: 999px;
   overflow: hidden;
-  background: color-mix(in oklab, var(--bk-fg) 4%, transparent);
+  background: var(--bk-card);
   box-shadow: inset 0 0 0 var(--hairline) var(--bk-border-strong);
   color: color-mix(in oklab, var(--bk-fg) 82%, var(--bk-bg));
   font-size: var(--text-ui);
@@ -3803,13 +3803,12 @@ main {
 
 @media (hover: hover) and (pointer: fine) {
   .site-news:hover {
-    background: color-mix(in oklab, var(--bk-fg) 7%, transparent);
     box-shadow: inset 0 0 0 var(--hairline) color-mix(in oklab, var(--bk-fg) 40%, transparent);
     color: var(--bk-fg);
   }
 }
 
-/* The label fills the pill's left end, on the card colour, with a link-blue dot. Lime stays the agent's colour. */
+/* The label fills the pill's left end: one quiet grey on the card, the dot in ink. Lime stays the agent's colour. */
 .site-news__tag {
   display: inline-flex;
   flex: none;
@@ -3818,11 +3817,10 @@ main {
   gap: 0.4375rem;
   padding: 0 0.75rem 0 0.8125rem;
   border-radius: 999px 0 0 999px;
-  background: var(--bk-card);
-  /* The pill's own edge on the outside, a hairline where the label meets the news. */
+  background: var(--bk-muted);
   box-shadow:
     inset 0 0 0 var(--hairline) var(--bk-border-strong),
-    inset calc(-1 * var(--hairline)) 0 0 color-mix(in oklab, var(--bk-fg) 12%, transparent);
+    inset calc(-1 * var(--hairline)) 0 0 var(--bk-border-strong);
   color: var(--bk-fg);
   font-size: 0.75rem;
   font-weight: 550;
@@ -3835,8 +3833,7 @@ main {
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 999px;
-  background: var(--bk-brand);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--bk-brand) 22%, transparent);
+  background: var(--bk-fg);
 }
 
 .site-news__text {
