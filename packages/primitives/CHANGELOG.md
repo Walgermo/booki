@@ -1,5 +1,12 @@
 # @booki/primitives
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [[`a6462a0`](https://github.com/Walgermo/booki/commit/a6462a086d56505249a3d6fa8481aa8f6dcd04b8)]:
+  - @booki-aui/core@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

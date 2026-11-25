@@ -1,5 +1,11 @@
 # @booki/core
 
+## 0.3.2
+
+### Patch Changes
+
+- [#129](https://github.com/Walgermo/booki/pull/129) [`a6462a0`](https://github.com/Walgermo/booki/commit/a6462a086d56505249a3d6fa8481aa8f6dcd04b8) Thanks [@Walgermo](https://github.com/Walgermo)! - With `language: "nb"`, the bridge's own step refusals from ui-sdk now come back in Norwegian too: "… har ingenting å trykke på nå.", "… tar ikke … nå. Den tar: …" and the sentence on what `press` takes. The refusal for an account number with other characters than digits now reads "can only hold digits" ("kan bare inneholde sifre").
+
 ## 0.3.1
 
 ### Patch Changes
