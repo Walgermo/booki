@@ -238,7 +238,7 @@ describe("AmountField native form validation", () => {
     fireEvent.click(submitter);
     expect(field.value).toBe("5500");
     expect(field.validationMessage).toMatch(/at most 5,000.00/);
-    expect(field).toHaveAttribute("aria-invalid", "true");
+    expect(field.getAttribute("aria-invalid")).toBe("true");
     expect(onValueChange).not.toHaveBeenCalled();
     expect(onSubmit).not.toHaveBeenCalled();
   });
