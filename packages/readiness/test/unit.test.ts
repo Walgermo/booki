@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { IRREVERSIBLE, looksLikeIconName, samePage } from "../src/audit.js";
-import { toHtml, toJson } from "../src/report.js";
+import { toConsole, toHtml, toJson } from "../src/report.js";
 import { RULES } from "../src/rules.js";
 import { score } from "../src/score.js";
 import { findSecrets, isIban, isKid, isKontonummer, isRoutingNumber } from "../src/secrets.js";
@@ -118,6 +118,7 @@ describe("reports", () => {
     title: "<Test>",
     checkedAt: "2026-11-21T10:00:00.000Z",
     ...score([{ rule: "field-unnamed" }]),
+    measured: true,
     findings: [
       {
         rule: "field-unnamed" as const,
@@ -129,6 +130,21 @@ describe("reports", () => {
     bridge: { source: null, components: 0, named: 0, actions: 0, controls: [], webmcpTools: [], error: null },
     snapshot: "- textbox [ref=e1]",
   };
+
+  it("shows no score when nothing was measured", () => {
+    const empty = {
+      ...report,
+      measured: false,
+      grade: "not measured" as const,
+      notMeasured: "Nothing measured: open the form first, then call check(page).",
+    };
+    const html = toHtml(empty);
+    expect(html).toContain("no score");
+    expect(html).not.toContain(">95<");
+    expect(html).toContain("check(page)");
+    expect(toConsole(empty)).toMatch(/no score[\s\S]*check\(page\)/);
+    expect(JSON.parse(toJson(empty))).toMatchObject({ measured: false, grade: "not measured", score: 95 });
+  });
 
   it("escapes page content in the HTML report", () => {
     const html = toHtml(report);

@@ -26,14 +26,19 @@ const yellow = paint("33");
 const green = paint("32");
 
 export function toConsole(report: Report): string {
-  const colour = report.score >= 85 ? green : report.score >= 60 ? yellow : red;
+  const colour = !report.measured ? yellow : report.score >= 85 ? green : report.score >= 60 ? yellow : red;
   const out: string[] = [];
   out.push(`${bold("Agent readiness")}  ${report.url}`);
   if (report.redirectedFrom) out.push(yellow(redirectNote(report)));
+  const headline = report.measured ? `${report.score}/100` : "no score";
   out.push(
-    `${colour(bold(`${report.score}/100`))} ${colour(report.grade)}  ${dim(`· ${report.findings.length} findings · snapshot ≈ ${report.metrics.snapshotTokens.toLocaleString("en-US")} tokens · bridge: ${bridgeLine(report)}`)}`,
+    `${colour(bold(headline))} ${colour(report.grade)}  ${dim(`· ${report.findings.length} findings · snapshot ≈ ${report.metrics.snapshotTokens.toLocaleString("en-US")} tokens · bridge: ${bridgeLine(report)}`)}`,
   );
   out.push("");
+  if (!report.measured) {
+    out.push(yellow(report.notMeasured ?? ""));
+    out.push("");
+  }
   const byRule = groupByRule(report.findings);
   for (const d of report.deductions) {
     const rule = RULES[d.rule];
@@ -48,7 +53,7 @@ export function toConsole(report: Report): string {
     if (rule.booki) out.push(`    ${dim("Booki:")} ${rule.booki}`);
     out.push("");
   }
-  if (!report.findings.length) out.push(green("Nothing found that stops an agent on this page."));
+  if (!report.findings.length && report.measured) out.push(green("Nothing found that stops an agent on this page."));
   return out.join("\n");
 }
 
@@ -81,7 +86,7 @@ export function redirectNote(report: Report): string {
 
 export function toHtml(report: Report): string {
   const byRule = groupByRule(report.findings);
-  const tone = report.score >= 85 ? "good" : report.score >= 60 ? "warn" : "bad";
+  const tone = !report.measured ? "warn" : report.score >= 85 ? "good" : report.score >= 60 ? "warn" : "bad";
   const sections = report.deductions
     .map((d) => {
       const rule = RULES[d.rule];
@@ -176,9 +181,10 @@ details pre { white-space: pre-wrap; font: 12px/1.4 ui-monospace, Menlo, monospa
 <h1>Agent readiness</h1>
 <p class="url">${esc(report.title)} · <a href="${esc(report.url)}">${esc(report.url)}</a> · ${esc(report.checkedAt.slice(0, 16).replace("T", " "))} UTC</p>
 ${report.redirectedFrom ? `<p class="redirect"><strong>${esc(redirectNote(report))}</strong></p>` : ""}
+${report.measured ? "" : `<p class="redirect"><strong>${esc(report.notMeasured ?? "")}</strong></p>`}
 
 <div class="summary">
-  <div class="score tone-${tone}">${report.score}<small>/100</small><div style="font-size:15px;font-weight:600;margin-top:6px">${esc(report.grade)}</div></div>
+  <div class="score tone-${tone}">${report.measured ? `${report.score}<small>/100</small>` : `<small>no score</small>`}<div style="font-size:15px;font-weight:600;margin-top:6px">${esc(report.grade)}</div></div>
   <dl class="facts">
     <div><dt>Findings</dt><dd>${report.findings.length}</dd></div>
     <div><dt>Snapshot</dt><dd>≈ ${report.metrics.snapshotTokens.toLocaleString("en-US")} tokens</dd></div>
@@ -191,10 +197,11 @@ ${report.redirectedFrom ? `<p class="redirect"><strong>${esc(redirectNote(report
 
 <div class="block">
   <h2>Score</h2>
+  ${report.measured ? "" : `<p class="muted"><strong>Not measured.</strong> There is no score: the bridge had no controls and the page has no fields or charts.</p>`}
   <p class="muted">100, minus each rule's points per finding, capped per rule. 85 and up: ready. 60 to 84: partly ready. Below 60: not ready.</p>
   <table><thead><tr><th>Rule</th><th>Contract</th><th class="num">Found</th><th class="num">Points</th></tr></thead><tbody>
   ${report.deductions.map((d) => `<tr><td><a href="#${d.rule}">${esc(RULES[d.rule].title)}</a></td><td>${esc(RULES[d.rule].contract)}</td><td class="num">${d.findings}</td><td class="num">−${d.points}</td></tr>`).join("")}
-  ${report.deductions.length ? "" : `<tr><td colspan="4">Nothing found.</td></tr>`}
+  ${report.deductions.length ? "" : `<tr><td colspan="4">${report.measured ? "Nothing found." : "Nothing found, and nothing measured."}</td></tr>`}
   </tbody></table>
 </div>
 

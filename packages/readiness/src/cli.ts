@@ -23,7 +23,8 @@ Options
   --wait-for <selector>   Wait until this selector is on the page
   --timeout <ms>          Give up on loading the page (and --wait-for) after this long (default 30000)
   --headed                Show the browser
-  --fail-under <score>    Exit with code 1 when the score is below this
+  --fail-under <score>    Exit with code 1 when the score is below this,
+                          or when nothing was measured (bridge with no controls)
   --snapshot              Include the full accessibility snapshot in the JSON
   -h, --help              This text
 `;
@@ -79,7 +80,7 @@ async function main(): Promise<number> {
   }
 
   const floor = values["fail-under"] ? Number(values["fail-under"]) : null;
-  return floor !== null && report.score < floor ? 1 : 0;
+  return floor !== null && (!report.measured || report.score < floor) ? 1 : 0;
 }
 
 main().then(

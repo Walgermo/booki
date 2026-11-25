@@ -56,7 +56,15 @@ export type Report = {
   title: string;
   checkedAt: string;
   score: number;
-  grade: "ready" | "partly ready" | "not ready";
+  grade: "ready" | "partly ready" | "not ready" | "not measured";
+  /**
+   * False when the bridge has no controls and the page has no fields or charts:
+   * the form may not be open yet, so
+   * `score` rests on almost nothing and `grade` is "not measured".
+   */
+  measured: boolean;
+  /** Set when `measured` is false: what to do instead. */
+  notMeasured?: string;
   /** Points lost per rule. */
   deductions: Array<{ rule: RuleId; findings: number; points: number }>;
   findings: Finding[];
@@ -263,6 +271,10 @@ export async function audit(input: string, options: AuditOptions = {}): Promise<
     await close();
   }
 }
+
+/** Said when the bridge has no controls and the page has no fields or charts, in the console, the HTML report and the JSON. */
+export const NOT_MEASURED =
+  "Nothing measured: the bridge has no controls and the page has no fields or charts, so the checks had nothing to compare. The tool never clicks: a form that appears after a row is selected or a button is pressed is not on the page yet. Open the form first (a Playwright step), then call check(page) from @booki-aui/readiness.";
 
 /** Checks an open page. Exposed for callers that drive their own browser. */
 export async function check(page: Page, url = page.url()): Promise<Report> {
@@ -552,12 +564,16 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
 
   const title = await page.title();
   const result = score(findings);
+  // Nothing to judge: no bridge controls, and no fields or charts for the DOM checks.
+  const measured = bridge.components > 0 || fields.length > 0 || charts.length > 0;
   return {
     tool: { name: "@booki-aui/readiness", version: VERSION },
     url,
     title,
     checkedAt: new Date().toISOString(),
     ...result,
+    measured,
+    ...(measured ? {} : { grade: "not measured" as const, notMeasured: NOT_MEASURED }),
     findings: sortFindings(findings),
     metrics: {
       snapshotChars: snapshot.length,

@@ -189,8 +189,8 @@ not sufficient.
   column header, a CSS selector and the element's HTML), why it matters to an
   agent, the fix, and Booki's control for it when one exists. It ends with the
   bridge's controls and actions and the full snapshot a browser agent reads.
-- **JSON:** the same data: `score`, `grade`, `deductions`, `findings`,
-  `metrics`, `bridge`. The raw snapshot is left out unless you pass
+- **JSON:** the same data: `score`, `grade`, `measured`, `deductions`,
+  `findings`, `metrics`, `bridge`. The raw snapshot is left out unless you pass
   `--snapshot`.
 
 Secrets the tool finds are masked (`86•••••••47`) everywhere in the output,
@@ -239,6 +239,28 @@ A page without a bridge can reach at most 75: the contract's bridge is what
 lets an agent act through named actions instead of guessing. A page with a
 bridge loses 5 points for each field the bridge leaves out, up to 30, so a
 bridge that offers only part of the screen no longer scores 100.
+
+### When nothing was measured
+
+The command line never clicks. A form that appears only after a row is
+selected or a button is pressed is not on the page it loads, so the bridge has
+no controls and the page has no fields or charts for the other checks to judge.
+A page without a bridge but with fields is still scored (and gets
+`bridge-missing`). When nothing is there to judge, the tool prints `no score` instead of a figure, the HTML report says the same,
+and the JSON report has `measured: false`, `grade: "not measured"` and a
+`notMeasured` text. `score` stays in the JSON so its shape does not change,
+but it is not a pass. With `--fail-under`, an unmeasured page exits with code 1.
+
+Open the form first, then check the open page:
+
+```ts
+import { check } from "@booki-aui/readiness"
+
+await page.getByRole("row", { name: "Invoice 1042" }).click()
+await page.getByRole("button", { name: "Edit" }).click()
+const report = await check(page)
+if (!report.measured) throw new Error(report.notMeasured)
+```
 
 ## Reference scores
 
