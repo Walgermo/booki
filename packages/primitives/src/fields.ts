@@ -29,14 +29,7 @@ export function checkFields(
  */
 export const QUERY_FORMAT = 'setSort(column, "asc"|"desc"); setFilter(column, text); setPage(1) is the first page';
 
-/**
- * The DOM event behind a person's edit, when a setter was called from a slot
- * handler. An agent's call passes plain values, never an Event, so its change
- * still reports `source: "agent"`.
- */
-export function asEvent(value: unknown): Event | undefined {
-  return typeof Event !== "undefined" && value instanceof Event ? value : undefined;
-}
+export { asEvent } from "./as-event.js";
 
 /**
  * The key of a person-only button on one record, such as "F-1#confirm". ui-sdk

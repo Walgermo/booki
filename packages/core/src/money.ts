@@ -1,5 +1,5 @@
 import { isoMinorUnits } from "./currency-minor-units.js";
-import { BookiError } from "./msg.js";
+import { moneyMessages } from "./msg-money.js";
 
 /** Integer minor-unit money. Never use floats as source of truth. */
 
@@ -14,13 +14,13 @@ export type Money = {
 /** ISO 4217 fraction digits for a currency with a defined minor unit. */
 export function minorDigitsFor(currency: BookiCurrencyCode): number {
   const digits = isoMinorUnits(currency);
-  if (digits === undefined) throw new BookiError("money.no-minor-unit", { currency });
+  if (digits === undefined) throw moneyMessages.error("money.no-minor-unit", { currency });
   return digits;
 }
 
 export function money(minor: number, currency: BookiCurrencyCode): Money {
   if (!Number.isSafeInteger(minor)) {
-    throw new BookiError("money.not-safe-integer", { value: String(minor) });
+    throw moneyMessages.error("money.not-safe-integer", { value: String(minor) });
   }
   // -0 is 0: it would print as "-NOK 0.00".
   return { minor: minor === 0 ? 0 : minor, currency: currency.toUpperCase() };
@@ -70,7 +70,7 @@ function digitsToMinor(negative: boolean, int: string, frac: string, minorDigits
  */
 export function fromMajor(major: number, currency: BookiCurrencyCode): Money {
   if (!Number.isFinite(major)) {
-    throw new BookiError("money.not-finite", { value: String(major) });
+    throw moneyMessages.error("money.not-finite", { value: String(major) });
   }
   const { negative, int, frac } = plainDecimal(major);
   return money(digitsToMinor(negative, int, frac, minorDigitsFor(currency)), currency);
@@ -85,23 +85,23 @@ export function fromMajor(major: number, currency: BookiCurrencyCode): Money {
 export function minorFromDecimal(text: string, currency: BookiCurrencyCode): number {
   const value = String(text).trim();
   const match = /^([+-])?(\d+)(?:\.(\d+))?$/.exec(value);
-  if (!match) throw new BookiError("money.not-decimal", { value });
+  if (!match) throw moneyMessages.error("money.not-decimal", { value });
   const [, sign, int, frac = ""] = match;
   const digits = minorDigitsFor(currency);
   if (/[1-9]/.test(frac.slice(digits))) {
-    throw new BookiError("money.too-precise", { value, digits, currency: String(currency) });
+    throw moneyMessages.error("money.too-precise", { value, digits, currency: String(currency) });
   }
   const whole = BigInt(int! + frac.slice(0, digits).padEnd(digits, "0"));
   const minor = sign === "-" ? -whole : whole;
   if (minor > BigInt(Number.MAX_SAFE_INTEGER) || minor < BigInt(Number.MIN_SAFE_INTEGER)) {
-    throw new BookiError("money.not-safe-integer", { value });
+    throw moneyMessages.error("money.not-safe-integer", { value });
   }
   return Number(minor) || 0;
 }
 
 /** Minor units back to exact decimal text in major units: 123450 NOK → "1234.50". */
 export function decimalFromMinor(minor: number, currency: BookiCurrencyCode): string {
-  if (!Number.isSafeInteger(minor)) throw new BookiError("money.not-safe-integer", { value: String(minor) });
+  if (!Number.isSafeInteger(minor)) throw moneyMessages.error("money.not-safe-integer", { value: String(minor) });
   const digits = minorDigitsFor(currency);
   const abs = String(Math.abs(minor)).padStart(digits + 1, "0");
   const text = digits ? `${abs.slice(0, -digits)}.${abs.slice(-digits)}` : abs;
@@ -134,7 +134,7 @@ export function subMoney(a: Money, b: Money): Money {
 
 export function assertSameCurrency(a: Money, b: Money): void {
   if (a.currency !== b.currency) {
-    throw new BookiError("money.currency-mismatch", { a: String(a.currency), b: String(b.currency) });
+    throw moneyMessages.error("money.currency-mismatch", { a: String(a.currency), b: String(b.currency) });
   }
 }
 

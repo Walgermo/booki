@@ -193,13 +193,13 @@ describe("AmountField human input", () => {
 });
 
 describe("AmountField native form validation", () => {
-  function renderForm(props: Partial<Parameters<typeof AmountField>[0]> = {}) {
+  function renderForm(props: Partial<Parameters<typeof AmountField>[0]> = {}, country: "NO" | "US" = "US") {
     const onSubmit = vi.fn((event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       return new FormData(event.currentTarget).get("amount");
     });
     const { getByTestId, getByRole } = render(
-      <BookiLocaleProvider defaultCountry="US">
+      <BookiLocaleProvider defaultCountry={country}>
         <form data-testid="amount-form" onSubmit={onSubmit}>
           <AmountField name="amount" defaultValue={312_500} {...props} />
           <button type="submit">Submit</button>
@@ -240,6 +240,19 @@ describe("AmountField native form validation", () => {
     expect(field.validationMessage).toMatch(/at most 5,000.00/);
     expect(field.getAttribute("aria-invalid")).toBe("true");
     expect(onValueChange).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["invalid", "Skriv inn et gyldig beløp, for eksempel 1,00."],
+    ["0,50", "Skriv inn et beløp på minst 1,00."],
+    ["5,01", "Skriv inn et beløp på høyst 5,00."],
+  ])("reports Norwegian native validation for %s", (draft, message) => {
+    const { field, form, onSubmit } = renderForm({ minMinor: 100, maxMinor: 500 }, "NO");
+    act(() => field.focus());
+    fireEvent.input(field, { target: { value: draft } });
+    expect(field.validationMessage).toBe(message);
+    form.requestSubmit();
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
