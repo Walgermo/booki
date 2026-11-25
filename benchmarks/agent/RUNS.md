@@ -62,3 +62,24 @@ measurement is without it, so those screens may come out slower or less often
 right.
 
 The scripted head-to-head (no model) on the site is from `h2h-2026-11-21T13-45-56-090Z.json`.
+
+## API side, 25 November 2026
+
+Every run of `pnpm proof --side api` (`src/api-bench.ts`), counted or not.
+Five runs per file except the first; effort `medium` for Claude, none for
+DeepSeek. The API has no tool that runs code, so "code calls" does not apply.
+These runs have no browser and read nothing of the machine they ran on; their
+full transcripts are in the result files (kept locally, like the others).
+All nine together cost $0.26 at the gateway's list price.
+
+| File | Task | Model | Right | Status |
+| --- | --- | --- | --- | --- |
+| `api-supplier-invoice-2026-11-25T10-31-45-786Z.json` | supplier-invoice | claude-haiku-5.5 | 1/1 | Not counted: a one-run check of the runner |
+| `api-supplier-invoice-2026-11-25T10-32-40-674Z.json` | supplier-invoice | claude-opus-5.5 | 5/5 | Counted |
+| `api-dashboard-2026-11-25T10-33-07-539Z.json` | dashboard | claude-opus-5.5 | 5/5 | Counted |
+| `api-supplier-invoice-2026-11-25T10-33-34-854Z.json` | supplier-invoice | claude-sonnet-5.5 | 5/5 | Counted |
+| `api-dashboard-2026-11-25T10-33-50-906Z.json` | dashboard | claude-sonnet-5.5 | 5/5 | Counted |
+| `api-supplier-invoice-2026-11-25T10-34-15-614Z.json` | supplier-invoice | claude-haiku-5.5 | 5/5 | Counted |
+| `api-dashboard-2026-11-25T10-34-39-566Z.json` | dashboard | claude-haiku-5.5 | 5/5 | Counted |
+| `api-supplier-invoice-2026-11-25T10-35-36-065Z.json` | supplier-invoice | deepseek-v4.1-flash-1017 | 5/5 | Counted |
+| `api-dashboard-2026-11-25T10-36-05-438Z.json` | dashboard | deepseek-v4.1-flash-1017 | 5/5 | Counted |

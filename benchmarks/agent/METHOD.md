@@ -413,16 +413,78 @@ pages, and in four runs to list folders, read files and scan ports on the
 benchmark machine. Those transcripts are not published; [RUNS.md](RUNS.md)
 lists every run.
 
-## API baseline (not run)
+## API side
 
-The same three tasks (voucher, supplier invoice, sales invoice) and the same
-end-state checks exist for an agent that has tool calls straight to a
-bookkeeping API and no screen. The code is in `src/api/`: an in-process
-`BookkeepingApi` for the Norwegian profile, its tool definitions, and
-`verify.ts`, which reuses the screen runs' expected numbers and check names.
-It is unit-tested (`pnpm --filter agent-benchmark test`) and has never been run
-against a model. No figures exist and none are published. The paid runs, the
-figures and the FAQ update on the site are still open under issue #13.
+An agent with tool calls straight to a bookkeeping API and no screen, run as
+one more side (key `api`) next to the rebuilt screens and Booki. Results are
+in the README; every run is in [RUNS.md](RUNS.md).
+
+**What it is.** `src/api/`: an in-process `BookkeepingApi` for the Norwegian
+profile (the same suppliers, customers, accounts and VAT codes as the Booki
+pages, and the same 50 000 kr auto-post rule), its tool definitions
+(`tools.ts`), and end-state checks (`verify.ts`) that reuse the screen runs'
+expected numbers and check names. For the dashboard there are three read
+endpoints, `get_monthly_results`, `get_receivables_aging` and
+`get_salary_totals`, that return what the dashboard's widgets show and no more:
+twelve months of revenue and costs, the receivables in three age buckets, and
+this month's payroll totals, from the same figures as the dashboard pages. The
+model gets all eleven tools on every task, as it would from one API.
+
+**How it runs.** `src/api-bench.ts`, started by `pnpm proof --side api`. The
+same system prompt and task text as the screen runs, the same loop
+(`loop.ts`), 30-step cap, top-level prompt caching, effort and gateway list
+prices; the key and prices come from the same code as `proof` (`gateway.ts`).
+Each run gets a fresh API, so every run starts from the same books. Tokens,
+requests, tool calls and wall time are counted as for the screens
+(`summary.ts` is shared with `bench`).
+
+**What "right" means.** The model has to end on its own (`end_turn`) and:
+
+- *Supplier invoice*: the API holds exactly one supplier invoice, for supplier
+  20001, number 8841, the two dates, KID 10012342, 15 500,00 gross, account
+  6800, VAT code MVA25, and posted. The API posts it itself under the
+  auto-post rule, as the Booki page does.
+- *Dashboard*: the answer passes the same check as the dashboard pages
+  (October's revenue and costs, the best month and its revenue, receivables
+  over 30 days), and the API holds no record at all, since the task says not
+  to change anything. The screens' dashboard check has no such test, because
+  their dashboards cannot be changed.
+
+The voucher and sales-invoice checks exist (`verifyVoucherApi`,
+`verifySalesInvoiceApi`) but were not run: those screen runs are withdrawn, so
+there is nothing to set them beside. They can be added to `src/api-tasks.ts`
+once the screens are measured again.
+
+**Where it is unfair to the API side.**
+
+- The system prompt says "You operate a web page". It was kept word for word
+  so the only difference is the tools; the API side has no page.
+- The tool descriptions were written before any model ran, and were not
+  changed after: Booki's controls were improved after models failed on them
+  (README), the API's were not. On the dashboard Haiku and DeepSeek passed a
+  field the aging read does not take, in every run, because its description
+  names `asOf`; that cost them one refused call a run.
+- It gets all eleven tools on every task, about 2 700 tool-definition tokens a
+  request, where the Booki bridge has three.
+
+**Where it is unfair to Booki and the screens.**
+
+- The API is built for exactly these tasks: one call takes the whole supplier
+  invoice, and the dashboard's three questions are answered by two reads that
+  return nothing else. A real ERP API has more endpoints, paging and
+  authentication, and its shape is not chosen for the task.
+- The API side gets no screen to read, which saves tokens, and no rules from
+  the controls either: what the screens and Booki show a person (a VAT split, a
+  balance, a refusal in a field) the API states only in its descriptions and
+  its refusals. Here the API checks the KID, dates, accounts and VAT codes as
+  Booki does; an API that checks less would let a wrong posting through, and
+  nothing here measures that.
+- Nobody watches an API run. Booki's case is a screen a person watches,
+  corrects and approves in; this measures cost, time and the end state, not
+  that.
+- The API and its checks run in process: a tool call takes microseconds. A
+  real API over HTTP adds a round trip per call; the Booki bridge runs in a
+  browser.
 
 ## Threats to validity
 

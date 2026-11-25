@@ -714,6 +714,126 @@
           "cacheWrite": 0.125,
           "cacheRead": 0.01
         }
+      },
+      {
+        "file": "benchmarks/agent/results/api-dashboard-2026-11-25T10-33-07-539Z.json",
+        "task": "dashboard",
+        "model": "anthropic/claude-opus-5.5",
+        "timestamp": "2026-11-25T10:33:07.539Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 4,
+          "output": 20,
+          "cacheWrite": 5,
+          "cacheRead": 0.19999999999999998
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-dashboard-2026-11-25T10-33-50-906Z.json",
+        "task": "dashboard",
+        "model": "anthropic/claude-sonnet-5.5",
+        "timestamp": "2026-11-25T10:33:50.906Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 2,
+          "output": 10,
+          "cacheWrite": 2.5,
+          "cacheRead": 0.09999999999999999
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-dashboard-2026-11-25T10-34-39-566Z.json",
+        "task": "dashboard",
+        "model": "anthropic/claude-haiku-5.5",
+        "timestamp": "2026-11-25T10:34:39.566Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 0.09999999999999999,
+          "output": 0.5,
+          "cacheWrite": 0.125,
+          "cacheRead": 0.01
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-dashboard-2026-11-25T10-36-05-438Z.json",
+        "task": "dashboard",
+        "model": "deepseek/deepseek-v4.1-flash-1017",
+        "timestamp": "2026-11-25T10:36:05.438Z",
+        "runsPerPage": 5,
+        "effort": null,
+        "prices": {
+          "input": 0.3,
+          "output": 1.2,
+          "cacheWrite": 0.3,
+          "cacheRead": 0.007
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-supplier-invoice-2026-11-25T10-32-40-674Z.json",
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-opus-5.5",
+        "timestamp": "2026-11-25T10:32:40.674Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 4,
+          "output": 20,
+          "cacheWrite": 5,
+          "cacheRead": 0.19999999999999998
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-supplier-invoice-2026-11-25T10-33-34-854Z.json",
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-sonnet-5.5",
+        "timestamp": "2026-11-25T10:33:34.854Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 2,
+          "output": 10,
+          "cacheWrite": 2.5,
+          "cacheRead": 0.09999999999999999
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-supplier-invoice-2026-11-25T10-34-15-614Z.json",
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-haiku-5.5",
+        "timestamp": "2026-11-25T10:34:15.614Z",
+        "runsPerPage": 5,
+        "effort": "medium",
+        "prices": {
+          "input": 0.09999999999999999,
+          "output": 0.5,
+          "cacheWrite": 0.125,
+          "cacheRead": 0.01
+        },
+        "side": "api"
+      },
+      {
+        "file": "benchmarks/agent/results/api-supplier-invoice-2026-11-25T10-35-36-065Z.json",
+        "task": "supplier-invoice",
+        "model": "deepseek/deepseek-v4.1-flash-1017",
+        "timestamp": "2026-11-25T10:35:36.065Z",
+        "runsPerPage": 5,
+        "effort": null,
+        "prices": {
+          "input": 0.3,
+          "output": 1.2,
+          "cacheWrite": 0.3,
+          "cacheRead": 0.007
+        },
+        "side": "api"
       }
     ],
     "sides": [
@@ -1314,6 +1434,110 @@
         "tokens": 31077,
         "costUsd": 0.001824335,
         "wallMs": 11568
+      },
+      {
+        "task": "dashboard",
+        "model": "anthropic/claude-opus-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 2,
+        "requests": 2,
+        "tokens": 6675,
+        "costUsd": 0.009508200000000001,
+        "wallMs": 4933
+      },
+      {
+        "task": "dashboard",
+        "model": "anthropic/claude-sonnet-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 2,
+        "requests": 2,
+        "tokens": 6541,
+        "costUsd": 0.0029241,
+        "wallMs": 2693
+      },
+      {
+        "task": "dashboard",
+        "model": "anthropic/claude-haiku-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 3,
+        "requests": 3,
+        "tokens": 10440,
+        "costUsd": 0.00045411000000000003,
+        "wallMs": 4619
+      },
+      {
+        "task": "dashboard",
+        "model": "deepseek/deepseek-v4.1-flash-1017",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 3,
+        "requests": 3,
+        "tokens": 7467,
+        "costUsd": 0.000904908,
+        "wallMs": 5280
+      },
+      {
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-opus-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 4,
+        "requests": 3,
+        "tokens": 11181,
+        "costUsd": 0.0187768,
+        "wallMs": 8673
+      },
+      {
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-sonnet-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 4,
+        "requests": 3,
+        "tokens": 10942,
+        "costUsd": 0.006792,
+        "wallMs": 4967
+      },
+      {
+        "task": "supplier-invoice",
+        "model": "anthropic/claude-haiku-5.5",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 4,
+        "requests": 3,
+        "tokens": 11216,
+        "costUsd": 0.0005924249999999999,
+        "wallMs": 4309
+      },
+      {
+        "task": "supplier-invoice",
+        "model": "deepseek/deepseek-v4.1-flash-1017",
+        "key": "api",
+        "name": "API",
+        "runs": 5,
+        "succeeded": 5,
+        "toolCalls": 5,
+        "requests": 4,
+        "tokens": 12302,
+        "costUsd": 0.001808616,
+        "wallMs": 10591
       }
     ]
   }

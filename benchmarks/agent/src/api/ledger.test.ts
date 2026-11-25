@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { isValidKid } from "@booki/core";
+import { DASHBOARD_EXPECTED } from "../verify.js";
 import { ApiError, BookkeepingApi, REFERENCE } from "./ledger.js";
 
 const voucherLines = (gross: number) => [
@@ -374,5 +375,33 @@ describe("what the API does not do", () => {
     for (const forbidden of ["approve", "finalize", "sign", "release", "send", "post"]) {
       assert.ok(!names.includes(forbidden), `${forbidden} must not be a method`);
     }
+  });
+});
+
+describe("dashboard reads", () => {
+  it("return the figures the dashboard pages draw, so the dashboard check holds for them", () => {
+    const api = new BookkeepingApi();
+    const months = api.monthlyResults();
+    assert.equal(months.length, 12);
+    assert.equal(months[0]!.period, "2025-11");
+    const october = months.at(-1)!;
+    assert.equal(october.period, "2026-10");
+    assert.equal(october.revenueMinor, DASHBOARD_EXPECTED.octoberRevenueMinor);
+    assert.equal(october.costsMinor, DASHBOARD_EXPECTED.octoberCostsMinor);
+    const best = months.reduce((top, month) => (month.revenueMinor > top.revenueMinor ? month : top));
+    assert.equal(best.period, "2025-12");
+    assert.equal(best.revenueMinor, DASHBOARD_EXPECTED.maxRevenueMinor);
+    const aging = api.receivablesAging();
+    assert.equal(aging.asOf, "2026-10-31");
+    assert.equal(aging.over30DaysMinor, DASHBOARD_EXPECTED.over30Minor);
+    assert.equal(aging.notDueMinor + aging.days1to30Minor + aging.over30DaysMinor, aging.totalMinor);
+  });
+
+  it("hand out copies", () => {
+    const api = new BookkeepingApi();
+    api.monthlyResults()[0]!.revenueMinor = 0;
+    api.payroll().employees = 0;
+    assert.notEqual(api.monthlyResults()[0]!.revenueMinor, 0);
+    assert.equal(api.payroll().employees, 4);
   });
 });

@@ -5,6 +5,7 @@
  * - "legacy": the old in-process imitation of it (`--browser-tools legacy`),
  *   kept only as a fallback for machines where the server cannot run.
  * - "bridge": ui-sdk's three agent tools, run in the page against `window.agent`.
+ * - "api": the bookkeeping API's tools, no page (built in src/api-bench.ts).
  *
  * `evaluate` is the harness's own window into the page, for readiness and the
  * end-state checks. The model never sees it and it is never counted.
@@ -20,7 +21,7 @@ import { startPlaywrightMcp } from "./mcp.js";
 import { bridgeTools, browserTools, type ToolOutcome } from "./tools.js";
 
 export type BrowserTools = "mcp" | "legacy";
-export type SessionKind = BrowserTools | "bridge";
+export type SessionKind = BrowserTools | "bridge" | "api";
 
 export type ResultBlock = Anthropic.TextBlockParam | Anthropic.ImageBlockParam;
 

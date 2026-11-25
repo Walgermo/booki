@@ -101,6 +101,53 @@ Found along the way, and acted on:
   own sentence with the call to make, and a short chart is listed whole. After
   both fixes Haiku and DeepSeek were right 5 of 5 on the Booki voucher.
 
+## Booki against an agent on an API, 25 November 2026
+
+The same two counted tasks, the same four models, system prompt, task text,
+loop, 30-step cap, effort (`medium` for Claude, none for DeepSeek), caching and
+gateway list prices as above, with the bookkeeping API's tools (`src/api/`) and
+nothing else: no page, no browser, no bridge. Run with `pnpm proof --side api`,
+five runs per model and task. Medians. Booki and Tripletex columns are the runs
+of 21 November above. What the API side is, and where it is unfair to either
+side: [METHOD.md](METHOD.md#api-side).
+
+Each cell: right · tool calls · tokens · start to finish · cost per run.
+
+| Task | Model | Tripletex | Booki | API |
+| --- | --- | --- | --- | --- |
+| Supplier invoice | Claude Opus 5.5 | 5/5 · 24 · 209 406 · 32.3 s · $0.181 | 5/5 · 4 · 19 294 · 12.4 s · $0.031 | **5/5 · 4 · 11 181 · 8.7 s · $0.019** |
+| Supplier invoice | Claude Sonnet 5.5 | 5/5 · 20 · 143 377 · 21.0 s · $0.056 | 5/5 · 3 · 13 342 · 7.1 s · $0.008 | **5/5 · 4 · 10 942 · 5.0 s · $0.007** |
+| Supplier invoice | Claude Haiku 5.5 | 4/5 · 23 · 273 975 · 27.9 s · $0.007 | 5/5 · 5 · 23 551 · 7.2 s · $0.0014 | **5/5 · 4 · 11 216 · 4.3 s · $0.0006** |
+| Supplier invoice | DeepSeek V4.1 Flash | 4/5 · 23 · 310 167 · 48.7 s · $0.015 | 5/5 · 6 · 24 488 · 13.1 s · $0.0031 | **5/5 · 5 · 12 302 · 10.6 s · $0.0018** |
+| Dashboard | Claude Opus 5.5 | 5/5 · 4 · 60 023 · 22.1 s · $0.069 | 5/5 · 1 · 5 755 · 5.8 s · $0.0107 | 5/5 · 2 · 6 675 · 4.9 s · $0.0095 |
+| Dashboard | Claude Sonnet 5.5 | 5/5 · 6 · 73 664 · 18.0 s · $0.036 | 5/5 · 1 · 5 526 · 3.6 s · $0.0029 | 5/5 · 2 · 6 541 · 2.7 s · $0.0029 |
+| Dashboard | Claude Haiku 5.5 | 5/5 · 16 · 237 170 · 56.3 s · $0.006 | 5/5 · 1 · 5 799 · 3.3 s · $0.0003 | 5/5 · 3 · 10 440 · 4.6 s · $0.0005 |
+| Dashboard | DeepSeek V4.1 Flash | 4/5 · 21 · 317 984 · 71.7 s · $0.013 | 5/5 · 1 · 4 476 · 4.0 s · $0.0010 | 5/5 · 3 · 7 467 · 5.3 s · $0.0009 |
+
+What it shows:
+
+- **The API was right as often as Booki.** 40 of 40 runs, as Booki; the rebuilt
+  screens were right 35 of 40 on these two tasks.
+- **On the supplier invoice the API is cheaper and faster for every model.**
+  1.1× (Sonnet) to 2.4× (Haiku) cheaper than Booki, and 1.2× (DeepSeek) to 1.7×
+  (Haiku) faster, with about half Booki's tokens. The Claude models made the
+  same four calls every time: list suppliers, VAT codes and accounts, then one
+  write. DeepSeek read the books back once more after writing.
+- **On the dashboard the two are about even.** Booki answered in one call, the
+  API in two: monthly results and the receivables aging. Haiku and DeepSeek
+  took three, because they passed `asOf` to the aging read in every run and
+  were refused (it takes no fields; its description names `asOf` as a field of
+  the answer, which invited it). The API was a little cheaper and faster for
+  Opus and Sonnet, a little dearer and slower for Haiku and DeepSeek: within
+  $0.0013 and 1.3 s a run either way. The description was left as it was run.
+- **What Booki adds is not price.** On these tasks an agent with an API it was
+  built for does at least as well as one on Booki. Booki's case is a screen a
+  person watches, corrects and decides in, where the API has no screen at all;
+  both are far ahead of an agent reading a screen built for people.
+
+Five runs per cell is few, and the tokens are small enough that a few hundred
+either way move the cost ratio; read the ratios as an indication.
+
 ## Workflow results, 21 November 2026
 
 Three workflow tasks, each a month's worth of one job on one page per side:
@@ -278,10 +325,14 @@ ANTHROPIC_API_KEY=… pnpm --filter agent-benchmark bench --task reconcile
 ANTHROPIC_API_KEY=… pnpm --filter agent-benchmark bench --task close
 ```
 
-The API baseline (the same three tasks with tool calls to a bookkeeping API and
-no screen) is in `src/api/`, and it has no run yet; see
-[METHOD.md](METHOD.md#api-baseline-not-run). `pnpm --filter agent-benchmark test`
-runs its unit tests, which never call a model.
+The API side (the same tasks with tool calls to a bookkeeping API and no
+screen) runs with `pnpm --filter agent-benchmark proof --side api [--task
+supplier-invoice] [--model …]`. It needs no site, uses the same key, gateway
+prices and effort as `proof`, and writes `results/api-<task>-<timestamp>.json`
+in the shape of a bench file. `node apps/www/scripts/bench-export.mjs --api`
+copies its medians into the site's data without touching any other figure; see
+[METHOD.md](METHOD.md#api-side). `pnpm --filter agent-benchmark test` runs its
+unit tests, which never call a model.
 
 It builds the packages, starts the site on port 5199 (or uses `--url`), starts
 one Playwright MCP server per run on the installed Chrome (`--browser
