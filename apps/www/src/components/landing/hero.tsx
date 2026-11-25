@@ -66,7 +66,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           <p>
             {t(
               "Without labels in the fuse box, you guess. Booki labels every field and button, so the agent gets it right the first time.",
-      "Uten merking i sikringsskapet må du prøve deg fram. Booki merker hvert felt og hver knapp, så agenten treffer riktig første gang.",
+              "Uten merking i sikringsskapet må du prøve deg fram. Booki merker hvert felt og hver knapp, så agenten treffer riktig første gang.",
             )}
           </p>
         </blockquote>
