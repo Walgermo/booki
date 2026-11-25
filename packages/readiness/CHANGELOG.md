@@ -1,5 +1,11 @@
 # @booki/readiness
 
+## 0.2.3
+
+### Patch Changes
+
+- [#132](https://github.com/Walgermo/booki/pull/132) [`e4d4d0d`](https://github.com/Walgermo/booki/commit/e4d4d0d19a303ad7b27588b8045712e59d94e907) Thanks [@Walgermo](https://github.com/Walgermo)! - The JSON report's `tool.version` is the installed version of `@booki-aui/readiness`; it always said 0.1.0.
+
 ## 0.2.2
 
 ### Patch Changes
