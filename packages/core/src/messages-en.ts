@@ -182,6 +182,9 @@ export const EN = {
   "invoice.credit-note-needs-original": "A credit note must say which invoice it corrects.",
   "invoice.credit-note-original-missing": 'The credit note points at invoice "{id}", which was not found.',
   "invoice.original-not-creditable": 'Invoice "{id}" is {status}; only a finalized or paid invoice can be credited.',
+  "invoice.credit-currency-mismatch":
+    "Credit note {note} is in {currency}. It must use {originalCurrency}, the currency of invoice {original}.",
+  "invoice.amount-out-of-range": "Invoice calculation gives {value} minor units, outside the safe integer range.",
   "invoice.credit-too-large":
     "The credit note is {gross} minor units, but only {open} is left to credit on invoice {number}.",
   "invoice.only-credit-note-points": "Only a credit note can point at another invoice.",
@@ -203,6 +206,7 @@ export const EN = {
   "signoff.not-signed": '"{level}" is not signed, so there is nothing to withdraw.',
   "signoff.open-points": 'Document "{id}" still has {count} open point(s). Close them before signing.',
   "sheets.no-sheet": 'No open sheet "{key}". Open: {keys}.',
+  "money.no-minor-unit": "Currency {currency} has no defined minor unit in the current ISO 4217 list.",
   "money.not-decimal": '"{value}" is not decimal text in major units, like "1234.50".',
   "money.too-precise":
     '"{value}" has more than {digits} decimals, which {currency} does not have. Round it first, on purpose.',

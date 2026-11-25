@@ -59,11 +59,19 @@ export type InvoiceTotals = {
 };
 
 /** Round half away from zero, on exact integer arithmetic. */
-function divRound(numerator: bigint, denominator: bigint): number {
+function divRound(numerator: bigint, denominator: bigint): bigint {
   const negative = numerator < 0n;
   const abs = negative ? -numerator : numerator;
   const rounded = (abs * 2n + denominator) / (denominator * 2n);
-  return Number(negative ? -rounded : rounded);
+  return negative ? -rounded : rounded;
+}
+
+function safeMinor(value: bigint): number {
+  const minor = Number(value);
+  if (!Number.isSafeInteger(minor)) {
+    throw new BookiError("invoice.amount-out-of-range", { value: String(value) });
+  }
+  return minor;
 }
 
 function whole(value: unknown, what: string, lineId: string, min = 0): number {
@@ -101,30 +109,33 @@ export function lineNetMinor(line: InvoiceLine): number {
   validateInvoiceLine(line);
   const gross = BigInt(line.quantityMilli) * BigInt(line.unitPriceMinor);
   const keep = BigInt(10_000 - (line.discountBp ?? 0));
-  return divRound(gross * keep, 1000n * 10_000n);
+  return safeMinor(divRound(gross * keep, 1000n * 10_000n));
 }
 
 /** Totals computed from the lines. A total is never typed in. */
 export function invoiceTotals(lines: InvoiceLine[]): InvoiceTotals {
-  const groups = new Map<string, InvoiceTaxGroup>();
+  const groups = new Map<string, Omit<InvoiceTaxGroup, "netMinor" | "taxMinor"> & { netMinor: bigint }>();
   for (const line of lines) {
     const key = `${line.taxCategory}:${line.taxRateBp}`;
+    const net = BigInt(lineNetMinor(line));
     const group = groups.get(key) ?? {
       taxCategory: line.taxCategory,
       taxRateBp: line.taxRateBp,
-      netMinor: 0,
-      taxMinor: 0,
+      netMinor: 0n,
     };
-    group.netMinor += lineNetMinor(line);
+    group.netMinor += net;
     groups.set(key, group);
   }
-  const list = [...groups.values()].map((group) => ({
-    ...group,
-    taxMinor: divRound(BigInt(group.netMinor) * BigInt(group.taxRateBp), 10_000n),
-  }));
-  const netMinor = list.reduce((sum, group) => sum + group.netMinor, 0);
-  const taxMinor = list.reduce((sum, group) => sum + group.taxMinor, 0);
-  return { netMinor, taxMinor, grossMinor: netMinor + taxMinor, groups: list };
+
+  let net = 0n;
+  let tax = 0n;
+  const list = [...groups.values()].map((group) => {
+    const groupTax = divRound(group.netMinor * BigInt(group.taxRateBp), 10_000n);
+    net += group.netMinor;
+    tax += groupTax;
+    return { ...group, netMinor: safeMinor(group.netMinor), taxMinor: safeMinor(groupTax) };
+  });
+  return { netMinor: safeMinor(net), taxMinor: safeMinor(tax), grossMinor: safeMinor(net + tax), groups: list };
 }
 
 /** Throws unless the invoice is a draft. A fixed invoice is corrected by credit note. */
@@ -136,12 +147,27 @@ export function assertEditable(invoice: Invoice): void {
   }
 }
 
+function assertCreditCurrency(original: Invoice, note: Invoice): void {
+  if (note.currency.toUpperCase() !== original.currency.toUpperCase()) {
+    throw new BookiError("invoice.credit-currency-mismatch", {
+      note: String(note.number ?? note.id),
+      currency: note.currency,
+      original: String(original.number ?? original.id),
+      originalCurrency: original.currency,
+    });
+  }
+}
+
 /** Gross still open on an invoice after the credit notes already issued against it. */
 export function creditableMinor(original: Invoice, creditNotes: Invoice[]): number {
-  const credited = creditNotes
-    .filter((note) => note.creditOf === original.id && note.status !== "draft" && note.status !== "void")
-    .reduce((sum, note) => sum + invoiceTotals(note.lines).grossMinor, 0);
-  return invoiceTotals(original.lines).grossMinor - credited;
+  let open = BigInt(invoiceTotals(original.lines).grossMinor);
+  for (const note of creditNotes) {
+    if (note.kind !== "credit-note" || note.creditOf !== original.id) continue;
+    if (note.status !== "finalized" && note.status !== "paid") continue;
+    assertCreditCurrency(original, note);
+    open -= BigInt(invoiceTotals(note.lines).grossMinor);
+  }
+  return safeMinor(open);
 }
 
 /**
@@ -160,6 +186,13 @@ export function invoiceIssues(invoice: Invoice, others: Invoice[] = []): string[
     }
   }
   if (issues.length > 0) return issues;
+  let gross: number;
+  try {
+    gross = invoiceTotals(invoice.lines).grossMinor;
+  } catch (error) {
+    if (!(error instanceof BookiError)) throw error;
+    return [error.message];
+  }
   if (invoice.lines.some((line) => line.taxCategory === "AE" || line.taxCategory === "K")) {
     if (!invoice.customerTaxId?.trim()) {
       issues.push(msg("invoice.customer-vat-number"));
@@ -171,16 +204,21 @@ export function invoiceIssues(invoice: Invoice, others: Invoice[] = []): string[
       issues.push(msg("invoice.credit-note-needs-original"));
     } else if (!original) {
       issues.push(msg("invoice.credit-note-original-missing", { id: invoice.creditOf }));
-    } else if (original.kind !== "invoice" || original.status === "draft" || original.status === "void") {
+    } else if (original.kind !== "invoice" || (original.status !== "finalized" && original.status !== "paid")) {
       issues.push(msg("invoice.original-not-creditable", { id: invoice.creditOf, status: original.status }));
     } else {
-      const open = creditableMinor(
-        original,
-        others.filter((item) => item.id !== invoice.id),
-      );
-      const gross = invoiceTotals(invoice.lines).grossMinor;
-      if (gross > open) {
-        issues.push(msg("invoice.credit-too-large", { gross, open, number: String(original.number ?? original.id) }));
+      try {
+        assertCreditCurrency(original, invoice);
+        const open = creditableMinor(
+          original,
+          others.filter((item) => item.id !== invoice.id),
+        );
+        if (gross > open) {
+          issues.push(msg("invoice.credit-too-large", { gross, open, number: String(original.number ?? original.id) }));
+        }
+      } catch (error) {
+        if (!(error instanceof BookiError)) throw error;
+        issues.push(error.message);
       }
     }
   } else if (invoice.creditOf) {
@@ -205,7 +243,7 @@ export function finalizeInvoice(invoice: Invoice, number: string, others: Invoic
 /** A draft credit note for a finalized or paid invoice. Defaults to crediting every line. */
 export function draftCreditNote(original: Invoice, id: string, lines: InvoiceLine[] = original.lines): Invoice {
   if (original.kind !== "invoice") throw new BookiError("invoice.only-invoice-creditable");
-  if (original.status === "draft" || original.status === "void") {
+  if (original.status !== "finalized" && original.status !== "paid") {
     throw new BookiError("invoice.nothing-to-credit", {
       number: String(original.number ?? original.id),
       status: original.status,

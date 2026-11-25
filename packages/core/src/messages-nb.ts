@@ -195,6 +195,10 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "invoice.credit-note-original-missing": 'Kreditnotaen viser til fakturaen "{id}", som ikke ble funnet.',
   "invoice.original-not-creditable":
     'Fakturaen "{id}" er {status}; bare en ferdigstilt eller betalt faktura kan krediteres.',
+  "invoice.credit-currency-mismatch":
+    "Kreditnota {note} er i {currency}. Den må bruke {originalCurrency}, valutaen til faktura {original}.",
+  "invoice.amount-out-of-range":
+    "Fakturaberegningen gir {value} i minste valutaenhet, utenfor området for sikre heltall.",
   "invoice.credit-too-large":
     "Kreditnotaen er på {gross} i minste myntenhet, men bare {open} gjenstår å kreditere på fakturaen {number}.",
   "invoice.only-credit-note-points": "Bare en kreditnota kan vise til en annen faktura.",
@@ -216,6 +220,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "signoff.not-signed": '"{level}" er ikke signert, så det er ingenting å trekke.',
   "signoff.open-points": 'Dokumentet "{id}" har fortsatt {count} åpne punkter. Lukk dem før du signerer.',
   "sheets.no-sheet": 'Ingen åpen side "{key}". Åpne: {keys}.',
+  "money.no-minor-unit": "Valuta {currency} har ingen definert minste valutaenhet i gjeldende ISO 4217-liste.",
   "money.not-decimal": '"{value}" er ikke et desimaltall i hele enheter, som "1234.50".',
   "money.too-precise":
     '"{value}" har flere enn {digits} desimaler, og det har ikke {currency}. Rund av først, med vilje.',

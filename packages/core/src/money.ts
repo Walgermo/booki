@@ -1,3 +1,4 @@
+import { isoMinorUnits } from "./currency-minor-units.js";
 import { BookiError } from "./msg.js";
 
 /** Integer minor-unit money. Never use floats as source of truth. */
@@ -10,20 +11,11 @@ export type Money = {
   currency: BookiCurrencyCode;
 };
 
-/** ISO 4217 default fraction digits for MVP currencies (+ extensible). */
-const MINOR_DIGITS: Record<string, number> = {
-  NOK: 2,
-  USD: 2,
-  EUR: 2,
-  GBP: 2,
-  SEK: 2,
-  DKK: 2,
-  JPY: 0,
-  KWD: 3,
-};
-
+/** ISO 4217 fraction digits for a currency with a defined minor unit. */
 export function minorDigitsFor(currency: BookiCurrencyCode): number {
-  return MINOR_DIGITS[currency.toUpperCase()] ?? 2;
+  const digits = isoMinorUnits(currency);
+  if (digits === undefined) throw new BookiError("money.no-minor-unit", { currency });
+  return digits;
 }
 
 export function money(minor: number, currency: BookiCurrencyCode): Money {
@@ -164,9 +156,9 @@ export function formatMoney(
   const m = typeof value === "number" ? money(value, options?.currency ?? "NOK") : value;
   const locale = options?.locale ?? "en-US";
   const accounting = options?.accounting ?? false;
+  const minorDigits = minorDigitsFor(m.currency);
   if (m.minor === 0 && options?.zero !== undefined) return options.zero;
-  const digits =
-    options?.trimZeroFraction && m.minor % 10 ** minorDigitsFor(m.currency) === 0 ? 0 : minorDigitsFor(m.currency);
+  const digits = options?.trimZeroFraction && m.minor % 10 ** minorDigits === 0 ? 0 : minorDigits;
 
   if (options?.withCurrency === false) {
     const text = new Intl.NumberFormat(locale, {
@@ -361,14 +353,14 @@ export function parseMajorInput(
 /**
  * Parse typed amount text straight to integer minor units, without float
  * multiplication. Returns null when the text isn't a number, has more
- * fraction digits than the currency (JPY 0, NOK 2, KWD 3), or is outside the
- * safe integer range.
+ * fraction digits than the currency (JPY 0, NOK 2, KWD 3), is outside the
+ * safe integer range, or the currency has no defined ISO 4217 minor unit.
  */
 export function parseToMinor(input: string, currency: BookiCurrencyCode, options?: { locale?: string }): number | null {
   const parsed = parseAmountText(input, { locale: options?.locale, currency });
   if (!parsed) return null;
-  const digits = minorDigitsFor(currency);
-  if (parsed.frac.length > digits) return null;
+  const digits = isoMinorUnits(currency);
+  if (digits === undefined || parsed.frac.length > digits) return null;
   const minor = digitsToMinor(parsed.negative, parsed.int, parsed.frac, digits);
   return Number.isSafeInteger(minor) ? minor : null;
 }
