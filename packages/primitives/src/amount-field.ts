@@ -40,6 +40,7 @@ export type AmountFieldState = {
    */
   minor: number | null;
   draft: string;
+  draftRefusal: string | null;
   focused: boolean;
   /** Value when the current human edit began (focus); restored on a refused blur. */
   editStart: number | null;
@@ -116,6 +117,7 @@ export const amountField = definePrimitive({
       allowEmpty,
       minor: value,
       draft: value === null ? "" : formatMinor(value, currency, locale),
+      draftRefusal: null,
       focused: false,
       editStart: null,
       currency,
@@ -146,8 +148,12 @@ export const amountField = definePrimitive({
     const change = createChange(context);
 
     function commitMinor(next: number, reason: string, event?: Event, keepDraft = false) {
-      const { currency, locale, value, empty } = context.store.get();
-      if (next === value && !empty) return false;
+      const { currency, locale, value, empty, draftRefusal } = context.store.get();
+      if (next === value && !empty) {
+        if (!keepDraft && draftRefusal)
+          context.store.set({ draft: formatMinor(value, currency, locale), draftRefusal: null });
+        return false;
+      }
       // The app hears the change first and may cancel it.
       const canceled = dispatch(context, "onValueChange", next, {
         reason,
@@ -171,6 +177,7 @@ export const amountField = definePrimitive({
       if (ok && !keepDraft) {
         context.store.set({
           draft: formatMinor(next, currency, locale),
+          draftRefusal: null,
         });
       }
       return ok;
@@ -202,24 +209,48 @@ export const amountField = definePrimitive({
     function commitEmpty(reason: string, event?: Event): boolean {
       const { allowEmpty, empty } = context.store.get();
       if (!allowEmpty) return false;
-      if (empty) return true;
+      if (empty) {
+        context.store.set({ draft: "", draftRefusal: null });
+        return true;
+      }
       // The app hears the change first and may cancel it, as for an amount.
       if (dispatch(context, "onValueChange", null, { reason, event })) return false;
       const ok = change("empty", true, { reason, event });
       if (!ok) return false;
       context.options().onEmpty?.({ reason });
       if (context.options().value === undefined) context.store.set({ value: null, minor: null });
-      context.store.set({ draft: "" });
+      context.store.set({ draft: "", draftRefusal: null });
       return true;
     }
 
-    /** Human path: commit typed text when it is a valid in-range amount. Never throws. */
     function commitDraft(draft: string, reason: string, event?: Event): boolean {
-      const { currency, locale, minMinor, maxMinor } = context.store.get();
-      if (draft.trim() === "" && context.store.get().allowEmpty) return commitEmpty(reason, event);
+      const { allowEmpty, currency, locale, minMinor, maxMinor } = context.store.get();
+      if (draft.trim() === "" && allowEmpty) {
+        context.store.set({ draftRefusal: null });
+        return commitEmpty(reason, event);
+      }
       const minor = parseToMinor(draft, currency, { locale });
-      if (minor === null || rangeError(minor, minMinor, maxMinor)) return false;
-      commitMinor(minor, reason, event, reason === "input");
+      if (minor === null) {
+        context.store.set({
+          draftRefusal: msg("amount.invalid-draft", { example: formatMinor(100, currency, locale) }),
+        });
+        return false;
+      }
+      const outOfRange = rangeError(minor, minMinor, maxMinor);
+      if (outOfRange) {
+        const belowMinimum = minor < minMinor;
+        const bound = belowMinimum ? Math.ceil(minMinor) : Math.floor(maxMinor ?? Infinity);
+        context.store.set({
+          draftRefusal: Number.isSafeInteger(bound)
+            ? msg(belowMinimum ? "amount.draft-below-min" : "amount.draft-above-max", {
+                limit: formatMinor(bound, currency, locale),
+              })
+            : outOfRange,
+        });
+        return false;
+      }
+      context.store.set({ draftRefusal: null });
+      commitMinor(minor, reason, event, true);
       return true;
     }
 
@@ -236,11 +267,11 @@ export const amountField = definePrimitive({
       },
       focus: () => {
         if (isLocked(context.store.get())) return;
-        const { value, currency, locale } = context.store.get();
+        const { value, currency, locale, draft, draftRefusal } = context.store.get();
         context.store.set({
           focused: true,
           editStart: value,
-          draft: value === null ? "" : formatMinor(value, currency, locale),
+          draft: draftRefusal ? draft : value === null ? "" : formatMinor(value, currency, locale),
         });
       },
       blur: (event?: unknown) => {
@@ -250,8 +281,13 @@ export const amountField = definePrimitive({
         if (!commitDraft(draft, "blur", asEvent(event))) {
           // Refused (unparseable or out of range): keystrokes may have
           // committed a prefix, so put back the amount from before the edit.
-          if (editStart !== null) commitMinor(editStart, "blur", asEvent(event));
+          const { draftRefusal } = context.store.get();
+          if (editStart !== null) commitMinor(editStart, "blur", asEvent(event), true);
           else if (context.store.get().allowEmpty) commitEmpty("blur", asEvent(event));
+          if (draftRefusal) {
+            context.store.set({ draft, draftRefusal });
+            return;
+          }
         }
         const { value, currency, locale } = context.store.get();
         context.store.set({ draft: value === null ? "" : formatMinor(value, currency, locale) });
@@ -265,7 +301,7 @@ export const amountField = definePrimitive({
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
-      state: (state) => ({ value: state.value, empty: state.empty }),
+      state: (state) => ({ value: state.value, empty: state.empty, draftRefused: Boolean(state.draftRefusal) }),
     }),
     currency: slot({
       attrs: () => ({
@@ -276,13 +312,14 @@ export const amountField = definePrimitive({
     }),
     input: slot({
       attrs: (state) => {
-        const display = state.focused
-          ? state.draft
-          : state.value === null
-            ? ""
-            : state.secret && state.value !== 0
-              ? "[redacted]"
-              : formatMinor(state.value, state.currency, state.locale);
+        const display =
+          state.focused || (state.draftRefusal && !state.secret && !isLocked(state))
+            ? state.draft
+            : state.value === null
+              ? ""
+              : state.secret && state.value !== 0
+                ? "[redacted]"
+                : formatMinor(state.value, state.currency, state.locale);
         const exceeds = state.value !== null && rangeError(state.value, state.minMinor, state.maxMinor) !== null;
         return {
           "data-slot": "amount-field-input",
@@ -290,10 +327,19 @@ export const amountField = definePrimitive({
           inputMode: "decimal",
           autoComplete: "off",
           value: display,
-          "aria-invalid": exceeds ? "true" : undefined,
+          "aria-invalid": exceeds || (state.draftRefusal && !isLocked(state)) ? "true" : undefined,
           "data-agent-secret": state.secret ? "" : undefined,
           ...inputLockAttrs(state),
         };
+      },
+      bind: (el, { store }) => {
+        const input = el as HTMLInputElement;
+        const validate = () => {
+          const state = store.get();
+          input.setCustomValidity(isLocked(state) ? "" : (state.draftRefusal ?? ""));
+        };
+        validate();
+        return store.subscribe(validate);
       },
       on: {
         focus: (_event, { api }) => api.focus(),

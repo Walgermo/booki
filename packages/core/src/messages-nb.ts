@@ -563,6 +563,9 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "field.unknown-account": 'Ingen konto "{value}" i kontoplanen. Kontoene, som nummer (navn): {items}.',
   "field.unknown-account-more":
     'Ingen konto "{value}" i kontoplanen på {count}. Nærmest: {items}. query({ within, text }) finner en på nummer eller helt ord.',
+  "amount.invalid-draft": "Skriv inn et gyldig beløp, for eksempel {example}.",
+  "amount.draft-below-min": "Skriv inn et beløp på minst {limit}.",
+  "amount.draft-above-max": "Skriv inn et beløp på høyst {limit}.",
   "amount.not-minor":
     "Beløpet må være et sikkert heltall i minste enhet (f.eks. 12500 = 125,00 {currency}), fikk {value}.",
   "amount.below-min": "Beløpet {minor} (minste enhet) er under minMinor {min}.",

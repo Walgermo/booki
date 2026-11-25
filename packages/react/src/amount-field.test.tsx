@@ -1,4 +1,5 @@
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
+import type { FormEvent } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AmountField } from "./amount-field.js";
 import { createBookiAgent, proposeChanges } from "./booki-agent.js";
@@ -161,23 +162,23 @@ describe("AmountField human input", () => {
       fireEvent.input(el, { target: { value: text } });
     }
     expect(() => fireEvent.blur(el)).not.toThrow();
-    expect(el.value).toBe("50.00");
+    expect(el.value).toBe("200");
     expect(onValueChange).toHaveBeenLastCalledWith(5_000, expect.anything());
 
     fireEvent.focus(el);
     fireEvent.input(el, { target: { value: "-1" } });
     fireEvent.blur(el);
-    expect(el.value).toBe("50.00");
+    expect(el.value).toBe("-1");
 
     fireEvent.focus(el);
     fireEvent.input(el, { target: { value: "1e5" } });
     fireEvent.blur(el);
-    expect(el.value).toBe("50.00");
+    expect(el.value).toBe("1e5");
 
     fireEvent.focus(el);
     fireEvent.input(el, { target: { value: "1.005" } });
     fireEvent.blur(el);
-    expect(el.value).toBe("50.00");
+    expect(el.value).toBe("1.005");
   });
 
   it("round-trips a negative amount through focus and blur", () => {
@@ -188,5 +189,71 @@ describe("AmountField human input", () => {
     fireEvent.blur(el);
     expect(onValueChange).not.toHaveBeenCalled();
     expect(el.value).toContain("25.00");
+  });
+});
+
+describe("AmountField native form validation", () => {
+  function renderForm(props: Partial<Parameters<typeof AmountField>[0]> = {}) {
+    const onSubmit = vi.fn((event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      return new FormData(event.currentTarget).get("amount");
+    });
+    const { getByTestId, getByRole } = render(
+      <BookiLocaleProvider defaultCountry="US">
+        <form data-testid="amount-form" onSubmit={onSubmit}>
+          <AmountField name="amount" defaultValue={312_500} {...props} />
+          <button type="submit">Submit</button>
+        </form>
+      </BookiLocaleProvider>,
+    );
+    return {
+      form: getByTestId("amount-form") as HTMLFormElement,
+      submitter: getByRole("button", { name: "Submit" }) as HTMLButtonElement,
+      onSubmit,
+      field: input(),
+    };
+  }
+
+  it("blocks native submission before blur, then submits the corrected amount", () => {
+    const { form, field, onSubmit } = renderForm({ required: true });
+    act(() => field.focus());
+    fireEvent.input(field, { target: { value: "abc" } });
+    expect(field.validationMessage).toMatch(/enter a valid amount/i);
+    expect(new FormData(form).has("amount")).toBe(false);
+    form.requestSubmit();
+    expect(onSubmit).not.toHaveBeenCalled();
+
+    fireEvent.input(field, { target: { value: "5.25" } });
+    expect(field.checkValidity()).toBe(true);
+    form.requestSubmit();
+    expect(onSubmit).toHaveReturnedWith("525");
+  });
+
+  it("retains invalid text and blocks submit-button activation after blur", () => {
+    const onValueChange = vi.fn();
+    const { field, submitter, onSubmit } = renderForm({ value: 312_500, onValueChange, maxMinor: 500_000 });
+    act(() => field.focus());
+    fireEvent.input(field, { target: { value: "5500" } });
+    act(() => submitter.focus());
+    fireEvent.click(submitter);
+    expect(field.value).toBe("5500");
+    expect(field.validationMessage).toMatch(/at most 5,000.00/);
+    expect(field.getAttribute("aria-invalid")).toBe("true");
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it.each([false, true])("handles an empty draft with allowEmpty and required=%s", (required) => {
+    const { field, submitter, onSubmit } = renderForm({ allowEmpty: true, required });
+    act(() => field.focus());
+    fireEvent.input(field, { target: { value: "abc" } });
+    expect(field.validity.customError).toBe(true);
+    fireEvent.input(field, { target: { value: "" } });
+    expect(field.validity.customError).toBe(false);
+    expect(field.validity.valueMissing).toBe(required);
+    act(() => submitter.focus());
+    fireEvent.click(submitter);
+    if (required) expect(onSubmit).not.toHaveBeenCalled();
+    else expect(onSubmit).toHaveReturnedWith("");
   });
 });
