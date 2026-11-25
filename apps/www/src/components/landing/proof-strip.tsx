@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { Disclosure } from "@/components/two-readers";
 import { formatters, proofKpis, USD_NOK } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
 
@@ -167,15 +168,18 @@ export function ProofStrip() {
           );
         })}
       </dl>
-      <p className="m-0 text-sm text-muted-foreground">
-        {t(
-          `Before: screens rebuilt from two Norwegian accounting systems. With Booki: the same tasks, a supplier invoice and a dashboard. Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs each, medians, ${f.runDate}. The voucher and sales invoice runs are withdrawn: a control's hint gave their answer away.`,
-          `Før: skjermbilder gjenskapt fra to norske regnskapssystemer. Med Booki: de samme oppgavene, en leverandørfaktura og et dashbord. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash, fem kjøringer hver, medianer, ${f.runDate}. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen røpet svaret. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
-        )}{" "}
-        <a href="#race-title" className="site-link">
-          {t("How it was measured", "Slik ble det målt")}
-        </a>
-      </p>
+      {/* What the figures were measured on, one click away: the figures read on their own. */}
+      <Disclosure title={t("About the measurements", "Om målingene")}>
+        <p className="site-faq__answer">
+          {t(
+            `Before: screens rebuilt from two Norwegian accounting systems. With Booki: the same tasks, a supplier invoice and a dashboard. Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs each, medians, ${f.runDate}. The voucher and sales invoice runs are withdrawn: a control's hint gave their answer away.`,
+            `Før: skjermbilder gjenskapt fra to norske regnskapssystemer. Med Booki: de samme oppgavene, en leverandørfaktura og et dashbord. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash, fem kjøringer hver, medianer, ${f.runDate}. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen røpet svaret. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
+          )}{" "}
+          <a href="#race-title" className="site-link">
+            {t("How it was measured", "Slik ble det målt")}
+          </a>
+        </p>
+      </Disclosure>
     </div>
   );
 }
