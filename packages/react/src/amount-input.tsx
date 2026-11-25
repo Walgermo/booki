@@ -15,7 +15,7 @@ function AmountInput({ onValueChange, currency, ...props }: AmountInputProps) {
   return (
     <AmountField
       currency={currency}
-      {...(props as AmountFieldProps)}
+      {...props}
       onValueChange={(minor: number | null) => {
         if (!onValueChange) return;
         const code = currency ?? "NOK";

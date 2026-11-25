@@ -104,6 +104,7 @@ A refusal is a sentence the agent can act on: it names the unit, the options tha
 | `value` / `defaultValue` | `number` (`number \| null` with `allowEmpty`) | Minor units (12500 = 125.00). Controlled with `value`; `null` shows the field empty |
 | `allowEmpty` | `boolean` | The field may be empty, which is not 0. `clear`, `setMinor(null)` and deleting the text empty it |
 | `onValueChange` | `(minor: number, details?) => void`; with `allowEmpty`: `(minor: number \| null, details?) => void` | Hears every change. With `allowEmpty`, emptying the field reports `null`, so a controlled field learns it was cleared |
+| `AmountFieldProps` | `AmountFieldProps<Empty extends boolean = boolean>` | For wrapper authors. The bare `AmountFieldProps` has `allowEmpty?: boolean` and a `(minor: number \| null, details?)` handler, so `function MyAmount(props: AmountFieldProps) { return <AmountField {...props} /> }` accepts `<MyAmount allowEmpty />`. `<AmountField>` itself still infers: `allowEmpty` left out gives a `number` handler, `allowEmpty` gives `number \| null`. Use `AmountFieldProps<false>` to pin a wrapper to a number handler |
 | `onEmpty` | `(details) => void` | Also called when the field becomes empty, after `onValueChange(null)` |
 | `minMinor` / `maxMinor` | `number` | Range in minor units. `minMinor` defaults to 0 (no negatives) |
 | `currency` | `string` | Defaults to the locale profile's (NOK in Norway) |

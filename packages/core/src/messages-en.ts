@@ -526,6 +526,7 @@ export const EN = {
   "field.account-not-digits":
     'Account number "{value}" has more than digits. Send digits only, with no letters or separators.',
   "field.account-empty": "An account number is needed here: {min} to {max} digits.",
+  "field.account-empty-chart": "An account number is needed here: pick one of the {count} accounts in the chart.",
   "field.account-not-text": 'setAccount takes the account number as digits, like "4711". Got {got}.',
   "field.account-range": "minLength {min} is greater than maxLength {max}, so no account number fits.",
   "field.account-length": 'Account number "{value}" must be {min} to {max} digits.',

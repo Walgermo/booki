@@ -134,10 +134,11 @@ export const bookiFieldAccount = definePrimitive({
           });
         }
         const text = String(raw).replace(/\s+/g, "");
-        if (text === "" && chart.length === 0)
+        if (text === "") {
+          if (chart.length > 0) throw new BookiError("field.account-empty-chart", { count: chart.length });
           throw new BookiError("field.account-empty", { min: minLength, max: maxLength });
-        if (text !== "" && !/^\d+$/.test(text))
-          throw new BookiError("field.account-not-digits", { value: String(raw).slice(0, 80) });
+        }
+        if (!/^\d+$/.test(text)) throw new BookiError("field.account-not-digits", { value: String(raw).slice(0, 80) });
         if (chart.length > 0) {
           const entry = chart.find((candidate) => candidate.number === text);
           if (!entry) {

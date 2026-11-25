@@ -36,7 +36,7 @@ type AmountFieldBase = {
  * or a `boolean` variable that may be true: `number | null`, because the field may be emptied
  * (clear, or deleting its text), which is not 0. `onEmpty` is called after it.
  */
-export type AmountFieldProps<Empty extends boolean = false> = AmountFieldBase & {
+export type AmountFieldProps<Empty extends boolean = boolean> = AmountFieldBase & {
   allowEmpty?: Empty;
   onValueChange?: (
     minor: [Empty] extends [false] ? number : number | null,

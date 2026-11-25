@@ -449,6 +449,14 @@ describe("the account kind", () => {
     expect((await run(agent, ["3000"])).ok).toBe(true);
   });
 
+  it("with a chart and no allowEmpty, an empty number says a number is needed", async () => {
+    const agent = createBookiAgent();
+    render(<Account chart={chart} />);
+    const refused = await run(agent, [""]);
+    expect(refused.ok).toBe(false);
+    expect(refused.error?.message).toContain("An account number is needed");
+  });
+
   it("with a long chart names only the nearest ones", async () => {
     const long = Array.from({ length: 60 }, (_, i) => ({ number: String(6000 + i * 10), name: `Konto ${i}` }));
     const agent = createBookiAgent();
