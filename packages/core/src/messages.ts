@@ -70,6 +70,8 @@ const SENTENCE_PARAMS = new Set([
   "labels",
   "buttons",
   "closed",
+  // An app's `data-agent-confirm` text: a question, or two sentences.
+  "confirm",
 ]);
 
 const WITHIN_SENTENCE = `(?:(?![.!?:;]\\s+["'(A-ZÆØÅ])[\\s\\S])*?`;

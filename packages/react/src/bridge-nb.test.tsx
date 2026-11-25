@@ -3,6 +3,8 @@ import { Button } from "@ui-sdk/react/button";
 import { NumberInput, NumberInputControl, NumberInputGroup } from "@ui-sdk/react/number-input";
 import { afterEach, describe, expect, it } from "vitest";
 import { AmountField } from "./amount-field.js";
+import { withRecordedAct } from "@booki-aui/primitives/agent-policy";
+import { createAgentCursor } from "./agent-cursor.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
 
@@ -112,5 +114,36 @@ describe("the bridge's own sentences with language nb", () => {
     expect(await act({ steps: [{ ref: "Antall", action: "setValue" }] })).toBe(
       'setValue på "Antall" trenger verdien, som "args": [verdi]. Ingen steg ble kjørt.',
     );
+  });
+});
+
+describe("a decline that comes through the cursor, the audit and withRecordedAct", () => {
+  it("is in Norwegian, and the audit row names who declined", async () => {
+    const rows: Array<{ action: string; decidedBy?: string }> = [];
+    const audit = (row: { action: string; decidedBy?: string }) => void rows.push(row);
+    const cursor = createAgentCursor();
+    const agent = withRecordedAct(
+      createBookiAgent({
+        agentId: "test",
+        language: "nb",
+        audit,
+        allow: cursor.wrap(() => ({ allow: false, by: "person-id" })),
+      }),
+      { audit, agentId: "test" },
+    );
+    // A confirm sentence that is two sentences of its own, as an app writes it.
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <Button data-agent-confirm="Bokføre bilag 12. Dette kan ikke angres: vil du fortsette?">Registrer</Button>
+      </BookiLocaleProvider>,
+    );
+    const result = (await agent.act({ steps: [{ ref: "Registrer", action: "press" }] })) as Result;
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toBe(
+      'Personen sa nei til "Bokføre bilag 12. Dette kan ikke angres: vil du fortsette?".',
+    );
+    expect(rows.filter((row) => row.action === "agent.refused")).toEqual([
+      expect.objectContaining({ decidedBy: "person-id" }),
+    ]);
   });
 });
