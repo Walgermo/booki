@@ -1,5 +1,11 @@
 # @booki/styles
 
+## 0.2.1
+
+### Patch Changes
+
+- [#99](https://github.com/Walgermo/booki/pull/99) [`4726bfa`](https://github.com/Walgermo/booki/commit/4726bfa0a1ae4bba6897fa7ac47bedd624eb842d) Thanks [@Walgermo](https://github.com/Walgermo)! - `base.css` is 26% smaller: 42 KB instead of 58 KB raw (7.0 KB instead of 7.3 KB gzipped). The component scope is now stated three times instead of twelve. Every selector keeps its specificity and every element its look.
+
 ## 0.2.0
 
 ### Minor Changes
