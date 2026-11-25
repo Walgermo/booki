@@ -1,5 +1,6 @@
-// Booki before it is on npm: packs the packages as npm would get them, and
-// prints how another project installs the files. Not `link:`, which gives that
+// Booki from this checkout, to try a change before it is released: packs the
+// packages as npm would get them, and prints how another project installs the
+// files. Not `link:`, which gives that
 // project a second React and paths only this computer has.
 //
 //   pnpm pack:local                 core, primitives, react, styles → .packed/

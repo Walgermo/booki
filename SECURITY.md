@@ -18,4 +18,4 @@ package.
 - The server guard (`@booki-aui/core/server`) letting a write through that it should refuse.
 - Money arithmetic that loses or invents minor units.
 
-Booki is pre-1.0 and not on npm; only the `main` branch is supported.
+Booki is pre-1.0: only the latest release on npm (`@booki-aui/*`) and the `main` branch are supported.

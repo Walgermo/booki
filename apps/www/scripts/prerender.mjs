@@ -10,7 +10,7 @@
  * The components were written for a browser, so the render runs with a
  * browser-like global (jsdom): English, light, no stored choices.
  */
-import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import Beasties from "beasties";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -267,7 +267,7 @@ function llmsTxt(pages) {
   return [
     "# Booki",
     "",
-    "> Agent-first UI for accounting and auditing: controls an AI agent operates by name, under the company's rules, with a person deciding what is theirs. Before 1.0, not on npm yet.",
+    "> Agent-first UI for accounting and auditing: controls an AI agent operates by name, under the company's rules, with a person deciding what is theirs. Before 1.0, on npm as @booki-aui/*.",
     "",
     "Every page here is also Markdown: add .md to its address. The agent bridge on each page (window.agent, and WebMCP where the browser has it) gives snapshot, query and act.",
     "",
@@ -358,5 +358,8 @@ if (failures.length) {
   process.exit(1);
 }
 writeFileSync(join(dist, "prompt.md"), `${AGENT_PROMPT.trim()}\n`);
+// The skill the setup prompt links to, from skills/booki: one copy, so the site never serves an old one.
+mkdirSync(join(dist, "skills", "booki"), { recursive: true });
+copyFileSync(join(here, "../../../skills/booki/SKILL.md"), join(dist, "skills", "booki", "SKILL.md"));
 writeFileSync(join(dist, "llms.txt"), llmsTxt(pages));
 console.log(`prerender: ${pages.length} pages, each as HTML and Markdown, and llms.txt`);

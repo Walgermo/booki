@@ -57,7 +57,9 @@ for (const { dir, manifest } of packages) {
   run("pnpm", ["pack", "--pack-destination", out], { cwd: dir });
   const tarball = readdirSync(out).find((file) => !before.has(file));
   if (!tarball) throw new Error(`pnpm pack wrote no tarball for ${name}`);
-  run("npm", ["stage", "publish", join(out, tarball), "--access", "public", "--provenance"], {
+  // A prerelease (0.3.0-next.1) goes to the `next` dist-tag, never to `latest`.
+  const tag = version.includes("-") ? ["--tag", "next"] : [];
+  run("npm", ["stage", "publish", join(out, tarball), "--access", "public", "--provenance", ...tag], {
     stdio: ["ignore", "inherit", "inherit"],
   });
   run("git", ["tag", `${name}@${version}`], { cwd: root });
