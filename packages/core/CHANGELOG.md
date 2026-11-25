@@ -1,5 +1,21 @@
 # @booki/core
 
+## 0.3.0
+
+### Minor Changes
+
+- [#120](https://github.com/Walgermo/booki/pull/120) [`6a7055c`](https://github.com/Walgermo/booki/commit/6a7055c05fad4d0dacda520afc5fe5823750fa4c) Thanks [@Walgermo](https://github.com/Walgermo)! - Breaking while Booki is 0.x, so this is a minor.
+  
+  `AmountField` and the other form controls now put `aria-invalid`, `aria-describedby` and `aria-errormessage` on the visible input instead of the wrapper, so a screen reader announces an error on the field. If you set `aria-describedby` on one of them and relied on it reaching the wrapper, move it to a wrapper of your own. On the US bank field the account-number input now takes `aria-invalid` too.
+  
+  With `allowEmpty`, `AmountField` now calls `onValueChange(null)` at runtime when the field is emptied (clearing it, or deleting its text). A handler that does arithmetic on the value or calls `money()` on it must handle `null`. `onEmpty` still fires, after `onValueChange`. In types, `onValueChange` is `(minor: number | null, details?) => void` whenever `allowEmpty` is `true` or a `boolean` variable, so a handler typed `(minor: number)` there no longer type-checks: accept `number | null`. With `allowEmpty` left out or `false` the handler still gets a `number`. `<AmountField>` infers this from its own props. The exported `AmountFieldProps` defaults to `boolean`, so a wrapper `function MyAmount(props: AmountFieldProps)` accepts `allowEmpty` and a `number | null` handler; write `AmountFieldProps<false>` to keep a wrapper on a `number` handler. The props are now listed in the catalog and the skill.
+  
+  `useBookiField` takes `group: false` for a field that already has its own labelled group (a `fieldset` with a `legend`): the root loses `role="group"`, so the group is not announced twice. It also has a new `account` kind (`setAccount`): digits of a length range, or a closed `chart` whose unknown numbers are refused with the nearest accounts, in English and Norwegian. An empty number is refused with "an account number is needed" with or without a chart. The check applies to a whole number, so a render that a person types into keeps a draft and calls `change` on blur (see `docs/own-controls.md`).
+
+### Patch Changes
+
+- [#116](https://github.com/Walgermo/booki/pull/116) [`1c95020`](https://github.com/Walgermo/booki/commit/1c95020e1ea0a99556ea58b79e0a590711fdb621) Thanks [@Walgermo](https://github.com/Walgermo)! - With `createBookiAgent({ language: "nb" })` a declined confirm now comes back in Norwegian also when the app's confirm text is a question or several sentences ("Bokføre bilag 12. Dette kan ikke angres: vil du fortsette?"); the confirm text of a refusal is read as page text. `toHttp(verdict).body` is typed (`HttpBody<T>`: the value on success, `{ ok: false, code, message, issues? }` on a refusal) instead of `unknown`, so it can be mapped to your own error shape. A person-only refusal no longer lists the refused agent's own roles under "ask someone with one of these roles".
+
 ## 0.2.1
 
 No changes in this release.
