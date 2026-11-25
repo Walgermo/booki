@@ -52,6 +52,13 @@ them for its first days, with `ERR_PNPM_NO_MATURE_MATCHING_VERSION`. Then either
 previous Booki release, with the `@ui-sdk` version it pins, or ask the owner of the app for an
 exception for exactly those versions, on a branch. Don't change the exact pin in `package.json`.
 
+**A trust policy can refuse 0.3.2 and later.** Up to 0.3.1 each release was approved by a
+person on npm; from 0.3.2 until v1 they are published straight from Booki's release workflow,
+with provenance from a trusted publisher but no approver. pnpm's `trustPolicy: no-downgrade` reads
+that as weaker than the approved 0.3.1 and refuses the install (`ERR_PNPM_TRUST_DOWNGRADE`). Then
+ask the owner of the app for a `trustPolicyExclude` entry for exactly the Booki versions you
+install, on a branch. Provenance still shows which commit and workflow run built each version.
+
 Add the `@ui-sdk` packages in the same command as Booki. Adding only one of them has made pnpm
 drop the other from the lockfile.
 

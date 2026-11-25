@@ -95,6 +95,13 @@ the workflow then keeps **Version Packages** and the changelogs current and
 publishes nothing. The workflow also needs Settings → Actions → General →
 "Allow GitHub Actions to create and approve pull requests".
 
+**Until v1: direct publishing.** Decided on 2026-11-25: releases are published
+straight from the workflow, with no person approving them on npm, until Booki
+reaches a stable v1. The cost falls on apps with pnpm's `trustPolicy: no-downgrade`:
+0.3.1 and earlier carry an approver, 0.3.2 and later do not, so pnpm refuses them
+as a downgrade until the app excludes them (README, install). At v1, go back to
+staged publishing (below), so every release again carries a person's approval.
+
 **Staged publishing instead.** Set the repository variable `NPM_PUBLISH_MODE`
 to `stage` and the workflow stages the versions (`npm stage publish`) instead
 of publishing them. Someone with publish rights then approves each one on
