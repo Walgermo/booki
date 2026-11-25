@@ -60,6 +60,51 @@ describe("the bridge's own sentences with language nb", () => {
     expect(JSON.stringify(result)).not.toContain("Pressed");
   });
 
+  it("ends a failed multi-step act in Norwegian, including what stays done", async () => {
+    const agent = createBookiAgent({ agentId: "test", language: "nb" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField value={100_00} aria-label="Fast beløp" />
+      </BookiLocaleProvider>,
+    );
+    const result = (await agent.act({
+      steps: [
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+        { ref: "Fast beløp", action: "expect", args: [5_00] },
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+      ],
+    })) as Result;
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toMatch(
+      /^Fast beløp \(c\d+\) er 10000, ikke 500\. Stegene før dette er utført\. Send det på nytt med steget etter det, 2 steg i ett kall\.$/,
+    );
+    const many = (await agent.act({
+      steps: [
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+        { ref: "Fast beløp", action: "expect", args: [5_00] },
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+      ],
+    })) as Result;
+    expect(many.error?.message).toContain("Send det på nytt med de 2 stegene etter det, 3 steg i ett kall.");
+  });
+
+  it("keeps the same multi-step sentence in English without a language", async () => {
+    const agent = createBookiAgent({ agentId: "test" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField value={100_00} aria-label="Fast beløp" />
+      </BookiLocaleProvider>,
+    );
+    const result = (await agent.act({
+      steps: [
+        { ref: "Fast beløp", action: "expect", args: [100_00] },
+        { ref: "Fast beløp", action: "expect", args: [5_00] },
+      ],
+    })) as Result;
+    expect(result.error?.message).toContain("The steps before this one stay done.");
+  });
+
   it("leaves the same sentences in English without a language", async () => {
     const agent = createBookiAgent({ agentId: "test", allow: () => false });
     screen();

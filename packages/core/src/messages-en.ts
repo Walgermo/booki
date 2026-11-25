@@ -734,4 +734,7 @@ export const EN = {
   "bridge.step-needs-ref": "{at} needs a ref: a component's ref from snapshot, or its label. No step ran.",
   "bridge.step-needs-action": '{at}, on "{ref}", needs an action, like "press". No step ran.',
   "bridge.step-needs-value": '{action} on "{ref}" needs its value, as "args": [value]. No step ran.',
+  "bridge.steps-stay-done": "The steps before this one stay done.",
+  "bridge.send-again-one": "Send it again with the step after it, {total} steps in one call.",
+  "bridge.send-again-many": "Send it again with the {rest} steps after it, {total} steps in one call.",
 } as const;

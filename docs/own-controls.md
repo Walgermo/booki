@@ -257,15 +257,27 @@ What each piece does:
   `role="radiogroup"`) takes `group: false`, on every kind. The hook renders a `div`
   for its root, and by default that `div` is `role="group"` named by `label`, so the
   group is announced twice and `getByRole("group", { name })` finds two. With
-  `group: false` the root has no role. `label` stays on it as `aria-label`, which is how the agent
-  snapshot reads the field's name, and which a screen reader ignores on an element without a role.
-  Without a `label` of that kind there would be no name for the agent to find the field by.
+  `group: false` the root has no role and no `aria-label`, so your own visible `<label>` is the only
+  accessible name and `getByLabelText("…")` finds the input alone. The agent still finds the field by
+  `label`: the hook puts it in a visually hidden element (`data-slot="visually-hidden"`) inside the root,
+  which ui-sdk reads as the field's name. That text is also in the root's content, so
+  `getByText` finds it beside your visible label.
+- **Render your own input, not one that is on the bridge.** What `render` returns must be the
+  product's own `<input>` or `<select>`. Don't put ui-sdk's `Input` (or any other ui-sdk control)
+  inside it: it registers on the bridge by itself, so one field shows up twice, as `field-account
+  "Kontonummer" [setAccount]` and as `input "Konto" [setValue, clear]`, and an agent's `setValue` on the
+  inner input changes only its draft and skips the field's rule. With your own input there is one
+  control, and it has the rule.
+- **`expect` works on every kind.** Besides its own key (`minor`, `code`, `account`, `date`) the
+  snapshot holds `value`, the same value, which is what `expect` compares: `{ ref: "Konto", action: "expect", args: ["2400"] }`
+  passes after `setAccount("2400")`. On an amount, `value` and `minor` are both integer minor units.
 - **Other kinds need `definePrimitive`.** For anything beyond these four, use
   the primitive above in this document.
 
 ## A free-text field: compose with your own input
 
-A description or a note needs no Booki kind. `Input` from `@ui-sdk/react/input` is already on the
+A description or a note needs no Booki kind. (This is for a field on its own. Inside a
+`useBookiField` render, use your own input, not this one: see above.) `Input` from `@ui-sdk/react/input` is already on the
 agent bridge with `setValue`, under its accessible name, and it renders no styles. Don't copy your
 design system's input classes into the screen: they stop matching when the design system changes.
 Every ui-sdk part takes `render`, so your own input can render the field and keep the agent wiring:

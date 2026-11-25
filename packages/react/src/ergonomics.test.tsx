@@ -1004,6 +1004,7 @@ const COUNTS = new Set(["total", "matching", "page", "pageCount", "pageSize", "t
 /** Keys kept for compatibility, each with the twin that says its unit. */
 const TWINS: Record<string, Record<string, string>> = {
   "amount-field": { value: "minor" },
+  "field-amount": { value: "minor" },
   "vat-return": { unmappedTotal: "unmappedCount" },
 };
 

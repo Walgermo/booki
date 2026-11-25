@@ -86,12 +86,12 @@ Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`). 
 
 | kind | value | action | snapshot keys |
 | --- | --- | --- | --- |
-| `amount` | integer minor units (`12500` = 125.00 NOK) | `setMinor` | `minor`, `currency`, `refusal` |
-| `code` | a value from the closed `options` list | `setCode` | `code`, `items`, `itemsHint`, `refusal` |
-| `account` | digits (`"1920"`); `minLength` (default 4) to `maxLength` (default 10), or a closed `chart` of `{ number, name }`; `allowEmpty` clears it to `""` | `setAccount` | `account`, `items`, `itemsHint`, `minLength`, `maxLength`, `refusal` |
-| `date` | ISO `YYYY-MM-DD`, or `""` | `setDate` | `date`, `refusal` |
+| `amount` | integer minor units (`12500` = 125.00 NOK) | `setMinor` | `minor` (and `value`, the same), `currency`, `refusal` |
+| `code` | a value from the closed `options` list | `setCode` | `code` (and `value`), `items`, `itemsHint`, `refusal` |
+| `account` | digits (`"1920"`); `minLength` (default 4) to `maxLength` (default 10), or a closed `chart` of `{ number, name }`; `allowEmpty` clears it to `""` | `setAccount` | `account` (and `value`), `items`, `itemsHint`, `minLength`, `maxLength`, `refusal` |
+| `date` | ISO `YYYY-MM-DD`, or `""` | `setDate` | `date` (and `value`), `refusal` |
 
-A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. A code field's `personOnly` lists values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused, a person's change with its DOM event goes through, and the snapshot shows the list. With a `chart`, an unknown account number is refused and the refusal names the nearest accounts (all of a short chart), like `AccountPicker`; without one, text that is not digits or is outside the length range is refused. Every kind takes `group: false` when the product's field already has its own labelled group (a `fieldset` with a `legend`, or `role="radiogroup"`): the root then has no `role="group"`, so the group is not announced twice, and `label` stays on it as `aria-label` for the agent snapshot. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
+A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. A code field's `personOnly` lists values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused, a person's change with its DOM event goes through, and the snapshot shows the list. With a `chart`, an unknown account number is refused and the refusal names the nearest accounts (all of a short chart), like `AccountPicker`; without one, text that is not digits or is outside the length range is refused. Every kind takes `group: false` when the product's field already has its own labelled group (a `fieldset` with a `legend`, or `role="radiogroup"`): the root then has no `role="group"`, so the group is not announced twice, and the root has no `aria-label` either: your visible `<label>` is the only accessible name, and the agent reads the field's name from a visually hidden element in the root. Render the product's own input or select inside `useBookiField`, never a bridge-registered one such as ui-sdk's `Input`, or the field appears twice on the bridge. `expect` works on every kind, because each snapshot holds `value`. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
 
 ## Catalog
 
