@@ -143,11 +143,11 @@ export function ErpWindow({
     async function play() {
       showCursorMessage = false;
       const posted = await run();
-      const heading = to.current?.querySelector("h2");
-      if (!stopped && posted && heading) {
-        heading.scrollIntoView({ block: "center", behavior: "smooth" });
+      const firstMetric = to.current?.querySelector("dt");
+      if (!stopped && posted && firstMetric) {
+        firstMetric.scrollIntoView({ block: "center", behavior: "smooth" });
         showCursorMessage = true;
-        cursor.rest(heading, t("Benchmark results", "Måleresultater"));
+        cursor.rest(firstMetric, t("Benchmark results", "Måleresultater"));
         await wait(2600);
       }
       stop();
