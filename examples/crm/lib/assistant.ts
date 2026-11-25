@@ -4,7 +4,7 @@ import { createMCPClient, Experimental_WebMCPTransport as WebMCPTransport, type 
 import { useChat } from "@ai-sdk/react";
 import { registerTools } from "@booki/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { logDecision, pageAgent } from "./agent";
 import { AGENT_ID } from "./people";
 
@@ -40,6 +40,27 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
   return client;
 }
 
+const NO_WEBMCP =
+  "Chatten trenger WebMCP: slå på chrome://flags/#enable-webmcp-testing i Chrome, start Chrome på nytt og last inn siden.";
+
+/** What the chat's callbacks read when they run, outside render. */
+class Link {
+  client: MCPClient | undefined;
+  constructor(public me: string) {}
+  setMe(me: string) {
+    this.me = me;
+  }
+  open(client: MCPClient) {
+    this.client = client;
+  }
+  close(client: MCPClient | undefined) {
+    if (this.client === client) this.client = undefined;
+  }
+}
+
+/** WebMCP does not come and go while the page is open. */
+const noChange = () => () => {};
+
 /** The browser's WebMCP, when it lets a page both register tools and call them. */
 export function modelContextOf(): ModelContext | undefined {
   const context = (globalThis as { document?: { modelContext?: Partial<ModelContext> } }).document?.modelContext;
@@ -52,25 +73,40 @@ export function modelContextOf(): ModelContext | undefined {
  * makes comes back here and runs in the tab.
  */
 export function useAssistant(me: string) {
-  const client = useRef<MCPClient | undefined>(undefined);
+  // What the chat's callbacks read when they run: the open client, and who the agent works for now.
+  const [link] = useState(() => new Link(me));
   const [ready, setReady] = useState(false);
-  const [setupError, setSetupError] = useState<string>();
-  const meRef = useRef(me);
-  meRef.current = me;
+  const [connectError, setConnectError] = useState<string>();
+  // The server renders as if WebMCP were there; the browser says whether it is.
+  const hasWebMCP = useSyncExternalStore(
+    noChange,
+    () => modelContextOf() !== undefined,
+    () => true,
+  );
+  const setupError = hasWebMCP ? connectError : NO_WEBMCP;
+
+  useEffect(() => {
+    link.setMe(me);
+  }, [link, me]);
+
+  const [transport] = useState(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        async prepareSendMessagesRequest({ messages }) {
+          const { tools } = await link.client!.listTools();
+          return { body: { messages, tools, me: link.me } };
+        },
+      }),
+  );
 
   const chat = useChat({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-      async prepareSendMessagesRequest({ messages }) {
-        const { tools } = await client.current!.listTools();
-        return { body: { messages, tools, me: meRef.current } };
-      },
-    }),
+    transport,
     sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
     async onToolCall({ toolCall }) {
       if (!toolCall.dynamic) return;
       try {
-        const output = await client.current!.callTool({
+        const output = await link.client!.callTool({
           name: toolCall.toolName,
           arguments: toolCall.input as Record<string, unknown>,
         });
@@ -89,31 +125,26 @@ export function useAssistant(me: string) {
 
   useEffect(() => {
     const context = modelContextOf();
-    if (!context) {
-      setSetupError(
-        "Chatten trenger WebMCP: slå på chrome://flags/#enable-webmcp-testing i Chrome, start Chrome på nytt og last inn siden.",
-      );
-      return;
-    }
+    if (!context) return;
     const registration = new AbortController();
     let opened: MCPClient | undefined;
     connectAssistant(context, registration.signal)
       .then((mcp) => {
         if (!mcp) return;
         opened = mcp;
-        client.current = mcp;
+        link.open(mcp);
         setReady(true);
       })
       .catch((error: unknown) => {
-        if (!registration.signal.aborted) setSetupError(error instanceof Error ? error.message : String(error));
+        if (!registration.signal.aborted) setConnectError(error instanceof Error ? error.message : String(error));
       });
     return () => {
       registration.abort();
-      if (client.current === opened) client.current = undefined;
+      link.close(opened);
       void opened?.close();
       setReady(false);
     };
-  }, []);
+  }, [link]);
 
   return { ...chat, ready, setupError };
 }

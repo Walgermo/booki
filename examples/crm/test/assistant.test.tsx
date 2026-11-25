@@ -20,8 +20,8 @@ function fakeModelContext() {
       signal.addEventListener("abort", () => tools.delete(tool.name), { once: true });
     },
     async getTools() {
-      return [...tools.values()].map(({ execute: _, ...definition }) => ({
-        ...definition,
+      return [...tools.values()].map((tool) => ({
+        ...Object.fromEntries(Object.entries(tool).filter(([key]) => key !== "execute")),
         origin: "http://localhost",
         window: null,
       })) as never;
