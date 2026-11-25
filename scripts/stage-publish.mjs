@@ -7,12 +7,12 @@
  * Runs in the Release workflow, which signs in to npm through trusted
  * publishing (OIDC): no token. `pnpm pack` turns `workspace:*` into the
  * released version, and `npm stage publish` uploads the tarball with
- * provenance. For each staged version it tags the commit and prints
- * "New tag: name@version", which changesets/action reads to push the tags
- * and create the GitHub Releases.
+ * provenance. For each staged version it writes a git-tag event to the file
+ * changesets/action names in CHANGESETS_OUTPUT; the action reads it to push
+ * the tag and create the GitHub Release.
  */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync } from "node:fs";
+import { appendFileSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -58,12 +58,16 @@ for (const { dir, manifest } of packages) {
   const tarball = readdirSync(out).find((file) => !before.has(file));
   if (!tarball) throw new Error(`pnpm pack wrote no tarball for ${name}`);
   // A prerelease (0.3.0-next.1) goes to the `next` dist-tag, never to `latest`.
-  const tag = version.includes("-") ? ["--tag", "next"] : [];
-  run("npm", ["stage", "publish", join(out, tarball), "--access", "public", "--provenance", ...tag], {
+  const distTag = version.includes("-") ? ["--tag", "next"] : [];
+  run("npm", ["stage", "publish", join(out, tarball), "--access", "public", "--provenance", ...distTag], {
     stdio: ["ignore", "inherit", "inherit"],
   });
-  run("git", ["tag", `${name}@${version}`], { cwd: root });
-  console.log(`New tag: ${name}@${version}`);
+  const tag = `${name}@${version}`;
+  // One JSON line per release, the format changesets/action v2 reads.
+  if (process.env.CHANGESETS_OUTPUT) {
+    appendFileSync(process.env.CHANGESETS_OUTPUT, `${JSON.stringify({ type: "git-tag", tag, packageName: name })}\n`);
+  }
+  console.log(`Staged ${tag}`);
   staged++;
 }
 console.log(
