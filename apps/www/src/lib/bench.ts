@@ -169,8 +169,14 @@ export type RealSide = {
  */
 export const WITHDRAWN: readonly string[] = ["voucher", "sales-invoice"];
 
+/**
+ * The screen sides only. The API side (key "api", `proof --side api`) is in
+ * bench.json beside them but is not a screen: it is left out of every figure
+ * that compares Booki with the rebuilt screens. Its result is in the FAQ and
+ * benchmarks/agent/README.md.
+ */
 const REAL: RealSide[] = (((data as { real?: { sides: RealSide[] } }).real?.sides ?? []) as RealSide[]).filter(
-  (side) => !WITHDRAWN.includes(side.task),
+  (side) => !WITHDRAWN.includes(side.task) && side.key !== "api",
 );
 
 /** Every real-model result still counted, for a task. */
@@ -181,8 +187,10 @@ export function realFor(task: BenchTask, model: string, key: string): RealSide |
   return REAL.find((side) => side.task === task && side.model.startsWith(model) && side.key === key);
 }
 
-type RealRun = { task: string; model: string; prices?: { input: number } | null };
-const REAL_RUNS: RealRun[] = ((data as { real?: { runs: RealRun[] } }).real?.runs ?? []) as RealRun[];
+type RealRun = { task: string; model: string; prices?: { input: number } | null; side?: string };
+const REAL_RUNS: RealRun[] = (((data as { real?: { runs: RealRun[] } }).real?.runs ?? []) as RealRun[]).filter(
+  (run) => run.side !== "api",
+);
 
 /** The cheapest model run on a task, by list price for input, other than the one the main figures use. */
 export function cheapModel(task: BenchTask, except = "anthropic/claude-opus"): string | undefined {

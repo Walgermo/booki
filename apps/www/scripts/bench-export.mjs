@@ -7,14 +7,105 @@
  *
  *   pnpm --filter agent-benchmark h2h --task all
  *   node apps/www/scripts/bench-export.mjs [path/to/h2h.json]
+ *
+ * `--api` replaces only the API side (results/api-*.json, from
+ * `proof --side api`) in the bench.json there is, and leaves every other
+ * figure as it is.
+ *
+ *   node apps/www/scripts/bench-export.mjs --api
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+const repo = path.resolve(here, "../../..");
 const results = path.resolve(here, "../../../benchmarks/agent/results");
 const out = path.resolve(here, "../src/data/bench.json");
+
+/** Which product a page was rebuilt from, as the site names it. */
+const SCREEN = {
+  "voucher-raw": { key: "tripletex", name: "Tripletex · DOM snapshot" },
+  "voucher-grid": { key: "dnb", name: "DNB Regnskap · DOM snapshot" },
+  "supplier-invoice-raw": { key: "tripletex", name: "Tripletex · DOM map" },
+  "sales-invoice-raw": { key: "tripletex", name: "Tripletex · DOM map" },
+  "dashboard-raw": { key: "tripletex", name: "Tripletex · DOM map" },
+  "dashboard-grid": { key: "dnb", name: "DNB Regnskap · DOM map" },
+};
+
+const screenOf = (page) =>
+  SCREEN[page] ??
+  (page.endsWith("-acc")
+    ? { key: "acc", name: "Booki" }
+    : page.endsWith("-api")
+      ? { key: "api", name: "API" }
+      : { key: page, name: page });
+
+/**
+ * Real-model runs (`pnpm proof` / `bench`, and `proof --side api`): per task,
+ * model and side, the newest run with at least three runs per page. Medians;
+ * success counts as checked.
+ */
+function realFrom(pattern) {
+  const real = new Map();
+  for (const file of readdirSync(results)
+    .filter((f) => pattern.test(f))
+    .sort()) {
+    const run = JSON.parse(readFileSync(path.join(results, file), "utf8"));
+    if (!run.summary || (run.runsPerPage ?? 0) < 3) continue;
+    real.set(`${run.task}|${run.model}|${run.side ?? "screens"}`, { file, run });
+  }
+  const sides = [...real.values()].flatMap(({ run }) =>
+    run.summary.map((page) => {
+      const screen = screenOf(page.page);
+      return {
+        task: run.task,
+        model: run.model,
+        key: screen.key,
+        name: screen.name,
+        runs: page.runs,
+        succeeded: page.succeeded,
+        toolCalls: page.toolCalls.median,
+        requests: page.requests.median,
+        tokens:
+          page.inputTokens.median +
+          page.cacheWriteTokens.median +
+          page.cacheReadTokens.median +
+          page.outputTokens.median,
+        costUsd: page.costUsd?.median ?? null,
+        wallMs: Math.round(page.wallMs.median),
+      };
+    }),
+  );
+  const runs = [...real.values()].map(({ file, run }) => ({
+    file: path.relative(repo, path.join(results, file)),
+    task: run.task,
+    model: run.model,
+    timestamp: run.timestamp,
+    runsPerPage: run.runsPerPage,
+    effort: run.effort,
+    prices: run.pricesUsdPerMillionTokens,
+    ...(run.side ? { side: run.side } : {}),
+  }));
+  return { runs, sides };
+}
+
+const write = (data, what) => {
+  mkdirSync(path.dirname(out), { recursive: true });
+  writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`);
+  console.log(`Wrote ${path.relative(process.cwd(), out)}: ${what}.`);
+};
+
+if (process.argv[2] === "--api") {
+  const data = JSON.parse(readFileSync(out, "utf8"));
+  const api = realFrom(/^api-.*\.json$/);
+  data.real = {
+    runs: [...data.real.runs.filter((run) => run.side !== "api"), ...api.runs],
+    sides: [...data.real.sides.filter((side) => side.key !== "api"), ...api.sides],
+  };
+  write(data, `${api.sides.length} API sides from ${api.runs.length} files, nothing else changed`);
+  process.exit(0);
+}
 
 /** Per task, the newest run that has it; a path on the command line is used alone. */
 const files = process.argv[2]
@@ -27,16 +118,6 @@ const runs = files.map((file) => ({ file, run: JSON.parse(readFileSync(file, "ut
 const newestFor = new Map();
 for (const entry of runs) for (const task of Object.keys(entry.run.tasks)) newestFor.set(task, entry);
 const run = runs.at(-1).run;
-
-/** Which product a page was rebuilt from, as the site names it. */
-const SCREEN = {
-  "voucher-raw": { key: "tripletex", name: "Tripletex · DOM snapshot" },
-  "voucher-grid": { key: "dnb", name: "DNB Regnskap · DOM snapshot" },
-  "supplier-invoice-raw": { key: "tripletex", name: "Tripletex · DOM map" },
-  "sales-invoice-raw": { key: "tripletex", name: "Tripletex · DOM map" },
-  "dashboard-raw": { key: "tripletex", name: "Tripletex · DOM map" },
-  "dashboard-grid": { key: "dnb", name: "DNB Regnskap · DOM map" },
-};
 
 const sides = [...newestFor]
   .flatMap(([task, { run: from }]) => from.sides.filter((side) => side.task === task))
@@ -71,51 +152,10 @@ const sides = [...newestFor]
     };
   });
 
-/**
- * Real-model runs (`pnpm proof` / `bench`): per task and model, the newest
- * run with at least three runs per page. Medians; success counts as checked.
- */
-const real = new Map();
-for (const file of readdirSync(results)
-  .filter((f) => /^bench-.*\.json$/.test(f))
-  .sort()) {
-  const run = JSON.parse(readFileSync(path.join(results, file), "utf8"));
-  if (!run.summary || (run.runsPerPage ?? 0) < 3) continue;
-  real.set(`${run.task}|${run.model}`, { file, run });
-}
-const realSides = [...real.values()].flatMap(({ run }) =>
-  run.summary.map((page) => {
-    const screen =
-      SCREEN[page.page] ??
-      (page.page.endsWith("-acc") ? { key: "acc", name: "Booki" } : { key: page.page, name: page.page });
-    return {
-      task: run.task,
-      model: run.model,
-      key: screen.key,
-      name: screen.name,
-      runs: page.runs,
-      succeeded: page.succeeded,
-      toolCalls: page.toolCalls.median,
-      requests: page.requests.median,
-      tokens:
-        page.inputTokens.median + page.cacheWriteTokens.median + page.cacheReadTokens.median + page.outputTokens.median,
-      costUsd: page.costUsd?.median ?? null,
-      wallMs: Math.round(page.wallMs.median),
-    };
-  }),
-);
-const realRuns = [...real.values()].map(({ file, run }) => ({
-  file: path.relative(path.resolve(here, "../../.."), path.join(results, file)),
-  task: run.task,
-  model: run.model,
-  timestamp: run.timestamp,
-  runsPerPage: run.runsPerPage,
-  effort: run.effort,
-  prices: run.pricesUsdPerMillionTokens,
-}));
+const real = realFrom(/^(bench|api)-.*\.json$/);
 
 const data = {
-  sources: [...new Set([...newestFor.values()].map(({ file }) => path.relative(path.resolve(here, "../../.."), file)))],
+  sources: [...new Set([...newestFor.values()].map(({ file }) => path.relative(repo, file)))],
   timestamp: run.timestamp,
   tokens: run.tokenCount.method,
   prices: run.prices,
@@ -128,9 +168,7 @@ const data = {
   },
   tasks: Object.fromEntries([...newestFor].map(([task, { run: from }]) => [task, from.tasks[task]])),
   sides,
-  real: { runs: realRuns, sides: realSides },
+  real,
 };
 
-mkdirSync(path.dirname(out), { recursive: true });
-writeFileSync(out, `${JSON.stringify(data, null, 2)}\n`);
-console.log(`Wrote ${path.relative(process.cwd(), out)} from ${data.sources.join(", ")}: ${sides.length} sides.`);
+write(data, `from ${data.sources.join(", ")}: ${sides.length} sides`);

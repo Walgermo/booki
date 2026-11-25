@@ -15,7 +15,7 @@ Booki is pre-1.0: the API still changes, and nothing is on npm until v1 has run 
 Benchmarks:
 
 - [#12](https://github.com/Walgermo/booki/issues/12) Remeasure the voucher, sales invoice and inbox benchmarks with Haiku and DeepSeek, and put the withdrawn results back on the site.
-- [#13](https://github.com/Walgermo/booki/issues/13) Measure Booki against an agent that works through an API or an MCP server. The API baseline is built and tested; the runs and the figures are left.
+- [#13](https://github.com/Walgermo/booki/issues/13) Measure Booki against an agent that works through an API or an MCP server. The API side is measured on the supplier invoice and the dashboard (benchmarks/agent/README.md); the voucher and sales invoice wait for #12, and an MCP server is not measured.
 - [#14](https://github.com/Walgermo/booki/issues/14) Hard benchmark tasks, written before Booki runs them so they are not tuned to it. The five tasks and their checks are written; the runs, and showing where Booki fails, are left.
 - [#15](https://github.com/Walgermo/booki/issues/15) Run 30 times per cell, with spread and confidence intervals.
 - [#16](https://github.com/Walgermo/booki/issues/16) Publish the full transcripts of the next measurement and invite an outside run.

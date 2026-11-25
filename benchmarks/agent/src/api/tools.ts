@@ -89,6 +89,27 @@ const catalogue: ToolSpec[] = [
     call: (api) => api.listVatCodes(),
   },
   {
+    name: "get_monthly_results",
+    description:
+      "Revenue and costs per month for the last twelve months, oldest first. period is yyyy-mm; amounts are integer øre. Read only.",
+    input_schema: NO_FIELDS,
+    call: (api) => api.monthlyResults(),
+  },
+  {
+    name: "get_receivables_aging",
+    description:
+      "Open customer receivables on the closing date asOf (yyyy-mm-dd), in three buckets by days past due: not due, 1–30 days and over 30 days, and their total. Amounts are integer øre; a credit note reduces its bucket. Read only.",
+    input_schema: NO_FIELDS,
+    call: (api) => api.receivablesAging(),
+  },
+  {
+    name: "get_salary_totals",
+    description:
+      "This month's payroll: number of employees, gross salary, employer's national insurance contribution and tax withheld. Amounts are integer øre. Read only.",
+    input_schema: NO_FIELDS,
+    call: (api) => api.payroll(),
+  },
+  {
     name: "get_state",
     description:
       "Read everything registered so far in this session: vouchers, supplier invoices, sales invoices and the audit trail. Amounts are integer øre. Read only.",

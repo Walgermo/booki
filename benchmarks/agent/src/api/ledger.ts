@@ -6,6 +6,7 @@
 // Amounts are integer minor units (øre). Dates are ISO yyyy-mm-dd strings.
 
 import { isValidKid } from "@booki/core";
+import { ageItems, type OpenItem } from "@booki/core/aging";
 
 export class ApiError extends Error {
   constructor(message: string) {
@@ -57,6 +58,58 @@ export const REFERENCE = {
     { code: "MVA25", percent: 25 },
   ] satisfies VatCode[],
 } as const;
+
+/**
+ * The overview's figures, copied from apps/www (components/erp-dashboard.tsx,
+ * lib/demo-data.ts and components/bench/dashboard-data.ts): the same twelve
+ * months, open receivables and payroll that the three dashboard pages draw.
+ * The read endpoints below return no more than those pages' widgets show.
+ */
+const MONTHS = [
+  "2025-11",
+  "2025-12",
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04",
+  "2026-05",
+  "2026-06",
+  "2026-07",
+  "2026-08",
+  "2026-09",
+  "2026-10",
+];
+const REVENUE = [
+  398_200, 512_900, 341_700, 368_400, 402_100, 417_600, 455_300, 471_800, 302_500, 433_900, 452_000, 486_500,
+].map((n) => n * 100);
+const COSTS = [
+  301_400, 356_200, 288_900, 297_300, 312_800, 318_500, 329_100, 336_700, 284_200, 322_600, 341_900, 318_400,
+].map((n) => n * 100);
+const receivable = (id: string, partyName: string, documentNumber: string, dueDate: string, amountMinor: number) =>
+  ({ id, partyId: partyName, partyName, documentNumber, dueDate, amountMinor, kind: "receivable" }) satisfies OpenItem;
+const RECEIVABLES: OpenItem[] = [
+  receivable("r1", "Vestlandsbygg AS", "1004", "2026-11-08", 3_000_000),
+  receivable("r2", "Brattli AS", "0988", "2026-09-20", 640_000),
+  receivable("r3", "Brattli AS", "0991", "2026-10-12", 212_500),
+  receivable("r4", "Havblikk Hotell", "0912", "2026-06-30", 1_875_000),
+  receivable("r5", "Havblikk Hotell", "K-0044", "2026-07-15", -250_000),
+  receivable("r6", "Nordlys Eiendom", "0975", "2026-08-28", 96_000),
+];
+export const DASHBOARD = {
+  asOf: "2026-10-31",
+  months: MONTHS.map((period, index) => ({ period, revenueMinor: REVENUE[index]!, costsMinor: COSTS[index]! })),
+  payroll: { employees: 4, salaryMinor: 12_740_000, employerTaxMinor: 2_566_200, withholdingMinor: 5_460_000 },
+};
+
+export type MonthlyResult = { period: string; revenueMinor: number; costsMinor: number };
+export type ReceivablesAging = {
+  asOf: string;
+  notDueMinor: number;
+  days1to30Minor: number;
+  over30DaysMinor: number;
+  totalMinor: number;
+};
+export type Payroll = typeof DASHBOARD.payroll;
 
 /** The company's auto-post rule: above 50 000,00 a person posts. */
 export const AUTO_POST_LIMIT_MINOR = 5_000_000;
@@ -266,6 +319,28 @@ export class BookkeepingApi {
 
   listVatCodes(): VatCode[] {
     return REFERENCE.vatCodes.map((vat) => ({ ...vat }));
+  }
+
+  /** Revenue and costs per month for the last twelve months, oldest first. */
+  monthlyResults(): MonthlyResult[] {
+    return DASHBOARD.months.map((month) => ({ ...month }));
+  }
+
+  /** Open receivables in three buckets by days past due, on the books' closing date. */
+  receivablesAging(): ReceivablesAging {
+    const aged = ageItems(RECEIVABLES, DASHBOARD.asOf, [0, 30]);
+    return {
+      asOf: DASHBOARD.asOf,
+      notDueMinor: aged.totalsMinor[0]!,
+      days1to30Minor: aged.totalsMinor[1]!,
+      over30DaysMinor: aged.totalsMinor[2]!,
+      totalMinor: aged.grandTotalMinor,
+    };
+  }
+
+  /** This month's payroll totals. */
+  payroll(): Payroll {
+    return { ...DASHBOARD.payroll };
   }
 
   postVoucher(input: VoucherInput, actor: string = DEFAULT_ACTOR): Voucher {

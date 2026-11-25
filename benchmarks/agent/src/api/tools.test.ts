@@ -77,6 +77,9 @@ describe("tool definitions", () => {
     const names = tools.map((tool) => tool.name).sort();
     assert.deepEqual(names, [
       "create_sales_invoice",
+      "get_monthly_results",
+      "get_receivables_aging",
+      "get_salary_totals",
       "get_state",
       "list_accounts",
       "list_customers",
