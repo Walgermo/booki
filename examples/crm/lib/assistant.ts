@@ -3,9 +3,10 @@
 import { createMCPClient, Experimental_WebMCPTransport as WebMCPTransport, type MCPClient } from "@ai-sdk/mcp";
 import { useChat } from "@ai-sdk/react";
 import { registerTools } from "@booki/react";
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from "ai";
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type UIMessage } from "ai";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { logDecision, pageAgent } from "./agent";
+import { TOOL_NAMES } from "./chat-tools";
 import { AGENT_ID } from "./people";
 
 type ModelContext = ConstructorParameters<typeof WebMCPTransport>[0]["modelContext"] & {
@@ -29,15 +30,39 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
     audit: logDecision,
   });
   signal.addEventListener("abort", unregister, { once: true });
-  // A browser may register asynchronously; let it finish before the client lists the tools.
-  await Promise.resolve();
-  if (signal.aborted) return undefined;
   const client = await createMCPClient({ transport: new WebMCPTransport({ modelContext: context }) });
+  try {
+    // Registration fails silently (a permissions policy, a browser that refuses): find out now, not on the first message.
+    const { tools } = await client.listTools();
+    const names = tools.map((tool) => tool.name);
+    if (!TOOL_NAMES.every((name) => names.includes(name)))
+      throw new Error("Siden fikk ikke registrert verktøyene sine i nettleseren. Last inn siden på nytt.");
+  } catch (error) {
+    await client.close();
+    throw error;
+  }
   if (signal.aborted) {
     await client.close();
     return undefined;
   }
   return client;
+}
+
+/**
+ * Tool rounds one message may start before the chat stops and hands back to
+ * the person: a model that keeps reading or retrying costs a request each time.
+ */
+export const MAX_TOOL_ROUNDS = 8;
+
+/** Sends the tool results back to the model, unless this message has used its rounds. */
+export function shouldContinue({ messages }: { messages: UIMessage[] }): boolean {
+  if (!lastAssistantMessageIsCompleteWithToolCalls({ messages })) return false;
+  const lastUser = messages.map((message) => message.role).lastIndexOf("user");
+  const rounds = messages
+    .slice(lastUser + 1)
+    .flatMap((message) => message.parts)
+    .filter((part) => part.type === "step-start").length;
+  return rounds < MAX_TOOL_ROUNDS;
 }
 
 const NO_WEBMCP =
@@ -102,7 +127,7 @@ export function useAssistant(me: string) {
 
   const chat = useChat({
     transport,
-    sendAutomaticallyWhen: lastAssistantMessageIsCompleteWithToolCalls,
+    sendAutomaticallyWhen: shouldContinue,
     async onToolCall({ toolCall }) {
       if (!toolCall.dynamic) return;
       try {

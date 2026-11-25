@@ -33,13 +33,22 @@ export type Crm = {
 export type Write =
   | { action: "deals"; deals: Deal[] }
   | { action: "activities"; dealId: string; activities: Activity[] }
-  | { action: "agent-step"; step: string; target: string };
+  | { action: "agent-step"; step: string; target: string; detail?: string };
 
 export type Answer = { ok: true; crm: Crm } | (Refusal & { crm: Crm });
 
 export function seedCrm(): Crm {
   return { deals: seedDeals(), activities: seedActivities(), audit: [] };
 }
+
+/** The rows the page's bridge writes about the agent's steps: refused, a person's, cancelled, failed in the control. */
+const AGENT_STEPS = new Set([
+  "agent.refused",
+  "agent.person-only",
+  "agent.cancelled",
+  "agent.failed",
+  "agent.confirmed",
+]);
 
 const now = () => new Date().toISOString();
 let sequence = 0;
@@ -233,7 +242,14 @@ export function apply(crm: Crm, actor: ServerActor | undefined, write: Write): A
   try {
     if (write.action === "deals") writeDeals(crm, context, write.deals);
     else if (write.action === "activities") writeActivities(crm, context, write.dealId, write.activities);
-    else if (write.action === "agent-step") log(crm, actor, "agent.refused", write.target, write.step);
+    else if (write.action === "agent-step")
+      log(
+        crm,
+        actor,
+        AGENT_STEPS.has(write.step) ? write.step : "agent.refused",
+        write.target,
+        typeof write.detail === "string" ? write.detail.slice(0, 200) : undefined,
+      );
     return { ok: true, crm };
   } catch (error) {
     crm.deals = before.deals;

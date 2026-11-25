@@ -168,7 +168,7 @@ export async function actAndRecord<A extends Actable>(
   const result = (await agent.act(input, actOptions)) as Awaited<ReturnType<A["act"]>>;
   const failed = (result as { ok: boolean; error?: { step: number; message: string } }).error;
   if (!(result as { ok: boolean }).ok && failed && options.audit) {
-    const step = input.steps[failed.step];
+    const step = Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
     // A check that did not hold changed nothing and was not refused: the agent reads why, the audit trail stays about changes.
     if (step?.action === "expect") return result;
     // `allow` refused it, and `bookiAllow` has already recorded that: one row per decision.

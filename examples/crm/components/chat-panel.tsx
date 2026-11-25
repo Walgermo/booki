@@ -11,16 +11,26 @@ const TOOL_LABEL: Record<string, string> = {
   crm_act: "handlet",
 };
 
-/** What a tool returned, as one line for the person: a refusal in Norwegian, otherwise nothing. */
-function toolNote(part: { state: string; output?: unknown; errorText?: string }): string | null {
+/**
+ * What a tool returned, as one line for the person: a refusal or a failure in
+ * Norwegian, nothing when it went through. A tool that threw comes back from
+ * the MCP client as `isError` with a plain sentence; a refused `act` comes back
+ * as JSON with `ok: false`.
+ */
+export function toolNote(part: { state: string; output?: unknown; errorText?: string }): string | null {
   if (part.state === "output-error") return part.errorText ? localize(part.errorText, "nb") : "feilet";
   if (part.state !== "output-available") return "…";
-  const content = (part.output as { content?: { type: string; text?: string }[] } | undefined)?.content;
-  const raw = content?.find((item) => item.type === "text")?.text;
+  const output = part.output as { isError?: boolean; content?: { type: string; text?: string }[] } | undefined;
+  const raw = output?.content?.find((item) => item.type === "text")?.text;
+  if (output?.isError) return raw ? localize(raw, "nb") : "feilet";
   if (!raw) return null;
   try {
-    const result = JSON.parse(raw) as { ok?: boolean; error?: { message?: string } };
-    return result.ok === false && result.error?.message ? localize(result.error.message, "nb") : null;
+    const result = JSON.parse(raw) as { ok?: boolean; error?: unknown };
+    if (result.ok === false && typeof (result.error as { message?: unknown })?.message === "string")
+      return localize((result.error as { message: string }).message, "nb");
+    // `query` and `snapshot` say what was wrong with the call as `error`, a sentence.
+    if (typeof result.error === "string") return localize(result.error, "nb");
+    return null;
   } catch {
     return null;
   }

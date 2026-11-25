@@ -5,7 +5,7 @@
   "description": "A sales CRM with Booki in Next.js: pipeline board, deal value with its source, activity timeline, forecast, funnel, time in stage and recurring revenue, a server guard on every write, and an agent that runs common sales tasks.",
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3200",
+    "dev": "next dev --hostname 127.0.0.1 --port 3200",
     "build": "next build",
     "start": "next start --port 3200",
     "typecheck": "tsc --noEmit",

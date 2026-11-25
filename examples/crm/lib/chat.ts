@@ -7,10 +7,8 @@ import {
   streamText,
   toUIMessageStream,
 } from "ai";
+import { pageTools } from "./chat-tools";
 import { nameOf, PEOPLE } from "./people";
-
-/** The tools the page registers for its assistant: Booki's `registerTools` with the prefix `crm`. */
-export const TOOL_NAMES = ["crm_act", "crm_query", "crm_snapshot"] as const;
 
 const MODEL = process.env.CRM_MODEL ?? "claude-sonnet-5-5";
 
@@ -20,7 +18,10 @@ const text = (status: number, body: string) =>
 /**
  * The chat runs only on a local development server: this example has no
  * sign-in in front of the model, and the browser sends the tool definitions.
- * In your app, put your sign-in here instead.
+ * These checks stop another website in the person's browser (Origin, Fetch
+ * Metadata, DNS rebinding through Host). They cannot stop a program on the
+ * network, which can write any header: that is why `pnpm dev` listens on
+ * 127.0.0.1 only. In your app, put your sign-in here instead.
  */
 export function isLocalRequest(request: Request): boolean {
   if (process.env.NODE_ENV !== "development" || process.env.VERCEL !== undefined) return false;
@@ -47,9 +48,11 @@ export function isLocalRequest(request: Request): boolean {
 const instructions = (me: string) =>
   [
     `You are the assistant in a sales CRM, working for ${nameOf(me)}. Answer in Norwegian Bokmål, briefly.`,
-    "The page is yours to operate through three tools: crm_snapshot lists the controls and what each offers,",
-    "crm_query reads one control's records (deals, activities, forecast rows), and crm_act runs steps on them.",
-    "Read with crm_snapshot before you act, and use the refs and actions it lists; do not guess them.",
+    "The page is yours to operate through three tools. crm_snapshot lists the controls: each one's ref, what it holds",
+    "(the board's deals and stages, the open deal's activities, the forecast) and the actions it takes now.",
+    "crm_query finds items by text when a list is long (text, and within: a ref). crm_act runs steps:",
+    '{ "steps": [{ "ref": "c1", "action": "moveDeal", "args": ["D-101", "negotiation"] }] }.',
+    "Read with crm_snapshot before you act, and use the refs, ids and actions it lists; do not guess them.",
     "Change something only when asked. After acting, say in one or two sentences what changed.",
     "Some steps are a person's, whatever you are asked: marking a deal won or lost, reopening it, removing an activity.",
     "When crm_act refuses one, tell the person which button to press; do not try another way round.",
@@ -66,6 +69,8 @@ export async function handleChat(request: Request): Promise<Response> {
   if (!process.env.ANTHROPIC_API_KEY)
     return text(503, "Sett ANTHROPIC_API_KEY i examples/crm/.env.local og start serveren på nytt.");
 
+  // A conversation in this example is a few kilobytes; anything far larger is not one.
+  if (Number(request.headers.get("content-length") ?? 0) > 512_000) return text(413, "Samtalen er for lang.");
   let body: { messages?: unknown; tools?: unknown; me?: unknown };
   try {
     body = await request.json();
@@ -74,13 +79,7 @@ export async function handleChat(request: Request): Promise<Response> {
   }
   const me = PEOPLE.some((person) => person.id === body.me) ? String(body.me) : "kari";
 
-  // Only the page's own three tools: anything else the browser lists is not this app's.
-  const definitions = Array.isArray(body.tools)
-    ? body.tools.filter(
-        (tool): tool is { name: string } =>
-          typeof tool === "object" && tool !== null && TOOL_NAMES.includes((tool as { name: never }).name),
-      )
-    : [];
+  const definitions = pageTools(body.tools);
   if (definitions.length === 0) return text(400, "Siden har ikke registrert verktøyene sine.");
 
   let tools: ReturnType<typeof createMCPTools>;
@@ -114,5 +113,26 @@ export async function handleChat(request: Request): Promise<Response> {
     tools,
     abortSignal: request.signal,
   });
-  return createUIMessageStreamResponse({ stream: toUIMessageStream({ stream: result.stream }) });
+  return createUIMessageStreamResponse({
+    stream: toUIMessageStream({
+      stream: result.stream,
+      onError: modelError,
+      // A tool's own refusal is the page's sentence: the model and the person read it as it is.
+      redactToolErrors: false,
+    }),
+  });
+}
+
+/**
+ * What the person reads when the model call fails: why, in their words, never
+ * the provider's own text (it can name the key or the account).
+ */
+export function modelError(error: unknown): string {
+  console.error("[chat]", error);
+  const status = (error as { statusCode?: number } | null)?.statusCode;
+  if (status === 401 || status === 403)
+    return "Modellen avviste nøkkelen: sjekk ANTHROPIC_API_KEY i examples/crm/.env.local.";
+  if (status === 404) return "Modellen finnes ikke: sjekk CRM_MODEL.";
+  if (status === 429 || status === 529) return "Modellen er opptatt akkurat nå. Prøv igjen om litt.";
+  return "Modellen svarte ikke. Prøv igjen.";
 }

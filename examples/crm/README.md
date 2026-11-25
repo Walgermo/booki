@@ -54,8 +54,18 @@ How it fits together:
   tool call the model makes.
 - **`lib/chat.ts`, on the server.** `createMCPTools` turns the definitions the
   page sent into the model's tools, with no `execute`: running them belongs to
-  the tab. It takes only the three `crm_` tools, and runs only on a local
-  development server, since the example has no sign-in in front of the model.
+  the tab. It takes only the three `crm_` tools, and text and tool results in
+  the conversation (no files, no system messages). A failed model call reads
+  as a Norwegian sentence, never the provider's own error text.
+- **Local only.** The example has no sign-in in front of the model, so
+  `pnpm dev` listens on 127.0.0.1 alone, and the route refuses requests that
+  another website in your browser could send (Origin, Fetch Metadata, a Host
+  that is not local). The headers are no protection against a program on the
+  network, which can write any header; listening on 127.0.0.1 is. In your app,
+  put your sign-in in front of the route.
+- **One message, at most eight tool rounds** (`MAX_TOOL_ROUNDS`), so a model
+  that keeps reading or retrying stops and hands back to the person. Switching
+  who is signed in starts a new conversation.
 - **The same rules as the tasks.** A tool call goes through the same bridge:
   marking a deal won or lost and removing an activity are refused as a
   person's, the refusal comes back as a sentence the model passes on, every
@@ -103,6 +113,9 @@ pnpm --filter @booki/example-crm test
 renders the page, runs each task through the bridge and checks what reached
 the server, with the page's `fetch` going straight to the real handler.
 `test/assistant.test.tsx` opens AI SDK's WebMCP client on the page's tools,
-with WebMCP as the browser gives it, and checks that a model's tool calls move
-a deal as the agent and are refused closing one; and that the chat route runs
-only locally and takes only the page's own tools.
+with a stand-in for the browser's WebMCP, and calls them as the chat does (no
+model): a move goes through as the agent, closing a deal is refused and
+recorded, a call in the wrong shape gets a sentence back. It also checks the
+round limit, what the person reads for each kind of failure, and that the
+route refuses other websites, files, system messages and tools that are not
+the page's.

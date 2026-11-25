@@ -76,7 +76,8 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
 
   /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
   const run = async (input: ActInput, actOptions?: ActOptions) => {
-    const lone = input.steps.length === 1 ? input.steps[0] : undefined;
+    // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
+    const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
     if (lone) currentStep.set(bridge, lone.action);
     try {
       return await bridge.act(input as never, actOptions);

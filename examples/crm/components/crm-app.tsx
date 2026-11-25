@@ -59,7 +59,9 @@ export function CrmApp({ initial }: { initial: Crm }) {
 
   useEffect(
     () =>
-      listenToDecisions((row) => void send({ action: "agent-step", step: row.action, target: row.target }, "agent")),
+      listenToDecisions(
+        (row) => void send({ action: "agent-step", step: row.action, target: row.target, detail: row.detail }, "agent"),
+      ),
     [send],
   );
 
@@ -210,7 +212,8 @@ export function CrmApp({ initial }: { initial: Crm }) {
           </main>
           <aside className="grid min-w-0 content-start gap-4">
             <AgentPanel me={me} dealId={deal.id} />
-            <ChatPanel me={me} />
+            {/* A new conversation for each person: one person's chat is not the next one's. */}
+            <ChatPanel key={me} me={me} />
           </aside>
         </div>
       </BookiAccessProvider>
