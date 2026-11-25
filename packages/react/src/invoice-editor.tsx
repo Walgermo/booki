@@ -8,27 +8,29 @@ import {
 } from "@booki-aui/core/invoice";
 import type { BookiChangeDetails } from "./change-details.js";
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { invoiceEditor } from "@booki-aui/primitives/invoice-editor";
 
-const parts = createParts(invoiceEditor, {
+const TAGS = {
   root: "div",
   cell: "input",
   tax: "select",
   add: "button",
   remove: "button",
   finalize: "button",
-});
-const InvoiceEditorRoot = parts.Root;
-const InvoiceEditorCell = parts.Cell;
-const InvoiceEditorTax = parts.Tax;
-const InvoiceEditorAdd = parts.Add;
-const InvoiceEditorRemove = parts.Remove;
-const InvoiceEditorFinalize = parts.Finalize;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof invoiceEditor, typeof TAGS> = createParts(invoiceEditor, TAGS);
+const InvoiceEditorRoot: (typeof parts)["Root"] = parts.Root;
+const InvoiceEditorCell: (typeof parts)["Cell"] = parts.Cell;
+const InvoiceEditorTax: (typeof parts)["Tax"] = parts.Tax;
+const InvoiceEditorAdd: (typeof parts)["Add"] = parts.Add;
+const InvoiceEditorRemove: (typeof parts)["Remove"] = parts.Remove;
+const InvoiceEditorFinalize: (typeof parts)["Finalize"] = parts.Finalize;
 
 export type InvoiceEditorProps = {
   invoice?: Invoice;

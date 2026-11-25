@@ -1,26 +1,28 @@
 import type { ClientRecipient, ClientRequest, ClientRequestStatus } from "@booki-aui/core/client-request";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { buttonKey, clientRequests } from "@booki-aui/primitives/client-requests";
 
-const parts = createParts(clientRequests, {
+const TAGS = {
   root: "div",
   send: "button",
   remind: "button",
   accept: "button",
   reason: "textarea",
   reject: "button",
-});
-const ClientRequestsRoot = parts.Root;
-const ClientRequestsSend = parts.Send;
-const ClientRequestsRemind = parts.Remind;
-const ClientRequestsAccept = parts.Accept;
-const ClientRequestsReason = parts.Reason;
-const ClientRequestsReject = parts.Reject;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof clientRequests, typeof TAGS> = createParts(clientRequests, TAGS);
+const ClientRequestsRoot: (typeof parts)["Root"] = parts.Root;
+const ClientRequestsSend: (typeof parts)["Send"] = parts.Send;
+const ClientRequestsRemind: (typeof parts)["Remind"] = parts.Remind;
+const ClientRequestsAccept: (typeof parts)["Accept"] = parts.Accept;
+const ClientRequestsReason: (typeof parts)["Reason"] = parts.Reason;
+const ClientRequestsReject: (typeof parts)["Reject"] = parts.Reject;
 
 const COPY = {
   EN: {

@@ -7,7 +7,7 @@ import {
 } from "@booki-aui/core/ledger";
 import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import { matchingRows, type TableColumn, type TableQuery } from "@booki-aui/core/table";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useMemo, type ReactNode } from "react";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -25,7 +25,7 @@ import {
   ledgerTable,
 } from "@booki-aui/primitives/ledger-table";
 
-const parts = createParts(ledgerTable, {
+const TAGS = {
   root: "div",
   from: "input",
   to: "input",
@@ -40,21 +40,23 @@ const parts = createParts(ledgerTable, {
   next: "button",
   search: "input",
   sort: "button",
-});
-const LedgerTableRoot = parts.Root;
-const LedgerTableFrom = parts.From;
-const LedgerTableTo = parts.To;
-const LedgerTableList = parts.List;
-const LedgerTableRow = parts.Row;
-const LedgerTableBack = parts.Back;
-const LedgerTableVoucher = parts.Voucher;
-const LedgerTableLineAccount = parts.Lineaccount;
-const LedgerTableDocument = parts.Document;
-const LedgerTableCrumb = parts.Crumb;
-const LedgerTablePrevious = parts.Previous;
-const LedgerTableNext = parts.Next;
-const LedgerTableSearch = parts.Search;
-const LedgerTableSort = parts.Sort;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof ledgerTable, typeof TAGS> = createParts(ledgerTable, TAGS);
+const LedgerTableRoot: (typeof parts)["Root"] = parts.Root;
+const LedgerTableFrom: (typeof parts)["From"] = parts.From;
+const LedgerTableTo: (typeof parts)["To"] = parts.To;
+const LedgerTableList: (typeof parts)["List"] = parts.List;
+const LedgerTableRow: (typeof parts)["Row"] = parts.Row;
+const LedgerTableBack: (typeof parts)["Back"] = parts.Back;
+const LedgerTableVoucher: (typeof parts)["Voucher"] = parts.Voucher;
+const LedgerTableLineAccount: (typeof parts)["Lineaccount"] = parts.Lineaccount;
+const LedgerTableDocument: (typeof parts)["Document"] = parts.Document;
+const LedgerTableCrumb: (typeof parts)["Crumb"] = parts.Crumb;
+const LedgerTablePrevious: (typeof parts)["Previous"] = parts.Previous;
+const LedgerTableNext: (typeof parts)["Next"] = parts.Next;
+const LedgerTableSearch: (typeof parts)["Search"] = parts.Search;
+const LedgerTableSort: (typeof parts)["Sort"] = parts.Sort;
 
 const COPY = {
   EN: {

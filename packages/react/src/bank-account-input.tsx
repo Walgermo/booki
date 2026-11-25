@@ -1,24 +1,26 @@
 import { digitsOnly, isValidKontonummer } from "@booki-aui/core/kontonummer";
 import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki-aui/core/routing-number";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { IbanInput } from "./iban-input.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { type BankAccountValue, bankAccount } from "@booki-aui/primitives/bank-account-input";
 
-const parts = createParts(bankAccount, {
+const TAGS = {
   root: "div",
   kontonummer: "input",
   routing: "input",
   account: "input",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof bankAccount, typeof TAGS> = createParts(bankAccount, TAGS);
 
-const BankAccountRoot = parts.Root;
-const BankAccountKontonummer = parts.Kontonummer;
-const BankAccountRouting = parts.Routing;
-const BankAccountAccount = parts.Account;
+const BankAccountRoot: (typeof parts)["Root"] = parts.Root;
+const BankAccountKontonummer: (typeof parts)["Kontonummer"] = parts.Kontonummer;
+const BankAccountRouting: (typeof parts)["Routing"] = parts.Routing;
+const BankAccountAccount: (typeof parts)["Account"] = parts.Account;
 
 export type BankAccountInputProps = {
   /** For profiles whose bank account is an IBAN. */

@@ -6,22 +6,24 @@ import {
   type AttachmentRegion,
 } from "@booki-aui/core/attachments";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { evidenceList } from "@booki-aui/primitives/evidence-list";
 
-const parts = createParts(evidenceList, {
+const TAGS = {
   root: "div",
   link: "button",
   kind: "select",
   remove: "button",
-});
-const EvidenceListRoot = parts.Root;
-const EvidenceListLink = parts.Link;
-const EvidenceListKind = parts.Kind;
-const EvidenceListRemove = parts.Remove;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof evidenceList, typeof TAGS> = createParts(evidenceList, TAGS);
+const EvidenceListRoot: (typeof parts)["Root"] = parts.Root;
+const EvidenceListLink: (typeof parts)["Link"] = parts.Link;
+const EvidenceListKind: (typeof parts)["Kind"] = parts.Kind;
+const EvidenceListRemove: (typeof parts)["Remove"] = parts.Remove;
 
 const COPY = {
   EN: {

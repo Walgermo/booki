@@ -1,26 +1,28 @@
 import { type PeriodGranularity } from "@booki-aui/core/period";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useId, useState, type ComponentProps } from "react";
 import { localToday } from "@booki-aui/core/financial-date";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { buildItems, accountingPeriod } from "@booki-aui/primitives/accounting-period-select";
 
-const parts = createParts(accountingPeriod, {
+const TAGS = {
   root: "div",
   trigger: "button",
   list: "div",
   option: "div",
   select: "select",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof accountingPeriod, typeof TAGS> = createParts(accountingPeriod, TAGS);
 
-const AccountingPeriodRoot = parts.Root;
+const AccountingPeriodRoot: (typeof parts)["Root"] = parts.Root;
 /** The select-only combobox a person opens. */
-const AccountingPeriodTrigger = parts.Trigger;
-const AccountingPeriodList = parts.List;
-const AccountingPeriodOption = parts.Option;
+const AccountingPeriodTrigger: (typeof parts)["Trigger"] = parts.Trigger;
+const AccountingPeriodList: (typeof parts)["List"] = parts.List;
+const AccountingPeriodOption: (typeof parts)["Option"] = parts.Option;
 /** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
-const AccountingPeriodControl = parts.Select;
+const AccountingPeriodControl: (typeof parts)["Select"] = parts.Select;
 
 export type AccountingPeriodSelectProps = {
   value?: string;

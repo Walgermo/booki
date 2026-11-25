@@ -1,6 +1,6 @@
 import { formatMoney } from "@booki-aui/core/money";
 import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { compactMoney, periodName } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
@@ -12,10 +12,12 @@ import {
   type ForecastPeriod,
 } from "@booki-aui/primitives/forecast-chart";
 
-const parts = createParts(forecastChart, { root: "div", grouping: "button", period: "button" });
-const ForecastChartRoot = parts.Root;
-const ForecastChartGrouping = parts.Grouping;
-const ForecastChartPeriod = parts.Period;
+const TAGS = { root: "div", grouping: "button", period: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof forecastChart, typeof TAGS> = createParts(forecastChart, TAGS);
+const ForecastChartRoot: (typeof parts)["Root"] = parts.Root;
+const ForecastChartGrouping: (typeof parts)["Grouping"] = parts.Grouping;
+const ForecastChartPeriod: (typeof parts)["Period"] = parts.Period;
 
 const COPY = {
   EN: {

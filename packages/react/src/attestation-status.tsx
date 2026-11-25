@@ -1,4 +1,4 @@
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useState } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import {
@@ -7,19 +7,21 @@ import {
   attestationStatus,
 } from "@booki-aui/primitives/attestation-status";
 
-const parts = createParts(attestationStatus, {
+const TAGS = {
   root: "div",
   badge: "span",
   approve: "button",
   reject: "button",
   escalate: "button",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof attestationStatus, typeof TAGS> = createParts(attestationStatus, TAGS);
 
-const AttestationStatusRoot = parts.Root;
-const AttestationStatusBadge = parts.Badge;
-const AttestationStatusApprove = parts.Approve;
-const AttestationStatusReject = parts.Reject;
-const AttestationStatusEscalate = parts.Escalate;
+const AttestationStatusRoot: (typeof parts)["Root"] = parts.Root;
+const AttestationStatusBadge: (typeof parts)["Badge"] = parts.Badge;
+const AttestationStatusApprove: (typeof parts)["Approve"] = parts.Approve;
+const AttestationStatusReject: (typeof parts)["Reject"] = parts.Reject;
+const AttestationStatusEscalate: (typeof parts)["Escalate"] = parts.Escalate;
 
 export type AttestationStatusProps = {
   value?: AttestationStatusValue;

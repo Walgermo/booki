@@ -8,14 +8,14 @@ import {
   type DimensionDefinition,
 } from "@booki-aui/core/voucher";
 import type { PeriodState } from "@booki-aui/core/period-lock";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { VoucherLines } from "./voucher-lines.js";
 import { type RowError, voucherComposer } from "@booki-aui/primitives/voucher-composer";
 
-const parts = createParts(voucherComposer, {
+const TAGS = {
   root: "div",
   accountSelect: "select",
   accountInput: "input",
@@ -30,8 +30,10 @@ const parts = createParts(voucherComposer, {
   newAccountSelect: "select",
   newAccountInput: "input",
   add: "button",
-});
-const VoucherComposerRoot = parts.Root;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof voucherComposer, typeof TAGS> = createParts(voucherComposer, TAGS);
+const VoucherComposerRoot: (typeof parts)["Root"] = parts.Root;
 
 /** A select must be able to show the value a line already holds. */
 function withCurrent<T>(

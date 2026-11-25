@@ -8,18 +8,20 @@ import {
   type VatReturnStatus,
   type VatTransaction,
 } from "@booki-aui/core/vat-return";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { type VatReturnSubmission, DEFAULT_SNAPSHOT_ROWS, vatReturn } from "@booki-aui/primitives/vat-return";
 
-const parts = createParts(vatReturn, { root: "div", box: "button", back: "button", ready: "button", submit: "button" });
-const VatReturnRoot = parts.Root;
-const VatReturnBoxButton = parts.Box;
-const VatReturnBack = parts.Back;
-const VatReturnReady = parts.Ready;
-const VatReturnSubmit = parts.Submit;
+const TAGS = { root: "div", box: "button", back: "button", ready: "button", submit: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof vatReturn, typeof TAGS> = createParts(vatReturn, TAGS);
+const VatReturnRoot: (typeof parts)["Root"] = parts.Root;
+const VatReturnBoxButton: (typeof parts)["Box"] = parts.Box;
+const VatReturnBack: (typeof parts)["Back"] = parts.Back;
+const VatReturnReady: (typeof parts)["Ready"] = parts.Ready;
+const VatReturnSubmit: (typeof parts)["Submit"] = parts.Submit;
 
 const COPY = {
   EN: {

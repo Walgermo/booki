@@ -1,5 +1,5 @@
 import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import {
   CHART_RANGES,
@@ -28,10 +28,12 @@ import {
   trendChart,
 } from "@booki-aui/primitives/trend-chart";
 
-const parts = createParts(trendChart, { root: "div", range: "button", point: "button" });
-const TrendChartRoot = parts.Root;
-const TrendChartRange = parts.Range;
-const TrendChartPoint = parts.Point;
+const TAGS = { root: "div", range: "button", point: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof trendChart, typeof TAGS> = createParts(trendChart, TAGS);
+const TrendChartRoot: (typeof parts)["Root"] = parts.Root;
+const TrendChartRange: (typeof parts)["Range"] = parts.Range;
+const TrendChartPoint: (typeof parts)["Point"] = parts.Point;
 
 const COPY = {
   EN: {

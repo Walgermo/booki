@@ -1,17 +1,19 @@
 import { localToday } from "@booki-aui/core/financial-date";
 import { type AgingBucket, type OpenItem, type OpenItemKind } from "@booki-aui/core/aging";
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState } from "react";
 import { formatPercent, observeWidth, seriesColor, wholeAbove } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { type Details, DEFAULT_TOP, report, derive, agingChart } from "@booki-aui/primitives/aging-chart";
 
-const parts = createParts(agingChart, { root: "div", bucket: "button", clear: "button" });
-const AgingChartRoot = parts.Root;
-const AgingChartBucket = parts.Bucket;
-const AgingChartClear = parts.Clear;
+const TAGS = { root: "div", bucket: "button", clear: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof agingChart, typeof TAGS> = createParts(agingChart, TAGS);
+const AgingChartRoot: (typeof parts)["Root"] = parts.Root;
+const AgingChartBucket: (typeof parts)["Bucket"] = parts.Bucket;
+const AgingChartClear: (typeof parts)["Clear"] = parts.Clear;
 
 const COPY = {
   EN: {

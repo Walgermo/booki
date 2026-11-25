@@ -12,7 +12,7 @@ import {
 } from "@booki-aui/core/aging";
 import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import type { TableColumn, TableQuery } from "@booki-aui/core/table";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -29,7 +29,7 @@ import {
   partyColumns,
 } from "@booki-aui/primitives/aged-balances";
 
-const parts = createParts(agedBalances, {
+const TAGS = {
   root: "div",
   date: "input",
   party: "button",
@@ -39,16 +39,18 @@ const parts = createParts(agedBalances, {
   sort: "button",
   prev: "button",
   next: "button",
-});
-const AgedBalancesRoot = parts.Root;
-const AgedBalancesDate = parts.Date;
-const AgedBalancesParty = parts.Party;
-const AgedBalancesBack = parts.Back;
-const AgedBalancesSearch = parts.Search;
-const AgedBalancesBucket = parts.Bucket;
-const AgedBalancesSort = parts.Sort;
-const AgedBalancesPrev = parts.Prev;
-const AgedBalancesNext = parts.Next;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof agedBalances, typeof TAGS> = createParts(agedBalances, TAGS);
+const AgedBalancesRoot: (typeof parts)["Root"] = parts.Root;
+const AgedBalancesDate: (typeof parts)["Date"] = parts.Date;
+const AgedBalancesParty: (typeof parts)["Party"] = parts.Party;
+const AgedBalancesBack: (typeof parts)["Back"] = parts.Back;
+const AgedBalancesSearch: (typeof parts)["Search"] = parts.Search;
+const AgedBalancesBucket: (typeof parts)["Bucket"] = parts.Bucket;
+const AgedBalancesSort: (typeof parts)["Sort"] = parts.Sort;
+const AgedBalancesPrev: (typeof parts)["Prev"] = parts.Prev;
+const AgedBalancesNext: (typeof parts)["Next"] = parts.Next;
 
 const COPY = {
   EN: {

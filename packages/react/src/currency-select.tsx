@@ -1,24 +1,26 @@
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { DEFAULT_CURRENCIES, currencySelect } from "@booki-aui/primitives/currency-select";
 
-const parts = createParts(currencySelect, {
+const TAGS = {
   root: "div",
   trigger: "button",
   list: "div",
   option: "div",
   select: "select",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof currencySelect, typeof TAGS> = createParts(currencySelect, TAGS);
 
-const CurrencySelectRoot = parts.Root;
+const CurrencySelectRoot: (typeof parts)["Root"] = parts.Root;
 /** The select-only combobox a person opens. */
-const CurrencySelectTrigger = parts.Trigger;
-const CurrencySelectList = parts.List;
-const CurrencySelectOption = parts.Option;
+const CurrencySelectTrigger: (typeof parts)["Trigger"] = parts.Trigger;
+const CurrencySelectList: (typeof parts)["List"] = parts.List;
+const CurrencySelectOption: (typeof parts)["Option"] = parts.Option;
 /** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
-const CurrencySelectControl = parts.Select;
+const CurrencySelectControl: (typeof parts)["Select"] = parts.Select;
 
 export type CurrencySelectProps = {
   value?: string;

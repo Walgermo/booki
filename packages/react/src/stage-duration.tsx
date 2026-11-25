@@ -1,5 +1,5 @@
 import type { PipelineStage } from "@booki-aui/core/pipeline";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
@@ -11,9 +11,11 @@ import {
   type StageStay,
 } from "@booki-aui/primitives/stage-duration";
 
-const parts = createParts(stageDuration, { root: "div", stage: "button" });
-const StageDurationRoot = parts.Root;
-const StageDurationStage = parts.Stage;
+const TAGS = { root: "div", stage: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof stageDuration, typeof TAGS> = createParts(stageDuration, TAGS);
+const StageDurationRoot: (typeof parts)["Root"] = parts.Root;
+const StageDurationStage: (typeof parts)["Stage"] = parts.Stage;
 
 const COPY = {
   EN: {

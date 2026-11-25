@@ -1,12 +1,14 @@
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useId } from "react";
 import { formatPercent, linePath, linearScale, periodName, type Direction, type PeriodValue } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { type KpiGood, derive, kpiStat } from "@booki-aui/primitives/kpi-stat";
 
-const parts = createParts(kpiStat, { root: "div" });
-const KpiStatRoot = parts.Root;
+const TAGS = { root: "div" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof kpiStat, typeof TAGS> = createParts(kpiStat, TAGS);
+const KpiStatRoot: (typeof parts)["Root"] = parts.Root;
 
 const COPY = {
   EN: {

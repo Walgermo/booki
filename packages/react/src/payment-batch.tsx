@@ -2,7 +2,7 @@ import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import type { BookiChangeDetails } from "./change-details.js";
 import { type PaymentBatch as Batch, type PaymentItem } from "@booki-aui/core/payment-batch";
 import { matchingRows, type TableColumn, type TableQuery } from "@booki-aui/core/table";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
@@ -11,7 +11,7 @@ import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { DEFAULT_PAGE_SIZE, paymentBatch, paymentColumns } from "@booki-aui/primitives/payment-batch";
 
-const parts = createParts(paymentBatch, {
+const TAGS = {
   root: "div",
   remove: "button",
   approve: "button",
@@ -20,15 +20,17 @@ const parts = createParts(paymentBatch, {
   sort: "button",
   prev: "button",
   next: "button",
-});
-const PaymentBatchRoot = parts.Root;
-const PaymentBatchRemove = parts.Remove;
-const PaymentBatchApprove = parts.Approve;
-const PaymentBatchRelease = parts.Release;
-const PaymentBatchSearch = parts.Search;
-const PaymentBatchSort = parts.Sort;
-const PaymentBatchPrev = parts.Prev;
-const PaymentBatchNext = parts.Next;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof paymentBatch, typeof TAGS> = createParts(paymentBatch, TAGS);
+const PaymentBatchRoot: (typeof parts)["Root"] = parts.Root;
+const PaymentBatchRemove: (typeof parts)["Remove"] = parts.Remove;
+const PaymentBatchApprove: (typeof parts)["Approve"] = parts.Approve;
+const PaymentBatchRelease: (typeof parts)["Release"] = parts.Release;
+const PaymentBatchSearch: (typeof parts)["Search"] = parts.Search;
+const PaymentBatchSort: (typeof parts)["Sort"] = parts.Sort;
+const PaymentBatchPrev: (typeof parts)["Prev"] = parts.Prev;
+const PaymentBatchNext: (typeof parts)["Next"] = parts.Next;
 
 const LIST_COPY = {
   EN: {

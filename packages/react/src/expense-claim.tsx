@@ -8,13 +8,13 @@ import {
 } from "@booki-aui/core/expense";
 import type { BookiChangeDetails } from "./change-details.js";
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { type ExpenseExceptionState, expenseClaim } from "@booki-aui/primitives/expense-claim";
 
-const parts = createParts(expenseClaim, {
+const TAGS = {
   root: "div",
   cell: "input",
   pick: "select",
@@ -24,16 +24,18 @@ const parts = createParts(expenseClaim, {
   submit: "button",
   approve: "button",
   reject: "button",
-});
-const ExpenseClaimRoot = parts.Root;
-const ExpenseClaimCell = parts.Cell;
-const ExpenseClaimPick = parts.Pick;
-const ExpenseClaimAdd = parts.Add;
-const ExpenseClaimRemove = parts.Remove;
-const ExpenseClaimAccept = parts.Accept;
-const ExpenseClaimSubmit = parts.Submit;
-const ExpenseClaimApprove = parts.Approve;
-const ExpenseClaimReject = parts.Reject;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof expenseClaim, typeof TAGS> = createParts(expenseClaim, TAGS);
+const ExpenseClaimRoot: (typeof parts)["Root"] = parts.Root;
+const ExpenseClaimCell: (typeof parts)["Cell"] = parts.Cell;
+const ExpenseClaimPick: (typeof parts)["Pick"] = parts.Pick;
+const ExpenseClaimAdd: (typeof parts)["Add"] = parts.Add;
+const ExpenseClaimRemove: (typeof parts)["Remove"] = parts.Remove;
+const ExpenseClaimAccept: (typeof parts)["Accept"] = parts.Accept;
+const ExpenseClaimSubmit: (typeof parts)["Submit"] = parts.Submit;
+const ExpenseClaimApprove: (typeof parts)["Approve"] = parts.Approve;
+const ExpenseClaimReject: (typeof parts)["Reject"] = parts.Reject;
 
 const COPY = {
   EN: {

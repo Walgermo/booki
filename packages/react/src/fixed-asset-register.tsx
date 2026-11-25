@@ -10,13 +10,13 @@ import {
 } from "@booki-aui/core/fixed-assets";
 import { formatMoney, money } from "@booki-aui/core/money";
 import { formatPeriod } from "@booki-aui/core/period";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { type AssetRow, fixedAssetRegister } from "@booki-aui/primitives/fixed-asset-register";
 
-const parts = createParts(fixedAssetRegister, {
+const TAGS = {
   root: "div",
   period: "input",
   open: "button",
@@ -26,16 +26,18 @@ const parts = createParts(fixedAssetRegister, {
   discard: "button",
   cell: "input",
   dispose: "button",
-});
-const FixedAssetRegisterRoot = parts.Root;
-const FixedAssetRegisterPeriod = parts.Period;
-const FixedAssetRegisterOpen = parts.Open;
-const FixedAssetRegisterBack = parts.Back;
-const FixedAssetRegisterPropose = parts.Propose;
-const FixedAssetRegisterConfirm = parts.Confirm;
-const FixedAssetRegisterDiscard = parts.Discard;
-const FixedAssetRegisterCell = parts.Cell;
-const FixedAssetRegisterDispose = parts.Dispose;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof fixedAssetRegister, typeof TAGS> = createParts(fixedAssetRegister, TAGS);
+const FixedAssetRegisterRoot: (typeof parts)["Root"] = parts.Root;
+const FixedAssetRegisterPeriod: (typeof parts)["Period"] = parts.Period;
+const FixedAssetRegisterOpen: (typeof parts)["Open"] = parts.Open;
+const FixedAssetRegisterBack: (typeof parts)["Back"] = parts.Back;
+const FixedAssetRegisterPropose: (typeof parts)["Propose"] = parts.Propose;
+const FixedAssetRegisterConfirm: (typeof parts)["Confirm"] = parts.Confirm;
+const FixedAssetRegisterDiscard: (typeof parts)["Discard"] = parts.Discard;
+const FixedAssetRegisterCell: (typeof parts)["Cell"] = parts.Cell;
+const FixedAssetRegisterDispose: (typeof parts)["Dispose"] = parts.Dispose;
 
 const COPY = {
   EN: {

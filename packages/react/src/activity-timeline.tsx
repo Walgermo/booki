@@ -1,5 +1,5 @@
 import type { Activity, ActivityKind } from "@booki-aui/core/activity";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import type { BookiChangeDetails } from "./change-details.js";
 import { useAccessFor } from "./access.js";
@@ -7,10 +7,12 @@ import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { activityTimeline, buttonKey, type TimelinePerson } from "@booki-aui/primitives/activity-timeline";
 
-const parts = createParts(activityTimeline, { root: "div", complete: "button", remove: "button" });
-const ActivityTimelineRoot = parts.Root;
-const ActivityTimelineComplete = parts.Complete;
-const ActivityTimelineRemove = parts.Remove;
+const TAGS = { root: "div", complete: "button", remove: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof activityTimeline, typeof TAGS> = createParts(activityTimeline, TAGS);
+const ActivityTimelineRoot: (typeof parts)["Root"] = parts.Root;
+const ActivityTimelineComplete: (typeof parts)["Complete"] = parts.Complete;
+const ActivityTimelineRemove: (typeof parts)["Remove"] = parts.Remove;
 
 const COPY = {
   EN: {
