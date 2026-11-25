@@ -1,5 +1,11 @@
 # @booki/readiness
 
+## 0.2.2
+
+### Patch Changes
+
+- [#125](https://github.com/Walgermo/booki/pull/125) [`815a6ad`](https://github.com/Walgermo/booki/commit/815a6ad8b7506ca0d1b1b939f622c967c125564b) Thanks [@Walgermo](https://github.com/Walgermo)! - A page whose bridge (window.agent, or a WebMCP snapshot tool) has no controls but which has fields of its own (plain selects and text areas that are not on the bridge) no longer scores 100. Each such field is now reported as `field-not-on-bridge`, as it already was when the bridge had some controls. A page with an empty bridge and nothing else to judge is still "not measured".
+
 ## 0.2.1
 
 ### Patch Changes
