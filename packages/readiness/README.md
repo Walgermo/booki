@@ -246,7 +246,9 @@ The command line never clicks. A form that appears only after a row is
 selected or a button is pressed is not on the page it loads, so the bridge has
 no controls and the page has no fields or charts for the other checks to judge.
 A page without a bridge but with fields is still scored (and gets
-`bridge-missing`). When nothing is there to judge, the tool prints `no score` instead of a figure, the HTML report says the same,
+`bridge-missing`). A bridge with no controls on a page that has fields of its
+own is scored too: each field is reported as `field-not-on-bridge`, so it is
+not a pass. When nothing is there to judge, the tool prints `no score` instead of a figure, the HTML report says the same,
 and the JSON report has `measured: false`, `grade: "not measured"` and a
 `notMeasured` text. `score` stays in the JSON so its shape does not change,
 but it is not a pass. With `--fail-under`, an unmeasured page exits with code 1.

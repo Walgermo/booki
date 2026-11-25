@@ -290,6 +290,8 @@ export async function readBridge(): Promise<{
     offPage?: boolean;
   }>;
   tools: string[];
+  /** A snapshot was read (window.agent, or a WebMCP snapshot tool), even if it listed no controls. */
+  snapshotRead: boolean;
   error: string | null;
 }> {
   const g = globalThis as unknown as {
@@ -317,16 +319,16 @@ export async function readBridge(): Promise<{
   try {
     if (typeof g.agent?.snapshot === "function") {
       const components = toList(await g.agent.snapshot()) as never[];
-      return { source: "window.agent", components, tools, error: null };
+      return { source: "window.agent", components, tools, snapshotRead: true, error: null };
     }
     const snapshotTool = (g.__readinessTools ?? []).find((tool) => tool.name === "snapshot");
     if (snapshotTool?.execute) {
       const components = toList(await snapshotTool.execute({})) as never[];
-      return { source: "webmcp", components, tools, error: null };
+      return { source: "webmcp", components, tools, snapshotRead: true, error: null };
     }
-    return { source: tools.length ? "webmcp" : null, components: [], tools, error: null };
+    return { source: tools.length ? "webmcp" : null, components: [], tools, snapshotRead: false, error: null };
   } catch (error) {
-    return { source: null, components: [], tools, error: String(error) };
+    return { source: null, components: [], tools, snapshotRead: false, error: String(error) };
   }
 }
 
