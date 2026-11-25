@@ -31,6 +31,20 @@ describe("readiness checks on fixture pages", () => {
     expect(report.bridge).toMatchObject({ source: "window.agent", components: 1, actions: 1 });
   });
 
+  it("does not call a page with no bridge controls ready", async () => {
+    const report = await run("no-bridge");
+    expect(report.bridge.components).toBe(0);
+    expect(report.measured).toBe(false);
+    expect(report.grade).toBe("not measured");
+    expect(report.notMeasured).toMatch(/check\(page\)/);
+    const { toConsole } = await import("../src/report.js");
+    expect(toConsole(report)).toMatch(/no score/);
+  });
+
+  it("measures a page whose bridge has controls", async () => {
+    expect((await run("clean")).measured).toBe(true);
+  });
+
   it("finds unnamed, broken and shared field names", async () => {
     const report = await run("fields");
     expect(tally(report)).toEqual({ "field-unnamed": 3, "field-broken-name": 1, "field-ambiguous": 1 });
