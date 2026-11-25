@@ -246,7 +246,7 @@ Every `on…Change` gets `{ reason, source }`, and a `Button` from `@ui-sdk/reac
 gives `onClick(event, { source })`. Don't keep an "agent is running" flag: the person can
 click while the agent's step waits for its pointer or for `allow`, and their click would
 be recorded as the agent's. An undo through `history` also reports `source: "agent"`, because
-ui-sdk puts the values back through the bridge; `isHistoryRestoring()` is true while it does, so
+the history puts the values back through the bridge; `isHistoryRestoring()` is true while it does, so
 the write is the person's. If the person's click changes the control first, the agent's
 waiting step then fails ("disabled now", or a refusal naming the new state): the person's
 action wins, and the agent reads the screen again. `save` sends the agent's writes with a token your server

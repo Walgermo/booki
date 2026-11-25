@@ -11,7 +11,7 @@ from `@ui-sdk/core` (vercel-labs/ui#1017), so `@booki/primitives` and
 
 ## History restores through the bridge, so an undo reports `source: "agent"`
 
-Not reported yet.
+Reported: vercel-labs/ui#1123.
 
 **What happens.** `createHistory` puts values back with the bridge's own `act`, so
 every change of an undo or a seek reaches change callbacks and `subscribe` with
