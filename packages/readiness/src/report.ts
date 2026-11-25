@@ -197,7 +197,7 @@ ${report.measured ? "" : `<p class="redirect"><strong>${esc(report.notMeasured ?
 
 <div class="block">
   <h2>Score</h2>
-  ${report.measured ? "" : `<p class="muted"><strong>Not measured.</strong> The figure above is not a pass: the bridge had no controls.</p>`}
+  ${report.measured ? "" : `<p class="muted"><strong>Not measured.</strong> There is no score: the bridge had no controls and the page has no fields or charts.</p>`}
   <p class="muted">100, minus each rule's points per finding, capped per rule. 85 and up: ready. 60 to 84: partly ready. Below 60: not ready.</p>
   <table><thead><tr><th>Rule</th><th>Contract</th><th class="num">Found</th><th class="num">Points</th></tr></thead><tbody>
   ${report.deductions.map((d) => `<tr><td><a href="#${d.rule}">${esc(RULES[d.rule].title)}</a></td><td>${esc(RULES[d.rule].contract)}</td><td class="num">${d.findings}</td><td class="num">−${d.points}</td></tr>`).join("")}

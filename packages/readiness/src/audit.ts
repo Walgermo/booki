@@ -58,7 +58,8 @@ export type Report = {
   score: number;
   grade: "ready" | "partly ready" | "not ready" | "not measured";
   /**
-   * False when the bridge had no controls: the form may not be open yet, so
+   * False when the bridge has no controls and the page has no fields or charts:
+   * the form may not be open yet, so
    * `score` rests on almost nothing and `grade` is "not measured".
    */
   measured: boolean;
@@ -271,9 +272,9 @@ export async function audit(input: string, options: AuditOptions = {}): Promise<
   }
 }
 
-/** Said when the bridge has no controls, in the console, the HTML report and the JSON. */
+/** Said when the bridge has no controls and the page has no fields or charts, in the console, the HTML report and the JSON. */
 export const NOT_MEASURED =
-  "Nothing measured: the bridge has no controls, so most checks had nothing to compare the page with. The tool never clicks: a form that appears after a row is selected or a button is pressed is not on the page yet. Open the form first (a Playwright step), then call check(page) from @booki-aui/readiness.";
+  "Nothing measured: the bridge has no controls and the page has no fields or charts, so the checks had nothing to compare. The tool never clicks: a form that appears after a row is selected or a button is pressed is not on the page yet. Open the form first (a Playwright step), then call check(page) from @booki-aui/readiness.";
 
 /** Checks an open page. Exposed for callers that drive their own browser. */
 export async function check(page: Page, url = page.url()): Promise<Report> {
@@ -563,7 +564,8 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
 
   const title = await page.title();
   const result = score(findings);
-  const measured = bridge.components > 0;
+  // Nothing to judge: no bridge controls, and no fields or charts for the DOM checks.
+  const measured = bridge.components > 0 || fields.length > 0 || charts.length > 0;
   return {
     tool: { name: "@booki-aui/readiness", version: VERSION },
     url,
