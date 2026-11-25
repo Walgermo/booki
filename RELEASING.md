@@ -52,10 +52,10 @@ CI fails a pull request that changes a package without a changeset.
    writes each package's `CHANGELOG.md`, regenerates the framework packages
    and formats. Read it: those are the release notes.
 3. Merge **Version Packages**. With publishing on, the workflow builds,
-   stages each package on npm with provenance, tags it
+   publishes each package on npm with provenance, tags it
    (`@booki-aui/core@0.2.0`) and creates a GitHub Release with the notes.
-4. Approve the staged versions on npmjs.com → Staged Packages. Only then
-   are they published.
+   If the `npm` environment has a required reviewer, it waits for that one
+   approval in GitHub first (Actions → the Release run → Review deployments).
 
 `pnpm release:plan` shows what would be published, without publishing.
 
@@ -65,23 +65,41 @@ The packages are published to npm as `@booki-aui/*`. (The `@booki` scope on npm
 belongs to someone else, so the npm names carry `-aui`, for "agent UI"; the
 project, the repository and the docs are still Booki.)
 
-Releasing takes a person. Merging **Version Packages** runs `pnpm release`:
-it builds the packages and runs `scripts/stage-publish.mjs`, which **stages**
-every version npm does not have yet, with provenance, tags it and creates the
-GitHub Release. Nothing is installable until someone with publish rights
-approves each staged version on npmjs.com → Staged Packages (with 2FA), or
-with `npm stage approve <id>`.
+Merging **Version Packages** releases. The Release workflow has three jobs:
+
+- `version` keeps the **Version Packages** pull request current.
+- `plan` runs when no changesets are left and publishing is on, and checks
+  whether any package version is not on npm yet (`node scripts/publish.mjs --check`).
+  A merge that releases nothing (docs, a test) stops here.
+- `publish` runs `pnpm release`: it builds the packages and runs
+  `scripts/publish.mjs`, which publishes every version npm does not have yet,
+  with provenance, and then tags it and creates the GitHub Release.
+
+`publish` runs in the GitHub environment `npm`. Whether a release waits for a
+person is decided there, not on npm:
+
+- **With a required reviewer** (Settings → Environments → npm → Required
+  reviewers): the job waits for one approval in GitHub, for the whole release.
+- **Without one**: merging **Version Packages** publishes straight away. The
+  merge is then the person's decision.
 
 The workflow signs in to npm through trusted publishing (OIDC): there is no
-npm token in the repository. Each package on npm trusts
-`Walgermo/booki` → `release.yml` (Settings → Trusted Publisher, with only
-`npm stage publish` allowed). Renaming the workflow file breaks that trust.
+npm token in the repository. Each package on npm trusts `Walgermo/booki` →
+`release.yml`, environment `npm` (Settings → Trusted Publisher). Renaming the
+workflow file or the environment breaks that trust. Every version carries
+provenance: npm shows which commit and workflow run built it.
 
 Publishing is on when the repository variable `NPM_PUBLISH` is `true`
 (Settings → Secrets and variables → Actions → Variables), and off otherwise:
 the workflow then keeps **Version Packages** and the changelogs current and
-stages nothing. The workflow also needs Settings → Actions → General →
+publishes nothing. The workflow also needs Settings → Actions → General →
 "Allow GitHub Actions to create and approve pull requests".
+
+**Staged publishing instead.** Set the repository variable `NPM_PUBLISH_MODE`
+to `stage` and the workflow stages the versions (`npm stage publish`) instead
+of publishing them. Someone with publish rights then approves each one on
+npmjs.com → Staged Packages (with 2FA), or with `npm stage approve <id>`. Use
+this while a package's trusted publisher still allows only staging.
 
 A new package has no page on npm yet, so it cannot trust the workflow: publish
 its first version by hand (`pnpm pack`, then `npm publish <tarball>` from an

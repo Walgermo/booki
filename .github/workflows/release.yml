@@ -1,12 +1,17 @@
 name: Release
 
 # On every push to main, Changesets keeps a "Version Packages" pull request
-# open with the next versions and their CHANGELOG entries. Merging it
-# releases: with the repository variable NPM_PUBLISH set to "true", the
-# packages are staged on npm with provenance (scripts/stage-publish.mjs), get
-# git tags and a GitHub Release whose notes are the CHANGELOG entry. A person
-# then approves each staged version on npmjs.com, and only then is it
-# published. Without the variable, nothing is staged.
+# open with the next versions and their CHANGELOG entries (job `version`).
+# Merging it releases: when the repository variable NPM_PUBLISH is "true" and a
+# package version is not on npm yet (job `plan`), job `publish` builds the
+# packages, publishes them with provenance (scripts/publish.mjs), and pushes git
+# tags and GitHub Releases whose notes are the CHANGELOG entry.
+#
+# `publish` runs in the GitHub environment `npm`. Give that environment a
+# required reviewer (Settings → Environments → npm) and a release waits for one
+# approval in GitHub; leave it without one and releasing is automatic once the
+# Version Packages pull request is merged. Restrict each package's trusted
+# publisher on npm to this workflow and the `npm` environment.
 #
 # npm trusts this workflow by its file name (trusted publishing, OIDC), so
 # there is no npm token. Needs: Settings → Actions → General → "Allow GitHub
@@ -20,15 +25,73 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: write
-  contents: write
-  pull-requests: write
-  id-token: write
+  contents: read
 
 jobs:
-  release:
+  version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+    outputs:
+      hasChangesets: ${{ steps.changesets.outputs.has-changesets }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Version pull request
+        id: changesets
+        uses: changesets/action@v2.1.2
+        with:
+          version-script: pnpm version-packages
+          commit-message: "Version Packages"
+          pr-title: "Version Packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run CI on the version pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branch="changeset-release/${GITHUB_REF_NAME}"
+          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[].number')" ]; then
+            gh workflow run ci.yml --ref "$branch"
+          fi
+
+  plan:
+    needs: version
+    if: needs.version.outputs.hasChangesets == 'false' && vars.NPM_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pending: ${{ steps.check.outputs.pending }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Any package version not on npm yet?
+        id: check
+        run: node scripts/publish.mjs --check
+
+  publish:
+    needs: plan
+    if: needs.plan.outputs.pending == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: npm
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -41,22 +104,11 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: pnpm install --frozen-lockfile
 
-      - name: Version pull request, or release
+      - name: Publish, tag and create GitHub Releases
         uses: changesets/action@v2.1.2
         with:
-          version-script: pnpm version-packages
-          publish-script: ${{ vars.NPM_PUBLISH == 'true' && 'pnpm release' || '' }}
-          commit-message: "Version Packages"
-          pr-title: "Version Packages"
+          publish-script: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
-
-      - name: Run CI on the version pull request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          branch="changeset-release/${GITHUB_REF_NAME}"
-          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[].number')" ]; then
-            gh workflow run ci.yml --ref "$branch"
-          fi
+          NPM_PUBLISH_MODE: ${{ vars.NPM_PUBLISH_MODE }}
