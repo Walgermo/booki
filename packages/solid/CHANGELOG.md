@@ -1,5 +1,14 @@
 # @booki/solid
 
+## 0.3.3
+
+### Patch Changes
+
+- [#132](https://github.com/Walgermo/booki/pull/132) [`e4d4d0d`](https://github.com/Walgermo/booki/commit/e4d4d0d19a303ad7b27588b8045712e59d94e907) Thanks [@Walgermo](https://github.com/Walgermo)! - The install command in each README adds `@ui-sdk/core` and the framework's `@ui-sdk` package at the version the package pins, in one command.
+- Updated dependencies []:
+  - @booki-aui/core@0.3.3
+  - @booki-aui/primitives@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
