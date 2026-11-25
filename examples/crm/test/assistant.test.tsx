@@ -209,7 +209,13 @@ describe("what the page and the server trust", () => {
     const user = { role: "user", parts: [{ type: "text" }] };
     const assistant = {
       role: "assistant",
-      parts: [{ type: "step-start" }, { type: "reasoning" }, { type: "dynamic-tool" }, { type: "text" }],
+      parts: [
+        { type: "step-start" },
+        { type: "reasoning" },
+        { type: "custom" },
+        { type: "dynamic-tool" },
+        { type: "text" },
+      ],
     };
     expect(acceptedMessages([user, assistant])).toBe(true);
     expect(acceptedMessages([{ role: "user", parts: [{ type: "reasoning" }] }])).toBe(false);
@@ -286,6 +292,7 @@ describe("the chat's server route", () => {
   it("says where the key goes when there is none", async () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("ANTHROPIC_API_KEY", "");
+    vi.stubEnv("AI_GATEWAY_API_KEY", "");
     const response = await post({ messages: [], tools: [] });
     expect(response.status).toBe(503);
     expect(await response.text()).toMatch(/ANTHROPIC_API_KEY/);
