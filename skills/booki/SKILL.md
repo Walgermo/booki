@@ -48,17 +48,15 @@ the person that the setup is experimental before you wire it.
 
 ## 1. Install
 
-**A minimum release age.** Booki pins the `@ui-sdk` packages exactly, and both are new when they
+**A minimum release age.** Booki and its exactly pinned `@ui-sdk` packages are new when they
 come out, so an app with a release-age rule (pnpm `minimumReleaseAge`, Renovate's
 `minimumReleaseAge`) can refuse them for its first days (`ERR_PNPM_NO_MATURE_MATCHING_VERSION`).
-Then stop and say so. Either install the previous Booki release, with the `@ui-sdk` version it
-pins, or ask the product's owner to approve an exception for exactly those versions, on your branch
-only, never on the main branch. Never add an exception yourself, and don't change the exact pin
-in `package.json`.
+Then stop and say so, and ask the product's owner for an exception for exactly those versions, on
+your branch only. Never add an exception yourself, and don't change the exact pin in `package.json`.
 
-**A trust policy.** From 0.3.2 until v1, Booki is published straight from its release workflow
-(provenance, no human approver on npm). pnpm's `trustPolicy: no-downgrade` refuses it after an
-approved 0.3.1 (`ERR_PNPM_TRUST_DOWNGRADE`). Then stop and say so, and ask the product's owner for a
+**A trust policy.** Booki is published from its release workflow with provenance but no person
+approving each version on npm. pnpm's `trustPolicy: no-downgrade` can refuse that
+(`ERR_PNPM_TRUST_DOWNGRADE`). Then stop and say so, and ask the product's owner for a
 `trustPolicyExclude` entry for exactly those versions, on your branch only. Never add one yourself.
 
 ```bash
