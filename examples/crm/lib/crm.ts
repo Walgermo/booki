@@ -41,21 +41,19 @@ export function seedCrm(): Crm {
   return { deals: seedDeals(), activities: seedActivities(), audit: [] };
 }
 
-/** The rows the page's bridge writes about the agent's steps: refused, a person's, cancelled, failed in the control. */
-const AGENT_STEPS = new Set([
-  "agent.refused",
-  "agent.person-only",
-  "agent.cancelled",
-  "agent.failed",
-  "agent.confirmed",
-]);
+/**
+ * The rows the page's bridge writes about the agent's steps: refused, a
+ * person's, cancelled, failed in the control. Not `agent.confirmed`: in this
+ * app no person confirms an agent's step, so a row saying one did is false.
+ */
+const AGENT_STEPS = new Set(["agent.refused", "agent.person-only", "agent.cancelled", "agent.failed"]);
 
 const now = () => new Date().toISOString();
-let sequence = 0;
 
 function log(crm: Crm, actor: ServerActor | undefined, action: string, target: string, detail?: string) {
   crm.audit.unshift({
-    id: `a${++sequence}`,
+    // The records outlive a hot reload (see store.ts) and a counter in this module does not: an id of its own.
+    id: `a-${crypto.randomUUID()}`,
     at: now(),
     actor: actor ? actorLabel(actor) : "unknown",
     action,
@@ -242,14 +240,24 @@ export function apply(crm: Crm, actor: ServerActor | undefined, write: Write): A
   try {
     if (write.action === "deals") writeDeals(crm, context, write.deals);
     else if (write.action === "activities") writeActivities(crm, context, write.dealId, write.activities);
-    else if (write.action === "agent-step")
+    else if (write.action === "agent-step") {
+      // Only the agent writes rows about its own steps, and only as text.
+      if (actor?.kind !== "agent")
+        return {
+          ok: false,
+          status: 403,
+          code: "crm.agent-step",
+          message: "Bare agenten skriver rader om sine egne steg.",
+          crm,
+        };
       log(
         crm,
         actor,
         AGENT_STEPS.has(write.step) ? write.step : "agent.refused",
-        write.target,
+        typeof write.target === "string" ? write.target.slice(0, 120) : "?",
         typeof write.detail === "string" ? write.detail.slice(0, 200) : undefined,
       );
+    }
     return { ok: true, crm };
   } catch (error) {
     crm.deals = before.deals;

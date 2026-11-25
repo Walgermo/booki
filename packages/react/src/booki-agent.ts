@@ -93,7 +93,7 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
     // nothing and leaves no trace. Checked after the call, when the button is on
     // the page even if an earlier step in it made the button appear.
     const failed = result.ok ? undefined : result.error;
-    const step = failed ? input.steps?.[failed.step] : undefined;
+    const step = failed && Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
     const person = step ? personOnlyPress(bridge, step) : null;
     if (failed && step && person) {
       markRefused({ ref: step.ref, label: person.entry.label, action: step.action });

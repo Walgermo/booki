@@ -2,8 +2,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CrmApp } from "@/components/crm-app";
 import { toolNote } from "@/components/chat-panel";
-import { connectAssistant, MAX_TOOL_ROUNDS, shouldContinue } from "@/lib/assistant";
-import { handleChat, modelError } from "@/lib/chat";
+import { connectAssistant, MAX_TOOL_ROUNDS, ownTools, shouldContinue, stoppedAtLimit } from "@/lib/assistant";
+import { acceptedMessages, handleChat, modelError } from "@/lib/chat";
+import { handleCrm } from "@/lib/handler";
 import { pageTools } from "@/lib/chat-tools";
 import { crm } from "@/lib/store";
 
@@ -27,7 +28,7 @@ function fakeModelContext({ refuse = false } = {}) {
     async getTools() {
       return [...tools.values()].map((tool) => ({
         ...Object.fromEntries(Object.entries(tool).filter(([key]) => key !== "execute")),
-        origin: "http://localhost",
+        origin: location.origin,
         window: null,
       })) as never;
     },
@@ -113,7 +114,7 @@ describe("the assistant's mistakes and limits", () => {
     const result = (await client.callTool({ name: "crm_act", arguments: { step: [] } })) as {
       content: { text: string }[];
     };
-    expect(JSON.parse(result.content[0]!.text).error.message).toMatch(/act takes \{ "steps"/);
+    expect(JSON.parse(result.content[0]!.text).error.message).toMatch(/^act tar \{ "steps".*Ingen steg ble kjørt\.$/);
     close();
   });
 
@@ -144,6 +145,9 @@ describe("the assistant's mistakes and limits", () => {
     });
     expect(shouldContinue(after(1))).toBe(true);
     expect(shouldContinue(after(MAX_TOOL_ROUNDS))).toBe(false);
+    // And the person is told it stopped there, not before.
+    expect(stoppedAtLimit(after(1).messages)).toBe(false);
+    expect(stoppedAtLimit(after(MAX_TOOL_ROUNDS).messages)).toBe(true);
   });
 
   it("shows the person each kind of failure in Norwegian, and nothing when a step went through", () => {
@@ -163,6 +167,44 @@ describe("the assistant's mistakes and limits", () => {
     expect(modelError({ statusCode: 401, message: "invalid x-api-key sk-ant-…" })).toMatch(/avviste nøkkelen/);
     expect(modelError({ statusCode: 429 })).toMatch(/opptatt/);
     expect(modelError(new Error("socket hang up"))).toBe("Modellen svarte ikke. Prøv igjen.");
+  });
+});
+
+describe("what the page and the server trust", () => {
+  it("sends the model only this page's own tools, not a frame's or another origin's with the same name", () => {
+    const at = (name: string, origin: string) => ({ name, _meta: { "ai-sdk.dev/webmcp": { name, origin } } });
+    const listed = [
+      at("crm_act", "https://frame.example"),
+      at("crm_act_2", location.origin),
+      at("crm_query", location.origin),
+    ];
+    expect(ownTools(listed).map((tool) => tool.name)).toEqual(["crm_query"]);
+  });
+
+  it("takes the model's reasoning back with the conversation: Claude thinks before it calls a tool", () => {
+    const user = { role: "user", parts: [{ type: "text" }] };
+    const assistant = {
+      role: "assistant",
+      parts: [{ type: "step-start" }, { type: "reasoning" }, { type: "dynamic-tool" }, { type: "text" }],
+    };
+    expect(acceptedMessages([user, assistant])).toBe(true);
+    expect(acceptedMessages([{ role: "user", parts: [{ type: "reasoning" }] }])).toBe(false);
+    expect(acceptedMessages([{ role: "assistant", parts: [{ type: "file" }] }])).toBe(false);
+  });
+
+  it("writes rows about the agent's steps only for the agent, and never as a person's confirmation", async () => {
+    const write = (token: string, body: unknown) =>
+      handleCrm(
+        new Request("http://localhost/api/crm", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+          body: JSON.stringify(body),
+        }),
+      );
+    const row = { action: "agent-step", step: "agent.confirmed", target: "D-101", detail: "Godkjent av Kari" };
+    expect((await write("person:kari", row)).status).toBe(403);
+    expect((await write("agent:kari", row)).status).toBe(200);
+    expect(crm().audit[0]).toMatchObject({ actor: "agent:crm-assistant", action: "agent.refused", target: "D-101" });
   });
 });
 
@@ -195,7 +237,12 @@ describe("the chat's server route", () => {
   it("refuses a conversation far larger than one", async () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("ANTHROPIC_API_KEY", "test");
-    expect((await post({ messages: [], tools: [] }, { "content-length": "600000" })).status).toBe(413);
+    // The size of what came, whatever content-length says.
+    const long = {
+      messages: [{ id: "1", role: "user", parts: [{ type: "text", text: "x".repeat(600_000) }] }],
+      tools: [],
+    };
+    expect((await post(long, { "content-length": "10" })).status).toBe(413);
   });
 
   it("takes text and the page's tool results only: no files, no system messages", async () => {

@@ -2,7 +2,7 @@
 
 import { localize } from "@booki/core/messages";
 import { useState } from "react";
-import { useAssistant } from "@/lib/assistant";
+import { MAX_TOOL_ROUNDS, stoppedAtLimit, useAssistant } from "@/lib/assistant";
 import { nameOf } from "@/lib/people";
 
 const TOOL_LABEL: Record<string, string> = {
@@ -45,6 +45,7 @@ export function ChatPanel({ me }: { me: string }) {
   const { messages, sendMessage, status, error, ready, setupError } = useAssistant(me);
   const [input, setInput] = useState("");
   const busy = status === "submitted" || status === "streaming";
+  const stopped = !busy && stoppedAtLimit(messages);
 
   return (
     <section
@@ -86,6 +87,11 @@ export function ChatPanel({ me }: { me: string }) {
           </li>
         ))}
       </ol>
+      {stopped ? (
+        <p role="status" className="text-sm">
+          Agenten stoppet etter {MAX_TOOL_ROUNDS} runder uten å bli ferdig. Skriv hva den skal gjøre videre.
+        </p>
+      ) : null}
       {error ? (
         <p role="alert" className="text-sm">
           {error.message}

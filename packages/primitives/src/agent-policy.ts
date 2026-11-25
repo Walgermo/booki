@@ -181,11 +181,16 @@ export async function actAndRecord<A extends Actable>(
     if (already) return result;
     // The control's name, as a person reads it, rather than its ref.
     const label = step ? agent.snapshot?.().find((entry) => entry.ref === step.ref)?.label : undefined;
+    // A call in the wrong shape: ui-sdk's sentence quotes what the agent sent, which can be an account
+    // number, so the row says only that no step ran.
+    const shape = /(?:No step ran|Ingen steg ble kjørt)\.$/.test(failed.message);
     options.audit({
       actor: `agent:${options.agentId ?? "bridge"}`,
       action: "agent.failed",
-      target: label ?? step?.ref ?? "?",
-      detail: `${step?.action ?? "?"}: ${failed.message.replace(/\s+/g, " ").slice(0, 200)}`,
+      target: shape ? "act" : (label ?? step?.ref ?? "?"),
+      detail: shape
+        ? "act: the call was not in the shape act takes; no step ran"
+        : `${step?.action ?? "?"}: ${failed.message.replace(/\s+/g, " ").slice(0, 200)}`,
       ...(options.ruleVersion ? { ruleVersion: options.ruleVersion } : {}),
     });
   }

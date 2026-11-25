@@ -31,7 +31,7 @@ export type CurrencySelectProps = {
 
 function CurrencySelect({
   value,
-  defaultValue = "NOK",
+  defaultValue,
   currencies = DEFAULT_CURRENCIES,
   onValueChange,
   name,
@@ -47,7 +47,8 @@ function CurrencySelect({
   return (
     <CurrencySelectRoot
       value={value}
-      defaultValue={defaultValue}
+      // A controlled select takes no default: ui-sdk warns when it gets both.
+      defaultValue={value === undefined ? (defaultValue ?? "NOK") : undefined}
       currencies={currencies}
       label={label}
       onValueChange={onValueChange}

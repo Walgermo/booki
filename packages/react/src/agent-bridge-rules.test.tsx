@@ -175,9 +175,13 @@ describe('registerTools with allow: "bridge"', () => {
       error: { message: string };
     };
     expect(result.ok).toBe(false);
-    expect(result.error.message).toMatch(/act takes \{ "steps"/);
+    expect(result.error.message).toMatch(/^act tar \{ "steps"/);
     await expect(agent.act({ foo: 1 } as never)).resolves.toMatchObject({ ok: false });
-    expect(rows[0]).toMatchObject({ action: "agent.failed" });
+    await expect(agent.act(null as never)).resolves.toMatchObject({ ok: false });
+    expect(rows[0]).toMatchObject({ action: "agent.failed", target: "act" });
+    // The sentence quotes what was sent, which can be an account number: the row does not.
+    await tools.find((tool) => tool.name === "act")!.execute({ steps: [], kid: "12345678903" });
+    expect(JSON.stringify(rows)).not.toContain("12345678903");
   });
 
   it("refuses a prefix with a gate of its own", () => {

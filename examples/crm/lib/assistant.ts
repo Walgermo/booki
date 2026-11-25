@@ -34,7 +34,7 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
   try {
     // Registration fails silently (a permissions policy, a browser that refuses): find out now, not on the first message.
     const { tools } = await client.listTools();
-    const names = tools.map((tool) => tool.name);
+    const names = ownTools(tools).map((tool) => tool.name);
     if (!TOOL_NAMES.every((name) => names.includes(name)))
       throw new Error("Siden fikk ikke registrert verktøyene sine i nettleseren. Last inn siden på nytt.");
   } catch (error) {
@@ -49,20 +49,43 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
 }
 
 /**
+ * The tools this page registered, out of what the browser lists: another
+ * origin's tools, or a frame's that took one of the names first, never reach
+ * the model. WebMCP's client gives a repeated name to the first one listed and
+ * renames the rest, so the name alone is not enough; the origin is.
+ */
+export function ownTools<T extends { name: string; _meta?: Record<string, unknown> }>(tools: T[]): T[] {
+  const origin = globalThis.location?.origin;
+  return tools.filter((tool) => {
+    const from = (tool._meta?.["ai-sdk.dev/webmcp"] as { origin?: unknown } | undefined)?.origin;
+    return (TOOL_NAMES as readonly string[]).includes(tool.name) && from === origin;
+  });
+}
+
+/**
  * Tool rounds one message may start before the chat stops and hands back to
  * the person: a model that keeps reading or retrying costs a request each time.
  */
 export const MAX_TOOL_ROUNDS = 8;
 
-/** Sends the tool results back to the model, unless this message has used its rounds. */
-export function shouldContinue({ messages }: { messages: UIMessage[] }): boolean {
-  if (!lastAssistantMessageIsCompleteWithToolCalls({ messages })) return false;
+/** The tool rounds the model has taken since the person last wrote. */
+export function roundsSinceLastUser(messages: UIMessage[]): number {
   const lastUser = messages.map((message) => message.role).lastIndexOf("user");
-  const rounds = messages
+  // AI SDK starts each round of an automatic resend with a `step-start` part in the same assistant message.
+  return messages
     .slice(lastUser + 1)
     .flatMap((message) => message.parts)
     .filter((part) => part.type === "step-start").length;
-  return rounds < MAX_TOOL_ROUNDS;
+}
+
+/** True when the chat stopped at the limit with the model's tool results unanswered. */
+export function stoppedAtLimit(messages: UIMessage[]): boolean {
+  return roundsSinceLastUser(messages) >= MAX_TOOL_ROUNDS && lastAssistantMessageIsCompleteWithToolCalls({ messages });
+}
+
+/** Sends the tool results back to the model, unless this message has used its rounds. */
+export function shouldContinue({ messages }: { messages: UIMessage[] }): boolean {
+  return lastAssistantMessageIsCompleteWithToolCalls({ messages }) && roundsSinceLastUser(messages) < MAX_TOOL_ROUNDS;
 }
 
 const NO_WEBMCP =
@@ -120,7 +143,7 @@ export function useAssistant(me: string) {
         api: "/api/chat",
         async prepareSendMessagesRequest({ messages }) {
           const { tools } = await link.client!.listTools();
-          return { body: { messages, tools, me: link.me } };
+          return { body: { messages, tools: ownTools(tools), me: link.me } };
         },
       }),
   );
