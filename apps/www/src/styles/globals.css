@@ -4305,3 +4305,51 @@ body:has([data-slot="agent-cursor"]) {
   stroke-width: 1;
   stroke-dasharray: 2 4;
 }
+
+/* The proof strip's measurement note: a quiet text toggle under the figures, no box. */
+.site-proof-about {
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+.site-proof-about summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  list-style: none;
+  text-decoration: underline;
+  text-decoration-color: var(--bk-border-strong);
+  text-underline-offset: 0.25em;
+}
+
+.site-proof-about summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-proof-about summary::after {
+  content: "+";
+  font-family: var(--bk-mono);
+}
+
+.site-proof-about[open] summary::after {
+  content: "−";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-proof-about summary:hover {
+    color: var(--bk-fg);
+  }
+}
+
+.site-proof-about summary:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.site-proof-about p {
+  max-width: 72ch;
+  margin: 0.625rem 0 0;
+  line-height: 1.55;
+}
