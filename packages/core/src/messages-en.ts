@@ -524,7 +524,7 @@ export const EN = {
   "field.unknown-code-more":
     'No option "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',
   "field.account-not-digits":
-    'Account number "{value}" has more than digits. Send digits only, with no letters or separators.',
+    'Account number "{value}" can only hold digits. Send digits only, with no letters or separators.',
   "field.account-empty": "An account number is needed here: {min} to {max} digits.",
   "field.account-empty-chart": "An account number is needed here: pick one of the {count} accounts in the chart.",
   "field.account-not-text": 'setAccount takes the account number as digits, like "4711". Got {got}.',
@@ -709,6 +709,11 @@ export const EN = {
   "bridge.no-button": 'No button "{text}" in {ref}. Buttons: {buttons}.',
   "bridge.button-disabled": '"{button}" in {ref} is disabled now.',
   "bridge.disabled": "{component} {ref} is disabled now.",
+  "bridge.nothing-to-press": "{component} {ref} has nothing to press now.",
+  "bridge.takes-no": "{component} {ref} takes no {action} now. It takes: {actions}.",
+  "bridge.takes-no-nothing": "{component} {ref} takes no {action} now. It takes: nothing.",
+  "bridge.press-takes-buttons": "press takes a button's text: {buttons}.",
+  "bridge.press-opens": "press takes the text of a button inside it, and opens it first to find the button.",
   "bridge.no-item": 'No item "{item}" in {name}. Its items: {items}.',
   "bridge.needs-ref": "A step needs a ref: a component's ref from snapshot, or its label.",
   "bridge.needs-action": 'A step on "{ref}" needs an action, like "press".',

@@ -345,3 +345,41 @@ describe("status words and closing stops (pilot 7)", () => {
     }
   });
 });
+
+describe("ui-sdk's own step sentences in Norwegian", () => {
+  // The exact text ui-sdk 0.1.0-beta.17 writes in page/agent/agent.js.
+  const cases: Array<[string, string]> = [
+    ["field-account c4 has nothing to press now.", "field-account c4 har ingenting å trykke på nå."],
+    [
+      "field-account c4 takes no frobnicate now. It takes: setAccount.",
+      "field-account c4 tar ikke frobnicate nå. Den tar: setAccount.",
+    ],
+    ["button c7 takes no setValue now. It takes: nothing.", "button c7 tar ikke setValue nå. Den tar ingenting."],
+    [
+      "dialog c2 takes no setValue now. It takes: press. press takes a button's text: Lagre, Avbryt.",
+      "dialog c2 tar ikke setValue nå. Den tar: press. press tar teksten på en knapp: Lagre, Avbryt.",
+    ],
+    [
+      "menu c3 takes no setValue now. It takes: press, setOpen. press takes the text of a button inside it, and opens it first to find the button.",
+      "menu c3 tar ikke setValue nå. Den tar: press, setOpen. press tar teksten på en knapp inni den, og åpner den først for å finne knappen.",
+    ],
+  ];
+  for (const [en, nb] of cases) {
+    it(`translates "${en.slice(0, 48)}…"`, () => {
+      expect(localize(en, "nb")).toBe(nb);
+      expect(localize(en, "en")).toBe(en);
+    });
+  }
+
+  it("keeps the trailer Norwegian after one of them", () => {
+    const text = "field-account c4 has nothing to press now. The steps before this one stay done.";
+    expect(localize(text, "nb")).toBe(
+      `field-account c4 har ingenting å trykke på nå. ${msgIn("nb", "bridge.steps-stay-done")}`,
+    );
+  });
+
+  it("says an account number can only hold digits, in both languages", () => {
+    expect(msg("field.account-not-digits", { value: "ab" })).toContain('"ab" can only hold digits');
+    expect(msgIn("nb", "field.account-not-digits", { value: "ab" })).toContain('"ab" kan bare inneholde sifre');
+  });
+});

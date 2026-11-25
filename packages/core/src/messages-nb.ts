@@ -549,7 +549,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "field.unknown-code-more":
     'Ingen valg "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',
   "field.account-not-digits":
-    'Kontonummeret "{value}" har mer enn sifre. Send bare sifre, uten bokstaver eller skilletegn.',
+    'Kontonummeret "{value}" kan bare inneholde sifre. Send bare sifre, uten bokstaver eller skilletegn.',
   "field.account-empty": "Her trengs et kontonummer: {min} til {max} sifre.",
   "field.account-empty-chart": "Her trengs et kontonummer: velg én av de {count} kontoene i kontoplanen.",
   "field.account-not-text": 'setAccount tar kontonummeret som sifre, som "4711". Fikk {got}.',
@@ -736,6 +736,11 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "bridge.no-button": 'Ingen knapp "{text}" i {ref}. Knappene: {buttons}.',
   "bridge.button-disabled": '"{button}" i {ref} er slått av nå.',
   "bridge.disabled": "{component} {ref} er slått av nå.",
+  "bridge.nothing-to-press": "{component} {ref} har ingenting å trykke på nå.",
+  "bridge.takes-no": "{component} {ref} tar ikke {action} nå. Den tar: {actions}.",
+  "bridge.takes-no-nothing": "{component} {ref} tar ikke {action} nå. Den tar ingenting.",
+  "bridge.press-takes-buttons": "press tar teksten på en knapp: {buttons}.",
+  "bridge.press-opens": "press tar teksten på en knapp inni den, og åpner den først for å finne knappen.",
   "bridge.no-item": 'Ingen valg "{item}" i {name}. Valgene: {items}.',
   "bridge.needs-ref": "Et steg trenger en ref: en komponents ref fra snapshot, eller merkelappen.",
   "bridge.needs-action": 'Et steg på "{ref}" trenger en handling, som "press".',
