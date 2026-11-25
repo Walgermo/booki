@@ -433,8 +433,7 @@
   gap: 3px;
 }
 
-.kpi-mark--calls i,
-.kpi-mark--cost i {
+.kpi-mark--calls i {
   display: block;
   animation: kpi-in 360ms ease-out both;
   animation-delay: calc(var(--i) * 18ms);
@@ -490,42 +489,50 @@
   color: var(--bk-fg);
 }
 
-/* Faster: a stopwatch, the lap filled. */
-.kpi-mark__crown {
-  fill: var(--faint);
+/* Faster: two lanes of one race; with Booki the run ends early. */
+.kpi-mark--time {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  width: 112px;
 }
 
-.kpi-mark__dial {
-  fill: none;
-  stroke: var(--faint);
-  stroke-width: 3;
-}
-
-.kpi-mark__lap {
-  fill: var(--bk-fg);
-  transform-origin: 16px 18px;
-  animation: kpi-lap 600ms 200ms ease-out both;
-}
-
-/* Cheaper: a row of coins, one spent. */
-.kpi-mark--cost {
-  padding-left: 6px;
-}
-
-.kpi-mark--cost i {
-  width: 14px;
-  height: 14px;
-  margin-left: -6px;
-  border-radius: 999px;
-  background: var(--bk-bg);
-  box-shadow: inset 0 0 0 1.5px var(--faint);
-}
-
-.kpi-mark--cost i[data-on] {
+.kpi-mark__lane {
   position: relative;
-  z-index: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--faint);
+}
+
+.kpi-mark__lane:last-child {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--faint);
+}
+
+.kpi-mark__run {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--share);
+  border-radius: 999px;
   background: var(--bk-fg);
-  box-shadow: 0 0 0 2px var(--bk-bg);
+  animation: kpi-grow 600ms 200ms ease-out both;
+}
+
+/* Cheaper: a stack of coins against the one coin spent. */
+.kpi-mark__coin {
+  fill: var(--bk-bg);
+  stroke: var(--faint);
+  stroke-width: 1.25;
+}
+
+.kpi-mark__spent {
+  fill: var(--bk-fg);
+  stroke: var(--bk-fg);
+  stroke-width: 1.25;
+}
+
+.kpi-mark--cost svg {
+  animation: kpi-in 400ms ease-out both;
 }
 
 @keyframes kpi-in {
@@ -541,16 +548,9 @@
   }
 }
 
-@keyframes kpi-lap {
-  from {
-    opacity: 0;
-    transform: scale(0.6);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .kpi-mark *,
-  .kpi-mark__lap {
+  .kpi-mark,
+  .kpi-mark * {
     animation: none !important;
   }
 }

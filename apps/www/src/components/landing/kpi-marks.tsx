@@ -43,32 +43,30 @@ export function TokensMark({
   );
 }
 
-/** Faster: a stopwatch whose dial is the old time; the new time is the filled wedge. */
+/** Faster: a race, the same task on two lanes; with Booki it finishes at 1/ratio of the way. */
 export function TimeMark({ ratio }: { ratio: number }) {
-  const [cx, cy, r] = [16, 18, 8.5];
-  const angle = (2 * Math.PI) / ratio;
-  const x = cx + r * Math.sin(angle);
-  const y = cy - r * Math.cos(angle);
-  const wedge = `M${cx} ${cy} L${cx} ${cy - r} A${r} ${r} 0 ${angle > Math.PI ? 1 : 0} 1 ${x.toFixed(2)} ${y.toFixed(2)} Z`;
   return (
     <span className="kpi-mark kpi-mark--time" aria-hidden="true">
-      <svg viewBox="0 0 32 32" width="32" height="32">
-        <rect x="13.5" y="0.5" width="5" height="3" rx="1" className="kpi-mark__crown" />
-        <circle cx={cx} cy={cy} r="12" className="kpi-mark__dial" />
-        <path d={wedge} className="kpi-mark__lap" />
-      </svg>
+      <span className="kpi-mark__lane" />
+      <span className="kpi-mark__lane">
+        <span className="kpi-mark__run" style={{ "--share": `${100 / ratio}%` } as CSSProperties} />
+      </span>
     </span>
   );
 }
 
-/** Cheaper: the coins the same task cost without Booki, one of them spent with it. */
+/** Cheaper: a stack of coins the task cost without Booki, and the one coin it cost with it. */
 export function CostMark({ ratio }: { ratio: number }) {
   const count = Math.max(2, Math.round(ratio));
+  const step = 2.2;
   return (
     <span className="kpi-mark kpi-mark--cost" aria-hidden="true">
-      {Array.from({ length: count }, (_, i) => (
-        <i key={i} data-on={i === 0 ? "" : undefined} style={{ "--i": i } as CSSProperties} />
-      ))}
+      <svg viewBox="0 0 64 34" width="64" height="34">
+        {Array.from({ length: count }, (_, i) => (
+          <ellipse key={i} cx="20" cy={30 - i * step} rx="10" ry="3" className="kpi-mark__coin" />
+        ))}
+        <ellipse cx="48" cy="30" rx="10" ry="3" className="kpi-mark__spent" />
+      </svg>
     </span>
   );
 }
