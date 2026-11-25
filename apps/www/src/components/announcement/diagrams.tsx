@@ -48,7 +48,7 @@ export function BeforeAfter() {
       steps: [
         { name: t("Read the screen", "Les skjermen"), detail: t("screenshot per click", "skjermdump per klikk") },
         { name: t("Guess the field", "Gjett feltet"), detail: t("by label and place", "etter ledetekst og plass") },
-        { name: t("Type text", "Skriv tekst"), detail: t("“3125,00” into a box", "«3125,00» i en boks") },
+        { name: t("Type text", "Skriv tekst"), detail: t("“3125,00” into a box", "«3125,00» i et felt") },
         { name: t("Signed-in user", "Innlogget bruker"), detail: t("audit names the person", "sporet viser personen") },
       ],
     },
@@ -59,7 +59,7 @@ export function BeforeAfter() {
         { name: t("Snapshot", "Øyeblikksbilde"), detail: t("typed state · once", "typede data · én gang") },
         { name: t("Named action", "Navngitt handling"), detail: "setMinor(312500)" },
         { name: t("Your rule", "Regelen deres"), detail: t("allow · or a person", "allow · eller en person") },
-        { name: "agent:bookkeeper", detail: t("in the audit trail", "i revisjonssporet") },
+        { name: "agent:assistant", detail: t("in the audit trail", "i revisjonssporet") },
       ],
     },
   ];

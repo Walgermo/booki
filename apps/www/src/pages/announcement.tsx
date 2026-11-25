@@ -73,11 +73,11 @@ export function AnnouncementPage() {
       </p>
 
       <section className="site-article__section" aria-labelledby="why">
-        <h2 id="why">{t("Agents are already in the books", "Agentene er allerede i regnskapet")}</h2>
+        <h2 id="why">{t("Agents are already in your software", "Agentene er allerede i programvaren deres")}</h2>
         <p>
           {t(
-            "An agent on an ordinary screen reads it again after every click, guesses which unnamed box holds the amount, and types into it. That is slow and expensive, and in accounting it is wrong in ways that matter: an amount in the wrong field, a rounding nobody chose, an approval recorded as whoever was signed in.",
-            "En agent på et vanlig skjermbilde leser det på nytt etter hvert klikk, gjetter hvilket navnløst felt som har beløpet, og skriver i det. Det er tregt og dyrt, og i regnskap er det feil på måter som betyr noe: et beløp i feil felt, en avrunding ingen valgte, en attestering registrert på den som var logget inn.",
+            "An agent on an ordinary screen reads it again after every click, guesses which unnamed box holds the value, and types into it. That is slow and expensive, and in software that runs a business it is wrong in ways that matter: a value in the wrong field, a rounding nobody chose, an approval recorded as whoever was signed in.",
+            "En agent på et vanlig skjermbilde leser det på nytt etter hvert klikk, gjetter hvilket navnløst felt som har verdien, og skriver i det. Det er tregt og dyrt, og i programvare som driver en virksomhet er det feil på måter som betyr noe: en verdi i feil felt, en avrunding ingen valgte, en godkjenning registrert på den som var logget inn.",
           )}
         </p>
       </section>
@@ -89,8 +89,8 @@ export function AnnouncementPage() {
         <h2 id="step">{t("One step, end to end", "Ett steg, fra start til slutt")}</h2>
         <p>
           {t(
-            "Each control tells the agent what it holds and which actions it takes right now. The agent calls one by name; your rule runs inside it; a step that needs a person waits for one. The audit trail records the agent as itself, and your server checks the same rules again, refusing an agent the decisions that are a person's: approving, signing off, releasing.",
-            "Hver kontroll forteller agenten hva den inneholder og hvilke handlinger den tar akkurat nå. Agenten kaller én ved navn; regelen deres kjører inne i den; et steg som trenger en person, venter på en. Revisjonssporet registrerer agenten som seg selv, og serveren sjekker de samme reglene igjen og nekter en agent de beslutningene som er en persons: attestering, signering, frigivelse.",
+            "Each control tells the agent what it holds and which actions it takes right now. The agent calls one by name; your rule runs inside it; a step that needs a person waits for one. The audit trail records the agent as itself, and your server checks the same rules again, refusing an agent the decisions that are a person's: approving, signing, releasing.",
+            "Hver kontroll forteller agenten hva den inneholder og hvilke handlinger den tar akkurat nå. Agenten kaller én ved navn; regelen deres kjører inne i den; et steg som trenger en person, venter på en. Revisjonssporet registrerer agenten som seg selv, og serveren sjekker de samme reglene igjen og nekter en agent de beslutningene som er en persons: godkjenning, signering, frigivelse.",
           )}
         </p>
       </section>
@@ -138,8 +138,8 @@ export function AnnouncementPage() {
           </li>
           <li>
             {t(
-              "Server guards cover posting, approvals, payments, period close, invoices, VAT and findings; other writes need a rule of your own.",
-              "Serverkontrollene dekker bokføring, attestering, betalinger, periodeavslutning, fakturaer, mva og funn; andre skriveoperasjoner trenger en egen regel.",
+              "Ready-made server guards cover approvals, payments, invoices and more; other writes need a rule of your own.",
+              "Ferdige serverkontroller dekker godkjenning, betalinger, fakturaer og mer; andre skriveoperasjoner trenger en egen regel.",
             )}
           </li>
         </ul>
@@ -170,8 +170,8 @@ export function AnnouncementPage() {
         </div>
         <p className="site-article__note">
           {t(
-            "Booki implements a draft specification any ERP can adopt: what a screen gives an agent, what stays with a person, and how every step is recorded and checked again.",
-            "Booki implementerer et utkast til spesifikasjon som ethvert ERP kan ta i bruk: hva et skjermbilde gir en agent, hva som forblir en persons, og hvordan hvert steg registreres og sjekkes igjen.",
+            "Booki implements a draft specification any product can adopt: what a screen gives an agent, what stays with a person, and how every step is recorded and checked again.",
+            "Booki implementerer et utkast til spesifikasjon som ethvert produkt kan ta i bruk: hva et skjermbilde gir en agent, hva som forblir en persons, og hvordan hvert steg registreres og sjekkes igjen.",
           )}{" "}
           <a href={CONTRACT_URL} target="_blank" rel="noreferrer" className="site-link">
             {t("The Agent Contract", "Agentkontrakten")}
@@ -183,8 +183,8 @@ export function AnnouncementPage() {
         kicker={t("Open source, MIT", "Åpen kildekode, MIT")}
         title={t("Put one screen in front of an agent.", "Sett ett skjermbilde foran en agent.")}
         text={t(
-          "Read the docs, try the demo ERP, or open an issue to say which screen you would pilot.",
-          "Les dokumentasjonen, prøv demo-ERP-en, eller opprett en issue og si hvilket skjermbilde dere ville pilotert.",
+          "Read the docs, try the demo, or open an issue to say which screen you would pilot.",
+          "Les dokumentasjonen, prøv demoen, eller opprett en issue og si hvilket skjermbilde dere ville pilotert.",
         )}
         link={{ to: "/docs", label: t("Read the docs", "Les dokumentasjonen") }}
       />
