@@ -134,6 +134,17 @@ function matchWhole(text: string, language: MessageLanguage): string | undefined
 
 function localizeText(text: string, language: MessageLanguage): string {
   if (text === "") return text;
+  // The bridge appends a fixed sentence to whatever the failing step said. Split it off
+  // first, so a step sentence that ends in a sentence parameter cannot swallow it, and so
+  // a step sentence the catalogue does not know still gets the trailer in `language`.
+  const trailer = MESSAGES["bridge.steps-stay-done"].en;
+  const at = text.indexOf(` ${trailer}`);
+  if (at > 0) {
+    const head = localizeText(text.slice(0, at), language);
+    const after = text.slice(at + 1 + trailer.length).trimStart();
+    const rest = after === "" ? "" : ` ${localizeText(after, language)}`;
+    return `${head} ${msgIn(language, "bridge.steps-stay-done")}${rest}`;
+  }
   const whole = matchWhole(text, language);
   if (whole !== undefined) return whole;
   // A run of sentences, such as issues joined with a space. Take the longest

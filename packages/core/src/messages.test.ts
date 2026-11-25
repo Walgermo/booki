@@ -318,4 +318,30 @@ describe("status words and closing stops (pilot 7)", () => {
     expect(nb).not.toContain("?.");
     expect(msg("agent.person-only", { confirm: "Approve the invoice" }).endsWith("invoice.")).toBe(true);
   });
+  describe("the bridge's trailing sentence", () => {
+    const stay = "The steps before this one stay done.";
+    const again = "Send it again with the step after it, 2 steps in one call.";
+    const cases: Array<[string, string]> = [
+      ["bridge.no-component", msg("bridge.no-component", { ref: "X", labels: "A, B" })],
+      [
+        "bridge.no-component-behind",
+        msg("bridge.no-component-behind", { ref: "X", labels: "A, B", closed: "Menu opens it" }),
+      ],
+      ["bridge.no-button", msg("bridge.no-button", { text: "Go", ref: "X", buttons: "Save, Cancel" })],
+      ["an unknown sentence", "Something the catalogue does not know."],
+    ];
+    for (const [name, step] of cases) {
+      it(`puts it in Norwegian after ${name}`, () => {
+        const nb = localize(`${step} ${stay} ${again}`, "nb");
+        expect(nb).toContain(`${msgIn("nb", "bridge.steps-stay-done")} `);
+        expect(nb).toContain("Send det på nytt med steget etter det, 2 steg i ett kall.");
+        expect(nb).not.toContain("The steps");
+        expect(nb).not.toContain("Send it again");
+        const head = nb.slice(0, nb.indexOf(msgIn("nb", "bridge.steps-stay-done")) - 1);
+        expect(head).toBe(localize(step, "nb"));
+        expect(localize(`${step} ${stay}`, "nb")).toBe(`${head} ${msgIn("nb", "bridge.steps-stay-done")}`);
+        expect(localize(`${step} ${stay}`, "en")).toBe(`${step} ${stay}`);
+      });
+    }
+  });
 });
