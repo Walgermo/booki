@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 /**
- * A small drawing above each hero figure, of what the figure claims. One
+ * A small drawing under each hero figure, of what the figure claims. One
  * language for all four: what the same task took on a screen without Booki is
  * faint, what it took with Booki is ink. Each is drawn to the measured ratio,
  * never to a rounder one. Decoration only: the figure and its label carry the

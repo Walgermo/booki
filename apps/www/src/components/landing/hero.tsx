@@ -49,23 +49,23 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         {/* Four figures, one per measurement, each the median over the same pairs; the ranges are in the strip below the demo. */}
         <dl className="landing-hero__stats">
           <div>
-            <CallsMark {...kpi.calls} />
             <dt>{fewer(kpi.calls)}</dt>
+            <CallsMark {...kpi.calls} />
             <dd>{t("fewer tool calls", "færre verktøykall")}</dd>
           </div>
           <div>
-            <TokensMark {...kpi.tokens} format={thousands} />
             <dt>{fewer(kpi.tokens)}</dt>
+            <TokensMark {...kpi.tokens} format={thousands} />
             <dd>{t("fewer tokens", "færre tokens")}</dd>
           </div>
           <div>
-            <TimeMark ratio={kpi.faster.median} />
             <dt>{times(kpi.faster.median)}</dt>
+            <TimeMark ratio={kpi.faster.median} />
             <dd>{t("faster", "raskere")}</dd>
           </div>
           <div>
-            <CostMark ratio={kpi.cheaper.median} />
             <dt>{times(kpi.cheaper.median)}</dt>
+            <CostMark ratio={kpi.cheaper.median} />
             <dd>{t("cheaper", "billigere")}</dd>
           </div>
         </dl>
