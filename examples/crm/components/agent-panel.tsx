@@ -1,6 +1,6 @@
 "use client";
 
-import { localize } from "@booki/core/messages";
+import { localize } from "@booki-aui/core/messages";
 import { useState } from "react";
 import { asAgentWork, pageAgent } from "@/lib/agent";
 import { nameOf } from "@/lib/people";

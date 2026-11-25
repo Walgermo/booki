@@ -4,13 +4,13 @@ import {
   type AttachmentFile,
   type AttachmentKind,
   type AttachmentRegion,
-} from "@booki/core/attachments";
+} from "@booki-aui/core/attachments";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { evidenceList } from "@booki/primitives/evidence-list";
+import { evidenceList } from "@booki-aui/primitives/evidence-list";
 
 const parts = createParts(evidenceList, {
   root: "div",

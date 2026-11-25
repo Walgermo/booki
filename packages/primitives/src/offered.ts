@@ -1,5 +1,5 @@
-import { closest, LISTED_WHOLE } from "@booki/core/closest";
-import { BookiError } from "@booki/core/msg";
+import { closest, LISTED_WHOLE } from "@booki-aui/core/closest";
+import { BookiError } from "@booki-aui/core/msg";
 
 export type OfferedItem = { value: string; label: string };
 

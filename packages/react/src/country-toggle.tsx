@@ -1,4 +1,4 @@
-import type { CountryCode } from "@booki/core/locale";
+import type { CountryCode } from "@booki-aui/core/locale";
 import { useBookiLocaleOptional } from "./locale.js";
 
 const OPTIONS: { code: CountryCode; label: string }[] = [

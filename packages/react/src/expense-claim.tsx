@@ -5,14 +5,14 @@ import {
   type ExpensePolicy,
   type ExpenseRule,
   type PolicyException,
-} from "@booki/core/expense";
+} from "@booki-aui/core/expense";
 import type { BookiChangeDetails } from "./change-details.js";
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type ExpenseExceptionState, expenseClaim } from "@booki/primitives/expense-claim";
+import { type ExpenseExceptionState, expenseClaim } from "@booki-aui/primitives/expense-claim";
 
 const parts = createParts(expenseClaim, {
   root: "div",
@@ -429,4 +429,4 @@ export {
 };
 export type { Claim as ExpenseClaimData, ExpenseLine, ExpenseLineInput, ExpensePolicy, ExpenseRule, PolicyException };
 
-export { type ExpenseExceptionState } from "@booki/primitives/expense-claim";
+export { type ExpenseExceptionState } from "@booki-aui/primitives/expense-claim";

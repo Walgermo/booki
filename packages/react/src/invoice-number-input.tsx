@@ -3,7 +3,7 @@ import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { invoiceNumber } from "@booki/primitives/invoice-number-input";
+import { invoiceNumber } from "@booki-aui/primitives/invoice-number-input";
 
 const parts = createParts(invoiceNumber, {
   root: "div",

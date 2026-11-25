@@ -2,7 +2,7 @@ import { stageChanges } from "@ui-sdk/react/history";
 import { elementOf } from "@ui-sdk/react/observe";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { AgentBridge } from "./booki-agent.js";
-import { personOnly } from "@booki/primitives/person-only";
+import { personOnly } from "@booki-aui/primitives/person-only";
 
 /** The control an agent is working on right now. */
 export type AgentActivity = {
@@ -30,7 +30,7 @@ const PROPOSED = "data-agent-proposed";
  *
  * - While the agent changes a control, that control is the "active" one.
  * - A control the agent changed carries `data-agent-set` until a person edits
- *   it or calls `acknowledge()`. Style it however you like; `@booki/styles`
+ *   it or calls `acknowledge()`. Style it however you like; `@booki-aui/styles`
  *   draws a fjord-blue line on its leading edge.
  */
 export function attachAgentPresence(agent: AgentBridge, options: { linger?: number } = {}): AgentPresenceController {

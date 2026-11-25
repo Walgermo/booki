@@ -1,4 +1,4 @@
-import type { useBookiLocale } from "@booki/react";
+import type { useBookiLocale } from "@booki-aui/react";
 
 import type { Entry } from "@/components/agent-view";
 

@@ -1,4 +1,4 @@
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { isPersonOnly } from "./person-only.js";
 
 /** A step as the bridge's `allow` sees it. */

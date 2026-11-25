@@ -1,4 +1,4 @@
-import { toCsv, type TableColumn } from "@booki/core/table";
+import { toCsv, type TableColumn } from "@booki-aui/core/table";
 
 /**
  * Hand a person a CSV of the rows they see: every match, not just the page.

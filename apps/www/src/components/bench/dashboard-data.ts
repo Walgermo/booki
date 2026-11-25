@@ -1,4 +1,4 @@
-import { ageItems } from "@booki/core/aging";
+import { ageItems } from "@booki-aui/core/aging";
 
 import { COSTS, MONTHS, REVENUE } from "@/components/erp-dashboard";
 import { RECEIVABLES } from "@/lib/demo-data";

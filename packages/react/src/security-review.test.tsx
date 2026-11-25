@@ -1,6 +1,6 @@
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { isPersonOnly, personOnly } from "@booki/primitives/person-only";
+import { isPersonOnly, personOnly } from "@booki-aui/primitives/person-only";
 import { BankReconciliation } from "./bank-reconciliation.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";

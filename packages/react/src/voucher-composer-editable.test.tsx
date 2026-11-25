@@ -1,4 +1,4 @@
-import type { AccountOption, VoucherLine } from "@booki/core/voucher";
+import type { AccountOption, VoucherLine } from "@booki-aui/core/voucher";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";

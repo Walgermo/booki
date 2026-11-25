@@ -1,4 +1,4 @@
-import type { BankLine, OpenPost, ReconciliationMatch } from "@booki/core/reconciliation";
+import type { BankLine, OpenPost, ReconciliationMatch } from "@booki-aui/core/reconciliation";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { BankReconciliation } from "./bank-reconciliation.js";

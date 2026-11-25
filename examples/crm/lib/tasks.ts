@@ -1,7 +1,7 @@
 "use client";
 
-import { formatMoney } from "@booki/core/money";
-import { actAndRecord, type AgentBridge } from "@booki/react";
+import { formatMoney } from "@booki-aui/core/money";
+import { actAndRecord, type AgentBridge } from "@booki-aui/react";
 import { STAGES, TODAY } from "./data";
 import { AGENT_ID } from "./people";
 import { logDecision } from "./agent";

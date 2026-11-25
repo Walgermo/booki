@@ -100,7 +100,7 @@ describe("useBookiField amount kind", () => {
 
 // The amount example in the install guide (skills/booki/SKILL.md, "Your own
 // components"), as written there. Keep the two in sync.
-import { formatMoney, parseToMinor } from "@booki/core/money";
+import { formatMoney, parseToMinor } from "@booki-aui/core/money";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { createBookiAgent, useBookiField } from "./index.js";

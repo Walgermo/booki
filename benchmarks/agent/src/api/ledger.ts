@@ -5,8 +5,8 @@
 //
 // Amounts are integer minor units (øre). Dates are ISO yyyy-mm-dd strings.
 
-import { isValidKid } from "@booki/core";
-import { ageItems, type OpenItem } from "@booki/core/aging";
+import { isValidKid } from "@booki-aui/core";
+import { ageItems, type OpenItem } from "@booki-aui/core/aging";
 
 export class ApiError extends Error {
   constructor(message: string) {

@@ -52,21 +52,21 @@ const CONTRACT: { rule: Text; how: Text }[] = [
 
 const PACKAGES: [string, Text][] = [
   [
-    "@booki/core",
+    "@booki-aui/core",
     {
       en: "Integer money, country profiles, validators and voucher helpers. No framework.",
       nb: "Penger i heltall, landprofiler, validatorer og bilagshjelpere. Uten rammeverk.",
     },
   ],
   [
-    "@booki/react",
+    "@booki-aui/react",
     {
       en: "Unstyled React controls that agents operate through typed actions.",
       nb: "Ustylede React-kontroller som agenter styrer gjennom typede handlinger.",
     },
   ],
   [
-    "@booki/styles",
+    "@booki-aui/styles",
     {
       en: "Optional default look: CSS variables and data-slot selectors.",
       nb: "Valgfritt standarduttrykk: CSS-variabler og data-slot-selektorer.",

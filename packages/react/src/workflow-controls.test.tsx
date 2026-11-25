@@ -1,6 +1,6 @@
-import type { CloseTask } from "@booki/core/close";
-import type { Invoice } from "@booki/core/invoice";
-import type { PaymentBatch as Batch } from "@booki/core/payment-batch";
+import type { CloseTask } from "@booki-aui/core/close";
+import type { Invoice } from "@booki-aui/core/invoice";
+import type { PaymentBatch as Batch } from "@booki-aui/core/payment-batch";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";

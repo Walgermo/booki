@@ -1,6 +1,6 @@
-import { formatMoney, money } from "@booki/core/money";
-import { suggestMatches, type BankLine, type OpenPost } from "@booki/core/reconciliation";
-import type { VoucherLine } from "@booki/core/voucher";
+import { formatMoney, money } from "@booki-aui/core/money";
+import { suggestMatches, type BankLine, type OpenPost } from "@booki-aui/core/reconciliation";
+import type { VoucherLine } from "@booki-aui/core/voucher";
 import {
   AccountPicker,
   AccountingPeriodSelect,
@@ -26,7 +26,7 @@ import {
   useBookiLocale,
   VoucherComposer,
   VoucherLines,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { Navigate, useParams } from "react-router-dom";
 import { Fragment, useMemo, useRef, useState } from "react";
 
@@ -118,9 +118,9 @@ export function ComponentDocPage() {
       ) : null}
       <p className="mt-4 mb-0 max-w-prose text-sm text-muted-foreground">
         {t("Import from ", "Importer fra ")}
-        <code>@booki/react</code> {t("(or", "(eller")} <code>@booki/core</code>).{" "}
+        <code>@booki-aui/react</code> {t("(or", "(eller")} <code>@booki-aui/core</code>).{" "}
         {t("The look is optional: ", "Utseendet er valgfritt: ")}
-        <code>import &quot;@booki/styles&quot;</code>. {t("Country profile: ", "Landprofil: ")}
+        <code>import &quot;@booki-aui/styles&quot;</code>. {t("Country profile: ", "Landprofil: ")}
         <strong>{country}</strong>.
       </p>
     </article>

@@ -8,7 +8,7 @@ import {
   type Entity,
   type Permission,
   type Role,
-} from "@booki/core/permissions";
+} from "@booki-aui/core/permissions";
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 export type BookiAccess = {
@@ -24,7 +24,7 @@ const BookiAccessContext = createContext<BookiAccess | null>(null);
 export type BookiAccessProviderProps = {
   /** The person at the keyboard. */
   actor?: Actor;
-  /** Defaults to `STANDARD_ROLES` from `@booki/core/permissions`. */
+  /** Defaults to `STANDARD_ROLES` from `@booki-aui/core/permissions`. */
   roles?: Role[];
   /** The company being worked in. An actor limited to other entities is refused. */
   entity?: Entity;
@@ -90,5 +90,5 @@ function useAccessFor(
 }
 
 export { BookiAccessProvider, useBookiAccess, useAccessFor };
-export { refuseDenied } from "@booki/primitives/access";
+export { refuseDenied } from "@booki-aui/primitives/access";
 export type { Actor, Deed, DutyRule, Entity, Permission, Role };

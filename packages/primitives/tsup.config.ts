@@ -61,5 +61,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   target: "es2022",
-  external: [/^@booki\/core(\/.*)?$/, /^@ui-sdk\/core(\/.*)?$/],
+  external: [/^@booki-aui\/core(\/.*)?$/, /^@ui-sdk\/core(\/.*)?$/],
 });

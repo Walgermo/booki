@@ -1,5 +1,5 @@
 import { BookiLogo } from "@/components/booki-logo";
-import { useBookiLocale } from "@booki/react";
+import { useBookiLocale } from "@booki-aui/react";
 import { useEffect } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 

@@ -10,9 +10,9 @@ import {
   type OpenItem,
   type OpenItemKind,
   type OverdueParty,
-} from "@booki/core/aging";
-import { BookiError } from "@booki/core/msg";
-import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/aging";
+import { BookiError } from "@booki-aui/core/msg";
+import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";
 import { QUERY_FORMAT } from "./fields.js";

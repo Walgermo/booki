@@ -4,10 +4,10 @@
     "outDir": "dist",
     "noEmit": true,
     "paths": {
-      "@booki/primitives": [
+      "@booki-aui/primitives": [
         "../primitives/src/index.ts"
       ],
-      "@booki/primitives/*": [
+      "@booki-aui/primitives/*": [
         "../primitives/src/*.ts"
       ]
     }

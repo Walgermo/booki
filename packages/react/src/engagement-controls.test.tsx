@@ -1,5 +1,5 @@
-import type { ClientRequest } from "@booki/core/client-request";
-import type { Finding } from "@booki/core/findings";
+import type { ClientRequest } from "@booki-aui/core/client-request";
+import type { Finding } from "@booki-aui/core/findings";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import type { ReactElement } from "react";

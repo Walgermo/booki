@@ -1,11 +1,11 @@
-import type { Activity, ActivityKind } from "@booki/core/activity";
+import type { Activity, ActivityKind } from "@booki-aui/core/activity";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import type { BookiChangeDetails } from "./change-details.js";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { activityTimeline, buttonKey, type TimelinePerson } from "@booki/primitives/activity-timeline";
+import { activityTimeline, buttonKey, type TimelinePerson } from "@booki-aui/primitives/activity-timeline";
 
 const parts = createParts(activityTimeline, { root: "div", complete: "button", remove: "button" });
 const ActivityTimelineRoot = parts.Root;

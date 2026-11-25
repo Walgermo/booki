@@ -1,18 +1,18 @@
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import type { BookiChangeDetails } from "./change-details.js";
-import { formatPeriod } from "@booki/core/period";
+import { formatPeriod } from "@booki-aui/core/period";
 import {
   type VatReturnComputation,
   type VatReturnFiling,
   type VatReturnSchema,
   type VatReturnStatus,
   type VatTransaction,
-} from "@booki/core/vat-return";
+} from "@booki-aui/core/vat-return";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type VatReturnSubmission, DEFAULT_SNAPSHOT_ROWS, vatReturn } from "@booki/primitives/vat-return";
+import { type VatReturnSubmission, DEFAULT_SNAPSHOT_ROWS, vatReturn } from "@booki-aui/primitives/vat-return";
 
 const parts = createParts(vatReturn, { root: "div", box: "button", back: "button", ready: "button", submit: "button" });
 const VatReturnRoot = parts.Root;
@@ -319,4 +319,4 @@ function VatReturn({
 export { VatReturn, VatReturnBack, VatReturnBoxButton, VatReturnReady, VatReturnRoot, VatReturnSubmit, vatReturn };
 export type { VatReturnFiling, VatReturnSchema, VatReturnStatus, VatTransaction };
 
-export { type VatBoxSummary, type VatReturnSubmission } from "@booki/primitives/vat-return";
+export { type VatBoxSummary, type VatReturnSubmission } from "@booki-aui/primitives/vat-return";

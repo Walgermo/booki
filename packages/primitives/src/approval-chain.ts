@@ -5,7 +5,7 @@ import {
   type ApprovalDecision,
   type ApprovalLevel,
   type ApprovalRequest,
-} from "@booki/core/approval";
+} from "@booki-aui/core/approval";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

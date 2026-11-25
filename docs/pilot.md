@@ -36,7 +36,7 @@ with numbers from yours.
 | --- | --- | --- |
 | 1–2 | **Baseline.** Add your current screen as a `browser` page in `benchmarks/agent/src/tasks.ts` (a `path`, a `ready` check and a `verify` that reads your screen's end state), and write the task the way your users phrase it (add its id to `TaskId`). Run `pnpm proof --task <yours>` with a key. For the free scripted comparison (`h2h`), also add a best-case script for the page in `src/scripted.ts`. | You have the "before" numbers. |
 | 3–6 | **Swap the controls.** Replace the amount, account, VAT, date, KID and line inputs with Booki controls, or give a control of your own a primitive (`definePrimitive`) and create its parts with your own tags and names. Keep your layout, your API and your save flow. Mark posting and paying with `data-agent-confirm`. | `window.agent.snapshot()` lists the screen's controls with named actions. |
-| 7–8 | **Server.** Run the screen's write route through `@booki/core/server` (`guardPostVoucher` or your own `guard()`), with the agent on its own credential. | The API refuses an agent's approval and an unbalanced voucher with 403 / 422. |
+| 7–8 | **Server.** Run the screen's write route through `@booki-aui/core/server` (`guardPostVoucher` or your own `guard()`), with the agent on its own credential. | The API refuses an agent's approval and an unbalanced voucher with 403 / 422. |
 | 9 | **Rules.** Put your company policy in `allow`: what an agent may post alone (an amount limit, balanced, dated in an open period), what goes to a person. | A step over the limit waits for a person; one under it posts and is logged as the agent. |
 | 10 | **After.** Add the new screen as a `bridge` page next to the old one and run `pnpm proof` again (and `h2h`, if you scripted both pages). | You have the "after" numbers and the report. |
 
@@ -61,7 +61,7 @@ Agree on them before day 1. Suggested:
 
 ```bash
 echo "ANTHROPIC_API_KEY=…" >> apps/www/.env.local   # git-ignored; never printed
-pnpm --filter @booki/www dev -- --port 5183
+pnpm --filter @booki-aui/www dev -- --port 5183
 pnpm proof                      # all tasks, 5 runs per page
 pnpm proof --task voucher       # one task
 ```
@@ -71,8 +71,8 @@ times runs times pages. The scripted `h2h` is free and is the baseline.
 
 ## What it does not cover
 
-- Any stack: `@booki/react`, `@booki/web` (Angular, server-rendered pages),
-  `@booki/vue`, `@booki/svelte` or `@booki/solid`. Outside React you write the
+- Any stack: `@booki-aui/react`, `@booki-aui/web` (Angular, server-rendered pages),
+  `@booki-aui/vue`, `@booki-aui/svelte` or `@booki-aui/solid`. Outside React you write the
   markup around the parts; the agent cursor is `<booki-agent-cursor>` there.
 - Your ERP's own integrations (bank, tax authority, document scanning) stay yours.
 - The [Agent Contract](../spec/agent-contract.md) lists what a conforming

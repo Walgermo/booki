@@ -1,9 +1,9 @@
-import type { PaymentBatch as Batch } from "@booki/core/payment-batch";
+import type { PaymentBatch as Batch } from "@booki-aui/core/payment-batch";
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { BookiAccessProvider } from "./access.js";
 import { createBookiAgent } from "./booki-agent.js";
-import { SE_PROFILE, defineProfile } from "@booki/core/locale";
+import { SE_PROFILE, defineProfile } from "@booki-aui/core/locale";
 import { BankAccountInput } from "./bank-account-input.js";
 import { CurrencySelect } from "./currency-select.js";
 import { BookiLocaleProvider } from "./locale.js";

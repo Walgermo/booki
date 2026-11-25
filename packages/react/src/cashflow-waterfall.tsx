@@ -1,10 +1,10 @@
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { barPath, linearScale, observeWidth, type WaterfallStep } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type Details, type CashflowStep, derive, cashflowWaterfall } from "@booki/primitives/cashflow-waterfall";
+import { type Details, type CashflowStep, derive, cashflowWaterfall } from "@booki-aui/primitives/cashflow-waterfall";
 
 export type { WaterfallStep };
 const parts = createParts(cashflowWaterfall, { root: "div", step: "button" });
@@ -335,4 +335,4 @@ function truncate(text: string, max: number): string {
 
 export { CashflowWaterfall, CashflowWaterfallRoot, CashflowWaterfallStep, cashflowWaterfall };
 
-export { type CashflowStep } from "@booki/primitives/cashflow-waterfall";
+export { type CashflowStep } from "@booki-aui/primitives/cashflow-waterfall";

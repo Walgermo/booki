@@ -11,8 +11,8 @@ import {
   type VatReturnFiling,
   type VatReturnSchema,
   type VatTransaction,
-} from "@booki/core/vat-return";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/vat-return";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

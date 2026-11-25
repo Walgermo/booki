@@ -1,7 +1,7 @@
 import { Button } from "@ui-sdk/react/button";
 import { useState } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
-import { personOnly } from "@booki/primitives/person-only";
+import { personOnly } from "@booki-aui/primitives/person-only";
 
 export type ScaPromptProps = {
   title?: string;

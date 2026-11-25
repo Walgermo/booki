@@ -7,7 +7,7 @@ import {
   PaymentReferenceInput,
   TaxCodeSelect,
   TextLink,
-} from "@booki/react";
+} from "@booki-aui/react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
@@ -33,7 +33,7 @@ const ACCOUNTS = [
   { number: "6800", name: "Kontorrekvisita" },
 ];
 
-const GUARD = `import { advise, guard, toHttp } from "@booki/core/server"
+const GUARD = `import { advise, guard, toHttp } from "@booki-aui/core/server"
 
 // The actor your sign-in established; an agent has its own credential.
 const verdict = guard({ actor, scope: engagementId, locale: "nb" }, "audit.sign-off", () => sign(page))
@@ -46,8 +46,8 @@ const { status, body } = toHttp(verdict)`;
 
 const STYLES = `/* app/globals.css: under your utilities, in your colours */
 @layer theme, base, booki, components, utilities;
-@import "@booki/styles" layer(booki);
-@import "@booki/styles/shadcn.css" layer(booki);`;
+@import "@booki-aui/styles" layer(booki);
+@import "@booki-aui/styles/shadcn.css" layer(booki);`;
 
 /** A live example on its sheet of paper, with a link to its page in the docs. */
 function Example({ docs, children }: { docs: string; children: ReactNode }) {
@@ -302,7 +302,7 @@ export function FeaturesPage() {
               ),
             ]}
           />
-          <InstallBlock label="@booki/core/server" command={GUARD} />
+          <InstallBlock label="@booki-aui/core/server" command={GUARD} />
         </div>
       </Section>
 

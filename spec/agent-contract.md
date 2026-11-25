@@ -201,9 +201,9 @@ An implementation conforms when, for every control it ships:
 5. its agent actions meet the ergonomics rules in section 12.
 
 A conformance suite for the bridge-level conditions (sections 2 to 7) ships as
-`@booki/readiness/conformance`; `runConformance` takes a bridge (snapshot, act,
+`@booki-aui/readiness/conformance`; `runConformance` takes a bridge (snapshot, act,
 subscribe) and optional probes, and reports each check as pass, fail or skip
-with the section it enforces. `@booki/readiness/reference` is a small
+with the section it enforces. `@booki-aui/readiness/reference` is a small
 implementation of the contract without Booki or ui-sdk that the suite passes.
 The suite does not yet cover per-language refusals (10.4) or the ergonomics
 rules (12) beyond naming valid choices; passing it is necessary, not

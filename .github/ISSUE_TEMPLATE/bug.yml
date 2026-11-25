@@ -6,7 +6,7 @@ body:
     id: where
     attributes:
       label: Where
-      description: The package and control, like "@booki/react VoucherComposer".
+      description: The package and control, like "@booki-aui/react VoucherComposer".
     validations:
       required: true
   - type: textarea

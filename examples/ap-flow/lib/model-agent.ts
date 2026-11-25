@@ -1,7 +1,7 @@
 "use client";
 
 import type Anthropic from "@anthropic-ai/sdk";
-import { actAndRecord, type AgentBridge } from "@booki/react";
+import { actAndRecord, type AgentBridge } from "@booki-aui/react";
 import { logDecision } from "./agent";
 import { settled, takeRefusals } from "./writes";
 

@@ -1,4 +1,4 @@
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { dispatch } from "@ui-sdk/core";
 
 /**

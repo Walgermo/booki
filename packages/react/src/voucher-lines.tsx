@@ -1,5 +1,5 @@
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
-import { sumVoucher, type VoucherLine } from "@booki/core/voucher";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
+import { sumVoucher, type VoucherLine } from "@booki-aui/core/voucher";
 import { useBookiLocaleOptional } from "./locale.js";
 
 export type VoucherLinesProps = {

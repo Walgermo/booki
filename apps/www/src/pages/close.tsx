@@ -1,6 +1,6 @@
-import type { BankLine, OpenPost, ReconciliationMatch } from "@booki/core/reconciliation";
-import { suggestMatches } from "@booki/core/reconciliation";
-import { voucherIssues, type AccountOption, type VoucherLine } from "@booki/core/voucher";
+import type { BankLine, OpenPost, ReconciliationMatch } from "@booki-aui/core/reconciliation";
+import { suggestMatches } from "@booki-aui/core/reconciliation";
+import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
 import {
   AgentPresence,
   AgentProposal,
@@ -12,9 +12,9 @@ import {
   VoucherComposer,
   type AgentPresenceController,
   type ProposedChange,
-} from "@booki/react";
-import { localize } from "@booki/core/messages";
-import { formatMoney, money } from "@booki/core/money";
+} from "@booki-aui/react";
+import { localize } from "@booki-aui/core/messages";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { Button as GateButton } from "@ui-sdk/react/button";
 import { useRef, useState } from "react";
 

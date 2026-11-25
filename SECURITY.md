@@ -15,7 +15,7 @@ package.
 
 - An agent making a decision that is a person's (approve, sign off, release, confirm).
 - Secrets reaching an agent: bank accounts, IBANs, KIDs and anything marked `data-agent-secret`.
-- The server guard (`@booki/core/server`) letting a write through that it should refuse.
+- The server guard (`@booki-aui/core/server`) letting a write through that it should refuse.
 - Money arithmetic that loses or invents minor units.
 
 Booki is pre-1.0 and not on npm; only the `main` branch is supported.

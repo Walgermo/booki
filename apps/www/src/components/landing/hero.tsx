@@ -1,4 +1,4 @@
-import { TextLink } from "@booki/react";
+import { TextLink } from "@booki-aui/react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 

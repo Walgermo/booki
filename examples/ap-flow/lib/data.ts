@@ -1,4 +1,4 @@
-import type { SupplierInvoice, SupplierInvoiceField, SupplierInvoiceFields } from "@booki/core/supplier-invoice";
+import type { SupplierInvoice, SupplierInvoiceField, SupplierInvoiceFields } from "@booki-aui/core/supplier-invoice";
 
 /**
  * A made-up Norwegian company's week of supplier invoices. Account numbers and

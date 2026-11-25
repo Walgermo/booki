@@ -16,11 +16,11 @@ public API still moves, so the steps shift down by one:
 | Adds something: a control, an action, an option, a profile | **patch** (0.1.0 → 0.1.1) | minor |
 | Fixes a bug, a message, a style | **patch** | patch |
 
-The UI packages are released together at one version: `@booki/core`,
+The UI packages are released together at one version: `@booki-aui/core`,
 `primitives`, `react`, `styles`, `web`, `vue`, `svelte` and `solid` (a
 `fixed` group in `.changeset/config.json`). They are generated from the same
 definitions, so a fix in one is a release of all, and an app never mixes
-versions. `@booki/readiness` is a separate tool with its own version. The docs
+versions. `@booki-aui/readiness` is a separate tool with its own version. The docs
 site, the examples and the benchmark are private and never released.
 
 ## In a pull request
@@ -53,25 +53,38 @@ CI fails a pull request that changes a package without a changeset.
    and formats. Read it: those are the release notes.
 3. Merge **Version Packages**. With publishing on, the workflow builds,
    publishes to npm with provenance, tags each package
-   (`@booki/core@0.2.0`) and creates a GitHub Release with the notes.
+   (`@booki-aui/core@0.2.0`) and creates a GitHub Release with the notes.
 
 `pnpm release:plan` shows what would be published, without publishing.
 
-## Publishing is off until v1
+## Publishing to npm
 
-Booki is not on npm until v1 has run in a real product. Until then the
-workflow keeps the **Version Packages** pull request and changelogs current
-and publishes nothing. To turn publishing on:
+The packages are published to npm as `@booki-aui/*`. (The `@booki` scope on npm
+belongs to someone else, so the npm names carry `-aui`, for "agent UI"; the
+project, the repository and the docs are still Booki.) Publishing is on when
+both of these are set, and off otherwise: the workflow then keeps the
+**Version Packages** pull request and the changelogs current and publishes
+nothing.
 
-1. Create the `@booki` scope on npm and an automation token with publish
-   rights; add it as the `NPM_TOKEN` repository secret.
+1. Create the `booki-aui` organization on npmjs.com, and a granular access
+   token with read and write access to it. Add the token as the `NPM_TOKEN`
+   repository secret (Settings → Secrets and variables → Actions → Secrets).
 2. Set the repository variable `NPM_PUBLISH` to `true`
    (Settings → Secrets and variables → Actions → Variables).
 3. Allow the workflow to open pull requests: Settings → Actions → General →
    "Allow GitHub Actions to create and approve pull requests".
 
-The first publish releases the versions in `package.json` that npm does not
-have yet, `0.1.0` included.
+Merging **Version Packages** then runs `pnpm release`: it builds the packages
+and runs `changeset publish`, which publishes every version npm does not have
+yet, with provenance (the workflow has `id-token: write`), tags each package
+and creates the GitHub Release. Check it first with:
+
+```bash
+pnpm release:plan
+```
+
+and a package's contents with `pnpm publish --dry-run --no-git-checks` in its
+folder; `workspace:*` dependencies become the released version.
 
 ## Prereleases
 

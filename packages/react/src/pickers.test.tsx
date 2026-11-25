@@ -1,10 +1,10 @@
 import { checkPattern, mount } from "@ui-sdk/core/testing";
 import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { accountPicker } from "@booki/primitives/account-picker";
-import { accountingPeriod } from "@booki/primitives/accounting-period-select";
-import { currencySelect } from "@booki/primitives/currency-select";
-import { taxCodeSelect } from "@booki/primitives/tax-code-select";
+import { accountPicker } from "@booki-aui/primitives/account-picker";
+import { accountingPeriod } from "@booki-aui/primitives/accounting-period-select";
+import { currencySelect } from "@booki-aui/primitives/currency-select";
+import { taxCodeSelect } from "@booki-aui/primitives/tax-code-select";
 import { AccountPicker } from "./account-picker.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { CurrencySelect } from "./currency-select.js";

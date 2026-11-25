@@ -1,6 +1,6 @@
 "use client";
 
-import { actAndRecord, type AgentBridge } from "@booki/react";
+import { actAndRecord, type AgentBridge } from "@booki-aui/react";
 import { logDecision } from "./agent";
 import { settled, takeRefusals } from "./writes";
 

@@ -3,7 +3,7 @@ import {
   isValidOrganizationNumber,
   normalizeOrganizationNumber,
   type OrganizationNumberKind,
-} from "@booki/core/organization-number";
+} from "@booki-aui/core/organization-number";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";

@@ -8,7 +8,7 @@ import {
   AlertDialogTrigger,
 } from "@ui-sdk/react/alert-dialog";
 import { useId, useState, type ReactNode } from "react";
-import { personOnly as markPersonOnly } from "@booki/primitives/person-only";
+import { personOnly as markPersonOnly } from "@booki-aui/primitives/person-only";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 

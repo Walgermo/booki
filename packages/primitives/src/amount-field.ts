@@ -1,5 +1,5 @@
-import { formatMoney, money, parseToMinor } from "@booki/core/money";
-import { BookiError, msg } from "@booki/core/msg";
+import { formatMoney, money, parseToMinor } from "@booki-aui/core/money";
+import { BookiError, msg } from "@booki-aui/core/msg";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";

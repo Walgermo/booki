@@ -1,6 +1,6 @@
-import { invoiceIssues, invoiceTotals, type Invoice, type InvoiceTotals } from "@booki/core/invoice";
-import type { AccountOption } from "@booki/core/voucher";
-import { AccountPicker, InvoiceEditor } from "@booki/react";
+import { invoiceIssues, invoiceTotals, type Invoice, type InvoiceTotals } from "@booki-aui/core/invoice";
+import type { AccountOption } from "@booki-aui/core/voucher";
+import { AccountPicker, InvoiceEditor } from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useEndState } from "./end-state";

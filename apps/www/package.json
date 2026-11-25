@@ -1,5 +1,5 @@
 {
-  "name": "@booki/www",
+  "name": "@booki-aui/www",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.11.0",
-    "@booki/core": "workspace:*",
-    "@booki/react": "workspace:*",
-    "@booki/styles": "workspace:*",
+    "@booki-aui/core": "workspace:*",
+    "@booki-aui/react": "workspace:*",
+    "@booki-aui/styles": "workspace:*",
     "@fontsource-variable/albert-sans": "^5.3.0",
     "@ui-sdk/core": "0.1.0-beta.17",
     "@ui-sdk/react": "0.1.0-beta.17",

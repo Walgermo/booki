@@ -1,5 +1,5 @@
-import { formatKid, generateKid, isValidKid } from "@booki/core/kid";
-import { BookiError } from "@booki/core/msg";
+import { formatKid, generateKid, isValidKid } from "@booki-aui/core/kid";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent, textOf } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";

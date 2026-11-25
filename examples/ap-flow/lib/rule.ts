@@ -1,4 +1,4 @@
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
 
 /**
  * The company's rule for what the agent may approve on its own. The same

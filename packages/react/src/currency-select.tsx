@@ -2,7 +2,7 @@ import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { DEFAULT_CURRENCIES, currencySelect } from "@booki/primitives/currency-select";
+import { DEFAULT_CURRENCIES, currencySelect } from "@booki-aui/primitives/currency-select";
 
 const parts = createParts(currencySelect, {
   root: "div",
@@ -17,7 +17,7 @@ const CurrencySelectRoot = parts.Root;
 const CurrencySelectTrigger = parts.Trigger;
 const CurrencySelectList = parts.List;
 const CurrencySelectOption = parts.Option;
-/** The native `<select>` fallback, shown by @booki/styles on touch screens. */
+/** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
 const CurrencySelectControl = parts.Select;
 
 export type CurrencySelectProps = {

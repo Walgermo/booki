@@ -1,11 +1,11 @@
-import type { SignableDocument, SignoffLevel, SignoffMark } from "@booki/core/document-signoff";
+import type { SignableDocument, SignoffLevel, SignoffMark } from "@booki-aui/core/document-signoff";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { buttonKey, documentSignoff, type LevelView } from "@booki/primitives/document-signoff";
+import { buttonKey, documentSignoff, type LevelView } from "@booki-aui/primitives/document-signoff";
 
 const parts = createParts(documentSignoff, {
   root: "div",

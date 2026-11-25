@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import "./amount-field.js";
-import { personOnly } from "@booki/primitives/person-only";
+import { personOnly } from "@booki-aui/primitives/person-only";
 import "./voucher-composer.js";
 import { createBookiAgent } from "./agent.js";
 import { createAgentCursor, type BookiAgentCursorElement } from "./agent-cursor.js";
@@ -15,7 +15,7 @@ const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 type Entry = { ref: string; component: string; actions: string[]; value?: number; minor?: number };
 
-describe("@booki/web", () => {
+describe("@booki-aui/web", () => {
   it("registers Booki's controls as custom elements an agent operates by name", async () => {
     const agent = createBookiAgent({ agentId: "test" });
     document.body.innerHTML = `
@@ -101,7 +101,7 @@ describe("@booki/web", () => {
   it("imports no React anywhere", () => {
     const src = path.dirname(new URL(import.meta.url).pathname);
     for (const file of readdirSync(src).filter((f) => f.endsWith(".ts"))) {
-      expect(readFileSync(path.join(src, file), "utf8"), file).not.toMatch(/from "(react|react-dom|@ui-sdk\/react[^"]*|@booki\/react[^"]*)"/);
+      expect(readFileSync(path.join(src, file), "utf8"), file).not.toMatch(/from "(react|react-dom|@ui-sdk\/react[^"]*|@booki-aui\/react[^"]*)"/);
     }
   });
 });

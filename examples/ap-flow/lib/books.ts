@@ -1,5 +1,5 @@
-import { approveBatch, setBatchItems, type PaymentBatch } from "@booki/core/payment-batch";
-import { validateMatch, type BankLine, type OpenPost, type ReconciliationMatch } from "@booki/core/reconciliation";
+import { approveBatch, setBatchItems, type PaymentBatch } from "@booki-aui/core/payment-batch";
+import { validateMatch, type BankLine, type OpenPost, type ReconciliationMatch } from "@booki-aui/core/reconciliation";
 import {
   RuleRefusal,
   actorDeed,
@@ -10,9 +10,9 @@ import {
   type Refusal,
   type ServerActor,
   type Verdict,
-} from "@booki/core/server";
-import { approveSupplierInvoice, rejectSupplierInvoice, type SupplierInvoice } from "@booki/core/supplier-invoice";
-import type { Deed } from "@booki/core/permissions";
+} from "@booki-aui/core/server";
+import { approveSupplierInvoice, rejectSupplierInvoice, type SupplierInvoice } from "@booki-aui/core/supplier-invoice";
+import type { Deed } from "@booki-aui/core/permissions";
 import { CHART, COMPANY, VALUE_DATE, seedInvoices } from "./data";
 import { ROLES, personOf } from "./people";
 import { RULE_NAME, smallKnownSupplier } from "./rule";

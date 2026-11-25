@@ -1,5 +1,5 @@
-import { formatMoney, money, parseToMinor } from "@booki/core/money";
-import type { TaxCode } from "@booki/core/locale";
+import { formatMoney, money, parseToMinor } from "@booki-aui/core/money";
+import type { TaxCode } from "@booki-aui/core/locale";
 import {
   applyAccountRules,
   assertBalanced,
@@ -28,10 +28,10 @@ import {
   type VoucherRules,
   type DimensionDefinition,
   type PostingContext,
-} from "@booki/core/voucher";
-import type { PeriodState } from "@booki/core/period-lock";
+} from "@booki-aui/core/voucher";
+import type { PeriodState } from "@booki-aui/core/period-lock";
 import { createChange, definePrimitive } from "@ui-sdk/core";
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import { checkFields } from "./fields.js";
 import { restoreSelect } from "./lock.js";
 

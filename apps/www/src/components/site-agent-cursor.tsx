@@ -1,4 +1,4 @@
-import { AgentCursor, narrateNorwegian } from "@booki/react";
+import { AgentCursor, narrateNorwegian } from "@booki-aui/react";
 
 import { useAgentCursor } from "@/agent";
 import { useLang } from "@/lib/lang";

@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
-import { BookiLocaleProvider } from "@booki/react";
+import { BookiLocaleProvider } from "@booki-aui/react";
 import { App } from "./App";
 import { LangProvider } from "./lib/lang";
 import "./styles/globals.css";

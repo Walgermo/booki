@@ -8,9 +8,9 @@ import {
   setBatchItems,
   type PaymentBatch as Batch,
   type PaymentItem,
-} from "@booki/core/payment-batch";
-import { BookiError } from "@booki/core/msg";
-import { normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/payment-batch";
+import { BookiError } from "@booki-aui/core/msg";
+import { normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";

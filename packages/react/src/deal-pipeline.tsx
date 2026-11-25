@@ -1,4 +1,4 @@
-import { formatMoney } from "@booki/core/money";
+import { formatMoney } from "@booki-aui/core/money";
 import type {
   CurrencyTotals,
   Deal,
@@ -6,14 +6,14 @@ import type {
   DealValueStatus,
   PipelineStage,
   StageSummary,
-} from "@booki/core/pipeline";
+} from "@booki-aui/core/pipeline";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import type { BookiChangeDetails } from "./change-details.js";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { buttonKey, dealPipeline, type PipelineOwner } from "@booki/primitives/deal-pipeline";
+import { buttonKey, dealPipeline, type PipelineOwner } from "@booki-aui/primitives/deal-pipeline";
 
 const parts = createParts(dealPipeline, {
   root: "div",

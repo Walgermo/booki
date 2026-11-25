@@ -15,11 +15,13 @@ export function BookiLayers() {
           <div className="site-layers__layer">
             <p className="site-layers__name">{t("Your screen", "Skjermbildet deres")}</p>
             <ul className="site-chips" aria-label={t("Framework packages", "Rammeverkpakker")}>
-              {["@booki/react", "@booki/web", "@booki/vue", "@booki/svelte", "@booki/solid"].map((name) => (
-                <li key={name} className="site-chip">
-                  {name}
-                </li>
-              ))}
+              {["@booki-aui/react", "@booki-aui/web", "@booki-aui/vue", "@booki-aui/svelte", "@booki-aui/solid"].map(
+                (name) => (
+                  <li key={name} className="site-chip">
+                    {name}
+                  </li>
+                ),
+              )}
             </ul>
             <p className="site-layers__text">
               {t(
@@ -29,7 +31,7 @@ export function BookiLayers() {
             </p>
           </div>
           <div className="site-layers__layer" data-optional="">
-            <p className="site-layers__name">@booki/styles</p>
+            <p className="site-layers__name">@booki-aui/styles</p>
             <p className="site-layers__text">
               {t(
                 "Optional. Scoped to Booki's components, in a cascade layer if you like, with a shadcn token bridge.",
@@ -40,7 +42,7 @@ export function BookiLayers() {
         </div>
         <p className="site-layers__link">{t("generated from", "generert fra")}</p>
         <div className="site-layers__layer">
-          <p className="site-layers__name">@booki/primitives</p>
+          <p className="site-layers__name">@booki-aui/primitives</p>
           <p className="site-layers__text">
             {t(
               "Every control's definition, with no framework: its state, its agent actions and the rules it enforces.",
@@ -50,7 +52,7 @@ export function BookiLayers() {
         </div>
         <p className="site-layers__link">{t("rules from", "regler fra")}</p>
         <div className="site-layers__layer">
-          <p className="site-layers__name">@booki/core</p>
+          <p className="site-layers__name">@booki-aui/core</p>
           <p className="site-layers__text">
             {t(
               "Money in integer minor units, vouchers, validators, approvals, periods, VAT, audit sampling, roles and country profiles.",
@@ -86,18 +88,18 @@ export function BookiLayers() {
       </div>
 
       <div className="site-layers__layer site-layers__server">
-        <p className="site-layers__name">@booki/core/server</p>
+        <p className="site-layers__name">@booki-aui/core/server</p>
         <p className="site-layers__text">
           {t(
-            "The same rules from @booki/core, as the gate in your API: guard, advise, PERSON_ONLY, roles per engagement, actorRecord. The bridge is for speed and clarity; the server decides.",
-            "De samme reglene fra @booki/core, som porten i API-et deres: guard, advise, PERSON_ONLY, roller per oppdrag, actorRecord. Broen gir fart og tydelighet; serveren bestemmer.",
+            "The same rules from @booki-aui/core, as the gate in your API: guard, advise, PERSON_ONLY, roles per engagement, actorRecord. The bridge is for speed and clarity; the server decides.",
+            "De samme reglene fra @booki-aui/core, som porten i API-et deres: guard, advise, PERSON_ONLY, roller per oppdrag, actorRecord. Broen gir fart og tydelighet; serveren bestemmer.",
           )}
         </p>
       </div>
       <figcaption className="sr-only">
         {t(
-          "Framework packages are generated from @booki/primitives, which takes its rules from @booki/core. The agent bridge reads and acts on the screen. @booki/core/server runs the same rules in your API.",
-          "Rammeverkpakkene genereres fra @booki/primitives, som henter reglene fra @booki/core. Agentbroen leser og handler i skjermbildet. @booki/core/server kjører de samme reglene i API-et deres.",
+          "Framework packages are generated from @booki-aui/primitives, which takes its rules from @booki-aui/core. The agent bridge reads and acts on the screen. @booki-aui/core/server runs the same rules in your API.",
+          "Rammeverkpakkene genereres fra @booki-aui/primitives, som henter reglene fra @booki-aui/core. Agentbroen leser og handler i skjermbildet. @booki-aui/core/server kjører de samme reglene i API-et deres.",
         )}
       </figcaption>
     </figure>

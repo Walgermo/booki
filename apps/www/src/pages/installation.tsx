@@ -40,16 +40,16 @@ pnpm pack:local --out ../your-product/vendor/booki`;
 // What `pnpm pack:local` names the files: the packages share one version.
 const ADD = `# pnpm-workspace.yaml
 overrides:
-  "@booki/core": "file:./vendor/booki/booki-core-${version}.tgz"
-  "@booki/primitives": "file:./vendor/booki/booki-primitives-${version}.tgz"
-  "@booki/react": "file:./vendor/booki/booki-react-${version}.tgz"
-  "@booki/styles": "file:./vendor/booki/booki-styles-${version}.tgz"
+  "@booki-aui/core": "file:./vendor/booki/booki-core-${version}.tgz"
+  "@booki-aui/primitives": "file:./vendor/booki/booki-primitives-${version}.tgz"
+  "@booki-aui/react": "file:./vendor/booki/booki-react-${version}.tgz"
+  "@booki-aui/styles": "file:./vendor/booki/booki-styles-${version}.tgz"
 
 # then
-pnpm add @booki/core @booki/react @booki/styles`;
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles`;
 
-const PROVIDER = `import { BookiLocaleProvider } from "@booki/react"
-import "@booki/styles"
+const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"
+import "@booki-aui/styles"
 
 createRoot(root).render(
   <BookiLocaleProvider defaultCountry="NO">
@@ -57,7 +57,7 @@ createRoot(root).render(
   </BookiLocaleProvider>,
 )`;
 
-const AMOUNT = `import { AmountField } from "@booki/react"
+const AMOUNT = `import { AmountField } from "@booki-aui/react"
 
 // Before: <input name="amount" type="number" step="0.01" />
 <form action="/invoices" method="post">
@@ -70,7 +70,7 @@ const AMOUNT = `import { AmountField } from "@booki/react"
   <button type="submit">Save</button>
 </form>`;
 
-const VOUCHER = `import { VoucherComposer, type VoucherLine } from "@booki/react"
+const VOUCHER = `import { VoucherComposer, type VoucherLine } from "@booki-aui/react"
 
 const [lines, setLines] = useState<VoucherLine[]>(voucher.lines)
 
@@ -84,7 +84,7 @@ const [lines, setLines] = useState<VoucherLine[]>(voucher.lines)
   projects={projects}
 />`;
 
-const AGENT = `import { createBookiAgent, registerTools } from "@booki/react"
+const AGENT = `import { createBookiAgent, registerTools } from "@booki-aui/react"
 
 type PersonPrompt = (text: string) => Promise<boolean> | boolean
 
@@ -190,7 +190,7 @@ export function InstallationPage() {
         <InstallBlock label={t("In your product", "I produktet ditt")} command={ADD} />
         <p className={p}>
           {t("When the packages are published this becomes one ", "Når pakkene er publisert, blir dette én ")}
-          <code>pnpm add @booki/core @booki/react @booki/styles</code>.
+          <code>pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles</code>.
         </p>
       </Section>
 

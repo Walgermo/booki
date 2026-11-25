@@ -1,5 +1,5 @@
 {
-  "name": "@booki/react",
+  "name": "@booki-aui/react",
   "version": "0.1.7",
   "description": "Booki React — agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. Unstyled by default. Supported: React 19 with the NO and US profiles.",
   "type": "module",
@@ -281,8 +281,8 @@
     "test:coverage": "vitest run --coverage --testTimeout=20000"
   },
   "dependencies": {
-    "@booki/core": "workspace:*",
-    "@booki/primitives": "workspace:*"
+    "@booki-aui/core": "workspace:*",
+    "@booki-aui/primitives": "workspace:*"
   },
   "peerDependencies": {
     "@ui-sdk/core": "0.1.0-beta.17",

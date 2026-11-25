@@ -1,4 +1,4 @@
-import type { PipelineStage } from "@booki/core/pipeline";
+import type { PipelineStage } from "@booki-aui/core/pipeline";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -9,7 +9,7 @@ import {
   type Details,
   type StageDuration,
   type StageStay,
-} from "@booki/primitives/stage-duration";
+} from "@booki-aui/primitives/stage-duration";
 
 const parts = createParts(stageDuration, { root: "div", stage: "button" });
 const StageDurationRoot = parts.Root;

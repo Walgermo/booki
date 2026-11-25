@@ -4,7 +4,7 @@ import {
   setPeriodStatus,
   type PeriodState,
   type PeriodStatus,
-} from "@booki/core/period-lock";
+} from "@booki-aui/core/period-lock";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

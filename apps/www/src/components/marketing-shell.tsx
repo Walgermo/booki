@@ -1,4 +1,4 @@
-import { TextLink } from "@booki/react";
+import { TextLink } from "@booki-aui/react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { BookiLogo } from "@/components/booki-logo";

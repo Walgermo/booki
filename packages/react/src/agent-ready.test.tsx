@@ -1,4 +1,4 @@
-import { buildBalancedSalesVoucher } from "@booki/core/voucher";
+import { buildBalancedSalesVoucher } from "@booki-aui/core/voucher";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AccountPicker } from "./account-picker.js";

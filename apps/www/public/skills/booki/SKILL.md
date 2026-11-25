@@ -1,7 +1,7 @@
 ---
 name: booki
 description: >-
-  Installs and wires Booki (@booki/core, @booki/react, @booki/styles) into a
+  Installs and wires Booki (@booki-aui/core, @booki-aui/react, @booki-aui/styles) into a
   React 19 (supported), or Vue, Svelte, Solid or Web Components (experimental) app — BookiLocaleProvider,
   agent-ready accounting primitives, and createBookiAgent. Use when adding Booki, agent-first accounting controls, AmountField,
   VoucherComposer, bank/KID inputs, or agent-operated ledger UI.
@@ -34,11 +34,11 @@ money movement.
 
 ## Support
 
-Supported: React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and
-`@booki/styles`) with the Norway (NO) and United States (US) country profiles.
+Supported: React 19 (`@booki-aui/react`, with `@booki-aui/core`, `@booki-aui/primitives` and
+`@booki-aui/styles`) with the Norway (NO) and United States (US) country profiles.
 
-Experimental: Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`,
-`@booki/solid`, `@booki/web`), and the Sweden (SE), Denmark (DK), United Kingdom (GB)
+Experimental: Vue, Svelte, Solid and Web Components (`@booki-aui/vue`, `@booki-aui/svelte`,
+`@booki-aui/solid`, `@booki-aui/web`), and the Sweden (SE), Denmark (DK), United Kingdom (GB)
 and Germany (DE) starter profiles. Experimental means the packages work and come from
 the same primitives, but they have less testing and their API may change between
 releases without notice.
@@ -48,7 +48,7 @@ the person that the setup is experimental before you wire it.
 
 ## 1. Install
 
-Booki is not on npm yet, so `pnpm add @booki/react` answers 404. Pack it from a clone
+Booki is not on npm yet, so `pnpm add @booki-aui/react` answers 404. Pack it from a clone
 (Node 26, pnpm 11):
 
 ```bash
@@ -63,17 +63,17 @@ use `link:`: the app then loads a second React, and nobody else can install it.
 Once Booki is published, this is the whole step:
 
 ```bash
-pnpm add @booki/core @booki/react @booki/styles
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
 ```
 
-Requires React 19+ for `@booki/react`. Other stacks: `@booki/web` (custom elements; Angular,
-server-rendered pages), `@booki/vue`, `@booki/svelte`, `@booki/solid`, all with the same
+Requires React 19+ for `@booki-aui/react`. Other stacks: `@booki-aui/web` (custom elements; Angular,
+server-rendered pages), `@booki-aui/vue`, `@booki-aui/svelte`, `@booki-aui/solid`, all with the same
 controls and actions. Add `@ui-sdk/core` and the `@ui-sdk` package for your framework
 (`@ui-sdk/react`) as direct dependencies of the app, both at exactly `0.1.0-beta.17`. The
 bridge and controls come from them, and the guide imports `Button` from `@ui-sdk/react/button`,
-which `@booki/react` does not re-export. Add both together: adding only `@ui-sdk/react` has
+which `@booki-aui/react` does not re-export. Add both together: adding only `@ui-sdk/react` has
 made pnpm drop `@ui-sdk/core` from the lockfile.
-TypeScript and `import "@booki/styles"`: the package ships its types, so the side-effect
+TypeScript and `import "@booki-aui/styles"`: the package ships its types, so the side-effect
 import checks. With Tailwind, import it from CSS instead (section 2).
 **A minimum release age.** Booki pins the `@ui-sdk` packages exactly, so an app with a
 release-age rule (pnpm `minimumReleaseAge`, Renovate's `minimumReleaseAge`) can refuse a version
@@ -90,8 +90,8 @@ passes.
 ## 2. Provider + styles
 
 ```tsx
-import { BookiLocaleProvider } from "@booki/react"
-import "@booki/styles"
+import { BookiLocaleProvider } from "@booki-aui/react"
+import "@booki-aui/styles"
 
 export function App() {
   return (
@@ -108,12 +108,12 @@ come out with no padding or border:
 
 ```css
 @layer theme, base, booki, components, utilities;
-@import "@booki/styles" layer(booki);
+@import "@booki-aui/styles" layer(booki);
 @import "tailwindcss";
 ```
 
-Only a few controls on a page: import `@booki/styles/base.css` and
-`@booki/styles/controls/<name>.css` for the ones it uses (`kpi-stat`, `data-table`, …)
+Only a few controls on a page: import `@booki-aui/styles/base.css` and
+`@booki-aui/styles/controls/<name>.css` for the ones it uses (`kpi-stat`, `data-table`, …)
 instead of the whole sheet (about 9 KB gzipped against 17 KB).
 
 `useBookiLocale()` / `useBookiLocaleOptional()` → `country`, `profile`, `setCountry`.
@@ -143,7 +143,7 @@ import {
   isHistoryRestoring,
   registerTools,
   withRecordedAct,
-} from "@booki/react"
+} from "@booki-aui/react"
 
 // The company's rules for marked steps (data-agent-confirm): return true to let
 // the agent do it alone, false to refuse, undefined to ask the person.
@@ -293,7 +293,7 @@ layout must not import `agent` or `cursor`; it renders this and passes the perso
 "use client"
 
 import type { ReactNode } from "react"
-import { BookiAccessProvider, BookiLocaleProvider, AgentCursor, AgentPresence } from "@booki/react"
+import { BookiAccessProvider, BookiLocaleProvider, AgentCursor, AgentPresence } from "@booki-aui/react"
 import { agent, cursor } from "./agent"
 
 type User = { id: string; name: string; roles: string[] }
@@ -324,17 +324,17 @@ it follows `prefers-reduced-motion` on its own.
 ### Your own components
 
 Screens the product already has stay. You don't wrap components: give a control
-a primitive (`definePrimitive` and `createChange` from `@booki/react`: named
+a primitive (`definePrimitive` and `createChange` from `@booki-aui/react`: named
 actions, `controlled` state, `data-agent-confirm` on irreversible buttons), then
 create its parts with `createParts`, with your own tags and names, or keep the control
 you have inside a root made with `usePrimitive` and `usePart`. A whole example:
 https://raw.githubusercontent.com/Walgermo/booki/main/docs/own-controls.md The same
 primitive renders in React (supported), and in Vue, Svelte, Solid and Web Components (experimental). A Booki
 control under your own names: `createParts` with its definition from
-`@booki/primitives`.
+`@booki-aui/primitives`.
 
 The lowest threshold, for an input or select the product keeps (a shadcn or Base UI
-field): `useBookiField` from `@booki/react` gives it Booki's typed agent action and
+field): `useBookiField` from `@booki-aui/react` gives it Booki's typed agent action and
 rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor units),
 `code` from a closed list (`setCode`, a refusal names the options) and `date`
 (`setDate`, ISO). Your field calls `change(next, event)` for a person's edit and shows
@@ -342,7 +342,7 @@ rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor uni
 
 A free-text field (a description, a note) needs no Booki kind: `Input` from
 `@ui-sdk/react/input` is already on the bridge, with `setValue`, under its accessible name.
-It renders without styles, and `@booki/styles` styles only Booki's own controls, so give it
+It renders without styles, and `@booki-aui/styles` styles only Booki's own controls, so give it
 your design system's classes: `<Input className={inputClasses} />`, with the classes your own
 input uses (for shadcn/ui, those of its `Input`).
 
@@ -363,7 +363,7 @@ not done: change the amount once it doesn't, and on blur. `allowEmpty` lets the 
 field takes an option's value or its label; `allowEmpty` there lets it be cleared.
 
 ```tsx
-import { formatMoney, parseToMinor } from "@booki/core/money"
+import { formatMoney, parseToMinor } from "@booki-aui/core/money"
 
 function AmountInput(props: { value: number | null; onValueChange?: (minor: number | null) => void }) {
   const show = (minor: number | null) =>
@@ -436,37 +436,37 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 
 | Component | Package entry | Agent notes |
 | --- | --- | --- |
-| AmountField | `@booki/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor`; `allowEmpty`: empty reads `value: null`, `setMinor(null)` and `clear` empty it |
-| VoucherComposer | `@booki/react` | line edits with VAT code, department and project per line; `assertPostable` names what blocks posting; closed lists via `accounts`, `taxCodes`, `departments`, `projects`; a foreign-currency line with `setForeign` (the `foreignFormat` hint gives the order and units) |
-| BankReconciliation | `@booki/react` | agent suggests matches (`suggestMatch`), a person approves; sides must sum equal |
-| ApprovalChain | `@booki/react` | agent reads status and who may decide (`assertApproved`); approve/reject/escalate are a person's, checked against limits and levels |
-| PeriodLock | `@booki/react` | agent asks `assertPostingAllowed(date)`; a person closes and locks |
-| CloseChecklist | `@booki/react` | agent does tasks in order (`completeTask`); a second person signs off |
-| InvoiceEditor | `@booki/react` | agent drafts lines, totals are computed; a person finalizes; corrections by credit note |
-| PaymentBatch | `@booki/react` | agent sees payments without account numbers and removes duplicates; two people approve, a person releases |
-| SupplierInvoiceInbox | `@booki/react` | agent corrects extracted fields and proposes coding; a person approves; duplicates are named |
-| EvidenceList | `@booki/react` | agent links and classifies attachments; the entry knows what evidence is missing |
-| ExpenseClaim | `@booki/react` | expenses, mileage and per diem against a policy; exceptions need a second person |
-| LedgerTable | `@booki/react` | trial balance → account → voucher → attached document; read-only; agent can `showVoucher`, `back`, `explainVariance` |
-| AgedBalances | `@booki/react` | receivables or payables by age; agent asks `overdue(minDays)` |
-| VatReturn | `@booki/react` | computed from a schema you supply; agent checks, a person submits |
-| AuditWorkpaper | `@booki/react` | materiality, seeded sample, tick marks; people conclude and sign |
-| AuditFindings | `@booki/react` | findings with basis and evidence; agent drafts and cites, a person confirms or withdraws; confidential text stays unread |
-| ClientRequests | `@booki/react` | requests to the client; agent drafts and records answers, a person sends, reminds and judges; email stays out of the snapshot |
-| FixedAssetRegister | `@booki/react` | schedules and a proposed depreciation run; a person confirms |
-| DataTable | `@booki/react` | any list: sort, search, filter, pages, columns, selection, totals, CSV; agent reads the page and counts |
-| KpiStat, TrendChart, BarChart, AgingChart, CashflowWaterfall | `@booki/react` | dashboard figures and charts; the agent reads numbers, periods and buckets from the snapshot, never pixels; `drill` to pick a period, bar, bucket or step |
-| BankAccountInput | `@booki/react` | secret; NO kontonummer / US ABA |
-| PaymentReferenceInput | `@booki/react` | secret KID when NO; a US memo is shown unless `secretReference` |
-| OrganizationNumberInput | `@booki/react` | orgnr mod11 / EIN |
-| IbanInput | `@booki/react` | secret; checksum; NO → kontonummer |
-| FinancialDateField | `@booki/react` | invoice / due / posting ISO dates |
-| AccountingPeriodSelect | `@booki/react` | closed year / month / VAT term |
-| InvoiceNumberInput | `@booki/react` | document / invoice number |
-| AttestationStatus | `@booki/react` | `setStatus`; approve/reject via confirm press |
-| TaxCodeSelect | `@booki/react` | closed `items` |
-| AccountPicker | `@booki/react` | closed chart; over 30 accounts are not in the snapshot (`more` gives the count): `query({ within, text })` finds one by number or whole word, and `query({ within, from: 50 })` reads the next 50 |
-| CurrencySelect | `@booki/react` | closed NOK/USD |
+| AmountField | `@booki-aui/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor`; `allowEmpty`: empty reads `value: null`, `setMinor(null)` and `clear` empty it |
+| VoucherComposer | `@booki-aui/react` | line edits with VAT code, department and project per line; `assertPostable` names what blocks posting; closed lists via `accounts`, `taxCodes`, `departments`, `projects`; a foreign-currency line with `setForeign` (the `foreignFormat` hint gives the order and units) |
+| BankReconciliation | `@booki-aui/react` | agent suggests matches (`suggestMatch`), a person approves; sides must sum equal |
+| ApprovalChain | `@booki-aui/react` | agent reads status and who may decide (`assertApproved`); approve/reject/escalate are a person's, checked against limits and levels |
+| PeriodLock | `@booki-aui/react` | agent asks `assertPostingAllowed(date)`; a person closes and locks |
+| CloseChecklist | `@booki-aui/react` | agent does tasks in order (`completeTask`); a second person signs off |
+| InvoiceEditor | `@booki-aui/react` | agent drafts lines, totals are computed; a person finalizes; corrections by credit note |
+| PaymentBatch | `@booki-aui/react` | agent sees payments without account numbers and removes duplicates; two people approve, a person releases |
+| SupplierInvoiceInbox | `@booki-aui/react` | agent corrects extracted fields and proposes coding; a person approves; duplicates are named |
+| EvidenceList | `@booki-aui/react` | agent links and classifies attachments; the entry knows what evidence is missing |
+| ExpenseClaim | `@booki-aui/react` | expenses, mileage and per diem against a policy; exceptions need a second person |
+| LedgerTable | `@booki-aui/react` | trial balance → account → voucher → attached document; read-only; agent can `showVoucher`, `back`, `explainVariance` |
+| AgedBalances | `@booki-aui/react` | receivables or payables by age; agent asks `overdue(minDays)` |
+| VatReturn | `@booki-aui/react` | computed from a schema you supply; agent checks, a person submits |
+| AuditWorkpaper | `@booki-aui/react` | materiality, seeded sample, tick marks; people conclude and sign |
+| AuditFindings | `@booki-aui/react` | findings with basis and evidence; agent drafts and cites, a person confirms or withdraws; confidential text stays unread |
+| ClientRequests | `@booki-aui/react` | requests to the client; agent drafts and records answers, a person sends, reminds and judges; email stays out of the snapshot |
+| FixedAssetRegister | `@booki-aui/react` | schedules and a proposed depreciation run; a person confirms |
+| DataTable | `@booki-aui/react` | any list: sort, search, filter, pages, columns, selection, totals, CSV; agent reads the page and counts |
+| KpiStat, TrendChart, BarChart, AgingChart, CashflowWaterfall | `@booki-aui/react` | dashboard figures and charts; the agent reads numbers, periods and buckets from the snapshot, never pixels; `drill` to pick a period, bar, bucket or step |
+| BankAccountInput | `@booki-aui/react` | secret; NO kontonummer / US ABA |
+| PaymentReferenceInput | `@booki-aui/react` | secret KID when NO; a US memo is shown unless `secretReference` |
+| OrganizationNumberInput | `@booki-aui/react` | orgnr mod11 / EIN |
+| IbanInput | `@booki-aui/react` | secret; checksum; NO → kontonummer |
+| FinancialDateField | `@booki-aui/react` | invoice / due / posting ISO dates |
+| AccountingPeriodSelect | `@booki-aui/react` | closed year / month / VAT term |
+| InvoiceNumberInput | `@booki-aui/react` | document / invoice number |
+| AttestationStatus | `@booki-aui/react` | `setStatus`; approve/reject via confirm press |
+| TaxCodeSelect | `@booki-aui/react` | closed `items` |
+| AccountPicker | `@booki-aui/react` | closed chart; over 30 accounts are not in the snapshot (`more` gives the count): `query({ within, text })` finds one by number or whole word, and `query({ within, from: 50 })` reads the next 50 |
+| CurrencySelect | `@booki-aui/react` | closed NOK/USD |
 
 Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
 `AuditTrail`, `ApprovalGate`, `PaymentConfirm`, `ScaPrompt`, `ExceptionBanner`,
@@ -474,8 +474,8 @@ Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
 
 ## 5. Money + audit rules
 
-- Canonical amounts: `{ minor: number, currency }` from `@booki/core` — never floats
-- Prefer `buildBalancedSalesVoucher` from `@booki/core` for auto-compose
+- Canonical amounts: `{ minor: number, currency }` from `@booki-aui/core` — never floats
+- Prefer `buildBalancedSalesVoucher` from `@booki-aui/core` for auto-compose
 - Posting / attestation paths append audit events; use `actor: agent:…` when
   `subscribe` reports `source === "agent"`
 - Irreversible money moves: `data-agent-confirm` + gate in `allow`
@@ -495,11 +495,11 @@ Display / human-gated (not domain act targets): `MoneyAmount`, `VoucherLines`,
 ## 6. The same rules on the server
 
 The controls are for speed and clarity; the API is the gate. Run every write
-through `@booki/core/server` with the caller your sign-in established. Give the
+through `@booki-aui/core/server` with the caller your sign-in established. Give the
 agent its own credential so the server sees `kind: "agent"`.
 
 ```ts
-import { guardPostVoucher, toHttp } from "@booki/core/server"
+import { guardPostVoucher, toHttp } from "@booki-aui/core/server"
 
 export async function POST(request: Request) {
   const actor = await session(request) // { id, kind: "person" | "agent", roles }
@@ -522,7 +522,7 @@ it acts for (`onBehalfOf`) allow, and an unknown person is refused. Permissions 
 has by the company's rule go in `agentOwn`. Without `personOf` the person is only recorded.
 
 **The agent's credential.** `issueAgentToken({ agentId, onBehalfOf }, secret)` from
-`@booki/core/server` issues a signed token that lasts 15 minutes. Your sign-in issues it for the signed-in person,
+`@booki-aui/core/server` issues a signed token that lasts 15 minutes. Your sign-in issues it for the signed-in person,
 and the page sends it with the agent's writes. `verifyAgentToken(token, secret)` gives
 `{ id, kind: "agent", onBehalfOf, grantId }` or null; add the agent's roles. The secret is
 at least 32 characters and stays on the server. Bind a token to what it is for with
@@ -558,7 +558,7 @@ submit) are refused for an agent even when its roles allow them.
 ## 7. Implementation checklist
 
 1. Detect the stack (Vite/Next, package manager, existing providers, auth).
-2. Add the packages (section 1: packed from a clone until they are on npm); import `@booki/styles` once at the root if using the default look
+2. Add the packages (section 1: packed from a clone until they are on npm); import `@booki-aui/styles` once at the root if using the default look
    (map `--bk-*` tokens to the product's own).
 3. Root: `BookiLocaleProvider`, `BookiAccessProvider` with the signed-in person,
    `AgentPresence` and `AgentCursor`.
@@ -570,7 +570,7 @@ submit) are refused for an agent even when its roles allow them.
    primitives and create their parts.
 6. Mark posts, payments and SCA with `data-agent-confirm`; approving, signing off,
    finalizing and releasing stay a person's buttons. Guard the same writes in the API
-   with `@booki/core/server`.
+   with `@booki-aui/core/server`.
 7. Own posting state in one place (no two writers).
 8. Prove it in the running app: `window.agent.snapshot()` lists the screen's
    controls with named actions; one `agent.act` sets an amount and the cursor
@@ -584,7 +584,7 @@ submit) are refused for an agent even when its roles allow them.
    somewhere else. Keep `session.json` out of git. It names fields
    an agent cannot tell apart, irreversible buttons without `data-agent-confirm`, and
    secrets in the snapshot. It never clicks, so a form behind a button is not measured:
-   open it with your own Playwright step and call `check(page)` from `@booki/readiness`
+   open it with your own Playwright step and call `check(page)` from `@booki-aui/readiness`
    (its README has the example).
 
 ## Out of scope

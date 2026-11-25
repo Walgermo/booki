@@ -1,9 +1,9 @@
-import type { AccountOption } from "@booki/core/voucher";
+import type { AccountOption } from "@booki-aui/core/voucher";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { accountPicker } from "@booki/primitives/account-picker";
+import { accountPicker } from "@booki-aui/primitives/account-picker";
 
 const parts = createParts(accountPicker, {
   root: "div",
@@ -20,7 +20,7 @@ const AccountPickerInput = parts.Input;
 const AccountPickerList = parts.List;
 const AccountPickerOption = parts.Option;
 const AccountPickerEmpty = parts.Empty;
-/** The native `<select>` fallback, shown by @booki/styles on touch screens. */
+/** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
 const AccountPickerControl = parts.Select;
 
 export type AccountPickerProps = {

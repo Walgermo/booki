@@ -9,9 +9,9 @@ import {
   type InvoiceLine,
   type InvoiceTotals,
   type TaxCategory,
-} from "@booki/core/invoice";
-import { BookiError } from "@booki/core/msg";
-import { parseToMinor } from "@booki/core/money";
+} from "@booki-aui/core/invoice";
+import { BookiError } from "@booki-aui/core/msg";
+import { parseToMinor } from "@booki-aui/core/money";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 

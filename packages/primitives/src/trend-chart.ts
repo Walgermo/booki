@@ -1,5 +1,5 @@
 import { createChange, definePrimitive } from "@ui-sdk/core";
-import { BookiError } from "@booki/core/msg";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   CHART_RANGES,
   DEFAULT_SNAPSHOT_POINTS,

@@ -1,4 +1,4 @@
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import {
   MAX_PAGE_SIZE,
   tableView,
@@ -7,14 +7,14 @@ import {
   type SortDirection,
   type TableColumn,
   type TableQuery,
-} from "@booki/core/table";
+} from "@booki-aui/core/table";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type AnyRow, type DataTableColumn as ColumnOf, idOf, dataTable } from "@booki/primitives/data-table";
+import { type AnyRow, type DataTableColumn as ColumnOf, idOf, dataTable } from "@booki-aui/primitives/data-table";
 
-/** A column: the shared definition from `@booki/core/table`, plus how a person sees the cell. */
+/** A column: the shared definition from `@booki-aui/core/table`, plus how a person sees the cell. */
 export type DataTableColumn<Row> = ColumnOf<Row, ReactNode>;
 
 const parts = createParts(dataTable, {

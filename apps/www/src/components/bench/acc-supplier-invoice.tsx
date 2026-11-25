@@ -1,5 +1,5 @@
-import { isValidKid } from "@booki/core/kid";
-import type { AccountOption, VoucherLine } from "@booki/core/voucher";
+import { isValidKid } from "@booki-aui/core/kid";
+import type { AccountOption, VoucherLine } from "@booki-aui/core/voucher";
 import {
   AccountPicker,
   AmountField,
@@ -9,7 +9,7 @@ import {
   TaxCodeSelect,
   VoucherLines,
   useBookiLocale,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { Button } from "@ui-sdk/react/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useEndState } from "./end-state";

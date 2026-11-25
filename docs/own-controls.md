@@ -8,7 +8,7 @@ inside the primitive's root. The code below is tested in
 ```tsx
 "use client"
 
-import { createChange, definePrimitive, usePart, usePrimitive } from "@booki/react"
+import { createChange, definePrimitive, usePart, usePrimitive } from "@booki-aui/react"
 
 type Option = { value: string; label: string }
 type CostCentreOptions = {
@@ -118,7 +118,7 @@ the two in sync.
 ```tsx
 "use client"
 
-import { useBookiField } from "@booki/react"
+import { useBookiField } from "@booki-aui/react"
 import { useState } from "react"
 
 const drift = [

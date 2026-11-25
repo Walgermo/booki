@@ -1,10 +1,10 @@
-import { type PeriodGranularity } from "@booki/core/period";
+import { type PeriodGranularity } from "@booki-aui/core/period";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useId, useState, type ComponentProps } from "react";
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { buildItems, accountingPeriod } from "@booki/primitives/accounting-period-select";
+import { buildItems, accountingPeriod } from "@booki-aui/primitives/accounting-period-select";
 
 const parts = createParts(accountingPeriod, {
   root: "div",
@@ -19,7 +19,7 @@ const AccountingPeriodRoot = parts.Root;
 const AccountingPeriodTrigger = parts.Trigger;
 const AccountingPeriodList = parts.List;
 const AccountingPeriodOption = parts.Option;
-/** The native `<select>` fallback, shown by @booki/styles on touch screens. */
+/** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
 const AccountingPeriodControl = parts.Select;
 
 export type AccountingPeriodSelectProps = {

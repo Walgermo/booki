@@ -1,4 +1,4 @@
-import { formatMoney } from "@booki/core/money";
+import { formatMoney } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { formatPercent } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -9,7 +9,7 @@ import {
   type Details,
   type FunnelStep,
   type FunnelStepInput,
-} from "@booki/primitives/funnel-chart";
+} from "@booki-aui/primitives/funnel-chart";
 
 const parts = createParts(funnelChart, { root: "div", step: "button" });
 const FunnelChartRoot = parts.Root;

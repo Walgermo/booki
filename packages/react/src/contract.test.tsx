@@ -8,7 +8,7 @@ import * as library from "./index.js";
  * ui-sdk parts and the `data-slot` names people style. Agents, apps and
  * stylesheets depend on these names, so they only ever grow. Removing or
  * renaming one fails here; adding one is fine. After an intended addition,
- * record it with `UPDATE_CONTRACT=1 pnpm --filter @booki/react test`.
+ * record it with `UPDATE_CONTRACT=1 pnpm --filter @booki-aui/react test`.
  */
 
 type Contract = Record<string, { actions: string[]; options: string[]; parts: string[]; dataSlots: string[] }>;
@@ -32,7 +32,7 @@ function current(): Contract {
     readdirSync(dir)
       .filter((file) => /\.tsx?$/.test(file) && !/\.test\./.test(file))
       .map((file) => ({ base: file.replace(/\.tsx?$/, ""), text: readFileSync(path.join(dir, file), "utf8") }));
-  // A definition lives in @booki/primitives; its composed React control, and
+  // A definition lives in @booki-aui/primitives; its composed React control, and
   // the `data-slot` names it renders, in the file of the same name here.
   const definitionSources = read(PRIMITIVES);
   const reactSources = read(SRC);

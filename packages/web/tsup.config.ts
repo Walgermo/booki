@@ -7,7 +7,7 @@ const controls = JSON.parse(readFileSync(new URL("./entries.json", import.meta.u
 export default defineConfig({
   entry: ["src/index.ts", "src/agent.ts", "src/agent-cursor.ts", ...controls.map((name) => `src/${name}.ts`)],
   format: ["esm"],
-  // Types from the built @booki/primitives: the exports carry explicit types, so nothing private is named.
+  // Types from the built @booki-aui/primitives: the exports carry explicit types, so nothing private is named.
   dts: { compilerOptions: { paths: {} } },
   splitting: true,
   clean: true,
@@ -15,10 +15,10 @@ export default defineConfig({
   target: "es2022",
   // Explicit names: the declaration build ignores a regex here.
   external: [
-    "@booki/core",
-    "@booki/primitives",
-    "@booki/primitives/agent-cursor",
-    ...controls.map((name) => `@booki/primitives/${name}`),
+    "@booki-aui/core",
+    "@booki-aui/primitives",
+    "@booki-aui/primitives/agent-cursor",
+    ...controls.map((name) => `@booki-aui/primitives/${name}`),
     "@ui-sdk/core",
     "@ui-sdk/web",
     "@ui-sdk/web/agent",

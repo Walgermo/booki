@@ -9,7 +9,7 @@ import {
   type CloseTask,
   type Invoice,
   type PaymentBatchData,
-} from "@booki/react";
+} from "@booki-aui/react";
 import { useState, type ReactNode } from "react";
 
 import { useLang } from "@/lib/lang";

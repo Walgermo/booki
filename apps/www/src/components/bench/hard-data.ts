@@ -26,7 +26,7 @@ export const DOC_ERROR_INVOICE = {
   invoiceNumber: "2207",
   invoiceDate: "2026-10-08",
   dueDate: "2026-11-07",
-  /** Mod-10 valid (checked with @booki/core/kid). */
+  /** Mod-10 valid (checked with @booki-aui/core/kid). */
   kid: "2207000015",
   lines: [
     { description: "Skrivebord", quantity: 2, unitMinor: 300_000, amountMinor: 600_000 },
@@ -127,7 +127,7 @@ export const FOREIGN_INVOICE = {
   account: "6800",
 };
 
-/** NOK per EUR, scaled by RATE_SCALE (1_000_000) as @booki/core/fx stores it. */
+/** NOK per EUR, scaled by RATE_SCALE (1_000_000) as @booki-aui/core/fx stores it. */
 export const FX_RATES_EUR_NOK: { date: string; rateScaled: number }[] = [
   { date: "2026-10-12", rateScaled: 11_680_000 },
   { date: "2026-10-13", rateScaled: 11_705_000 },

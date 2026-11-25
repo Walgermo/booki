@@ -1,4 +1,4 @@
-import { formatMoney, money, type Money } from "@booki/core/money";
+import { formatMoney, money, type Money } from "@booki-aui/core/money";
 import { useBookiLocaleOptional } from "./locale.js";
 import type { HTMLAttributes } from "react";
 

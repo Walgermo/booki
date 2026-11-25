@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@booki/styles";
+@import "@booki-aui/styles";
 
 @source "../";
 
@@ -25,7 +25,7 @@
   font-display: swap;
 }
 
-/* The site's text font. @booki/styles keeps its own default for apps that use it. */
+/* The site's text font. @booki-aui/styles keeps its own default for apps that use it. */
 :root {
   --bk-font: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -3730,7 +3730,7 @@ html[data-kpi-still] {
 
 /* The site's own ui-sdk controls (segmented control, disclosures) once took
    Booki's base button and text metrics through any [data-slot] ancestor.
-   @booki/styles now keeps those rules to Booki's components, so the site sets
+   @booki-aui/styles now keeps those rules to Booki's components, so the site sets
    the same metrics itself. Zero specificity, like Booki's. */
 :where([data-slot="segmented-control"], [data-slot="collapsible"]) button {
   display: inline-flex;

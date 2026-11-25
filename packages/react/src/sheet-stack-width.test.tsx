@@ -1,7 +1,7 @@
 import { cleanup, render, act } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, expect, it, vi } from "vitest";
-import type { StackSheet } from "@booki/core/sheet-stack";
+import type { StackSheet } from "@booki-aui/core/sheet-stack";
 import { BookiLocaleProvider } from "./locale.js";
 import { SheetStack } from "./sheet-stack.js";
 

@@ -113,7 +113,7 @@ describe("score", () => {
 
 describe("reports", () => {
   const report = {
-    tool: { name: "@booki/readiness" as const, version: "0.1.0" },
+    tool: { name: "@booki-aui/readiness" as const, version: "0.1.0" },
     url: "file:///x.html",
     title: "<Test>",
     checkedAt: "2026-11-21T10:00:00.000Z",

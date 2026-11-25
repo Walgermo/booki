@@ -1,9 +1,9 @@
-import type { SheetPlacement, StackSheet } from "@booki/core/sheet-stack";
+import type { SheetPlacement, StackSheet } from "@booki-aui/core/sheet-stack";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
-import { sheetStack } from "@booki/primitives/sheet-stack";
+import { sheetStack } from "@booki-aui/primitives/sheet-stack";
 
 const parts = createParts(sheetStack, {
   root: "div",

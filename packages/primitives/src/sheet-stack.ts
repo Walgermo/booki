@@ -1,5 +1,5 @@
-import { BookiError } from "@booki/core/msg";
-import { layoutStack, type SheetPlacement, type StackSheet } from "@booki/core/sheet-stack";
+import { BookiError } from "@booki-aui/core/msg";
+import { layoutStack, type SheetPlacement, type StackSheet } from "@booki-aui/core/sheet-stack";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 
 export type Options = {

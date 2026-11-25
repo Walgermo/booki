@@ -69,7 +69,7 @@ jobs:
           path: coverage-badge.json
 
       - name: Build docs site
-        run: pnpm --filter @booki/www build
+        run: pnpm --filter @booki-aui/www build
       - name: Build examples
         run: pnpm --filter "./examples/*" build
 

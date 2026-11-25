@@ -1,7 +1,11 @@
 import { createParts } from "@ui-sdk/react/primitive";
 import { useState } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
-import { type AttestationStatusValue, statusLabelFor, attestationStatus } from "@booki/primitives/attestation-status";
+import {
+  type AttestationStatusValue,
+  statusLabelFor,
+  attestationStatus,
+} from "@booki-aui/primitives/attestation-status";
 
 const parts = createParts(attestationStatus, {
   root: "div",
@@ -89,4 +93,4 @@ export {
   attestationStatus,
 };
 
-export { type AttestationStatusValue } from "@booki/primitives/attestation-status";
+export { type AttestationStatusValue } from "@booki-aui/primitives/attestation-status";

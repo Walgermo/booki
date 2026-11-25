@@ -1,11 +1,11 @@
-import { closeBlockers, type CloseSummary, type CloseTask } from "@booki/core/close";
+import { closeBlockers, type CloseSummary, type CloseTask } from "@booki-aui/core/close";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { useSay } from "./say.js";
-import { closeChecklist } from "@booki/primitives/close-checklist";
+import { closeChecklist } from "@booki-aui/primitives/close-checklist";
 
 const parts = createParts(closeChecklist, {
   root: "div",

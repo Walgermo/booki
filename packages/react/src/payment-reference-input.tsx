@@ -1,10 +1,10 @@
-import { isValidKid } from "@booki/core/kid";
+import { isValidKid } from "@booki-aui/core/kid";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
-import { type RefKind, paymentReference } from "@booki/primitives/payment-reference-input";
+import { type RefKind, paymentReference } from "@booki-aui/primitives/payment-reference-input";
 
 const parts = createParts(paymentReference, {
   root: "div",

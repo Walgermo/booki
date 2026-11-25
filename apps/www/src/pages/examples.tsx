@@ -1,4 +1,4 @@
-import { AgentPresence, BookiLocaleProvider } from "@booki/react";
+import { AgentPresence, BookiLocaleProvider } from "@booki-aui/react";
 
 import { agent } from "@/agent";
 import { Extend } from "@/components/landing/extend";

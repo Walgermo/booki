@@ -10,7 +10,7 @@ import type {
   SupplierInvoice,
   TickMark,
   VatTransaction,
-} from "@booki/react";
+} from "@booki-aui/react";
 
 /** Made-up books for Nordlys AS, October 2026. Shared by the docs previews and the ERP demo. */
 

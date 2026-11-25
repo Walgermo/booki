@@ -1,4 +1,4 @@
-import { localize } from "@booki/core/messages";
+import { localize } from "@booki-aui/core/messages";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";

@@ -1,6 +1,6 @@
-import { BookiError } from "@booki/core/msg";
-import { rangeError } from "@booki/primitives/amount-field";
-import { lockOptions, lockState } from "@booki/primitives/lock";
+import { BookiError } from "@booki-aui/core/msg";
+import { rangeError } from "@booki-aui/primitives/amount-field";
+import { lockOptions, lockState } from "@booki-aui/primitives/lock";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 
 /**

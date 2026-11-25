@@ -76,7 +76,7 @@ type Answer = { status: number; body: string };
 
 /**
  * The rules the screens enforce, checked again by the server with
- * `@booki/core/server`. Each button sends a real request; the bearer token is
+ * `@booki-aui/core/server`. Each button sends a real request; the bearer token is
  * the caller, as a sign-in would set it, never a field the client fills in.
  */
 export function ServerRules() {
@@ -143,7 +143,7 @@ export function ServerRules() {
       <p className="m-0 text-sm text-muted-foreground">
         {t("Live:", "Live:")} <code>POST /api/books</code> {t("on this site, with", "på denne siden, med")}{" "}
         <code>guardPostVoucher</code>, <code>guardDecideApproval</code> {t("and", "og")}{" "}
-        <code>guardReleasePayments</code> {t("from", "fra")} <code>@booki/core/server</code>.{" "}
+        <code>guardReleasePayments</code> {t("from", "fra")} <code>@booki-aui/core/server</code>.{" "}
         {t(
           "The agent holds every role and is still refused a person's decision.",
           "Agenten har alle roller og får likevel nei til en persons beslutning.",

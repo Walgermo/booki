@@ -1,19 +1,19 @@
-import { formatMoney, money } from "@booki/core/money";
-import type { TaxCode } from "@booki/core/locale";
+import { formatMoney, money } from "@booki-aui/core/money";
+import type { TaxCode } from "@booki-aui/core/locale";
 import {
   sumVoucher,
   type AccountOption,
   type DimensionOption,
   type VoucherLine,
   type DimensionDefinition,
-} from "@booki/core/voucher";
-import type { PeriodState } from "@booki/core/period-lock";
+} from "@booki-aui/core/voucher";
+import type { PeriodState } from "@booki-aui/core/period-lock";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { VoucherLines } from "./voucher-lines.js";
-import { type RowError, voucherComposer } from "@booki/primitives/voucher-composer";
+import { type RowError, voucherComposer } from "@booki-aui/primitives/voucher-composer";
 
 const parts = createParts(voucherComposer, {
   root: "div",

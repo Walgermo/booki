@@ -46,7 +46,7 @@ export const RULES: Record<RuleId, Rule> = {
     severity: "critical",
     why: "Without a bridge (snapshot, act, subscribe) an agent has to read the accessibility tree, guess which element is which and click or type into it. That is where the cost, the time and the wrong postings come from.",
     fix: "Expose the screen's controls through an agent bridge: each control with a name, its state as values and its named actions. With ui-sdk, create the agent once and register its tools for browser agents (WebMCP).",
-    booki: "createBookiAgent() + registerTools() from @booki/react",
+    booki: "createBookiAgent() + registerTools() from @booki-aui/react",
     points: 25,
     cap: 25,
   },
@@ -69,7 +69,7 @@ export const RULES: Record<RuleId, Rule> = {
     why: "Approving, rejecting, releasing, finalizing, submitting and signing off are a person's decisions. Offered as an agent action, an agent can take them, and the audit trail records an approval nobody gave.",
     fix: "Remove the action from the agent's list. Keep the decision as a person's button whose handler requires a real input event, and refuse it on the server for agent callers.",
     booki:
-      "ApprovalChain, AttestationStatus, PaymentBatch, CloseChecklist (person-only buttons); @booki/core/server guards (PERSON_ONLY)",
+      "ApprovalChain, AttestationStatus, PaymentBatch, CloseChecklist (person-only buttons); @booki-aui/core/server guards (PERSON_ONLY)",
     points: 15,
     cap: 30,
   },

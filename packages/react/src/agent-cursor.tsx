@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { cursorLabelRoom, type AgentCursorController, type AgentCursorState } from "@booki/primitives/agent-cursor";
+import { cursorLabelRoom, type AgentCursorController, type AgentCursorState } from "@booki-aui/primitives/agent-cursor";
 import { useBookiLocaleOptional } from "./locale.js";
 import { narrateNorwegian } from "./narrate-nb.js";
 
@@ -10,7 +10,7 @@ export {
   type AgentCursorPhase,
   type AgentCursorState,
   type AgentCursorStep,
-} from "@booki/primitives/agent-cursor";
+} from "@booki-aui/primitives/agent-cursor";
 export { narrateNorwegian } from "./narrate-nb.js";
 
 export type AgentCursorProps = {

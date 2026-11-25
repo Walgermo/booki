@@ -1,5 +1,5 @@
-import { localToday } from "@booki/core/financial-date";
-import { timeInStage, type PipelineStage, type StageDuration, type StageStay } from "@booki/core/pipeline";
+import { localToday } from "@booki-aui/core/financial-date";
+import { timeInStage, type PipelineStage, type StageDuration, type StageStay } from "@booki-aui/core/pipeline";
 import { definePrimitive } from "@ui-sdk/core";
 import { createDrill, shownIn } from "./drill.js";
 

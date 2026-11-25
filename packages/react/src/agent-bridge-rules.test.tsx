@@ -1,8 +1,8 @@
-import type { Deal, PipelineStage } from "@booki/core/pipeline";
+import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
 import { Button } from "@ui-sdk/react/button";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { actAndRecord, type AgentDecisionRow } from "@booki/primitives/agent-policy";
+import { actAndRecord, type AgentDecisionRow } from "@booki-aui/primitives/agent-policy";
 import { AmountField } from "./amount-field.js";
 import { attachAudit, createBookiAgent, registerTools } from "./booki-agent.js";
 import { ClientRequests } from "./client-requests.js";

@@ -7,8 +7,8 @@ import {
   type OpenItem,
   type OpenItemKind,
   type OverdueParty,
-} from "@booki/core/aging";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/aging";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { DEFAULT_SNAPSHOT_POINTS, sharePercent, wholeAbove } from "./chart-math.js";
 

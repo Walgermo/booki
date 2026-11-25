@@ -1,5 +1,5 @@
-import type { Activity } from "@booki/core/activity";
-import type { Deal, PipelineStage } from "@booki/core/pipeline";
+import type { Activity } from "@booki-aui/core/activity";
+import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { useState, type ReactElement } from "react";

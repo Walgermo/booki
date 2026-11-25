@@ -1,4 +1,4 @@
-import { BookiError, type MessageCode } from "@booki/core/msg";
+import { BookiError, type MessageCode } from "@booki-aui/core/msg";
 import { createChange } from "@ui-sdk/core";
 
 type DrillContext = {

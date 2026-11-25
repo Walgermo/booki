@@ -1,4 +1,4 @@
-import { localToday } from "@booki/core/financial-date";
+import { localToday } from "@booki-aui/core/financial-date";
 import {
   DEFAULT_AGING_LIMITS,
   ageItems,
@@ -9,9 +9,9 @@ import {
   type OpenItem,
   type OpenItemKind,
   type OverdueParty,
-} from "@booki/core/aging";
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
-import type { TableColumn, TableQuery } from "@booki/core/table";
+} from "@booki-aui/core/aging";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
+import type { TableColumn, TableQuery } from "@booki-aui/core/table";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
@@ -27,7 +27,7 @@ import {
   matchingItems,
   matchingParties,
   partyColumns,
-} from "@booki/primitives/aged-balances";
+} from "@booki-aui/primitives/aged-balances";
 
 const parts = createParts(agedBalances, {
   root: "div",
@@ -461,4 +461,4 @@ export {
 };
 export type { AgedItem, AgingBucket, AgingRow, OpenItem, OpenItemKind, OverdueParty };
 
-export { type AgingTotals, type AgedParty } from "@booki/primitives/aged-balances";
+export { type AgingTotals, type AgedParty } from "@booki-aui/primitives/aged-balances";

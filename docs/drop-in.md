@@ -6,14 +6,14 @@ rest of the app stays as it is.
 
 ## 1. Server Components
 
-Every file `@booki/react` ships starts with `"use client"`, so a Server
+Every file `@booki-aui/react` ships starts with `"use client"`, so a Server
 Component can import and render a Booki control. Pass only serializable props
 across the boundary: a function prop (`onOpenVoucher`, `nameOf`, a DataTable
 `cell`) needs a small client wrapper of your own.
 
 ## 2. Styles that stay inside Booki
 
-`@booki/styles` gives fields, buttons and labels a base look, but only inside
+`@booki-aui/styles` gives fields, buttons and labels a base look, but only inside
 Booki's own components. shadcn/ui and other libraries also set `data-slot` on
 their parts, so a plain `[data-slot]` scope would restyle every button in your
 app; the build scopes those rules to Booki's component names instead.
@@ -21,22 +21,22 @@ app; the build scopes those rules to Booki's component names instead.
 ```css
 /* app/globals.css: Booki over Tailwind's reset and under your utilities, in your colours */
 @layer theme, base, booki, components, utilities;
-@import "@booki/styles" layer(booki);
-@import "@booki/styles/shadcn.css" layer(booki);
+@import "@booki-aui/styles" layer(booki);
+@import "@booki-aui/styles/shadcn.css" layer(booki);
 @import "tailwindcss";
 ```
 
 - The first line sets the order. Leave it out and Booki's layer comes before
   Tailwind's `base`, whose reset then strips the padding and borders off every
   field and button.
-- `layer(booki)` (or `@booki/styles/layered.css`) puts Booki in a cascade
+- `layer(booki)` (or `@booki-aui/styles/layered.css`) puts Booki in a cascade
   layer, so your Tailwind utilities win wherever both apply.
 - `shadcn.css` sets each `--bk-*` token from the shadcn variable that does the
   same job (`--background`, `--card`, `--primary`, `--border`, `--radius`,
   `--font-sans`, `--chart-1..5`, ...). Map the rest to your own tokens the same
   way. `--bk-signal` (lime, "an agent did this") has no shadcn counterpart; if
   your product already has a colour for AI, point it there.
-- Skip `@booki/styles` entirely and the controls are unstyled: style the
+- Skip `@booki-aui/styles` entirely and the controls are unstyled: style the
   `data-slot` parts yourself.
 - Your own control, built with `definePrimitive` ([how](own-controls.md), or for an amount, code or date field you already have, [`useBookiField`](own-controls.md#the-lower-threshold-usebookifield)), takes the same base look with
   `data-booki` on its root.
@@ -47,7 +47,7 @@ Booki counts money in integer minor units. If your database gives `numeric`
 as text and you calculate with decimal.js, convert at the edge, exactly:
 
 ```ts
-import { decimalFromMinor, minorFromDecimal } from "@booki/core/money"
+import { decimalFromMinor, minorFromDecimal } from "@booki-aui/core/money"
 
 minorFromDecimal("1234.5", "NOK")  // 123450
 decimalFromMinor(123450, "NOK")    // "1234.50"
@@ -59,7 +59,7 @@ PostgREST hand a `numeric` column over as a JS number (`125000.5`), not as
 text. Then use the number's own digits, which `fromMajor` does:
 
 ```ts
-import { decimalFromMinor, fromMajor } from "@booki/core/money"
+import { decimalFromMinor, fromMajor } from "@booki-aui/core/money"
 
 fromMajor(125000.5, "NOK").minor   // 12500050
 decimalFromMinor(12500050, "NOK")  // "125000.50", send this back as the column's value
@@ -69,7 +69,7 @@ A deal or quote in any currency: give `CurrencySelect` the list your product
 takes (`currencies={["NOK", "EUR", "USD", "SEK"]}`); the agent's refusal names
 them. `AmountField` follows the `currency` you pass it.
 
-`@booki/styles/shadcn.css` makes Booki's fields shadcn's height (`h-9`). If
+`@booki-aui/styles/shadcn.css` makes Booki's fields shadcn's height (`h-9`). If
 your inputs are another height, set `--bk-control-h` to it after the import.
 
 For display,
@@ -78,7 +78,7 @@ zero as a dash and negatives in parentheses.
 
 ## 4. Who may do what, on the server
 
-Run every write through `@booki/core/server` with the actor your sign-in
+Run every write through `@booki-aui/core/server` with the actor your sign-in
 established. For an audit or consulting product:
 
 - **Roles per engagement.** `actor.scopes` holds roles by engagement id

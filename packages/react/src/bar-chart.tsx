@@ -1,10 +1,10 @@
-import { formatMoney, money } from "@booki/core/money";
+import { formatMoney, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { barPath, formatPercent, linearScale, observeWidth } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type Details, type BarItem, derive, barChart } from "@booki/primitives/bar-chart";
+import { type Details, type BarItem, derive, barChart } from "@booki-aui/primitives/bar-chart";
 
 const parts = createParts(barChart, { root: "div", bar: "button", more: "button" });
 const BarChartRoot = parts.Root;
@@ -280,4 +280,4 @@ function truncate(text: string, max: number): string {
 
 export { BarChart, BarChartBar, BarChartMore, BarChartRoot, barChart };
 
-export { type BarItem, type BarRow } from "@booki/primitives/bar-chart";
+export { type BarItem, type BarRow } from "@booki-aui/primitives/bar-chart";

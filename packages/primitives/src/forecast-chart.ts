@@ -1,5 +1,5 @@
-import { localToday } from "@booki/core/financial-date";
-import { BookiError } from "@booki/core/msg";
+import { localToday } from "@booki-aui/core/financial-date";
+import { BookiError } from "@booki-aui/core/msg";
 import {
   FORECAST_GROUPINGS,
   forecastByPeriod,
@@ -7,7 +7,7 @@ import {
   type ForecastGrouping,
   type ForecastPeriod,
   type PipelineStage,
-} from "@booki/core/pipeline";
+} from "@booki-aui/core/pipeline";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { createDrill, shownIn } from "./drill.js";
 

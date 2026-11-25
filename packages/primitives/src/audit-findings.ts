@@ -13,8 +13,8 @@ import {
   type FindingBasis,
   type FindingPatch,
   type RedactedFinding,
-} from "@booki/core/findings";
-import { BookiError } from "@booki/core/msg";
+} from "@booki-aui/core/findings";
+import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { checkFields, commitSecret, recordOf } from "./fields.js";

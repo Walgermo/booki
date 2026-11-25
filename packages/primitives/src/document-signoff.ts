@@ -7,8 +7,8 @@ import {
   type SignableDocument,
   type SignoffLevel,
   type SignoffMark,
-} from "@booki/core/document-signoff";
-import { BookiError, msg } from "@booki/core/msg";
+} from "@booki-aui/core/document-signoff";
+import { BookiError, msg } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { recordOf } from "./fields.js";

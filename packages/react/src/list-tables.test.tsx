@@ -1,7 +1,7 @@
-import type { OpenItem } from "@booki/core/aging";
-import type { LedgerEntry } from "@booki/core/ledger";
-import type { PaymentBatch as Batch } from "@booki/core/payment-batch";
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
+import type { OpenItem } from "@booki-aui/core/aging";
+import type { LedgerEntry } from "@booki-aui/core/ledger";
+import type { PaymentBatch as Batch } from "@booki-aui/core/payment-batch";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import type { ReactElement } from "react";

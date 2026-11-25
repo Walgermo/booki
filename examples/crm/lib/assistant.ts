@@ -2,7 +2,7 @@
 
 import { createMCPClient, Experimental_WebMCPTransport as WebMCPTransport, type MCPClient } from "@ai-sdk/mcp";
 import { useChat } from "@ai-sdk/react";
-import { registerTools } from "@booki/react";
+import { registerTools } from "@booki-aui/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type UIMessage } from "ai";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { asAgentWork, logDecision, pageAgent } from "./agent";

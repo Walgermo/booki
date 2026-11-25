@@ -51,7 +51,7 @@ export type BridgeReport = {
 };
 
 export type Report = {
-  tool: { name: "@booki/readiness"; version: string };
+  tool: { name: "@booki-aui/readiness"; version: string };
   url: string;
   title: string;
   checkedAt: string;
@@ -553,7 +553,7 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
   const title = await page.title();
   const result = score(findings);
   return {
-    tool: { name: "@booki/readiness", version: VERSION },
+    tool: { name: "@booki-aui/readiness", version: VERSION },
     url,
     title,
     checkedAt: new Date().toISOString(),

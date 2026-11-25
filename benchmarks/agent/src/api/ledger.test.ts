@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isValidKid } from "@booki/core";
+import { isValidKid } from "@booki-aui/core";
 import { DASHBOARD_EXPECTED } from "../verify.js";
 import { ApiError, BookkeepingApi, REFERENCE } from "./ledger.js";
 

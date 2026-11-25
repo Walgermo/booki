@@ -1,6 +1,6 @@
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import type { BookiChangeDetails } from "./change-details.js";
-import { matchingRows, type TableColumn, type TableQuery } from "@booki/core/table";
+import { matchingRows, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import {
   SUPPLIER_INVOICE_FIELDS,
   type BookedSupplierInvoice,
@@ -8,7 +8,7 @@ import {
   type SupplierInvoiceCoding,
   type SupplierInvoiceField,
   type SupplierInvoiceStatus,
-} from "@booki/core/supplier-invoice";
+} from "@booki-aui/core/supplier-invoice";
 import { createParts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
@@ -22,7 +22,7 @@ import {
   DEFAULT_PAGE_SIZE,
   invoiceColumns,
   supplierInvoiceInbox,
-} from "@booki/primitives/supplier-invoice-inbox";
+} from "@booki-aui/primitives/supplier-invoice-inbox";
 
 const parts = createParts(supplierInvoiceInbox, {
   root: "div",
@@ -589,4 +589,4 @@ export type {
   SupplierInvoiceStatus,
 };
 
-export { type SupplierInvoiceSummary, type InvoiceTotals } from "@booki/primitives/supplier-invoice-inbox";
+export { type SupplierInvoiceSummary, type InvoiceTotals } from "@booki-aui/primitives/supplier-invoice-inbox";

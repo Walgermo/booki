@@ -4,9 +4,9 @@
  * start from the same month. The benchmark's verifiers keep their own copy of
  * what the end state must be (benchmarks/agent/src/verify.ts).
  */
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
-import type { BankLine, OpenPost } from "@booki/core/reconciliation";
-import type { CloseTask } from "@booki/core/close";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
+import type { BankLine, OpenPost } from "@booki-aui/core/reconciliation";
+import type { CloseTask } from "@booki-aui/core/close";
 
 // ---------------------------------------------------------------------------
 // Inbox: eight supplier invoices read from documents, October 2026.

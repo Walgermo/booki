@@ -61,8 +61,8 @@ pnpm install && pnpm dev
 ```
 
 Open http://localhost:5173 for the docs and the demo.
-`pnpm --filter @booki/example-ap-flow dev` runs [the accounts-payable example](examples/ap-flow)
-at http://localhost:3100, and `pnpm --filter @booki/example-crm dev` [the sales CRM
+`pnpm --filter @booki-aui/example-ap-flow dev` runs [the accounts-payable example](examples/ap-flow)
+at http://localhost:3100, and `pnpm --filter @booki-aui/example-crm dev` [the sales CRM
 example](examples/crm) at http://localhost:3200.
 
 - **In your app, by hand:** `pnpm pack:local` in a clone packs Booki as npm
@@ -77,8 +77,8 @@ named actions; the control enforces the rules, the page decides what needs a
 person, and the server checks everything again.
 
 ```tsx
-import { AmountField, VoucherComposer, createBookiAgent } from "@booki/react"
-import "@booki/styles"
+import { AmountField, VoucherComposer, createBookiAgent } from "@booki-aui/react"
+import "@booki-aui/styles"
 
 const agent = createBookiAgent()
 
@@ -96,17 +96,17 @@ flowchart LR
   person["Person"] -- clicks --> controls
   bridge --> controls["Booki controls<br/>rules · redaction · audit"]
   controls -- "a person's decision?" --> stop["Refused for agents"]
-  controls -- "every write" --> server["@booki/core/server<br/>guard: role · duties · books"]
+  controls -- "every write" --> server["@booki-aui/core/server<br/>guard: role · duties · books"]
 ```
 
 The rules run twice: on screen for speed and clarity, and on your server as
-the gate. `@booki/core/server` checks the caller your sign-in established (a
+the gate. `@booki-aui/core/server` checks the caller your sign-in established (a
 person, or an agent with its own credential), its role, separation of duties
 and the books, and answers with a status and the same sentence the control
 showed:
 
 ```ts
-import { guardPostVoucher, toHttp } from "@booki/core/server"
+import { guardPostVoucher, toHttp } from "@booki-aui/core/server"
 
 const verdict = guardPostVoucher({ actor, locale: "nb" }, { lines, date, rules: { periods, accounts } })
 const { status, body } = toHttp(verdict) // 200, or 401/403/409/422 with a reason
@@ -130,7 +130,7 @@ Booki is the first implementation of a draft specification, [the Agent Contract 
 UIs](spec/agent-contract.md): what a screen gives an agent, what stays with a
 person, how every step is recorded and how the server checks it again. Any
 ERP can implement it; one agent then works across products. It is a draft with
-one implementation; the [conformance suite in @booki/readiness](packages/readiness/README.md#conformance-suite) lets you test your
+one implementation; the [conformance suite in @booki-aui/readiness](packages/readiness/README.md#conformance-suite) lets you test your
 own screens against it.
 
 ## Packages
@@ -141,23 +141,23 @@ one agent operates them all.
 
 | Package | For |
 | --- | --- |
-| `@booki/react` | React 19: the controls, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
-| `@booki/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML (experimental). |
-| `@booki/vue` · `@booki/svelte` · `@booki/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`) (experimental). |
-| `@booki/core` | The rules, with no framework: money, vouchers, reconciliation, approvals, period locks, close, invoices, payment batches, supplier invoices, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles, and the server guard. |
-| `@booki/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. |
-| `@booki/styles` | The optional default look, "Paper and Ink", as CSS variables (`DESIGN.md`). |
+| `@booki-aui/react` | React 19: the controls, the agent bridge, and the visible-agent pieces (`AgentCursor`, `AgentPresence`). |
+| `@booki-aui/web` | Custom elements (`<booki-amount-field>`) for Angular, server-rendered pages and plain HTML (experimental). |
+| `@booki-aui/vue` · `@booki-aui/svelte` · `@booki-aui/solid` | Vue 3.5, Svelte 5 and Solid 2, as parts (`AmountField.Root`, `AmountField.Input`) (experimental). |
+| `@booki-aui/core` | The rules, with no framework: money, vouchers, reconciliation, approvals, period locks, close, invoices, payment batches, supplier invoices, expenses, ledger, aging, VAT returns, audit sampling, fixed assets, exchange rates, roles, validators, country profiles, and the server guard. |
+| `@booki-aui/primitives` | Every control's definition with no framework: its state, its agent actions and the rules it enforces. |
+| `@booki-aui/styles` | The optional default look, "Paper and Ink", as CSS variables (`DESIGN.md`). |
 
 ## Support
 
 **Supported:**
 
-- React 19 (`@booki/react`, with `@booki/core`, `@booki/primitives` and `@booki/styles`)
+- React 19 (`@booki-aui/react`, with `@booki-aui/core`, `@booki-aui/primitives` and `@booki-aui/styles`)
 - The Norway (NO) and United States (US) country profiles
 
 **Experimental:**
 
-- Vue, Svelte, Solid and Web Components (`@booki/vue`, `@booki/svelte`, `@booki/solid`, `@booki/web`). They work and are generated from the same primitives, but they have less testing and their API may change between releases without notice.
+- Vue, Svelte, Solid and Web Components (`@booki-aui/vue`, `@booki-aui/svelte`, `@booki-aui/solid`, `@booki-aui/web`). They work and are generated from the same primitives, but they have less testing and their API may change between releases without notice.
 - The Sweden (SE), Denmark (DK), United Kingdom (GB) and Germany (DE) starter profiles.
 
 ## Country profiles

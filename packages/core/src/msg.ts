@@ -1,7 +1,7 @@
 /**
  * The English half of the message catalogue: what core needs to write its
  * sentences and throw `BookiError`. It carries no other language, so a module
- * that only reports in English ships only English. `@booki/core/messages`
+ * that only reports in English ships only English. `@booki-aui/core/messages`
  * adds Norwegian and `localize`.
  */
 import { EN } from "./messages-en.js";

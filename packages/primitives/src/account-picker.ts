@@ -1,4 +1,4 @@
-import type { AccountOption } from "@booki/core/voucher";
+import type { AccountOption } from "@booki-aui/core/voucher";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";

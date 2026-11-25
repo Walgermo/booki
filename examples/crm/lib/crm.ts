@@ -1,5 +1,5 @@
-import { completeTask, logActivity, rescheduleTask, scheduleTask, type Activity } from "@booki/core/activity";
-import { moveDeal, reopenDeal, setDealValue, setExpectedClose, type Deal } from "@booki/core/pipeline";
+import { completeTask, logActivity, rescheduleTask, scheduleTask, type Activity } from "@booki-aui/core/activity";
+import { moveDeal, reopenDeal, setDealValue, setExpectedClose, type Deal } from "@booki-aui/core/pipeline";
 import {
   actorLabel,
   guard,
@@ -8,7 +8,7 @@ import {
   type Refusal,
   type ServerActor,
   type Verdict,
-} from "@booki/core/server";
+} from "@booki-aui/core/server";
 import { STAGES, seedActivities, seedDeals } from "./data";
 import { ROLES, personOf } from "./people";
 

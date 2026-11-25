@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { SupplierInvoice } from "@booki/core/supplier-invoice";
+import type { SupplierInvoice } from "@booki-aui/core/supplier-invoice";
 import { apply, openPosts, seedBooks, type Books } from "@/lib/books";
 import { actorFor } from "@/lib/people";
 import { RULE_NAME } from "@/lib/rule";

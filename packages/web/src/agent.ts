@@ -1,14 +1,14 @@
-import { bookiAllow, bookiRegisterTools, type AgentDecision, type AgentPolicyOptions } from "@booki/primitives/agent-policy";
-export { actAndRecord, withRecordedAct } from "@booki/primitives/agent-policy";
+import { bookiAllow, bookiRegisterTools, type AgentDecision, type AgentPolicyOptions } from "@booki-aui/primitives/agent-policy";
+export { actAndRecord, withRecordedAct } from "@booki-aui/primitives/agent-policy";
 import { createAgent, registerTools as registerBridgeTools } from "@ui-sdk/web/agent";
 
 /**
  * The agent bridge for Booki's custom elements: the same snapshot, act, query
- * and subscribe as in @booki/react, with the same rule for marked steps.
+ * and subscribe as in @booki-aui/react, with the same rule for marked steps.
  *
  * ```ts
- * import "@booki/web"
- * import { createBookiAgent, registerTools } from "@booki/web"
+ * import "@booki-aui/web"
+ * import { createBookiAgent, registerTools } from "@booki-aui/web"
  *
  * const agent = createBookiAgent({ agentId: "bookkeeper", allow })
  * registerTools(agent, { allow })

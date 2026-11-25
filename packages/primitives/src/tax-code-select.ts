@@ -1,4 +1,4 @@
-import type { TaxCode } from "@booki/core/locale";
+import type { TaxCode } from "@booki-aui/core/locale";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent } from "./fields.js";
 import { isLocked, lockOptions, lockState, restoreSelect, selectLockAttrs } from "./lock.js";

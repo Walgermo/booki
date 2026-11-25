@@ -20,7 +20,7 @@ checks them for every control.
 
 ## How the test works
 
-For every control exported from `@booki/react`, and every action in its
+For every control exported from `@booki-aui/react`, and every action in its
 `agent.actions`, the test has a probe: a call with an unknown argument and the
 names its refusal must contain, an object probe (an unknown field must be
 refused, listing the fields, and the control must carry a format hint), or a
@@ -33,7 +33,7 @@ fails on a number whose name says money but not its unit.
 ## Findings
 
 Before this audit, most refusals that listed valid choices were literal English
-strings in `@booki/primitives`, so a Norwegian person (or an agent working in
+strings in `@booki-aui/primitives`, so a Norwegian person (or an agent working in
 Norwegian) got English. They now come from the message catalogue
 (`packages/core/src/messages-en.ts` / `messages-nb.ts`). The English wording of
 existing refusals is unchanged unless the row says otherwise.

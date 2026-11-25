@@ -1,4 +1,4 @@
-import { BookiLocaleProvider } from "@booki/react";
+import { BookiLocaleProvider } from "@booki-aui/react";
 import { useEffect, useRef } from "react";
 
 import { BookiClose } from "@/components/bench/acc-close";

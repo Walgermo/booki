@@ -1,4 +1,4 @@
-import { formatMoney, minorDigitsFor, money } from "@booki/core/money";
+import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import { createParts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import {
@@ -19,7 +19,14 @@ import {
 } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
-import { type Details, type TrendSeries, OTHER_SERIES, clean, derive, trendChart } from "@booki/primitives/trend-chart";
+import {
+  type Details,
+  type TrendSeries,
+  OTHER_SERIES,
+  clean,
+  derive,
+  trendChart,
+} from "@booki-aui/primitives/trend-chart";
 
 const parts = createParts(trendChart, { root: "div", range: "button", point: "button" });
 const TrendChartRoot = parts.Root;
@@ -443,4 +450,4 @@ function truncate(text: string, max: number): string {
 export { TrendChart, TrendChartPoint, TrendChartRange, TrendChartRoot, trendChart };
 export type { ChartRange, PeriodValue };
 
-export { type TrendSeries, type TrendSeriesSnapshot, type TrendDrilled } from "@booki/primitives/trend-chart";
+export { type TrendSeries, type TrendSeriesSnapshot, type TrendDrilled } from "@booki-aui/primitives/trend-chart";

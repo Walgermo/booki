@@ -1,4 +1,4 @@
-import { extractNorwegianKontonummer, formatIban, isValidIban, normalizeIban } from "@booki/core/iban";
+import { extractNorwegianKontonummer, formatIban, isValidIban, normalizeIban } from "@booki-aui/core/iban";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { asEvent, textOf } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";
