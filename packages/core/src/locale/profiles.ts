@@ -1,4 +1,4 @@
-import { BookiError } from "../msg.js";
+import { localeMessages } from "../msg-locale.js";
 import type { BookiLocaleProfile } from "./types.js";
 
 export const NO_PROFILE: BookiLocaleProfile = {
@@ -401,7 +401,7 @@ export const BOOKI_PROFILES: Record<string, BookiLocaleProfile> = {
 export function getBookiProfile(country: string, extra: Record<string, BookiLocaleProfile> = {}): BookiLocaleProfile {
   const profile = extra[country] ?? BOOKI_PROFILES[country];
   if (!profile) {
-    throw new BookiError("locale.no-profile", {
+    throw localeMessages.error("locale.no-profile", {
       country: String(country),
       countries: Object.keys(BOOKI_PROFILES).join(", "),
     });

@@ -1,7 +1,7 @@
 import { formatMoney, money, parseToMinor } from "@booki-aui/core/money";
-import { BookiError, msg } from "@booki-aui/core/msg";
+import { amountDraftMessage, amountMessages } from "@booki-aui/core/msg/amount";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
-import { asEvent } from "./fields.js";
+import { asEvent } from "./as-event.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";
 
 export type AmountFieldOptions = {
@@ -66,10 +66,10 @@ export function formatMinor(minor: number, currency: string, locale: string): st
 
 export function rangeError(minor: number, minMinor: number, maxMinor: number | undefined): string | null {
   if (minor < minMinor) {
-    return msg("amount.below-min", { minor, min: minMinor });
+    return amountMessages.msg("amount.below-min", { minor, min: minMinor });
   }
   if (maxMinor !== undefined && minor > maxMinor) {
-    return msg("amount.above-max", { minor, max: maxMinor });
+    return amountMessages.msg("amount.above-max", { minor, max: maxMinor });
   }
   return null;
 }
@@ -190,14 +190,14 @@ export const amountField = definePrimitive({
       if (minor === null && allowEmpty) return commitEmpty(reason, event);
       const n = typeof minor === "string" && /^\s*-?\d+\s*$/.test(minor) ? Number(minor) : minor;
       if (typeof n !== "number" || !Number.isSafeInteger(n)) {
-        throw new BookiError("amount.not-minor", {
+        throw amountMessages.error("amount.not-minor", {
           currency,
           value: typeof minor === "string" ? JSON.stringify(minor) : String(minor),
         });
       }
       const outOfRange = rangeError(n, minMinor, maxMinor);
       if (outOfRange)
-        throw new BookiError(n < minMinor ? "amount.below-min" : "amount.above-max", {
+        throw amountMessages.error(n < minMinor ? "amount.below-min" : "amount.above-max", {
           minor: n,
           min: minMinor,
           max: maxMinor ?? "",
@@ -229,10 +229,13 @@ export const amountField = definePrimitive({
         context.store.set({ draftRefusal: null });
         return commitEmpty(reason, event);
       }
+      const language = /^(nb|no)(-|$)/i.test(locale) ? "nb" : "en";
       const minor = parseToMinor(draft, currency, { locale });
       if (minor === null) {
         context.store.set({
-          draftRefusal: msg("amount.invalid-draft", { example: formatMinor(100, currency, locale) }),
+          draftRefusal: amountDraftMessage(language, "amount.invalid-draft", {
+            example: formatMinor(100, currency, locale),
+          }),
         });
         return false;
       }
@@ -242,7 +245,7 @@ export const amountField = definePrimitive({
         const bound = belowMinimum ? Math.ceil(minMinor) : Math.floor(maxMinor ?? Infinity);
         context.store.set({
           draftRefusal: Number.isSafeInteger(bound)
-            ? msg(belowMinimum ? "amount.draft-below-min" : "amount.draft-above-max", {
+            ? amountDraftMessage(language, belowMinimum ? "amount.draft-below-min" : "amount.draft-above-max", {
                 limit: formatMinor(bound, currency, locale),
               })
             : outOfRange,

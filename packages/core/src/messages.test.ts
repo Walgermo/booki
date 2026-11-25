@@ -3,6 +3,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { BookiError, isBookiError, localize, MESSAGES, msg, msgIn, type MessageCode } from "./messages.js";
+import { getBookiProfile } from "./locale/index.js";
+import { money } from "./money.js";
+import { amountMessages } from "./msg-amount.js";
 import { assertPostingAllowed, type PeriodState } from "./period-lock.js";
 import { approveBatch, assertReleasable, batchIssues, releaseBatch, type PaymentBatch } from "./payment-batch.js";
 import { assertPostable, createVoucherLine, voucherIssues, type VoucherRules } from "./voucher.js";
@@ -78,7 +81,8 @@ describe("message catalogue", () => {
     const literalThrows: string[] = [];
     for (const file of files) {
       const text = readFileSync(file, "utf8");
-      for (const match of text.matchAll(/\b(?:msg|new BookiError)\(\s*"([^"]+)"/g)) used.add(match[1]!);
+      for (const match of text.matchAll(/\b(?:msg|new BookiError|\w+Messages\.(?:error|msg))\(\s*"([^"]+)"/g))
+        used.add(match[1]!);
       for (const match of text.matchAll(/throw new (?:Range|Type)?Error\(\s*[`"']/g)) {
         literalThrows.push(`${file}: ${text.slice(match.index, match.index + 80)}`);
       }
@@ -108,6 +112,25 @@ describe("msg and BookiError", () => {
     expect(isBookiError(error)).toBe(true);
     expect(isBookiError({ code: "batch.no-payments", params: {} })).toBe(true);
     expect(isBookiError(new Error("x"))).toBe(false);
+  });
+
+  it("keeps the public error and localization contract for scoped messages", () => {
+    const params = { minor: 8, min: 9 };
+    const amount = amountMessages.error("amount.below-min", params);
+    const errors = [amount, caught(() => money(Number.NaN, "NOK")), caught(() => getBookiProfile("unknown"))];
+    class CustomBookiError extends BookiError {}
+
+    for (const error of errors) {
+      expect(error).toBeInstanceOf(BookiError);
+      expect(error).toBeInstanceOf(Error);
+      expect(error).not.toBeInstanceOf(CustomBookiError);
+      if (!isBookiError(error)) throw new Error("expected a BookiError");
+      expect(error.name).toBe("BookiError");
+      expect(localize(error, "en")).toBe(msg(error.code, error.params));
+      expect(localize(error, "nb")).toBe(msgIn("nb", error.code, error.params));
+      expect(localize(error.message, "nb")).toBe(localize(error, "nb"));
+    }
+    expect(amountMessages.msg("amount.below-min", params)).toBe(amount.message);
   });
 });
 

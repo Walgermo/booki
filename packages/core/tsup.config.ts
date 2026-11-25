@@ -41,6 +41,7 @@ export default defineConfig({
     "src/messages.ts",
     "src/closest.ts",
     "src/msg.ts",
+    "src/msg-amount.ts",
     "src/table.ts",
   ],
   format: ["esm"],

@@ -9,6 +9,7 @@
     "build": "pnpm build:packages && pnpm --filter @booki-aui/www build",
     "build:packages": "pnpm --filter @booki-aui/core build && pnpm --filter @booki-aui/primitives build && pnpm --filter @booki-aui/react build && pnpm --filter @booki-aui/styles build && pnpm build:frameworks && pnpm --filter @booki-aui/readiness build",
     "typecheck": "node scripts/ensure-built.mjs && pnpm --filter @booki-aui/core typecheck && pnpm --filter @booki-aui/primitives typecheck && pnpm --filter @booki-aui/react typecheck && pnpm --filter @booki-aui/www typecheck && pnpm --filter @booki-aui/web --filter @booki-aui/vue --filter @booki-aui/svelte --filter @booki-aui/solid typecheck && pnpm --filter @booki-aui/readiness typecheck && pnpm --filter @booki-aui/example-ap-flow typecheck && pnpm --filter @booki-aui/example-crm typecheck",
+    "check:bundle-size": "node scripts/check-bundle-size.mjs",
     "coverage": "node scripts/ensure-built.mjs && pnpm --filter @booki-aui/core test:coverage && pnpm --filter @booki-aui/primitives test:coverage && pnpm --filter @booki-aui/react test:coverage",
     "test": "node scripts/ensure-built.mjs && pnpm --filter @booki-aui/core test && pnpm --filter @booki-aui/primitives test && pnpm --filter @booki-aui/react test && pnpm --filter @booki-aui/styles test && pnpm --filter @booki-aui/web test && pnpm --filter @booki-aui/readiness test && pnpm --filter @booki-aui/example-ap-flow test && pnpm --filter @booki-aui/example-crm test && pnpm --filter agent-benchmark test",
     "proof": "pnpm --filter agent-benchmark proof",
@@ -36,6 +37,7 @@
     "@changesets/cli": "3.0.3",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
+    "esbuild": "0.27.7",
     "oxlint": "1.94.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

@@ -46,6 +46,8 @@ jobs:
 
       - name: Build packages
         run: pnpm build:packages
+      - name: Standalone bundle size
+        run: pnpm check:bundle-size
       - name: Generated framework packages are up to date
         # The generators also write each package's package.json, README and LICENSE.
         run: pnpm generate:frameworks && git diff --exit-code -- packages/web/src packages/vue packages/svelte packages/solid

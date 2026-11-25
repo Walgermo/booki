@@ -1,3 +1,7 @@
+import { MONEY_EN } from "./msg-money.js";
+import { LOCALE_EN } from "./msg-locale.js";
+import { AMOUNT_EN } from "./msg-amount.js";
+
 /**
  * The English sentence for every code. Core renders these with `msg`.
  * Generated from the catalogue; edit the text here and its Norwegian twin
@@ -206,13 +210,7 @@ export const EN = {
   "signoff.not-signed": '"{level}" is not signed, so there is nothing to withdraw.',
   "signoff.open-points": 'Document "{id}" still has {count} open point(s). Close them before signing.',
   "sheets.no-sheet": 'No open sheet "{key}". Open: {keys}.',
-  "money.no-minor-unit": "Currency {currency} has no defined minor unit in the current ISO 4217 list.",
-  "money.not-decimal": '"{value}" is not decimal text in major units, like "1234.50".',
-  "money.too-precise":
-    '"{value}" has more than {digits} decimals, which {currency} does not have. Round it first, on purpose.',
-  "money.not-safe-integer": "Money.minor must be a safe integer, got {value}",
-  "money.not-finite": "fromMajor expects a finite number, got {value}",
-  "money.currency-mismatch": "Currency mismatch: {a} vs {b}",
+  ...MONEY_EN,
   "fx.rate-format": "An exchange rate is a whole number of millionths above zero (11.2345 is 11234500), got {value}.",
   "fx.amount-format": "An amount is a whole number of minor units, got {value}.",
   "fx.no-rate": "No exchange rate from {from} to {to} on or before {date}. Add one before posting in {from}.",
@@ -220,8 +218,7 @@ export const EN = {
     "{amount} {currency} minor units at rate {rate} is {expected} {base} minor units, not {actual}.",
   "period.invalid-month": "Invalid month {month}",
   "period.invalid-vat-term": "Invalid VAT term {term}",
-  "locale.no-profile":
-    'No profile for country "{country}". Built in: {countries}. Pass your own with defineProfile and the provider\'s `profiles` prop.',
+  ...LOCALE_EN,
   "permissions.duty.approve-release": "The person who approved a payment run cannot also release it.",
   "permissions.duty.post-sign-off": "The person who posted cannot sign off the close of the same work.",
   "permissions.duty.invoice-payment": "The person who approved the invoice cannot approve its payment.",
@@ -537,12 +534,7 @@ export const EN = {
   "field.unknown-account": 'No account "{value}" in the chart. The accounts, as number (name): {items}.',
   "field.unknown-account-more":
     'No account "{value}" in the chart of {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
-  "amount.invalid-draft": "Enter a valid amount such as {example}.",
-  "amount.draft-below-min": "Enter an amount of at least {limit}.",
-  "amount.draft-above-max": "Enter an amount of at most {limit}.",
-  "amount.not-minor": "Amount must be a safe integer in minor units (e.g. 12500 = 125.00 {currency}), got {value}.",
-  "amount.below-min": "Amount {minor} (minor units) is below minMinor {min}.",
-  "amount.above-max": "Amount {minor} (minor units) exceeds maxMinor {max}.",
+  ...AMOUNT_EN,
   "date.invalid": 'Invalid date "{value}". Use YYYY-MM-DD.',
   "date.days-only-due":
     'setDaysFromToday is only for due dates; this field is kind "{kind}". Use setDate with YYYY-MM-DD.',

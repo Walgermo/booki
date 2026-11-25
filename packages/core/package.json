@@ -175,6 +175,10 @@
       "types": "./dist/msg.d.ts",
       "default": "./dist/msg.js"
     },
+    "./msg/amount": {
+      "types": "./dist/msg-amount.d.ts",
+      "default": "./dist/msg-amount.js"
+    },
     "./messages": {
       "types": "./dist/messages.d.ts",
       "default": "./dist/messages.js"
