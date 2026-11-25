@@ -1,7 +1,7 @@
 # Contributing to Booki
 
-Thanks for helping. Booki is pre-1.0: the API still changes, and nothing is on
-npm until v1 has run in a real product. The plan is in [ROADMAP.md](ROADMAP.md).
+Thanks for helping. Booki is pre-1.0: it is on npm as `@booki-aui/*`, and the
+API still changes between releases. The plan is in [ROADMAP.md](ROADMAP.md).
 
 ## Set up
 

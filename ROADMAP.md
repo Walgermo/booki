@@ -1,6 +1,6 @@
 # Roadmap
 
-Booki is pre-1.0: the API still changes, and nothing is on npm until v1 has run in a real product ([#32](https://github.com/Walgermo/booki/issues/32)). This file is a plan, not a promise. The work itself is tracked in the [issue list](https://github.com/Walgermo/booki/issues), and the [Support section of the README](README.md#support) says what is supported today and what is experimental.
+Booki is pre-1.0: it is on npm as `@booki-aui/*` (0.2.0), and the API still changes between releases. This file is a plan, not a promise. The work itself is tracked in the [issue list](https://github.com/Walgermo/booki/issues), and the [Support section of the README](README.md#support) says what is supported today and what is experimental.
 
 ## What v1 needs
 
@@ -8,7 +8,6 @@ Booki is pre-1.0: the API still changes, and nothing is on npm until v1 has run 
 - [#29](https://github.com/Walgermo/booki/issues/29) Rate limit on `/api/agent`: the endpoint stays off on booki.dev until it has a real rate limit.
 - [#24](https://github.com/Walgermo/booki/issues/24) Agent Contract: the spec is marked a draft, and a conformance suite and a reference implementation are in `@booki-aui/readiness`. Left: a way to run the suite against a live page, and a second, independent implementation.
 - [#25](https://github.com/Walgermo/booki/issues/25) Migration guide for one screen, with times from the product pilot: a team should see what moving one existing screen takes, in real figures.
-- [#32](https://github.com/Walgermo/booki/issues/32) Publish to npm after v1 has run in a real product: the packages go to npm once a real product has used them.
 
 ## After v1
 
