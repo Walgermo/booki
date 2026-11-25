@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ApprovalLevel, ApprovalRequest } from "./approval.js";
 import type { CloseTask } from "./close.js";
 import { approveBatch, type PaymentBatch } from "./payment-batch.js";
+import { draftCreditNote, finalizeInvoice } from "./invoice.js";
 import { BookiError } from "./msg.js";
 import {
   actorRecord,
@@ -9,6 +10,7 @@ import {
   guard,
   guardClosePeriod,
   guardDecideApproval,
+  guardFinalizeInvoice,
   guardPostVoucher,
   guardReleasePayments,
   guardSignDocument,
@@ -89,6 +91,34 @@ describe("server guards", () => {
       { chain, request, decision: "approved", at: "2026-10-31T10:00:00Z" },
     );
     expect(byKari.ok && byKari.value.decisions[0]?.approverId).toBe("kari");
+  });
+
+  it("refuses to finalize a credit note in a different currency from the original", () => {
+    const original = finalizeInvoice(
+      {
+        id: "invoice",
+        kind: "invoice",
+        status: "draft",
+        currency: "NOK",
+        lines: [
+          { id: "line", description: "Item", quantityMilli: 1000, unitPriceMinor: 100, taxCategory: "Z", taxRateBp: 0 },
+        ],
+      },
+      "1001",
+    );
+    const invoice = { ...draftCreditNote(original, "credit"), currency: "USD" };
+    const result = guardFinalizeInvoice(
+      { actor: nina, locale: "nb" },
+      {
+        invoice,
+        number: "2001",
+        others: [original],
+      },
+    );
+    expect(result).toMatchObject({ ok: false, status: 422, code: "invoice.not-ready" });
+    expect(result.ok === false && result.issues).toEqual([
+      expect.stringContaining("Kreditnota credit er i USD. Den må bruke NOK"),
+    ]);
   });
 
   it("separates approving from releasing, and needs the approvals to be current", () => {

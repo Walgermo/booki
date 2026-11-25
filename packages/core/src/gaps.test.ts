@@ -172,6 +172,22 @@ describe("invoice", () => {
       grossMinor: 4_050_00,
     });
   });
+  it("keeps exact totals at the safe limit and refuses unsafe line, group, and invoice totals", () => {
+    const large = line({ quantityMilli: 1000, unitPriceMinor: 3_002_399_751_580_330, taxCategory: "Z", taxRateBp: 0 });
+    expect(invoiceTotals([large, large, large]).grossMinor).toBe(Number.MAX_SAFE_INTEGER - 1);
+
+    const tooLarge = { ...large, unitPriceMinor: large.unitPriceMinor + 1 };
+    expect(() => invoiceTotals([tooLarge, tooLarge, tooLarge])).toThrow(/9007199254740993 minor units/);
+    expect(() => lineNetMinor({ ...tooLarge, quantityMilli: 3000 })).toThrow(/9007199254740993 minor units/);
+
+    const nearLimit = { ...large, unitPriceMinor: Number.MAX_SAFE_INTEGER };
+    expect(() => invoiceTotals([nearLimit, { ...large, taxCategory: "E" }])).toThrow(/safe integer range/);
+    const withTax = { ...nearLimit, taxCategory: "S" as const, taxRateBp: 1 };
+    expect(() => invoiceTotals([withTax])).toThrow(/safe integer range/);
+    const invoice = inv({ lines: [tooLarge, tooLarge, tooLarge] });
+    expect(invoiceIssues(invoice)).toEqual([expect.stringContaining("9007199254740993 minor units")]);
+    expect(() => finalizeInvoice(invoice, "1001")).toThrow(/9007199254740993 minor units/);
+  });
   it("refuses bad lines", () => {
     expect(() => lineNetMinor(line({ quantityMilli: 1.5 }))).toThrow(/whole number/);
     expect(() => lineNetMinor(line({ taxCategory: "AE" }))).toThrow(/rate must be 0/);
@@ -197,6 +213,36 @@ describe("invoice", () => {
     expect(invoiceIssues(second, [original, first])[0]).toMatch(/only 75000 is left/);
     expect(() => draftCreditNote(inv(), "c3")).toThrow(/nothing to credit/);
     expect(invoiceIssues({ ...second, creditOf: undefined }, [original])[0]).toMatch(/which invoice/);
+  });
+  it("requires the original currency for new and existing issued credit notes", () => {
+    const original = finalizeInvoice(inv(), "1001");
+    const draft = draftCreditNote(original, "c1");
+    expect(invoiceIssues({ ...draft, currency: "nok" }, [original])).toEqual([]);
+    expect(() => finalizeInvoice({ ...draft, currency: "USD" }, "2001", [original])).toThrow(/must use NOK/);
+
+    const prior = { ...draft, id: "legacy", currency: "USD", status: "finalized" as const, number: "2000" };
+    expect(() => creditableMinor(original, [prior])).toThrow(/Credit note 2000 is in USD/);
+    expect(invoiceIssues(draft, [original, prior])).toEqual([expect.stringContaining("Credit note 2000 is in USD")]);
+    expect(() => finalizeInvoice(draft, "2001", [original, prior])).toThrow(/must use NOK/);
+    expect(
+      creditableMinor(original, [
+        { ...prior, status: "void" },
+        { ...prior, status: "draft" },
+      ]),
+    ).toBe(225_000);
+  });
+
+  it("computes an exact remaining balance even when prior gross amounts sum above the safe limit", () => {
+    const lineAtLimit = line({
+      quantityMilli: 1000,
+      unitPriceMinor: Number.MAX_SAFE_INTEGER,
+      taxCategory: "Z",
+      taxRateBp: 0,
+    });
+    const original = finalizeInvoice(inv({ lines: [lineAtLimit] }), "1001");
+    const previous = finalizeInvoice(draftCreditNote(original, "c1"), "2000", [original]);
+    const overCredit = { ...previous, id: "c2", lines: [{ ...lineAtLimit, unitPriceMinor: 2 }] };
+    expect(creditableMinor(original, [previous, overCredit])).toBe(-2);
   });
 });
 

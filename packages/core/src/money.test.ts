@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   decimalFromMinor,
   formatMoney,
+  minorDigitsFor,
   minorFromDecimal,
   fromMajor,
   money,
@@ -12,6 +13,29 @@ import {
 
 const NBSP = " ";
 const NNBSP = " ";
+
+describe("ISO 4217 minor units", () => {
+  it("uses the published precision for zero-, two-, three-, and four-decimal currencies", () => {
+    expect(minorDigitsFor("clp")).toBe(0);
+    expect(minorDigitsFor("CHF")).toBe(2);
+    expect(minorDigitsFor("BHD")).toBe(3);
+    expect(minorDigitsFor("CLF")).toBe(4);
+    expect(fromMajor(123.4, "CLP")).toEqual({ minor: 123, currency: "CLP" });
+    expect(minorFromDecimal("1.234", "BHD")).toBe(1234);
+    expect(decimalFromMinor(1234, "BHD")).toBe("1.234");
+    expect(formatMoney(1234, { currency: "BHD", withCurrency: false })).toBe("1.234");
+    expect(parseToMinor("12.3", "CLP")).toBeNull();
+    expect(parseToMinor("0.0125", "CLF")).toBe(125);
+  });
+
+  it.each(["QQQ", "XAU"])("refuses precision-dependent operations for %s", (currency) => {
+    expect(() => minorDigitsFor(currency)).toThrow(/no defined minor unit/);
+    expect(() => fromMajor(1, currency)).toThrow(/no defined minor unit/);
+    expect(() => decimalFromMinor(1234, currency)).toThrow(/no defined minor unit/);
+    expect(() => formatMoney(0, { currency, zero: "–" })).toThrow(/no defined minor unit/);
+    expect(parseToMinor("1", currency)).toBeNull();
+  });
+});
 
 describe("parseMajorInput", () => {
   const cases: Array<[string, string, number | null]> = [
