@@ -286,6 +286,7 @@ describe("the chat's server route", () => {
   it("says where the key goes when there is none", async () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("ANTHROPIC_API_KEY", "");
+    vi.stubEnv("AI_GATEWAY_API_KEY", "");
     const response = await post({ messages: [], tools: [] });
     expect(response.status).toBe(503);
     expect(await response.text()).toMatch(/ANTHROPIC_API_KEY/);

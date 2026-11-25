@@ -1,4 +1,5 @@
 import { anthropic } from "@ai-sdk/anthropic";
+import { gateway } from "ai";
 import { createMCPTools, MCPClientError } from "@ai-sdk/mcp";
 import {
   convertToModelMessages,
@@ -10,7 +11,16 @@ import {
 import { pageTools } from "./chat-tools";
 import { nameOf, PEOPLE } from "./people";
 
-const MODEL = process.env.CRM_MODEL ?? "claude-sonnet-5-5";
+/**
+ * The model: Claude through Anthropic with ANTHROPIC_API_KEY, or the same
+ * model through Vercel AI Gateway with AI_GATEWAY_API_KEY. CRM_MODEL picks
+ * another, in the form the key's provider names it.
+ */
+function chatModel() {
+  if (process.env.ANTHROPIC_API_KEY) return anthropic(process.env.CRM_MODEL ?? "claude-sonnet-5-5");
+  return gateway(process.env.CRM_MODEL ?? "anthropic/claude-sonnet-5.5");
+}
+const hasKey = () => Boolean(process.env.ANTHROPIC_API_KEY || process.env.AI_GATEWAY_API_KEY);
 
 const text = (status: number, body: string) =>
   new Response(body, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
@@ -83,8 +93,11 @@ export function acceptedMessages(messages: { role: string; parts: { type: string
  */
 export async function handleChat(request: Request): Promise<Response> {
   if (!isLocalRequest(request)) return text(403, "Chatten kjører bare på en lokal utviklingsserver.");
-  if (!process.env.ANTHROPIC_API_KEY)
-    return text(503, "Sett ANTHROPIC_API_KEY i examples/crm/.env.local og start serveren på nytt.");
+  if (!hasKey())
+    return text(
+      503,
+      "Sett AI_GATEWAY_API_KEY eller ANTHROPIC_API_KEY i examples/crm/.env.local og start serveren på nytt.",
+    );
 
   // A conversation in this example is a few kilobytes; anything far larger is not one. Read the body to know.
   const raw = await request.text();
@@ -112,7 +125,7 @@ export async function handleChat(request: Request): Promise<Response> {
   if (!validated.success || !acceptedMessages(validated.data)) return text(400, "Bare tekst og verktøysvar fra siden.");
 
   const result = streamText({
-    model: anthropic(MODEL),
+    model: chatModel(),
     instructions: instructions(me),
     messages: await convertToModelMessages(validated.data, { tools }),
     tools,
@@ -136,7 +149,7 @@ export function modelError(error: unknown): string {
   console.error("[chat]", error);
   const status = (error as { statusCode?: number } | null)?.statusCode;
   if (status === 401 || status === 403)
-    return "Modellen avviste nøkkelen: sjekk ANTHROPIC_API_KEY i examples/crm/.env.local.";
+    return "Modellen avviste nøkkelen: sjekk AI_GATEWAY_API_KEY eller ANTHROPIC_API_KEY i examples/crm/.env.local.";
   if (status === 404) return "Modellen finnes ikke: sjekk CRM_MODEL.";
   if (status === 429 || status === 529) return "Modellen er opptatt akkurat nå. Prøv igjen om litt.";
   return "Modellen svarte ikke. Prøv igjen.";

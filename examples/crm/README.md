@@ -42,7 +42,7 @@ WebMCP, and [AI SDK's WebMCP client](https://ai-sdk.dev/cookbook/next/webmcp-too
 reads them from the page and hands them to the model.
 
 1. In Chrome, turn on `chrome://flags/#enable-webmcp-testing` and relaunch.
-2. Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`.
+2. Copy `.env.example` to `.env.local` and set `AI_GATEWAY_API_KEY` (Vercel AI Gateway) or `ANTHROPIC_API_KEY`.
 3. Start the dev server and open http://localhost:3200.
 
 How it fits together:
