@@ -31,34 +31,28 @@ type AmountFieldBase = {
   "aria-label"?: string;
 };
 
-/** A field that always holds an amount: `onValueChange` gets integer minor units. */
-type AmountFieldFilled = {
-  allowEmpty?: false;
-  onValueChange?: (minor: number, details?: { reason: string; source?: string }) => void;
-};
-
 /**
- * A field that may be empty, which is not 0: `clear` and deleting the text empty it, and
- * `onValueChange` then gets `null` (as does `onEmpty`, after it).
+ * `allowEmpty` decides what `onValueChange` hears. Left out or `false`: integer minor units. `true`,
+ * or a `boolean` variable that may be true: `number | null`, because the field may be emptied
+ * (clear, or deleting its text), which is not 0. `onEmpty` is called after it.
  */
-type AmountFieldEmpty = {
-  allowEmpty: true;
-  onValueChange?: (minor: number | null, details?: { reason: string; source?: string }) => void;
-};
-
-export type AmountFieldProps = AmountFieldBase &
-  (AmountFieldFilled | AmountFieldEmpty) &
-  BookiFormProps &
+export type AmountFieldProps<Empty extends boolean = false> = AmountFieldBase & {
+  allowEmpty?: Empty;
+  onValueChange?: (
+    minor: [Empty] extends [false] ? number : number | null,
+    details?: { reason: string; source?: string },
+  ) => void;
+} & BookiFormProps &
   Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
 
 /**
  * Composed amount field with BookiLocale defaults. Prefer this in apps;
  * use Root/Currency/Input parts when you need custom markup.
  */
-function AmountField({
+function AmountField<Empty extends boolean = false>({
   value,
   defaultValue,
-  allowEmpty = false,
+  allowEmpty = false as Empty,
   onEmpty,
   currency: currencyProp,
   minMinor,
@@ -73,7 +67,7 @@ function AmountField({
   className,
   "aria-label": ariaLabel,
   ...props
-}: AmountFieldProps) {
+}: AmountFieldProps<Empty>) {
   const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const currency = currencyProp ?? profile.currency;
@@ -92,7 +86,7 @@ function AmountField({
       secret={secret}
       disabled={disabled}
       readOnly={readOnly}
-      onValueChange={onValueChange as AmountFieldEmpty["onValueChange"]}
+      onValueChange={onValueChange as AmountFieldProps<true>["onValueChange"]}
       className={className}
       aria-label={label}
       {...rest}

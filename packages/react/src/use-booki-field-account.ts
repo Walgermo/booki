@@ -129,13 +129,15 @@ export const bookiFieldAccount = definePrimitive({
           return commit("", "clear", event);
         }
         if (typeof raw !== "string" && typeof raw !== "number") {
-          throw new BookiError("agent.not-text", {
-            action: "setAccount",
+          throw new BookiError("field.account-not-text", {
             got: Array.isArray(raw) ? "a list" : typeof raw,
           });
         }
         const text = String(raw).replace(/\s+/g, "");
-        if (!/^\d+$/.test(text)) throw new BookiError("field.account-not-digits", { value: String(raw).slice(0, 80) });
+        if (text === "" && chart.length === 0)
+          throw new BookiError("field.account-empty", { min: minLength, max: maxLength });
+        if (text !== "" && !/^\d+$/.test(text))
+          throw new BookiError("field.account-not-digits", { value: String(raw).slice(0, 80) });
         if (chart.length > 0) {
           const entry = chart.find((candidate) => candidate.number === text);
           if (!entry) {
@@ -151,6 +153,7 @@ export const bookiFieldAccount = definePrimitive({
           }
           return commit(entry.number, "set-account", event);
         }
+        if (minLength > maxLength) throw new BookiError("field.account-range", { min: minLength, max: maxLength });
         if (text.length < minLength || text.length > maxLength) {
           throw new BookiError("field.account-length", { value: text, min: minLength, max: maxLength });
         }

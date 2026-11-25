@@ -373,6 +373,8 @@ describe("the account kind", () => {
   }) {
     const { onValueChange, ...rest } = props;
     const [value, setValue] = useState("1500");
+    // A person types a number a digit at a time: the draft is held here and checked on blur.
+    const [draft, setDraft] = useState<string | null>(null);
     return useBookiField(
       {
         kind: "account",
@@ -386,7 +388,15 @@ describe("the account kind", () => {
       },
       ({ value, change, refusal }) => (
         <div>
-          <input aria-label="Konto-felt" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+          <input
+            aria-label="Konto-felt"
+            value={draft ?? value}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={(e) => {
+              if (draft === null) return;
+              if (change(draft, e.nativeEvent)) setDraft(null);
+            }}
+          />
           {refusal ? <p role="alert">{refusal}</p> : null}
         </div>
       ),
@@ -448,11 +458,35 @@ describe("the account kind", () => {
     expect(refused.error?.message).toContain("6300 (");
   });
 
-  it("a person's typing goes through the same rules and shows the refusal next to the field", () => {
-    render(<Account />);
+  it("a person types digit by digit; the number is checked on blur and a refusal shows next to the field", () => {
+    const onValueChange = vi.fn();
+    render(<Account allowEmpty onValueChange={onValueChange} />);
     const input = screen.getByLabelText("Konto-felt") as HTMLInputElement;
-    fireEvent.change(input, { target: { value: "12" } });
+    fireEvent.change(input, { target: { value: "" } });
+    for (const typed of ["1", "19", "192"]) {
+      fireEvent.change(input, { target: { value: typed } });
+      expect(input.value).toBe(typed);
+    }
+    fireEvent.blur(input);
     expect(screen.getByRole("alert").textContent).toContain("4 to 10 digits");
+    expect(input.value).toBe("192");
+    fireEvent.change(input, { target: { value: "1920" } });
+    fireEvent.blur(input);
+    expect(input.value).toBe("1920");
+    expect(onValueChange).toHaveBeenLastCalledWith("1920", expect.anything());
+  });
+
+  it("an empty value is refused with a sentence about the range, and an object with one about digits", async () => {
+    const agent = createBookiAgent();
+    render(<Account />);
+    expect((await run(agent, [""])).error?.message).toContain("4 to 10 digits");
+    expect((await run(agent, [{ a: 1 }])).error?.message).toContain("as digits");
+  });
+
+  it("refuses when minLength is greater than maxLength", async () => {
+    const agent = createBookiAgent();
+    render(<Account minLength={6} maxLength={4} />);
+    expect((await run(agent, ["12345"])).error?.message).toContain("greater than maxLength");
   });
 
   it("allowEmpty lets the agent clear it; without it an empty value is refused", async () => {

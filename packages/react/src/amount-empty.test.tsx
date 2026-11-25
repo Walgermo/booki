@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AmountField } from "./amount-field.js";
+import { AmountField, type AmountFieldProps } from "./amount-field.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
 
@@ -80,13 +80,22 @@ describe("onValueChange with allowEmpty", () => {
   });
 
   it("is typed with null only when allowEmpty is set", () => {
-    const empty: Parameters<typeof AmountField>[0] = {
+    const empty: AmountFieldProps<true> = {
       allowEmpty: true,
       onValueChange: (minor: number | null) => minor,
     };
-    const filled: Parameters<typeof AmountField>[0] = { onValueChange: (minor: number) => minor };
+    const filled: AmountFieldProps = { onValueChange: (minor: number) => minor };
     // @ts-expect-error a field that may be empty reports null, which a number-only handler cannot take
-    const narrow: Parameters<typeof AmountField>[0] = { allowEmpty: true, onValueChange: (minor: number) => minor };
+    const narrow: AmountFieldProps<true> = { allowEmpty: true, onValueChange: (minor: number) => minor };
     expect([empty, filled, narrow]).toHaveLength(3);
+  });
+});
+
+describe("AmountField allowEmpty typed from a boolean variable", () => {
+  it("accepts an inline handler that takes null", () => {
+    const flag: boolean = Math.random() > 2;
+    const seen: Array<number | null> = [];
+    render(<AmountField allowEmpty={flag} defaultValue={100} onValueChange={(m) => seen.push(m)} />);
+    expect(seen).toEqual([]);
   });
 });

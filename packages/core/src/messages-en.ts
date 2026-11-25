@@ -525,6 +525,9 @@ export const EN = {
     'No option "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',
   "field.account-not-digits":
     'Account number "{value}" has more than digits. Send digits only, with no letters or separators.',
+  "field.account-empty": "An account number is needed here: {min} to {max} digits.",
+  "field.account-not-text": 'setAccount takes the account number as digits, like "4711". Got {got}.',
+  "field.account-range": "minLength {min} is greater than maxLength {max}, so no account number fits.",
   "field.account-length": 'Account number "{value}" must be {min} to {max} digits.',
   "field.unknown-account": 'No account "{value}" in the chart. The accounts, as number (name): {items}.',
   "field.unknown-account-more":

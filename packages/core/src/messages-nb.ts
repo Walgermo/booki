@@ -550,6 +550,9 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Ingen valg "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',
   "field.account-not-digits":
     'Kontonummeret "{value}" har mer enn sifre. Send bare sifre, uten bokstaver eller skilletegn.',
+  "field.account-empty": "Her trengs et kontonummer: {min} til {max} sifre.",
+  "field.account-not-text": 'setAccount tar kontonummeret som sifre, som "4711". Fikk {got}.',
+  "field.account-range": "minLength {min} er større enn maxLength {max}, så ingen kontonummer passer.",
   "field.account-length": 'Kontonummeret "{value}" må være {min} til {max} sifre.',
   "field.unknown-account": 'Ingen konto "{value}" i kontoplanen. Kontoene, som nummer (navn): {items}.',
   "field.unknown-account-more":

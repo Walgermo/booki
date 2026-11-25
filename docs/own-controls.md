@@ -193,18 +193,29 @@ function CostCentreOwned(props: { onValueChange?: (code: string, details: { sour
 
 // An account number is digits. Without a `chart` any number of 4 to 10 digits is accepted
 // (`minLength` and `maxLength` change that); with a `chart` the number must be in it, and a
-// refusal names the nearest accounts. `allowEmpty` lets the field be cleared to "".
+// refusal names the nearest accounts. `allowEmpty` lets the field be cleared to "". The rules
+// apply to a whole number, so the render keeps a draft while a person types and calls `change` on blur.
 const chart = [
   { number: "1500", name: "Kundefordringer" },
   { number: "1920", name: "Bank" },
   { number: "3000", name: "Salgsinntekt" },
 ]
 function AccountField(props: { value: string; onValueChange?: (account: string, details: { source?: string }) => void }) {
+  // A person types a number a digit at a time, and "1" is not yet an account: keep what is typed
+  // as a draft and hand it to `change` on blur, where it is checked against the rules.
+  const [draft, setDraft] = useState<string | null>(null)
   return useBookiField(
     { kind: "account", value: props.value, chart, label: "Konto", onValueChange: props.onValueChange },
     ({ value, change, refusal }) => (
       <div>
-        <input aria-label="Konto-felt" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+        <input
+          aria-label="Konto-felt"
+          value={draft ?? value}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={(e) => {
+            if (draft !== null && change(draft, e.nativeEvent)) setDraft(null)
+          }}
+        />
         {refusal ? <p role="alert">{refusal}</p> : null}
       </div>
     ),

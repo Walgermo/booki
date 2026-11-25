@@ -112,7 +112,12 @@ function BankAccountInput({
             <Field invalid={accountInvalid}>
               <FieldLabel>Account number</FieldLabel>
               <FieldDescription>4–17 digits</FieldDescription>
-              <BankAccountAccount id={id ? `${id}-account` : undefined} required={required} placeholder="123456789" />
+              <BankAccountAccount
+                id={id ? `${id}-account` : undefined}
+                required={required}
+                placeholder="123456789"
+                aria-invalid={accountInvalid || undefined}
+              />
               {accountInvalid ? <FieldError>Invalid account number</FieldError> : null}
             </Field>
             <FormValue
