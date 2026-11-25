@@ -22,7 +22,7 @@
     "format:check": "biome format .",
     "changeset": "changeset",
     "version-packages": "changeset version && pnpm generate:frameworks && pnpm format",
-    "release": "pnpm build:packages && node scripts/stage-publish.mjs",
+    "release": "pnpm build:packages && node scripts/publish.mjs",
     "release:plan": "changeset publish-plan",
     "pack:local": "node scripts/pack-local.mjs"
   },
