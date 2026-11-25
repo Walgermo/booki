@@ -1973,6 +1973,12 @@ html[data-kpi-still] {
   scrollbar-color: var(--scrollbar-thumb-ink) transparent;
 }
 
+.installation-guide .site-code,
+.control-example .site-code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .site-code::selection,
 .site-code *::selection,
 .site-machine ::selection {

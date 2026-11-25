@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 export type InstallBlockProps = {
   command: string;
   label?: string;
+  language?: "javascript" | "jsx";
   className?: string;
   trailing?: ReactNode;
   /** A single copy button (hero) or a code block with a copy action (docs). */
@@ -19,6 +20,7 @@ export type InstallBlockProps = {
 export function InstallBlock({
   command,
   label,
+  language,
   className,
   trailing,
   variant = "docs",
@@ -67,7 +69,7 @@ export function InstallBlock({
           </Button>
         </div>
       </div>
-      <pre className="site-code">
+      <pre className="site-code" data-language={language}>
         <code>{command}</code>
       </pre>
     </div>

@@ -72,7 +72,7 @@ export function AgentView({ scope }: { scope: RefObject<HTMLElement | null> }) {
   }, [scope]);
 
   return (
-    <section aria-labelledby="agent-view-title" className="grid min-w-0 content-start gap-2">
+    <section data-markdown-hidden aria-labelledby="agent-view-title" className="grid min-w-0 content-start gap-2">
       <h2 id="agent-view-title" className="site-kicker">
         {t("The agent reads", "Agenten leser")}
       </h2>

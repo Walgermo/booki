@@ -47,7 +47,9 @@ const NB: Record<string, { title?: string; description: string }> = {
   "financial-date-field": { description: "Faktura-, forfalls- eller bokføringsdato (ISO) for agenter." },
   "accounting-period-select": { description: "Velger for år, måned eller mva-termin fra en fast liste." },
   "invoice-number-input": { description: "Leverandør- eller salgsfakturanummer / dokumentnummer." },
-  "attestation-status": { description: "Venter / godkjent / avvist, med handlinger som krever bekreftelse." },
+  "attestation-status": {
+    description: "Viser om en post venter, er godkjent eller avvist. En person tar beslutningen.",
+  },
   "voucher-lines": { description: "Skrivebeskyttet debet/kredit-tabell med balanse i bunnen." },
   "voucher-composer": { description: "Bilag en agent kan føre: addLine, setDebit/Credit, assertBalance." },
   "bank-reconciliation": {

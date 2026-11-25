@@ -142,7 +142,7 @@ export const catalog: CatalogItem[] = [
   {
     name: "attestation-status",
     title: "AttestationStatus",
-    description: "Pending / approved / rejected — confirm-gated actions.",
+    description: "Shows whether an entry is pending, approved or rejected. A person decides.",
     group: "React",
     install: installCmd("@booki-aui/react"),
   },
