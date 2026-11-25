@@ -19,19 +19,23 @@ export function Hero({ agent }: { agent: LandingAgent }) {
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
         <HeroTitle
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
-          text={t("Let an agent prepare vouchers", "La agenten klargjøre bilag")}
-          mark={t("agent", "agenten")}
+          text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
+          mark={t("agentic", "agentisk")}
+          rotate={t(
+            "ERP|CRM|invoicing tool|payments app|help desk|HR system|project tool|audit software|expense app",
+            "ERP-system|CRM|fakturasystem|betalingsløsning|helpdesk|HR-system|prosjektverktøy|revisjonsverktøy|utleggssystem",
+          ).split("|")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
           {t(
-            "With Booki, the agent fills in voucher lines and checks the balance. Your rules decide who can post.",
-            "Med Booki fyller agenten ut bilagslinjene og sjekker at bilaget balanserer. Dere bestemmer hvem som kan bokføre.",
+            "With Booki, people and agents use the same fields and buttons in your app. You decide what the agent can do.",
+            "Med Booki bruker mennesker og agenter de samme feltene og knappene i appen deres. Dere bestemmer hva agenten får gjøre.",
           )}
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
-            <a href="#invoice-demo">{t("Try the invoice demo", "Prøv fakturademoen")}</a>
+            <a href="#invoice-demo">{t("See Booki in action", "Se Booki i bruk")}</a>
           </Button>
           <Button asChild size="lg" variant="outline">
             <Link to="/docs/installation">{t("Install packages", "Installer pakkene")}</Link>

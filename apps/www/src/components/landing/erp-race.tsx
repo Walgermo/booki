@@ -330,7 +330,7 @@ export function ErpRace() {
   const { lang, t: tr } = useLang();
   const { int, usd, seconds, calls, runDate } = formatters(lang);
   const name = (side: BenchSide) => sideName(side.name, lang);
-  const [task, setTask] = useState<BenchTask>("supplier-invoice");
+  const [task, setTask] = useState<BenchTask>(TASKS[0].id);
 
   const sides = sidesFor(task);
   const max = Math.max(...sides.map((side) => side.requests));

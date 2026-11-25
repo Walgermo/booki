@@ -186,7 +186,7 @@ export function ErpWindow({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1">
           <h2 id="invoice-demo-title" className="m-0 text-lg font-semibold">
-            {t("Book a sample supplier invoice", "Bokfør en leverandørfaktura i demoen")}
+            {t("Booki in an accounting app", "Booki i et regnskapssystem")}
           </h2>
           <p className="m-0 max-w-[58ch] text-sm text-muted-foreground">
             {t(
