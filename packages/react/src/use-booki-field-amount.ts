@@ -20,6 +20,8 @@ export type BookiFieldAmountOptions = {
   currency?: string;
   minMinor?: number;
   maxMinor?: number;
+  /** `false`: the root takes no `role="group"`, for a field that has its own labelled group. */
+  group?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
   onValueChange?: (minor: number | null, details: { reason: string; source?: string }) => void;
@@ -33,6 +35,8 @@ export type BookiFieldAmountState = {
   minMinor: number;
   maxMinor: number | undefined;
   refusal: string | null;
+  /** The root is a `role="group"`; false when the product's field has its own. */
+  group: boolean;
   disabled: boolean;
   readOnly: boolean;
 };
@@ -45,6 +49,7 @@ export const bookiFieldAmount = definePrimitive({
     minMinor: "number",
     maxMinor: "number",
     allowEmpty: "boolean",
+    group: "boolean",
     ...lockOptions,
     onValueChange: "callback",
   },
@@ -57,10 +62,12 @@ export const bookiFieldAmount = definePrimitive({
     minMinor: options.minMinor ?? 0,
     maxMinor: options.maxMinor,
     refusal: null,
+    group: options.group ?? true,
     ...lockState(options),
   }),
   sync: (options: BookiFieldAmountOptions): Partial<BookiFieldAmountState> => {
     const next: Partial<BookiFieldAmountState> = { ...lockState(options) };
+    if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
     if (options.value !== undefined) next.minor = options.value === null && !options.allowEmpty ? 0 : options.value;
     if (options.currency !== undefined) next.currency = options.currency;
@@ -111,7 +118,8 @@ export const bookiFieldAmount = definePrimitive({
   },
   slots: (slot) => ({
     root: slot({
-      role: "group",
+      role: (state) => (state.group ? "group" : undefined),
+      roles: ["group"],
       attrs: (state) => ({
         "data-slot": "field-amount",
         "data-disabled": state.disabled ? "" : undefined,

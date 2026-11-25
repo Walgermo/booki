@@ -16,13 +16,14 @@ export type AmountFieldOptions = {
   secret?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
-  onValueChange?: (value: number, details: { reason: string; source?: string; cancel?: () => void }) => void;
+  /** Hears every change. With `allowEmpty`, emptying the field reports `null`. */
+  onValueChange?: (value: number | null, details: { reason: string; source?: string; cancel?: () => void }) => void;
   /**
    * The field may be empty: no amount, which is not 0. `clear` empties it, a
    * person can delete the text, and `value={null}` shows it empty.
    */
   allowEmpty?: boolean;
-  /** Called when the field becomes empty (with `allowEmpty`). */
+  /** Called when the field becomes empty (with `allowEmpty`), after `onValueChange(null)`. */
   onEmpty?: (details: { reason: string; source?: string }) => void;
 };
 
@@ -202,6 +203,8 @@ export const amountField = definePrimitive({
       const { allowEmpty, empty } = context.store.get();
       if (!allowEmpty) return false;
       if (empty) return true;
+      // The app hears the change first and may cancel it, as for an amount.
+      if (dispatch(context, "onValueChange", null, { reason, event })) return false;
       const ok = change("empty", true, { reason, event });
       if (!ok) return false;
       context.options().onEmpty?.({ reason });

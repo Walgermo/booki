@@ -1,7 +1,7 @@
 import { Field, FieldDescription, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { invoiceNumber } from "@booki-aui/primitives/invoice-number-input";
 
@@ -37,6 +37,7 @@ function InvoiceNumberInput({
   className,
   ...props
 }: InvoiceNumberInputProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
 
   return (
@@ -49,13 +50,13 @@ function InvoiceNumberInput({
       readOnly={readOnly}
       className={className}
       aria-label={profile.copy.invoiceNumber}
-      {...props}
+      {...rest}
     >
       {(state: { value: string }) => (
         <Field>
           <FieldLabel>{profile.copy.invoiceNumber}</FieldLabel>
           <FieldDescription>{profile.copy.invoiceNumberHint}</FieldDescription>
-          <InvoiceNumberField id={id} required={required} placeholder="INV-1001" />
+          <InvoiceNumberField id={id} required={required} placeholder="INV-1001" {...field} />
           <FormValue name={name} value={state.value} disabled={disabled} />
         </Field>
       )}

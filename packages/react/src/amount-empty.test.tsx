@@ -65,3 +65,28 @@ describe("an amount nobody has entered", () => {
     expect(plain.entry()).toMatchObject({ empty: false, minor: 0 });
   });
 });
+
+describe("onValueChange with allowEmpty", () => {
+  it("hears null when the field is emptied, so a controlled field learns it was cleared", async () => {
+    const calls: Array<number | null> = [];
+    const { agent, entry } = setup({
+      allowEmpty: true,
+      value: 5_000,
+      // Typed (minor: number | null) because allowEmpty is set.
+      onValueChange: (minor: number | null) => calls.push(minor),
+    });
+    await agent.act({ steps: [{ ref: entry().ref, action: "clear" }] });
+    expect(calls).toEqual([null]);
+  });
+
+  it("is typed with null only when allowEmpty is set", () => {
+    const empty: Parameters<typeof AmountField>[0] = {
+      allowEmpty: true,
+      onValueChange: (minor: number | null) => minor,
+    };
+    const filled: Parameters<typeof AmountField>[0] = { onValueChange: (minor: number) => minor };
+    // @ts-expect-error a field that may be empty reports null, which a number-only handler cannot take
+    const narrow: Parameters<typeof AmountField>[0] = { allowEmpty: true, onValueChange: (minor: number) => minor };
+    expect([empty, filled, narrow]).toHaveLength(3);
+  });
+});

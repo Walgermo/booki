@@ -523,6 +523,12 @@ export const EN = {
   "field.unknown-code": 'No option "{value}". The options, as value (label): {items}.',
   "field.unknown-code-more":
     'No option "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by code or whole word.',
+  "field.account-not-digits":
+    'Account number "{value}" has more than digits. Send digits only, with no letters or separators.',
+  "field.account-length": 'Account number "{value}" must be {min} to {max} digits.',
+  "field.unknown-account": 'No account "{value}" in the chart. The accounts, as number (name): {items}.',
+  "field.unknown-account-more":
+    'No account "{value}" in the chart of {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
   "amount.not-minor": "Amount must be a safe integer in minor units (e.g. 12500 = 125.00 {currency}), got {value}.",
   "amount.below-min": "Amount {minor} (minor units) is below minMinor {min}.",
   "amount.above-max": "Amount {minor} (minor units) exceeds maxMinor {max}.",

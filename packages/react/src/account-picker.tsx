@@ -1,7 +1,7 @@
 import type { AccountOption } from "@booki-aui/core/voucher";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { accountPicker } from "@booki-aui/primitives/account-picker";
 
@@ -49,6 +49,7 @@ function AccountPicker({
   className,
   ...props
 }: AccountPickerProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
 
   return (
@@ -63,11 +64,11 @@ function AccountPicker({
       readOnly={readOnly}
       className={className}
       aria-label={profile.copy.account}
-      {...props}
+      {...rest}
     >
       {(state: { value: string }) => (
         <>
-          <AccountPickerInput id={id} required={required} />
+          <AccountPickerInput id={id} required={required} {...field} />
           <AccountPickerList>
             {accounts.map((account) => {
               const label = `${account.number} — ${account.name}`;

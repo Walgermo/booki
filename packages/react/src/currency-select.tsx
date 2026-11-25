@@ -1,6 +1,6 @@
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { DEFAULT_CURRENCIES, currencySelect } from "@booki-aui/primitives/currency-select";
 
@@ -44,6 +44,7 @@ function CurrencySelect({
   className,
   ...props
 }: CurrencySelectProps) {
+  const { field, rest } = splitFieldAria(props);
   const { country } = useBookiLocaleOptional();
   const label = country === "NO" ? "Valuta" : "Currency";
   return (
@@ -58,11 +59,11 @@ function CurrencySelect({
       readOnly={readOnly}
       className={className}
       aria-label={label}
-      {...props}
+      {...rest}
     >
       {(state: { value: string }) => (
         <>
-          <CurrencySelectTrigger id={id} aria-required={required || undefined}>
+          <CurrencySelectTrigger id={id} aria-required={required || undefined} {...field}>
             {(trigger: { text: string }) => <span data-slot="currency-select-value">{trigger.text}</span>}
           </CurrencySelectTrigger>
           <CurrencySelectList>

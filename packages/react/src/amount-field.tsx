@@ -1,6 +1,6 @@
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { amountField } from "@booki-aui/primitives/amount-field";
 
@@ -16,23 +16,39 @@ const AmountFieldRoot: (typeof parts)["Root"] = parts.Root;
 const AmountFieldCurrency: (typeof parts)["Currency"] = parts.Currency;
 const AmountFieldInput: (typeof parts)["Input"] = parts.Input;
 
-export type AmountFieldProps = {
+type AmountFieldBase = {
   /** Minor units. `null` shows the field empty, with `allowEmpty`. */
   value?: number | null;
   defaultValue?: number | null;
-  /** The field may be empty, which is not 0: `clear` and deleting the text empty it. */
-  allowEmpty?: boolean;
-  /** Called when the field becomes empty. */
+  /** Called when the field becomes empty, after `onValueChange(null)`. */
   onEmpty?: (details: { reason: string; source?: string }) => void;
   currency?: string;
   /** Lowest accepted amount in minor units. Defaults to 0 (no negatives). */
   minMinor?: number;
   maxMinor?: number;
   secret?: boolean;
-  onValueChange?: (minor: number, details?: { reason: string; source?: string }) => void;
   className?: string;
   "aria-label"?: string;
-} & BookiFormProps &
+};
+
+/** A field that always holds an amount: `onValueChange` gets integer minor units. */
+type AmountFieldFilled = {
+  allowEmpty?: false;
+  onValueChange?: (minor: number, details?: { reason: string; source?: string }) => void;
+};
+
+/**
+ * A field that may be empty, which is not 0: `clear` and deleting the text empty it, and
+ * `onValueChange` then gets `null` (as does `onEmpty`, after it).
+ */
+type AmountFieldEmpty = {
+  allowEmpty: true;
+  onValueChange?: (minor: number | null, details?: { reason: string; source?: string }) => void;
+};
+
+export type AmountFieldProps = AmountFieldBase &
+  (AmountFieldFilled | AmountFieldEmpty) &
+  BookiFormProps &
   Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
 
 /**
@@ -58,6 +74,7 @@ function AmountField({
   "aria-label": ariaLabel,
   ...props
 }: AmountFieldProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const currency = currencyProp ?? profile.currency;
   // The name goes on the input too: a screen reader reads the text box, not the wrapper.
@@ -75,15 +92,15 @@ function AmountField({
       secret={secret}
       disabled={disabled}
       readOnly={readOnly}
-      onValueChange={onValueChange}
+      onValueChange={onValueChange as AmountFieldEmpty["onValueChange"]}
       className={className}
       aria-label={label}
-      {...props}
+      {...rest}
     >
       {(state: { value: number | null; empty: boolean }) => (
         <>
           <AmountFieldCurrency>{currency}</AmountFieldCurrency>
-          <AmountFieldInput id={id} required={required} aria-label={label} />
+          <AmountFieldInput id={id} required={required} aria-label={label} {...field} />
           {/* Integer minor units, the same number the agent reads. */}
           <FormValue name={name} value={state.value ?? ""} disabled={disabled} />
         </>

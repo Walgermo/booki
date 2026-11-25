@@ -1,7 +1,7 @@
 import type { TaxCode } from "@booki-aui/core/locale";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { taxCodeSelect } from "@booki-aui/primitives/tax-code-select";
 
@@ -45,6 +45,7 @@ function TaxCodeSelect({
   className,
   ...props
 }: TaxCodeSelectProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const codes = codesProp ?? profile.tax.codes;
   const fallback = defaultValue ?? codes.find((c) => c.percent === profile.tax.defaultPercent)?.code ?? codes[0]?.code;
@@ -67,11 +68,11 @@ function TaxCodeSelect({
       readOnly={readOnly}
       className={className}
       aria-label={profile.tax.label}
-      {...props}
+      {...rest}
     >
       {(state: { value: string }) => (
         <>
-          <TaxCodeSelectTrigger id={id} aria-required={required || undefined}>
+          <TaxCodeSelectTrigger id={id} aria-required={required || undefined} {...field}>
             {(trigger: { text: string }) => <span data-slot="tax-code-select-value">{trigger.text || "–"}</span>}
           </TaxCodeSelectTrigger>
           <TaxCodeSelectList>

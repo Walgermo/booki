@@ -319,3 +319,149 @@ describe("a code field with values only a person may choose", () => {
     }
   });
 });
+
+describe("a field that already has its own labelled group", () => {
+  const directions = [
+    { value: "in", label: "Inn" },
+    { value: "out", label: "Ut" },
+  ];
+
+  function Direction({ group }: { group?: boolean }) {
+    return useBookiField({ kind: "code", value: "in", options: directions, label: "Retning", group }, ({ value }) => (
+      <fieldset>
+        <legend>Retning</legend>
+        {directions.map((o) => (
+          <label key={o.value}>
+            <input type="radio" readOnly checked={value === o.value} />
+            {o.label}
+          </label>
+        ))}
+      </fieldset>
+    ));
+  }
+
+  it("by default wraps the field in a group named by its label", () => {
+    render(<Direction />);
+    expect(screen.getAllByRole("group", { name: "Retning" })).toHaveLength(2);
+  });
+
+  it("with group: false renders the root without role, and the snapshot keeps the label", () => {
+    const agent = createBookiAgent();
+    const { container } = render(<Direction group={false} />);
+    expect(screen.getAllByRole("group", { name: "Retning" })).toHaveLength(1);
+    const root = container.querySelector('[data-slot="field-code"]')!;
+    expect(root.hasAttribute("role")).toBe(false);
+    const entry = agent.snapshot().find((c) => c.component === "field-code")!;
+    expect(entry.label).toBe("Retning");
+    expect(entry.actions).toContain("setCode");
+  });
+});
+
+describe("the account kind", () => {
+  const chart = [
+    { number: "1500", name: "Kundefordringer" },
+    { number: "1920", name: "Bank" },
+    { number: "3000", name: "Salgsinntekt" },
+  ];
+
+  function Account(props: {
+    chart?: typeof chart;
+    allowEmpty?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    onValueChange?: (account: string, details: { source?: string }) => void;
+  }) {
+    const { onValueChange, ...rest } = props;
+    const [value, setValue] = useState("1500");
+    return useBookiField(
+      {
+        kind: "account",
+        value,
+        label: "Konto",
+        ...rest,
+        onValueChange: (account, details) => {
+          setValue(account);
+          onValueChange?.(account, details);
+        },
+      },
+      ({ value, change, refusal }) => (
+        <div>
+          <input aria-label="Konto-felt" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+          {refusal ? <p role="alert">{refusal}</p> : null}
+        </div>
+      ),
+    );
+  }
+
+  const run = async (agent: ReturnType<typeof createBookiAgent>, args: unknown[]) => {
+    const entry = agent.snapshot().find((c) => c.component === "field-account")!;
+    return (await agent.act({ steps: [{ ref: entry.ref, action: "setAccount", args }] })) as {
+      ok: boolean;
+      error?: { message: string };
+    };
+  };
+
+  it("snapshot reads the account as digits, with the range an open field accepts", () => {
+    const agent = createBookiAgent();
+    render(<Account />);
+    const entry = agent.snapshot().find((c) => c.component === "field-account") as unknown as Record<string, unknown>;
+    expect(entry).toMatchObject({ label: "Konto", account: "1500", minLength: 4, maxLength: 10 });
+    expect(entry.actions).toContain("setAccount");
+  });
+
+  it("an open field takes digits of the right length and refuses the rest, naming the range", async () => {
+    const onValueChange = vi.fn();
+    const agent = createBookiAgent();
+    render(<Account onValueChange={onValueChange} />);
+    expect((await run(agent, ["1920"])).ok).toBe(true);
+    expect(onValueChange.mock.calls[0]![0]).toBe("1920");
+    expect(onValueChange.mock.calls[0]![1]).toMatchObject({ source: "agent" });
+    expect((await run(agent, ["19x0"])).error?.message).toContain("digits only");
+    expect((await run(agent, ["192"])).error?.message).toContain("4 to 10 digits");
+    expect((await run(agent, ["12345678901"])).error?.message).toContain("4 to 10 digits");
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("takes minLength and maxLength", async () => {
+    const agent = createBookiAgent();
+    render(<Account minLength={3} maxLength={3} />);
+    expect((await run(agent, ["192"])).ok).toBe(true);
+    expect((await run(agent, ["1920"])).error?.message).toContain("3 to 3 digits");
+  });
+
+  it("with a chart refuses an unknown number and names the nearest accounts", async () => {
+    const agent = createBookiAgent();
+    render(<Account chart={chart} />);
+    const refused = await run(agent, ["1921"]);
+    expect(refused.ok).toBe(false);
+    expect(refused.error?.message).toContain("1920 (Bank)");
+    expect(refused.error?.message).toContain("1500 (Kundefordringer)");
+    expect((await run(agent, ["3000"])).ok).toBe(true);
+  });
+
+  it("with a long chart names only the nearest ones", async () => {
+    const long = Array.from({ length: 60 }, (_, i) => ({ number: String(6000 + i * 10), name: `Konto ${i}` }));
+    const agent = createBookiAgent();
+    render(<Account chart={long} />);
+    const refused = await run(agent, ["6301"]);
+    expect(refused.error?.message).toContain("in the chart of 60");
+    expect(refused.error?.message).toContain("6300 (");
+  });
+
+  it("a person's typing goes through the same rules and shows the refusal next to the field", () => {
+    render(<Account />);
+    const input = screen.getByLabelText("Konto-felt") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "12" } });
+    expect(screen.getByRole("alert").textContent).toContain("4 to 10 digits");
+  });
+
+  it("allowEmpty lets the agent clear it; without it an empty value is refused", async () => {
+    const agent = createBookiAgent();
+    const { unmount } = render(<Account allowEmpty />);
+    expect((await run(agent, [""])).ok).toBe(true);
+    expect((await run(agent, [null])).ok).toBe(true);
+    unmount();
+    render(<Account />);
+    expect((await run(agent, [""])).ok).toBe(false);
+  });
+});

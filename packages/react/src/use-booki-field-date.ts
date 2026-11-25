@@ -15,6 +15,8 @@ import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 
 export type BookiFieldDateOptions = {
   value?: string;
+  /** `false`: the root takes no `role="group"`, for a field that has its own labelled group. */
+  group?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
   onValueChange?: (date: string, details: { reason: string; source?: string }) => void;
@@ -23,6 +25,8 @@ export type BookiFieldDateOptions = {
 export type BookiFieldDateState = {
   date: string;
   refusal: string | null;
+  /** The root is a `role="group"`; false when the product's field has its own. */
+  group: boolean;
   disabled: boolean;
   readOnly: boolean;
 };
@@ -37,6 +41,7 @@ export const bookiFieldDate = definePrimitive({
   name: "field-date",
   options: {
     value: "string",
+    group: "boolean",
     ...lockOptions,
     onValueChange: "callback",
   },
@@ -44,10 +49,12 @@ export const bookiFieldDate = definePrimitive({
   state: (options: BookiFieldDateOptions): BookiFieldDateState => ({
     date: options.value ?? "",
     refusal: null,
+    group: options.group ?? true,
     ...lockState(options),
   }),
   sync: (options: BookiFieldDateOptions): Partial<BookiFieldDateState> => {
     const next: Partial<BookiFieldDateState> = { ...lockState(options) };
+    if (options.group !== undefined) next.group = options.group;
     if (options.value !== undefined) next.date = options.value;
     return next;
   },
@@ -77,7 +84,8 @@ export const bookiFieldDate = definePrimitive({
   },
   slots: (slot) => ({
     root: slot({
-      role: "group",
+      role: (state) => (state.group ? "group" : undefined),
+      roles: ["group"],
       attrs: (state) => ({
         "data-slot": "field-date",
         "data-disabled": state.disabled ? "" : undefined,

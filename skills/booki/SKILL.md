@@ -367,9 +367,11 @@ control under your own names: `createParts` with its definition from
 
 The lowest threshold, for an input or select the product keeps (a shadcn or Base UI
 field): `useBookiField` from `@booki-aui/react` gives it Booki's typed agent action and
-rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor units),
-`code` from a closed list (`setCode`, a refusal names the options) and `date`
-(`setDate`, ISO). Your field calls `change(next, event)` for a person's edit and shows
+rules without replacing it. Four kinds: `amount` (`setMinor`, integer minor units),
+`code` from a closed list (`setCode`, a refusal names the options), `account` (`setAccount`:
+digits of a length range, or a closed `chart` whose unknown numbers are refused with the nearest
+ones) and `date` (`setDate`, ISO). `group: false` drops the root's `role="group"` when your field
+has its own `fieldset`. Your field calls `change(next, event)` for a person's edit and shows
 `refusal`. See "The lower threshold: useBookiField" in own-controls.md.
 
 A free-text field (a description, a note) needs no Booki kind: `Input` from
@@ -477,7 +479,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 
 | Component | Package entry | Agent notes |
 | --- | --- | --- |
-| AmountField | `@booki-aui/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor`; `allowEmpty`: empty reads `value: null`, `setMinor(null)` and `clear` empty it |
+| AmountField | `@booki-aui/react` | `setMinor` — integer minor units; `minMinor` / `maxMinor`; `allowEmpty`: empty reads `value: null`, `setMinor(null)` and `clear` empty it, and `onValueChange` then gets `null` (typed `(minor: number \| null) => void` only with `allowEmpty`). Props: `value`, `defaultValue`, `allowEmpty`, `onValueChange`, `onEmpty`, `minMinor`, `maxMinor`, `currency`, `id`. No `label` prop: name it with an external `<label htmlFor={id}>` (the snapshot reads "Beløp (NOK)"); `aria-invalid`, `aria-describedby` and `aria-errormessage` go to the input. Full table in `packages/react/docs/llms.txt` |
 | VoucherComposer | `@booki-aui/react` | line edits with VAT code, department and project per line; `assertPostable` names what blocks posting; closed lists via `accounts`, `taxCodes`, `departments`, `projects`; a foreign-currency line with `setForeign` (the `foreignFormat` hint gives the order and units) |
 | BankReconciliation | `@booki-aui/react` | agent suggests matches (`suggestMatch`), a person approves; sides must sum equal |
 | ApprovalChain | `@booki-aui/react` | agent reads status and who may decide (`assertApproved`); approve/reject/escalate are a person's, checked against limits and levels |
@@ -607,7 +609,7 @@ submit) are refused for an agent even when its roles allow them.
    `attachAudit`, `createBookiHistory`, `registerTools`.
 5. Replace ad-hoc amount, bank, KID, date, account and voucher inputs with Booki
    controls; lists with `DataTable`; dashboard figures with the chart controls.
-   An amount, code or date field you keep: `useBookiField`. For the rest, define
+   An amount, code, account number or date field you keep: `useBookiField`. For the rest, define
    primitives and create their parts.
 6. Mark posts, payments and SCA with `data-agent-confirm`; approving, signing off,
    finalizing and releasing stay a person's buttons. Guard the same writes in the API

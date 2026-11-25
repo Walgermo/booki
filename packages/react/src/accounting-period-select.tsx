@@ -2,7 +2,7 @@ import { type PeriodGranularity } from "@booki-aui/core/period";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useId, useState, type ComponentProps } from "react";
 import { localToday } from "@booki-aui/core/financial-date";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { buildItems, accountingPeriod } from "@booki-aui/primitives/accounting-period-select";
 
@@ -48,6 +48,7 @@ function AccountingPeriodSelect({
   className,
   ...props
 }: AccountingPeriodSelectProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const granularity = granularityProp ?? profile.period.defaultGranularity;
   // This year, read once: a render that reads the clock can disagree with the last one.
@@ -69,14 +70,14 @@ function AccountingPeriodSelect({
       readOnly={readOnly}
       className={className}
       aria-label={profile.period.label}
-      {...props}
+      {...rest}
     >
       {(state: { value: string }) => (
         <>
           <span data-slot="accounting-period-label" id={labelId}>
             {profile.copy.period}
           </span>
-          <AccountingPeriodTrigger id={id} aria-required={required || undefined} aria-labelledby={labelId}>
+          <AccountingPeriodTrigger id={id} aria-required={required || undefined} aria-labelledby={labelId} {...field}>
             {(trigger: { text: string }) => <span data-slot="accounting-period-value">{trigger.text || "–"}</span>}
           </AccountingPeriodTrigger>
           <AccountingPeriodList>

@@ -2,7 +2,7 @@ import { isValidKid } from "@booki-aui/core/kid";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { type RefKind, paymentReference } from "@booki-aui/primitives/payment-reference-input";
 
@@ -45,6 +45,7 @@ function PaymentReferenceInput({
   className,
   ...props
 }: PaymentReferenceInputProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const kind = profile.paymentReference.kind;
 
@@ -60,7 +61,7 @@ function PaymentReferenceInput({
       readOnly={readOnly}
       className={className}
       aria-label={profile.paymentReference.label}
-      {...props}
+      {...rest}
     >
       {(state: { kind: RefKind; value: string }) => {
         // Invalid display follows the primitive's state, so it works
@@ -76,6 +77,7 @@ function PaymentReferenceInput({
             <PaymentReferenceField
               id={id}
               required={required}
+              {...field}
               placeholder={kind === "kid" ? "12345678903" : "INV-1001"}
             />
             {invalid ? <FieldError>Ugyldig KID</FieldError> : null}

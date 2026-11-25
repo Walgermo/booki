@@ -548,6 +548,12 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "field.unknown-code": 'Ingen valg "{value}". Valgene, som verdi (etikett): {items}.',
   "field.unknown-code-more":
     'Ingen valg "{value}" blant de {count}. Nærmest: {items}. query({ within, text }) finner en på kode eller helt ord.',
+  "field.account-not-digits":
+    'Kontonummeret "{value}" har mer enn sifre. Send bare sifre, uten bokstaver eller skilletegn.',
+  "field.account-length": 'Kontonummeret "{value}" må være {min} til {max} sifre.',
+  "field.unknown-account": 'Ingen konto "{value}" i kontoplanen. Kontoene, som nummer (navn): {items}.',
+  "field.unknown-account-more":
+    'Ingen konto "{value}" i kontoplanen på {count}. Nærmest: {items}. query({ within, text }) finner en på nummer eller helt ord.',
   "amount.not-minor":
     "Beløpet må være et sikkert heltall i minste enhet (f.eks. 12500 = 125,00 {currency}), fikk {value}.",
   "amount.below-min": "Beløpet {minor} (minste enhet) er under minMinor {min}.",
