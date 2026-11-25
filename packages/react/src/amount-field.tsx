@@ -91,12 +91,12 @@ function AmountField<Empty extends boolean = false>({
       aria-label={label}
       {...rest}
     >
-      {(state: { value: number | null; empty: boolean }) => (
+      {(state: { value: number | null; draftRefused: boolean }) => (
         <>
           <AmountFieldCurrency>{currency}</AmountFieldCurrency>
           <AmountFieldInput id={id} required={required} aria-label={label} {...field} />
           {/* Integer minor units, the same number the agent reads. */}
-          <FormValue name={name} value={state.value ?? ""} disabled={disabled} />
+          <FormValue name={name} value={state.value ?? ""} disabled={disabled || (!readOnly && state.draftRefused)} />
         </>
       )}
     </AmountFieldRoot>

@@ -533,6 +533,9 @@ export const EN = {
   "field.unknown-account": 'No account "{value}" in the chart. The accounts, as number (name): {items}.',
   "field.unknown-account-more":
     'No account "{value}" in the chart of {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
+  "amount.invalid-draft": "Enter a valid amount such as {example}.",
+  "amount.draft-below-min": "Enter an amount of at least {limit}.",
+  "amount.draft-above-max": "Enter an amount of at most {limit}.",
   "amount.not-minor": "Amount must be a safe integer in minor units (e.g. 12500 = 125.00 {currency}), got {value}.",
   "amount.below-min": "Amount {minor} (minor units) is below minMinor {min}.",
   "amount.above-max": "Amount {minor} (minor units) exceeds maxMinor {max}.",
