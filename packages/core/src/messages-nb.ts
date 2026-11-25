@@ -551,7 +551,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "field.account-not-digits":
     'Kontonummeret "{value}" har mer enn sifre. Send bare sifre, uten bokstaver eller skilletegn.',
   "field.account-empty": "Her trengs et kontonummer: {min} til {max} sifre.",
-  "field.account-empty-chart": "Her trengs et kontonummer: velg ett av de {count} kontoene i kontoplanen.",
+  "field.account-empty-chart": "Her trengs et kontonummer: velg én av de {count} kontoene i kontoplanen.",
   "field.account-not-text": 'setAccount tar kontonummeret som sifre, som "4711". Fikk {got}.',
   "field.account-range": "minLength {min} er større enn maxLength {max}, så ingen kontonummer passer.",
   "field.account-length": 'Kontonummeret "{value}" må være {min} til {max} sifre.',
