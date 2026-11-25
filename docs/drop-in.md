@@ -105,12 +105,97 @@ established. For an audit or consulting product:
   `warnings` for the person to weigh.
 - **The audit line.** `actorRecord(actor)` gives the label, the kind, and for
   an agent whose session, which client and which grant. Write it next to your
-  own audit columns.
+  own audit columns, or into the audit table you already have (section 5).
 
 `toHttp(verdict)` gives `{ status, body: { ok, code, message } }`; map it to
 your own error shape if you have one.
 
-## 5. Agents you already have
+## 5. Recording the agent in the audit trail you already have
+
+Many products write their audit trail with database triggers that take the actor from the
+session user. Such a trail has no place for "agent X, acting for person Y": without a change,
+an agent's write is saved as the person's own, and the agent shows up only in a server log.
+`actorRecord(actor)` gives the three things to keep (`actor`, `kind`, `onBehalfOf`, plus
+`grantId` and `clientId` when the actor has them). Two ways to keep them:
+
+- **Add columns or a JSON column.** Give the audit table `actor_kind`, `on_behalf_of` and
+  `grant_id` columns, or one `actor jsonb` column that holds `actorRecord(actor)` as it is.
+  The application writes them itself, in the same write as the change.
+- **Set the request's audit context before the write.** Keep the trigger as it is, and let
+  the request say who is acting: `set_config` with `is_local = true` sets a value for the current
+  transaction only, and the trigger reads it. Nothing in the audit table's shape changes except
+  the new columns the trigger fills in. This is the option that keeps the trigger the one writer.
+
+The worked example below is that second option, in Postgres, with generic SQL. Any database with
+triggers and session variables works the same way.
+
+```sql
+create table audit_event (
+  id           bigserial primary key,
+  table_name   text        not null,
+  row_id       text        not null,
+  operation    text        not null,          -- INSERT, UPDATE or DELETE
+  actor        text        not null,          -- the person's id, or "agent:bookkeeper"
+  actor_kind   text        not null,          -- 'person' or 'agent'
+  on_behalf_of text,                          -- the person an agent acted for
+  grant_id     text,
+  old_row      jsonb,
+  new_row      jsonb,
+  at           timestamptz not null default now()
+);
+
+create or replace function record_audit() returns trigger
+language plpgsql as $$
+begin
+  insert into audit_event
+    (table_name, row_id, operation, actor, actor_kind, on_behalf_of, grant_id, old_row, new_row)
+  values (
+    TG_TABLE_NAME,
+    case when TG_OP = 'DELETE' then OLD.id::text else NEW.id::text end,
+    TG_OP,
+    coalesce(nullif(current_setting('app.actor', true), ''), session_user),
+    coalesce(nullif(current_setting('app.actor_kind', true), ''), 'person'),
+    nullif(current_setting('app.on_behalf_of', true), ''),
+    nullif(current_setting('app.grant_id', true), ''),
+    case when TG_OP <> 'INSERT' then to_jsonb(OLD) end,
+    case when TG_OP <> 'DELETE' then to_jsonb(NEW) end
+  );
+  return null;
+end;
+$$;
+
+create trigger invoices_audit
+  after insert or update or delete on invoices
+  for each row execute function record_audit();
+```
+
+The write path sets the context in the same transaction as the change. It takes the values from
+the guard's verdict (`actorRecord(verdict.actor)`), never from the request body:
+
+```ts
+const record = actorRecord(verdict.actor) // { actor, kind, onBehalfOf?, grantId?, clientId? }
+
+await db.transaction(async (tx) => {
+  await tx.query(
+    `select set_config('app.actor', $1, true),
+            set_config('app.actor_kind', $2, true),
+            set_config('app.on_behalf_of', $3, true),
+            set_config('app.grant_id', $4, true)`,
+    [record.actor, record.kind, record.onBehalfOf ?? "", record.grantId ?? ""],
+  )
+  await tx.query("update invoices set status = $1 where id = $2", [status, invoiceId])
+})
+```
+
+Check it with `select actor, actor_kind, on_behalf_of from audit_event where table_name = 'invoices'
+order by id desc limit 5`: an agent's write shows `agent:bookkeeper`, `agent`, and the person in
+`on_behalf_of`. A write with no context (a migration, a psql session) is recorded as the database
+user with `actor_kind = 'person'`, so keep that path away from the agent's token.
+
+The context is only as trustworthy as the code that sets it. Set it only after `guard` has
+passed, in the server, and keep the agent's token away from any path that skips the guard.
+
+## 6. Agents you already have
 
 If your agent drives the DOM today, Booki's bridge replaces guessing: controls
 by name, typed actions, `data-agent-confirm` on what needs a person (on the
@@ -125,7 +210,7 @@ whether an agent call is running. `window.agent` stays out of production, and We
 `createBookiAgent({ audit })` records refused steps and who confirmed the rest. The
 [accounts-payable example](../examples/ap-flow) has the whole recipe.
 
-## 6. Where to start
+## 7. Where to start
 
 Leaf inputs (amount, account, date, organization number, KID) and read-only
 views (LedgerTable for a trial balance) drop in first. Workflow controls with

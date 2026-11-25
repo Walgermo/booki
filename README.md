@@ -39,9 +39,27 @@ and stop where a person has to decide. Your server checks the same rules again.
 Booki is on npm as `@booki-aui/*`, before 1.0: the API may still change between
 releases. What comes next is in [`ROADMAP.md`](ROADMAP.md). Install it yourself:
 
+**A minimum release age can refuse a new release.** Booki and its `@ui-sdk` packages
+are new when they come out, and Booki pins the `@ui-sdk` packages exactly. An app with a
+minimum release age (pnpm `minimumReleaseAge`, or Renovate's `minimumReleaseAge`) refuses
+them for its first days, with `ERR_PNPM_NO_MATURE_MATCHING_VERSION`. Then either install the
+previous Booki release, with the `@ui-sdk` version it pins, or ask the owner of the app for an
+exception for exactly those versions, on a branch. Don't change the exact pin in `package.json`.
+
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
 ```
+
+Add the `@ui-sdk` packages in the same command as Booki. Adding only one of them has made pnpm
+drop the other from the lockfile.
+
+**An unrelated package's Node `engines` entry can stop the install.** `pnpm add` rewrites the
+lockfile, so it can fail with `ERR_PNPM_UNSUPPORTED_ENGINE` on a transitive dependency whose
+`engines.node` doesn't list your Node version. That is your app's lockfile, not Booki: fix or
+report that entry, and don't change Node for it. A way through: install once with
+`--config.engine-strict=false`, then put your app's own edit of that `engines` entry back in
+`pnpm-lock.yaml` by hand. `pnpm add` can restore the old range, so check with
+`git diff pnpm-lock.yaml | grep engines`, then run `pnpm install --frozen-lockfile`.
 
 Or give it to your coding agent:
 

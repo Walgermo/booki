@@ -48,33 +48,38 @@ the person that the setup is experimental before you wire it.
 
 ## 1. Install
 
+**A minimum release age.** Booki pins the `@ui-sdk` packages exactly, and both are new when they
+come out, so an app with a release-age rule (pnpm `minimumReleaseAge`, Renovate's
+`minimumReleaseAge`) can refuse them for its first days (`ERR_PNPM_NO_MATURE_MATCHING_VERSION`).
+Then stop and say so. Either install the previous Booki release, with the `@ui-sdk` version it
+pins, or ask the product's owner to approve an exception for exactly those versions, on your branch
+only, never on the main branch. Never add an exception yourself, and don't change the exact pin
+in `package.json`.
+
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
 ```
 
 With npm, the same packages after `npm install`. Booki is before 1.0: read the release
 notes (the GitHub Releases, or each package's CHANGELOG) before moving to a new minor.
 
+The command adds the two `@ui-sdk` packages at exactly `0.1.0-beta.17` as direct dependencies of
+the app. The bridge and controls come from them, and the guide imports `Button` from
+`@ui-sdk/react/button`, which `@booki-aui/react` does not re-export. Keep all five in one command:
+adding only `@ui-sdk/react` has made pnpm drop `@ui-sdk/core` from the lockfile.
+
 Requires React 19+ for `@booki-aui/react`. Other stacks: `@booki-aui/web` (custom elements; Angular,
 server-rendered pages), `@booki-aui/vue`, `@booki-aui/svelte`, `@booki-aui/solid`, all with the same
-controls and actions. Add `@ui-sdk/core` and the `@ui-sdk` package for your framework
-(`@ui-sdk/react`) as direct dependencies of the app, both at exactly `0.1.0-beta.17`. The
-bridge and controls come from them, and the guide imports `Button` from `@ui-sdk/react/button`,
-which `@booki-aui/react` does not re-export. Add both together: adding only `@ui-sdk/react` has
-made pnpm drop `@ui-sdk/core` from the lockfile.
+controls and actions.
 TypeScript and `import "@booki-aui/styles"`: the package ships its types, so the side-effect
 import checks. With Tailwind, import it from CSS instead (section 2).
-**A minimum release age.** Booki pins the `@ui-sdk` packages exactly, so an app with a
-release-age rule (pnpm `minimumReleaseAge`, Renovate's `minimumReleaseAge`) can refuse a version
-that is only days old. Then stop and say so. Either wait until the version is old enough, or ask
-the product's owner to approve an exception for exactly those versions, on your branch only, never
-on the main branch. Never add an exception yourself.
 
-`pnpm add` rewrites the lockfile, so it can stop on an unrelated package's Node `engines`
-entry. That is the app's lockfile, not Booki: fix or report that entry, don't change Node for it.
-A way through: install once with `--config.engine-strict=false`, then put the app's own edit of
-that `engines` entry back in the lockfile by hand and check that `pnpm install --frozen-lockfile`
-passes.
+**An unrelated Node `engines` entry.** `pnpm add` rewrites the lockfile, so it can stop with
+`ERR_PNPM_UNSUPPORTED_ENGINE` on an unrelated package's `engines.node`. That is the app's lockfile,
+not Booki: fix or report that entry, don't change Node for it. A way through: install once with
+`--config.engine-strict=false`, then put the app's own edit of that `engines` entry back in the
+lockfile by hand. `pnpm add` can restore the old range, so check with
+`git diff pnpm-lock.yaml | grep engines`, then check that `pnpm install --frozen-lockfile` passes.
 
 ## 2. Provider + styles
 
@@ -156,9 +161,13 @@ const allow = async (step: { confirm?: string }) => {
 }
 
 // Your own audit trail: the agent's changes, the steps it was refused, and who confirmed the rest.
-// No such endpoint in your product? Keep these events in the browser (a log, the console) and let
-// the server record its own writes: section 6's guard names the agent and the person it acted for.
-const audit = (event: object) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) })
+// Default, when your product has no /api/audit endpoint: keep these events in the browser (here,
+// the console) and let the server record its own writes. Section 6's guard names the agent and the
+// person it acted for, and docs/drop-in.md ("Recording the agent in the audit trail you already
+// have") shows how to write that into an audit table you already have.
+// If you do have an endpoint, post the events to it instead:
+// const audit = (event: object) => void fetch("/api/audit", { method: "POST", body: JSON.stringify(event) })
+const audit = (event: object) => console.info("[booki audit]", event)
 
 // A visible agent pointer: it goes to each control and presses before the step runs.
 export const cursor = createAgentCursor()
@@ -210,6 +219,33 @@ function ConnectAgent() {
   useEffect(() => connectPerson(confirm, () => session.user.id), [confirm, session.user.id])
   return null
 }
+```
+
+If your confirm dialog comes from a client provider (a `<ConfirmProvider>` in a providers file), render
+`BookiRoot` inside that provider, and put `ConnectAgent` inside it too, or the hook has nothing to read.
+The person still comes from the server layout:
+
+```tsx
+// app/providers.tsx
+"use client"
+
+export function Providers({ user, children }: { user: User; children: ReactNode }) {
+  return (
+    <ConfirmProvider>
+      <BookiRoot user={user}>
+        <ConnectAgent />
+        {children}
+      </BookiRoot>
+    </ConfirmProvider>
+  )
+}
+```
+
+```tsx
+// app/layout.tsx: a Server Component
+<body>
+  <Providers user={user}>{children}</Providers>
+</body>
 ```
 
 Take the first snapshot after the screen has rendered: `window.agent` exists before a screen
@@ -331,9 +367,18 @@ rules without replacing it. Three kinds: `amount` (`setMinor`, integer minor uni
 
 A free-text field (a description, a note) needs no Booki kind: `Input` from
 `@ui-sdk/react/input` is already on the bridge, with `setValue`, under its accessible name.
-It renders without styles, and `@booki-aui/styles` styles only Booki's own controls, so give it
-your design system's classes: `<Input className={inputClasses} />`, with the classes your own
-input uses (for shadcn/ui, those of its `Input`).
+It renders without styles, and `@booki-aui/styles` styles only Booki's own controls. Don't copy
+your design system's input classes into the screen: they drift when the design system changes.
+Compose with your own input instead. Every ui-sdk part takes `render`, an element or a function
+that gets the props, so your input renders the field and keeps Booki's agent wiring:
+
+```tsx
+<Input render={(props) => <DesignInput {...props} />} />
+```
+
+`DesignInput` passes the props it gets, `ref` included, to its `<input>`. If your design system's
+`Input` can't take them, export its class string as a constant next to the component
+(`export const inputClasses = …`) and use that, not a copy.
 
 A field that saves when the person leaves it (on blur) never saves an agent's change: the
 agent sets the value and moves on, so nothing blurs. Save in the change callback when the

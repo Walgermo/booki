@@ -6,8 +6,10 @@ Agents should operate controls via `createBookiAgent` / `createAgent` — not DO
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
 ```
+
+The two `@ui-sdk` packages are direct dependencies of the app, at exactly that version: the bridge and `Button` / `Input` come from them. Add them in the same command.
 
 ```ts
 import { BookiLocaleProvider } from "@booki-aui/react/locale"

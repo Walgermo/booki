@@ -224,3 +224,34 @@ What each piece does:
   is still there, with its value, and offers nothing to call.
 - **Other kinds need `definePrimitive`.** For anything beyond these three, use
   the primitive above in this document.
+
+## A free-text field: compose with your own input
+
+A description or a note needs no Booki kind. `Input` from `@ui-sdk/react/input` is already on the
+agent bridge with `setValue`, under its accessible name, and it renders no styles. Don't copy your
+design system's input classes into the screen: they stop matching when the design system changes.
+Every ui-sdk part takes `render`, so your own input can render the field and keep the agent wiring:
+
+```tsx
+import { Input } from "@ui-sdk/react/input"
+import { Input as DesignInput } from "@/components/ui/input" // your design system's input
+
+export function NoteField(props: { label: string; name: string }) {
+  return (
+    <Input
+      name={props.name}
+      aria-label={props.label}
+      render={(fieldProps) => <DesignInput {...fieldProps} />}
+    />
+  )
+}
+```
+
+`render` gets the props the field needs (its `id`, `value`, handlers and `ref`), and `DesignInput`
+passes them to its `<input>`. Check that the agent still lists the field: `agent.snapshot()` shows it
+under its label, and `agent.act({ steps: [{ ref: "Note", action: "setValue", args: ["…"] }] })` sets it.
+
+If your design system's `Input` can't pass its props through, export its class string from the
+component's file instead, as a constant next to it (`export const inputClasses = "…"`), and use
+`className={inputClasses}` on an `Input` from `@ui-sdk/react/input`. That keeps one copy of the
+classes, in the design system.
