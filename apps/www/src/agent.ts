@@ -98,7 +98,20 @@ export async function whenCursorFree(): Promise<void> {
 const led = cursor.wrap(allow);
 const allowWithCursor: typeof led = (step, context) => (quiet > 0 ? allow(step) : led(step, context));
 
-const agent = createBookiAgent({ agentId: "site", allow: allowWithCursor });
+const bridge = createBookiAgent({ agentId: "site", allow: allowWithCursor });
+const onPage = <Entry extends { offPage?: boolean }>(entries: Entry[]) => entries.filter((entry) => !entry.offPage);
+
+// Site discovery describes the current screen. A docs preview can be replaced
+// on a country change or reset, and its previously visible fields are history
+// in UI SDK. Keep the original action resolver for steps that reveal controls.
+const agent: typeof bridge = {
+  ...bridge,
+  snapshot: () => onPage(bridge.snapshot()),
+  query: async (input) => {
+    const result = await bridge.query(input);
+    return Array.isArray(result) ? onPage(result) : result;
+  },
+};
 
 // In the browser only: the build also renders the pages to HTML, with no window.
 if (typeof window !== "undefined") {
