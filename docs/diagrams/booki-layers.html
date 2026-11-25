@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>Defined once, rendered everywhere</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Albert+Sans:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper: #f6f6f4;
+      --color-ink: #111419;
+      --color-muted: #585b61;
+      --color-rule: rgba(17,20,25,0.12);
+      --font-sans: 'Albert Sans', ui-sans-serif, system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+    .frame { max-width: 1200px; width: 100%; min-width: 0; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+    .sub { color: var(--color-muted); font-size: 0.875rem; max-width: 72ch; margin-bottom: 1.5rem; }
+    footer {
+      margin-top: 1.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--color-rule);
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+    svg { width: 100%; min-width: 1120px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Layer stack · Booki</p>
+    <h1>Defined once, rendered everywhere</h1>
+    <p class="sub">Each control is defined once with no framework. Every framework package is generated from that definition, so one agent operates them all the same way.</p>
+    <div class="diagram-container">
+      <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="booki-layers-title booki-layers-desc">
+        <title id="booki-layers-title">Defined once, rendered everywhere</title>
+        <desc id="booki-layers-desc">Booki&#x27;s layers from the announcement: framework packages and optional styles are generated from @booki/primitives, which takes its rules from @booki/core; the agent&#x27;s side reads and acts on the screen; @booki/core/server runs the same rules in your API.</desc>
+        <defs>
+<marker id="booki-layers-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#585b61"/></marker>
+<marker id="booki-layers-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#406100"/></marker>
+<marker id="booki-layers-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#335189"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="#f6f6f4"/>
+<rect x="40" y="40" width="512" height="136" rx="6" fill="#fefefd" stroke="#585b61" stroke-width="0.8"/>
+<text x="64" y="72" fill="#111419" font-size="14" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" font-weight="600">Your screen</text>
+<rect x="64" y="84" width="84" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="106.0" y="98" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/react</text>
+<rect x="156" y="84" width="72" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="192.0" y="98" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/web</text>
+<rect x="236" y="84" width="72" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="272.0" y="98" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/vue</text>
+<rect x="316" y="84" width="92" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="362.0" y="98" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/svelte</text>
+<rect x="416" y="84" width="84" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="458.0" y="98" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">@booki/solid</text>
+<text x="64" y="128" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">React controls (supported); custom elements for server-rendered</text>
+<text x="64" y="146" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">pages, and parts for Vue, Svelte and Solid (both experimental).</text>
+<rect x="568" y="40" width="192" height="136" rx="6" fill="#f6f6f4" stroke="#585b61" stroke-width="0.8" stroke-dasharray="4,3"/>
+<text x="592" y="72" fill="#111419" font-size="14" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" font-weight="600">@booki/styles</text>
+<text x="592" y="96" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">Optional. Scoped to</text>
+<text x="592" y="114" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">Booki&#x27;s components, in</text>
+<text x="592" y="132" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">a cascade layer if you</text>
+<text x="592" y="150" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">like.</text>
+<path d="M 64,212 V 180" fill="none" stroke="#585b61" stroke-width="1" marker-end="url(#booki-layers-arrow)"/>
+<text x="76" y="199.0" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">GENERATED FROM</text>
+<rect x="40" y="216" width="720" height="80" rx="6" fill="#fefefd" stroke="#585b61" stroke-width="0.8"/>
+<text x="64" y="248" fill="#111419" font-size="14" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" font-weight="600">@booki/primitives</text>
+<text x="64" y="272" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">Every control&#x27;s definition, with no framework: its state, its agent actions and the rules it enforces.</text>
+<path d="M 64,332 V 300" fill="none" stroke="#585b61" stroke-width="1" marker-end="url(#booki-layers-arrow)"/>
+<text x="76" y="319.0" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">RULES FROM</text>
+<rect x="40" y="336" width="720" height="120" rx="6" fill="#fefefd" stroke="#585b61" stroke-width="0.8"/>
+<text x="64" y="368" fill="#111419" font-size="14" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" font-weight="600">@booki/core</text>
+<rect x="64" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="78.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">NO</text>
+<rect x="100" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="114.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">US</text>
+<rect x="136" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="150.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">SE</text>
+<rect x="172" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="186.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">DK</text>
+<rect x="208" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="222.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">GB</text>
+<rect x="244" y="380" width="28" height="20" rx="4" fill="#eeeeeb" stroke="#dbdcdf" stroke-width="0.8"/>
+<text x="258.0" y="394" fill="#111419" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">DE</text>
+<text x="64" y="424" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">Money in integer minor units, vouchers, validators, approvals, periods, VAT, audit sampling, roles</text>
+<text x="64" y="442" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">and country profiles.</text>
+<rect x="784" y="40" width="296" height="416" rx="8" fill="#0d1117" stroke="#2a2e35" stroke-width="1"/>
+<text x="808" y="72" fill="#979ba3" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">THE AGENT&#x27;S SIDE</text>
+<rect x="808" y="88" width="44" height="20" rx="4" fill="#d4ee40" stroke="#d4ee40" stroke-width="0.8"/>
+<text x="830.0" y="102" fill="#161e08" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">agent</text>
+<rect x="808" y="124" width="64" height="20" rx="4" fill="#151a21" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="840.0" y="138" fill="#e7eaee" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">snapshot</text>
+<rect x="880" y="124" width="36" height="20" rx="4" fill="#151a21" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="898.0" y="138" fill="#e7eaee" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">act</text>
+<rect x="924" y="124" width="44" height="20" rx="4" fill="#151a21" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="946.0" y="138" fill="#e7eaee" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">query</text>
+<rect x="976" y="124" width="68" height="20" rx="4" fill="#151a21" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="1010.0" y="138" fill="#e7eaee" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">subscribe</text>
+<text x="808" y="180" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">The agent bridge reads the screen&#x27;s</text>
+<text x="808" y="198" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">controls and calls their actions by</text>
+<text x="808" y="216" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">name. createBookiAgent adds your</text>
+<text x="808" y="234" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">allow rule, the audit trail and undo</text>
+<text x="808" y="252" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">by source; the agent cursor shows</text>
+<text x="808" y="270" fill="#979ba3" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">each step to the person.</text>
+<rect x="40" y="480" width="1040" height="88" rx="6" fill="#fefefd" stroke="#585b61" stroke-width="0.8"/>
+<text x="64" y="512" fill="#111419" font-size="14" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif" font-weight="600">@booki/core/server</text>
+<text x="64" y="536" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">The same rules from @booki/core, as the gate in your API: guard, advise, PERSON_ONLY, roles per engagement, actorRecord.</text>
+<text x="64" y="554" fill="#585b61" font-size="11" font-family="'Albert Sans', ui-sans-serif, system-ui, sans-serif">The bridge is for speed and clarity; the server decides.</text>
+<line x1="40" y1="596" x2="1080" y2="596" stroke="rgba(17,20,25,0.12)" stroke-width="0.8"/>
+<text x="40" y="615" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">KEY</text>
+<rect x="96" y="606" width="20" height="12" rx="2" fill="#0d1117" stroke="#2a2e35" stroke-width="0.8"/>
+<text x="124" y="615" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">INK · WHAT THE MACHINE READS</text>
+<rect x="368" y="606" width="20" height="12" rx="2" fill="#d4ee40"/>
+<text x="396" y="615" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">LIME · THE AGENT</text>
+<rect x="544" y="606" width="20" height="12" rx="2" fill="none" stroke="#585b61" stroke-width="0.8" stroke-dasharray="4,3"/>
+<text x="572" y="615" fill="#585b61" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.1em">DASHED · OPTIONAL</text>
+      </svg>
+    </div>
+    <footer>Layers, order and text from the announcement post (apps/www/src/pages/announcement.tsx, figure apps/www/src/components/announcement/booki-layers.tsx). Colours: Paper and Ink tokens from packages/styles/src/booki.css.</footer>
+  </div>
+</body>
+</html>
