@@ -1,15 +1,17 @@
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { barPath, formatPercent, linearScale, observeWidth } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { type Details, type BarItem, derive, barChart } from "@booki-aui/primitives/bar-chart";
 
-const parts = createParts(barChart, { root: "div", bar: "button", more: "button" });
-const BarChartRoot = parts.Root;
-const BarChartBar = parts.Bar;
-const BarChartMore = parts.More;
+const TAGS = { root: "div", bar: "button", more: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof barChart, typeof TAGS> = createParts(barChart, TAGS);
+const BarChartRoot: (typeof parts)["Root"] = parts.Root;
+const BarChartBar: (typeof parts)["Bar"] = parts.Bar;
+const BarChartMore: (typeof parts)["More"] = parts.More;
 
 const COPY = {
   EN: {

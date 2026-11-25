@@ -1,5 +1,5 @@
 import { formatMoney } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { formatPercent } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
@@ -11,9 +11,11 @@ import {
   type FunnelStepInput,
 } from "@booki-aui/primitives/funnel-chart";
 
-const parts = createParts(funnelChart, { root: "div", step: "button" });
-const FunnelChartRoot = parts.Root;
-const FunnelChartStep = parts.Step;
+const TAGS = { root: "div", step: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof funnelChart, typeof TAGS> = createParts(funnelChart, TAGS);
+const FunnelChartRoot: (typeof parts)["Root"] = parts.Root;
+const FunnelChartStep: (typeof parts)["Step"] = parts.Step;
 
 const COPY = {
   EN: {

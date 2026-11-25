@@ -32,7 +32,10 @@ const controls = [];
 for (const file of readdirSync(reactSrc).sort()) {
   if (!file.endsWith(".tsx") || file.includes(".test.")) continue;
   const source = readFileSync(path.join(reactSrc, file), "utf8");
-  const call = source.match(/createParts\((\w+),\s*\{([\s\S]*?)\}\);/);
+  // The tags are a const beside the call (`const TAGS = { … } as const; createParts(x, TAGS)`), or inline.
+  const named = source.match(/const TAGS = \{([\s\S]*?)\} as const;[\s\S]*?createParts\((\w+), TAGS\)/);
+  const inline = source.match(/createParts\((\w+),\s*\{([\s\S]*?)\}\);/);
+  const call = named ? [named[0], named[2], named[1]] : inline;
   if (!call) continue;
   const [, definition, body] = call;
   const stem = file.replace(/\.tsx$/, "");

@@ -1,22 +1,24 @@
 import { closeBlockers, type CloseSummary, type CloseTask } from "@booki-aui/core/close";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { useSay } from "./say.js";
 import { closeChecklist } from "@booki-aui/primitives/close-checklist";
 
-const parts = createParts(closeChecklist, {
+const TAGS = {
   root: "div",
   complete: "button",
   signOff: "button",
   reopen: "button",
-});
-const CloseChecklistRoot = parts.Root;
-const CloseChecklistComplete = parts.Complete;
-const CloseChecklistSignOff = parts.SignOff;
-const CloseChecklistReopen = parts.Reopen;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof closeChecklist, typeof TAGS> = createParts(closeChecklist, TAGS);
+const CloseChecklistRoot: (typeof parts)["Root"] = parts.Root;
+const CloseChecklistComplete: (typeof parts)["Complete"] = parts.Complete;
+const CloseChecklistSignOff: (typeof parts)["SignOff"] = parts.SignOff;
+const CloseChecklistReopen: (typeof parts)["Reopen"] = parts.Reopen;
 
 export type CloseChecklistProps = {
   tasks?: CloseTask[];

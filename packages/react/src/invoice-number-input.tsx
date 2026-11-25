@@ -1,17 +1,19 @@
 import { Field, FieldDescription, FieldLabel } from "@ui-sdk/react/field";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { invoiceNumber } from "@booki-aui/primitives/invoice-number-input";
 
-const parts = createParts(invoiceNumber, {
+const TAGS = {
   root: "div",
   input: "input",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof invoiceNumber, typeof TAGS> = createParts(invoiceNumber, TAGS);
 
-const InvoiceNumberRoot = parts.Root;
-const InvoiceNumberField = parts.Input;
+const InvoiceNumberRoot: (typeof parts)["Root"] = parts.Root;
+const InvoiceNumberField: (typeof parts)["Input"] = parts.Input;
 
 export type InvoiceNumberInputProps = {
   /** Controlled value. Omit it (and use `defaultValue`) to let the field hold its own state. */

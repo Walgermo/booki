@@ -1,5 +1,5 @@
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { barPath, linearScale, observeWidth, type WaterfallStep } from "./chart-math.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -7,9 +7,11 @@ import { useSay } from "./say.js";
 import { type Details, type CashflowStep, derive, cashflowWaterfall } from "@booki-aui/primitives/cashflow-waterfall";
 
 export type { WaterfallStep };
-const parts = createParts(cashflowWaterfall, { root: "div", step: "button" });
-const CashflowWaterfallRoot = parts.Root;
-const CashflowWaterfallStep = parts.Step;
+const TAGS = { root: "div", step: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof cashflowWaterfall, typeof TAGS> = createParts(cashflowWaterfall, TAGS);
+const CashflowWaterfallRoot: (typeof parts)["Root"] = parts.Root;
+const CashflowWaterfallStep: (typeof parts)["Step"] = parts.Step;
 
 const COPY = {
   EN: {

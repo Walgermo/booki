@@ -8,7 +8,7 @@ import {
   type FindingStatus,
 } from "@booki-aui/core/findings";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -16,18 +16,20 @@ import { MoneyAmount } from "./money-amount.js";
 import { useSay } from "./say.js";
 import { auditFindings, buttonKey, type FindingEvidence } from "@booki-aui/primitives/audit-findings";
 
-const parts = createParts(auditFindings, {
+const TAGS = {
   root: "div",
   confirm: "button",
   reason: "textarea",
   withdraw: "button",
   reopen: "button",
-});
-const AuditFindingsRoot = parts.Root;
-const AuditFindingsConfirm = parts.Confirm;
-const AuditFindingsReason = parts.Reason;
-const AuditFindingsWithdraw = parts.Withdraw;
-const AuditFindingsReopen = parts.Reopen;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof auditFindings, typeof TAGS> = createParts(auditFindings, TAGS);
+const AuditFindingsRoot: (typeof parts)["Root"] = parts.Root;
+const AuditFindingsConfirm: (typeof parts)["Confirm"] = parts.Confirm;
+const AuditFindingsReason: (typeof parts)["Reason"] = parts.Reason;
+const AuditFindingsWithdraw: (typeof parts)["Withdraw"] = parts.Withdraw;
+const AuditFindingsReopen: (typeof parts)["Reopen"] = parts.Reopen;
 
 const COPY = {
   EN: {

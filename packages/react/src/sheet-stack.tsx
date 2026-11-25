@@ -1,20 +1,22 @@
 import type { SheetPlacement, StackSheet } from "@booki-aui/core/sheet-stack";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { sheetStack } from "@booki-aui/primitives/sheet-stack";
 
-const parts = createParts(sheetStack, {
+const TAGS = {
   root: "div",
   back: "button",
   crumb: "button",
   close: "button",
-});
-const SheetStackRoot = parts.Root;
-const SheetStackBack = parts.Back;
-const SheetStackCrumb = parts.Crumb;
-const SheetStackClose = parts.Close;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof sheetStack, typeof TAGS> = createParts(sheetStack, TAGS);
+const SheetStackRoot: (typeof parts)["Root"] = parts.Root;
+const SheetStackBack: (typeof parts)["Back"] = parts.Back;
+const SheetStackCrumb: (typeof parts)["Crumb"] = parts.Crumb;
+const SheetStackClose: (typeof parts)["Close"] = parts.Close;
 
 const COPY = {
   EN: { label: "Open sheets", trail: "Where you are", backTo: "Back to", close: "Close the top sheet" },

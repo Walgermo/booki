@@ -1,18 +1,20 @@
 import { isValidKid } from "@booki-aui/core/kid";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { type RefKind, paymentReference } from "@booki-aui/primitives/payment-reference-input";
 
-const parts = createParts(paymentReference, {
+const TAGS = {
   root: "div",
   input: "input",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof paymentReference, typeof TAGS> = createParts(paymentReference, TAGS);
 
-const PaymentReferenceRoot = parts.Root;
-const PaymentReferenceField = parts.Input;
+const PaymentReferenceRoot: (typeof parts)["Root"] = parts.Root;
+const PaymentReferenceField: (typeof parts)["Input"] = parts.Input;
 
 export type PaymentReferenceInputProps = {
   /** Controlled value. Omit it (and use `defaultValue`) to let the field hold its own state. */

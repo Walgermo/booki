@@ -9,7 +9,7 @@ import {
   type SupplierInvoiceField,
   type SupplierInvoiceStatus,
 } from "@booki-aui/core/supplier-invoice";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { ariaSort, downloadCsv, sortMark } from "./csv-download.js";
@@ -24,7 +24,7 @@ import {
   supplierInvoiceInbox,
 } from "@booki-aui/primitives/supplier-invoice-inbox";
 
-const parts = createParts(supplierInvoiceInbox, {
+const TAGS = {
   root: "div",
   select: "button",
   cell: "input",
@@ -37,19 +37,21 @@ const parts = createParts(supplierInvoiceInbox, {
   sort: "button",
   prev: "button",
   next: "button",
-});
-const SupplierInvoiceInboxRoot = parts.Root;
-const SupplierInvoiceInboxSelect = parts.Select;
-const SupplierInvoiceInboxCell = parts.Cell;
-const SupplierInvoiceInboxAccount = parts.Account;
-const SupplierInvoiceInboxConfirm = parts.Confirm;
-const SupplierInvoiceInboxApprove = parts.Approve;
-const SupplierInvoiceInboxReject = parts.Reject;
-const SupplierInvoiceInboxSearch = parts.Search;
-const SupplierInvoiceInboxStatusFilter = parts.Statusfilter;
-const SupplierInvoiceInboxSort = parts.Sort;
-const SupplierInvoiceInboxPrev = parts.Prev;
-const SupplierInvoiceInboxNext = parts.Next;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof supplierInvoiceInbox, typeof TAGS> = createParts(supplierInvoiceInbox, TAGS);
+const SupplierInvoiceInboxRoot: (typeof parts)["Root"] = parts.Root;
+const SupplierInvoiceInboxSelect: (typeof parts)["Select"] = parts.Select;
+const SupplierInvoiceInboxCell: (typeof parts)["Cell"] = parts.Cell;
+const SupplierInvoiceInboxAccount: (typeof parts)["Account"] = parts.Account;
+const SupplierInvoiceInboxConfirm: (typeof parts)["Confirm"] = parts.Confirm;
+const SupplierInvoiceInboxApprove: (typeof parts)["Approve"] = parts.Approve;
+const SupplierInvoiceInboxReject: (typeof parts)["Reject"] = parts.Reject;
+const SupplierInvoiceInboxSearch: (typeof parts)["Search"] = parts.Search;
+const SupplierInvoiceInboxStatusFilter: (typeof parts)["Statusfilter"] = parts.Statusfilter;
+const SupplierInvoiceInboxSort: (typeof parts)["Sort"] = parts.Sort;
+const SupplierInvoiceInboxPrev: (typeof parts)["Prev"] = parts.Prev;
+const SupplierInvoiceInboxNext: (typeof parts)["Next"] = parts.Next;
 
 const COPY = {
   EN: {

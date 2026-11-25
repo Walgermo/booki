@@ -7,7 +7,7 @@ import type {
   PipelineStage,
   StageSummary,
 } from "@booki-aui/core/pipeline";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import type { BookiChangeDetails } from "./change-details.js";
 import { useAccessFor } from "./access.js";
@@ -15,21 +15,23 @@ import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { buttonKey, dealPipeline, type PipelineOwner } from "@booki-aui/primitives/deal-pipeline";
 
-const parts = createParts(dealPipeline, {
+const TAGS = {
   root: "div",
   move: "select",
   won: "button",
   reason: "textarea",
   lost: "button",
   reopen: "button",
-});
-const DealPipelineRoot = parts.Root;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof dealPipeline, typeof TAGS> = createParts(dealPipeline, TAGS);
+const DealPipelineRoot: (typeof parts)["Root"] = parts.Root;
 /** A person's stage picker on one deal: `value` is the deal id. */
-const DealPipelineMove = parts.Move;
-const DealPipelineWon = parts.Won;
-const DealPipelineReason = parts.Reason;
-const DealPipelineLost = parts.Lost;
-const DealPipelineReopen = parts.Reopen;
+const DealPipelineMove: (typeof parts)["Move"] = parts.Move;
+const DealPipelineWon: (typeof parts)["Won"] = parts.Won;
+const DealPipelineReason: (typeof parts)["Reason"] = parts.Reason;
+const DealPipelineLost: (typeof parts)["Lost"] = parts.Lost;
+const DealPipelineReopen: (typeof parts)["Reopen"] = parts.Reopen;
 
 const COPY = {
   EN: {

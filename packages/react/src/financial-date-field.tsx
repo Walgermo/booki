@@ -1,18 +1,20 @@
 import { type FinancialDateKind } from "@booki-aui/core/financial-date";
 import { Field, FieldError, FieldLabel } from "@ui-sdk/react/field";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { financialDate } from "@booki-aui/primitives/financial-date-field";
 
-const parts = createParts(financialDate, {
+const TAGS = {
   root: "div",
   input: "input",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof financialDate, typeof TAGS> = createParts(financialDate, TAGS);
 
-const FinancialDateRoot = parts.Root;
-const FinancialDateControl = parts.Input;
+const FinancialDateRoot: (typeof parts)["Root"] = parts.Root;
+const FinancialDateControl: (typeof parts)["Input"] = parts.Input;
 
 export type FinancialDateFieldProps = {
   kind?: FinancialDateKind;

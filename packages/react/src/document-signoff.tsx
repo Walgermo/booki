@@ -1,22 +1,24 @@
 import type { SignableDocument, SignoffLevel, SignoffMark } from "@booki-aui/core/document-signoff";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { buttonKey, documentSignoff, type LevelView } from "@booki-aui/primitives/document-signoff";
 
-const parts = createParts(documentSignoff, {
+const TAGS = {
   root: "div",
   sign: "button",
   reason: "textarea",
   withdraw: "button",
-});
-const DocumentSignoffRoot = parts.Root;
-const DocumentSignoffSign = parts.Sign;
-const DocumentSignoffReason = parts.Reason;
-const DocumentSignoffWithdraw = parts.Withdraw;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof documentSignoff, typeof TAGS> = createParts(documentSignoff, TAGS);
+const DocumentSignoffRoot: (typeof parts)["Root"] = parts.Root;
+const DocumentSignoffSign: (typeof parts)["Sign"] = parts.Sign;
+const DocumentSignoffReason: (typeof parts)["Reason"] = parts.Reason;
+const DocumentSignoffWithdraw: (typeof parts)["Withdraw"] = parts.Withdraw;
 
 const COPY = {
   EN: {

@@ -1,5 +1,5 @@
 import { formatMoney } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import {
@@ -11,10 +11,12 @@ import {
   type RecurringView,
 } from "@booki-aui/primitives/recurring-revenue";
 
-const parts = createParts(recurringRevenue, { root: "div", view: "button", movement: "button" });
-const RecurringRevenueRoot = parts.Root;
-const RecurringRevenueView = parts.View;
-const RecurringRevenueMovement = parts.Movement;
+const TAGS = { root: "div", view: "button", movement: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof recurringRevenue, typeof TAGS> = createParts(recurringRevenue, TAGS);
+const RecurringRevenueRoot: (typeof parts)["Root"] = parts.Root;
+const RecurringRevenueView: (typeof parts)["View"] = parts.View;
+const RecurringRevenueMovement: (typeof parts)["Movement"] = parts.Movement;
 
 const COPY = {
   EN: {

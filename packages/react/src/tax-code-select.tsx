@@ -1,25 +1,27 @@
 import type { TaxCode } from "@booki-aui/core/locale";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { taxCodeSelect } from "@booki-aui/primitives/tax-code-select";
 
-const parts = createParts(taxCodeSelect, {
+const TAGS = {
   root: "div",
   trigger: "button",
   list: "div",
   option: "div",
   select: "select",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof taxCodeSelect, typeof TAGS> = createParts(taxCodeSelect, TAGS);
 
-const TaxCodeSelectRoot = parts.Root;
+const TaxCodeSelectRoot: (typeof parts)["Root"] = parts.Root;
 /** The select-only combobox a person opens. */
-const TaxCodeSelectTrigger = parts.Trigger;
-const TaxCodeSelectList = parts.List;
-const TaxCodeSelectOption = parts.Option;
+const TaxCodeSelectTrigger: (typeof parts)["Trigger"] = parts.Trigger;
+const TaxCodeSelectList: (typeof parts)["List"] = parts.List;
+const TaxCodeSelectOption: (typeof parts)["Option"] = parts.Option;
 /** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
-const TaxCodeSelectControl = parts.Select;
+const TaxCodeSelectControl: (typeof parts)["Select"] = parts.Select;
 
 export type TaxCodeSelectProps = {
   value?: string;

@@ -6,22 +6,24 @@ import {
   type ReconciliationMatch,
   type ReconciliationSummary,
 } from "@booki-aui/core/reconciliation";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useState, type ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { bankReconciliation } from "@booki-aui/primitives/bank-reconciliation";
 
-const parts = createParts(bankReconciliation, {
+const TAGS = {
   root: "div",
   match: "button",
   approve: "button",
   reject: "button",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof bankReconciliation, typeof TAGS> = createParts(bankReconciliation, TAGS);
 
-const BankReconciliationRoot = parts.Root;
-const BankReconciliationMatch = parts.Match;
-const BankReconciliationApprove = parts.Approve;
-const BankReconciliationReject = parts.Reject;
+const BankReconciliationRoot: (typeof parts)["Root"] = parts.Root;
+const BankReconciliationMatch: (typeof parts)["Match"] = parts.Match;
+const BankReconciliationApprove: (typeof parts)["Approve"] = parts.Approve;
+const BankReconciliationReject: (typeof parts)["Reject"] = parts.Reject;
 
 type RootState = {
   matches: ReconciliationMatch[];

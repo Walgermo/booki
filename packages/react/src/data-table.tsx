@@ -8,7 +8,7 @@ import {
   type TableColumn,
   type TableQuery,
 } from "@booki-aui/core/table";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
@@ -17,7 +17,7 @@ import { type AnyRow, type DataTableColumn as ColumnOf, idOf, dataTable } from "
 /** A column: the shared definition from `@booki-aui/core/table`, plus how a person sees the cell. */
 export type DataTableColumn<Row> = ColumnOf<Row, ReactNode>;
 
-const parts = createParts(dataTable, {
+const TAGS = {
   root: "div",
   search: "input",
   column: "input",
@@ -27,17 +27,19 @@ const parts = createParts(dataTable, {
   prev: "button",
   next: "button",
   pagesize: "select",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof dataTable, typeof TAGS> = createParts(dataTable, TAGS);
 
-const DataTableRoot = parts.Root;
-const DataTableSearch = parts.Search;
-const DataTableColumnToggle = parts.Column;
-const DataTableSort = parts.Sort;
-const DataTableSelect = parts.Select;
-const DataTableSelectPage = parts.Selectpage;
-const DataTablePrev = parts.Prev;
-const DataTableNext = parts.Next;
-const DataTablePageSize = parts.Pagesize;
+const DataTableRoot: (typeof parts)["Root"] = parts.Root;
+const DataTableSearch: (typeof parts)["Search"] = parts.Search;
+const DataTableColumnToggle: (typeof parts)["Column"] = parts.Column;
+const DataTableSort: (typeof parts)["Sort"] = parts.Sort;
+const DataTableSelect: (typeof parts)["Select"] = parts.Select;
+const DataTableSelectPage: (typeof parts)["Selectpage"] = parts.Selectpage;
+const DataTablePrev: (typeof parts)["Prev"] = parts.Prev;
+const DataTableNext: (typeof parts)["Next"] = parts.Next;
+const DataTablePageSize: (typeof parts)["Pagesize"] = parts.Pagesize;
 
 const COPY = {
   EN: {

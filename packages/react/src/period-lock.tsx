@@ -1,16 +1,18 @@
 import { formatPeriod } from "@booki-aui/core/period";
 import type { BookiChangeDetails } from "./change-details.js";
 import { type PeriodState, type PeriodStatus } from "@booki-aui/core/period-lock";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { periodLock } from "@booki-aui/primitives/period-lock";
 
-const parts = createParts(periodLock, { root: "div", set: "button" });
-const PeriodLockRoot = parts.Root;
-const PeriodLockSet = parts.Set;
+const TAGS = { root: "div", set: "button" } as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof periodLock, typeof TAGS> = createParts(periodLock, TAGS);
+const PeriodLockRoot: (typeof parts)["Root"] = parts.Root;
+const PeriodLockSet: (typeof parts)["Set"] = parts.Set;
 
 export type PeriodLockProps = {
   /** The period codes to list, e.g. `["2026-01", "2026-02"]`. */

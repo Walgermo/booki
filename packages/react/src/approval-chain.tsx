@@ -5,24 +5,26 @@ import {
   type ApprovalState,
 } from "@booki-aui/core/approval";
 import type { BookiChangeDetails } from "./change-details.js";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useWorkflowCopy } from "./workflow-copy.js";
 import { useSay } from "./say.js";
 import { approvalChain } from "@booki-aui/primitives/approval-chain";
 
-const parts = createParts(approvalChain, {
+const TAGS = {
   root: "div",
   approve: "button",
   reject: "button",
   escalate: "button",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof approvalChain, typeof TAGS> = createParts(approvalChain, TAGS);
 
-const ApprovalChainRoot = parts.Root;
-const ApprovalChainApprove = parts.Approve;
-const ApprovalChainReject = parts.Reject;
-const ApprovalChainEscalate = parts.Escalate;
+const ApprovalChainRoot: (typeof parts)["Root"] = parts.Root;
+const ApprovalChainApprove: (typeof parts)["Approve"] = parts.Approve;
+const ApprovalChainReject: (typeof parts)["Reject"] = parts.Reject;
+const ApprovalChainEscalate: (typeof parts)["Escalate"] = parts.Escalate;
 
 export type ApprovalChainProps = {
   chain: ApprovalLevel[];

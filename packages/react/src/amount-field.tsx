@@ -1,18 +1,20 @@
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { amountField } from "@booki-aui/primitives/amount-field";
 
-const parts = createParts(amountField, {
+const TAGS = {
   root: "div",
   currency: "span",
   input: "input",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof amountField, typeof TAGS> = createParts(amountField, TAGS);
 
-const AmountFieldRoot = parts.Root;
-const AmountFieldCurrency = parts.Currency;
-const AmountFieldInput = parts.Input;
+const AmountFieldRoot: (typeof parts)["Root"] = parts.Root;
+const AmountFieldCurrency: (typeof parts)["Currency"] = parts.Currency;
+const AmountFieldInput: (typeof parts)["Input"] = parts.Input;
 
 export type AmountFieldProps = {
   /** Minor units. `null` shows the field empty, with `allowEmpty`. */

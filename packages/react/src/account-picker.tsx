@@ -1,27 +1,29 @@
 import type { AccountOption } from "@booki-aui/core/voucher";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
 import { FormValue, type BookiFormProps } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { accountPicker } from "@booki-aui/primitives/account-picker";
 
-const parts = createParts(accountPicker, {
+const TAGS = {
   root: "div",
   input: "input",
   list: "div",
   option: "div",
   empty: "div",
   select: "select",
-});
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof accountPicker, typeof TAGS> = createParts(accountPicker, TAGS);
 
-const AccountPickerRoot = parts.Root;
+const AccountPickerRoot: (typeof parts)["Root"] = parts.Root;
 /** The search field: an editable combobox that filters the chart of accounts. */
-const AccountPickerInput = parts.Input;
-const AccountPickerList = parts.List;
-const AccountPickerOption = parts.Option;
-const AccountPickerEmpty = parts.Empty;
+const AccountPickerInput: (typeof parts)["Input"] = parts.Input;
+const AccountPickerList: (typeof parts)["List"] = parts.List;
+const AccountPickerOption: (typeof parts)["Option"] = parts.Option;
+const AccountPickerEmpty: (typeof parts)["Empty"] = parts.Empty;
 /** The native `<select>` fallback, shown by @booki-aui/styles on touch screens. */
-const AccountPickerControl = parts.Select;
+const AccountPickerControl: (typeof parts)["Select"] = parts.Select;
 
 export type AccountPickerProps = {
   accounts: AccountOption[];

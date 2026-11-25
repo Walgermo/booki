@@ -14,14 +14,14 @@ import {
   type WorkpaperItem,
 } from "@booki-aui/core/audit";
 import { formatMoney, money } from "@booki-aui/core/money";
-import { createParts } from "@ui-sdk/react/primitive";
+import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
 import { useAccessFor } from "./access.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { useSay } from "./say.js";
 import { signed, auditWorkpaper } from "@booki-aui/primitives/audit-workpaper";
 
-const parts = createParts(auditWorkpaper, {
+const TAGS = {
   root: "div",
   result: "select",
   tick: "select",
@@ -33,18 +33,20 @@ const parts = createParts(auditWorkpaper, {
   prepare: "button",
   review: "button",
   withdraw: "button",
-});
-const AuditWorkpaperRoot = parts.Root;
-const AuditWorkpaperResult = parts.Result;
-const AuditWorkpaperTick = parts.Tick;
-const AuditWorkpaperCell = parts.Cell;
-const AuditWorkpaperConclusion = parts.Conclusion;
-const AuditWorkpaperMethod = parts.Method;
-const AuditWorkpaperSampler = parts.Sampler;
-const AuditWorkpaperDraw = parts.Draw;
-const AuditWorkpaperPrepare = parts.Prepare;
-const AuditWorkpaperReview = parts.Review;
-const AuditWorkpaperWithdraw = parts.Withdraw;
+} as const;
+// Typed by name, so the declarations refer to the definition instead of spelling it out per part.
+const parts: Parts<typeof auditWorkpaper, typeof TAGS> = createParts(auditWorkpaper, TAGS);
+const AuditWorkpaperRoot: (typeof parts)["Root"] = parts.Root;
+const AuditWorkpaperResult: (typeof parts)["Result"] = parts.Result;
+const AuditWorkpaperTick: (typeof parts)["Tick"] = parts.Tick;
+const AuditWorkpaperCell: (typeof parts)["Cell"] = parts.Cell;
+const AuditWorkpaperConclusion: (typeof parts)["Conclusion"] = parts.Conclusion;
+const AuditWorkpaperMethod: (typeof parts)["Method"] = parts.Method;
+const AuditWorkpaperSampler: (typeof parts)["Sampler"] = parts.Sampler;
+const AuditWorkpaperDraw: (typeof parts)["Draw"] = parts.Draw;
+const AuditWorkpaperPrepare: (typeof parts)["Prepare"] = parts.Prepare;
+const AuditWorkpaperReview: (typeof parts)["Review"] = parts.Review;
+const AuditWorkpaperWithdraw: (typeof parts)["Withdraw"] = parts.Withdraw;
 
 const COPY = {
   EN: {
