@@ -3775,8 +3775,9 @@ main {
   gap: 0.625rem;
   max-width: 100%;
   min-height: 2rem;
-  padding: 0.25rem 0.875rem 0.25rem 0.3125rem;
+  padding: 0 0.875rem 0 0;
   border-radius: 999px;
+  overflow: hidden;
   background: color-mix(in oklab, var(--bk-fg) 4%, transparent);
   box-shadow: inset 0 0 0 var(--hairline) var(--bk-border-strong);
   color: color-mix(in oklab, var(--bk-fg) 82%, var(--bk-bg));
@@ -3808,18 +3809,20 @@ main {
   }
 }
 
-/* The label: a raised chip on the card colour, a link-blue dot. Lime stays the agent's colour. */
+/* The label fills the pill's left end, on the card colour, with a link-blue dot. Lime stays the agent's colour. */
 .site-news__tag {
   display: inline-flex;
   flex: none;
+  align-self: stretch;
   align-items: center;
   gap: 0.4375rem;
-  padding: 0.1875rem 0.5625rem 0.1875rem 0.5rem;
-  border-radius: 999px;
+  padding: 0 0.75rem 0 0.8125rem;
+  border-radius: 999px 0 0 999px;
   background: var(--bk-card);
+  /* The pill's own edge on the outside, a hairline where the label meets the news. */
   box-shadow:
-    inset 0 0 0 var(--hairline) color-mix(in oklab, var(--bk-fg) 12%, transparent),
-    0 1px 2px color-mix(in oklab, var(--bk-fg) 8%, transparent);
+    inset 0 0 0 var(--hairline) var(--bk-border-strong),
+    inset calc(-1 * var(--hairline)) 0 0 color-mix(in oklab, var(--bk-fg) 12%, transparent);
   color: var(--bk-fg);
   font-size: 0.75rem;
   font-weight: 550;
