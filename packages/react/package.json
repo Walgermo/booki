@@ -9,7 +9,7 @@
     "url": "git+https://github.com/Walgermo/booki.git",
     "directory": "packages/react"
   },
-  "homepage": "https://github.com/Walgermo/booki#readme",
+  "homepage": "https://booki.dev/docs/installation",
   "bugs": {
     "url": "https://github.com/Walgermo/booki/issues"
   },

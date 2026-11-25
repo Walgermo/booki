@@ -2,47 +2,51 @@ import { TextLink } from "@booki-aui/react";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 
+import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
 import { ErpWindow } from "./agentify-erp";
 import { HeroTitle } from "./hero-title";
-import { MeasuredFigures } from "./measured-figures";
 import { PromptButton } from "./prompt-button";
 import { ProofStrip } from "./proof-strip";
 import { AGENT_PROMPT, REPO_URL, type LandingAgent } from "./shared";
 
-/**
- * The landing page's hero: the title, one line on what it gives, two measured
- * figures, the Install button, the demo ERP the agent works in, and the three
- * figures told in full.
- */
 export function Hero({ agent }: { agent: LandingAgent }) {
   const { t } = useLang();
-  const markRef = useRef<HTMLSpanElement | null>(null);
-  const proofRef = useRef<HTMLDivElement | null>(null);
+  const markRef = useRef<HTMLSpanElement>(null);
+  const proofRef = useRef<HTMLDivElement>(null);
   return (
-    <section className="site-ledger grid grid-cols-[minmax(0,1fr)] gap-16 pt-[76px] pb-16 md:gap-28 md:pb-24">
+    <section className="site-ledger grid grid-cols-[minmax(0,1fr)] gap-12 pt-12 pb-16 md:gap-20 md:pt-[76px] md:pb-24">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
         <HeroTitle
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
-          text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
-          mark={t("agentic", "agentisk")}
-          // Booki is for more than an ERP: the last word turns through the business SaaS it fits,
-          // from the books to the CRM. No word longer than the longest here, or the title shrinks.
-          rotate={t(
-            "ERP|CRM|invoicing tool|payments app|help desk|HR system|project tool|audit software|expense app",
-            "ERP-system|CRM|fakturasystem|betalingsløsning|helpdesk|HR-system|prosjektverktøy|revisjonsverktøy|utleggssystem",
-          ).split("|")}
+          text={t("Let an agent prepare vouchers", "La agenten klargjøre bilag")}
+          mark={t("agent", "agenten")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
-          {t("Make your code agentic with Booki.", "Gjør koden deres agentisk med Booki.")}
+          {t(
+            "With Booki, the agent fills in voucher lines and checks the balance. Your rules decide who can post.",
+            "Med Booki fyller agenten ut bilagslinjene og sjekker at bilaget balanserer. Dere bestemmer hvem som kan bokføre.",
+          )}
         </p>
-        <MeasuredFigures />
-        {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 28 to the figures, 56 to the button. */}
-        <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
-          <PromptButton prompt={AGENT_PROMPT} />
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Button asChild size="lg">
+            <a href="#invoice-demo">{t("Try the invoice demo", "Prøv fakturademoen")}</a>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link to="/docs/installation">{t("Install packages", "Installer pakkene")}</Link>
+          </Button>
         </div>
-        <nav aria-label={t("Read more", "Les mer")} className="mt-5 flex items-center gap-6 text-sm">
+        <div className="mt-4 grid justify-items-center gap-2">
+          <PromptButton prompt={AGENT_PROMPT} />
+          <p className="m-0 text-sm text-muted-foreground">
+            {t("Paste the prompt into your coding agent.", "Lim inn prompten i kodeagenten deres.")}
+          </p>
+        </div>
+        <nav
+          aria-label={t("Read more", "Les mer")}
+          className="mt-5 flex flex-wrap items-center justify-center gap-6 text-sm"
+        >
           <TextLink asChild icon={<FeaturesIcon />}>
             <Link to="/features">{t("Features", "Funksjoner")}</Link>
           </TextLink>
@@ -55,27 +59,8 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         </nav>
       </div>
 
-      {/* The product on a stage, like a photograph on a backdrop. */}
-      <div className="erp-stage">
-        <ErpWindow agent={agent} from={markRef} to={proofRef} />
-      </div>
+      <ErpWindow agent={agent} from={markRef} to={proofRef} />
 
-      {/* Why the agent works in the screen at all, in one picture anyone knows. */}
-      <figure className="landing-quote">
-        <blockquote>
-          <p>
-            {t(
-              "Without labels in the fuse box, you guess. Booki labels every field and button, so the agent gets it right the first time.",
-              "Uten merking i sikringsskapet må du prøve deg fram. Booki merker hvert felt og hver knapp, så agenten treffer riktig første gang.",
-            )}
-          </p>
-        </blockquote>
-        <figcaption>
-          Stian Walgermo, <span>{t("creator of Booki", "skaper av Booki")}</span>
-        </figcaption>
-      </figure>
-
-      {/* After the demo, the agent's cursor goes on to the measured figures. */}
       <div ref={proofRef}>
         <ProofStrip />
       </div>

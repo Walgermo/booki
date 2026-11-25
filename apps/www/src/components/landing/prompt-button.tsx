@@ -15,7 +15,7 @@ const isMac = () =>
   );
 
 /**
- * The hero's one action. A click copies the setup prompt, and the button
+ * A click copies the setup prompt, and the button
  * prints a receipt: a paper slip unrolls from under it with the start of the
  * prompt and the one thing left to do, paste it into a coding agent. The slip
  * waits while it is read (hover, focus, hidden tab), closes on Escape or a
@@ -128,12 +128,11 @@ export function PromptButton({ prompt }: { prompt: string }) {
         data-done={done ? "" : undefined}
         aria-expanded={open}
         aria-controls="prompt-slip"
-        aria-label={done ? undefined : t("Install: copies the agent prompt", "Installer: kopierer agentprompten")}
         onClick={copy}
       >
         <span className="prompt-button__face" data-face="idle" aria-hidden={done}>
           <span className="prompt-button__caret" aria-hidden="true" />
-          <span className="prompt-button__label">{t("Install", "Installer")}</span>
+          <span className="prompt-button__label">{t("Copy agent prompt", "Kopier agentprompt")}</span>
           <span className="prompt-button__copy">
             <CopyIcon />
           </span>

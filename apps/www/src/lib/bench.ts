@@ -15,28 +15,28 @@ type Text = { en: string; nb: string };
 
 export const TASKS: { id: BenchTask; label: Text; short: Text; plural: Text }[] = [
   {
-    id: "voucher",
-    label: { en: "Post a voucher", nb: "Bokfør et bilag" },
-    short: { en: "Voucher", nb: "Bilag" },
-    plural: { en: "vouchers", nb: "bilag" },
-  },
-  {
     id: "supplier-invoice",
     label: { en: "Book a supplier invoice", nb: "Bokfør en leverandørfaktura" },
     short: { en: "Supplier invoice", nb: "Leverandørfaktura" },
     plural: { en: "supplier invoices", nb: "leverandørfakturaer" },
   },
   {
-    id: "sales-invoice",
-    label: { en: "Create a sales invoice", nb: "Lag en utgående faktura" },
-    short: { en: "Sales invoice", nb: "Utgående faktura" },
-    plural: { en: "sales invoices", nb: "utgående fakturaer" },
-  },
-  {
     id: "dashboard",
     label: { en: "Read a dashboard", nb: "Les et dashbord" },
     short: { en: "Dashboard", nb: "Dashbord" },
     plural: { en: "dashboard reads", nb: "dashbordavlesninger" },
+  },
+  {
+    id: "voucher",
+    label: { en: "Post a voucher", nb: "Bokfør et bilag" },
+    short: { en: "Voucher", nb: "Bilag" },
+    plural: { en: "vouchers", nb: "bilag" },
+  },
+  {
+    id: "sales-invoice",
+    label: { en: "Create a sales invoice", nb: "Lag en utgående faktura" },
+    short: { en: "Sales invoice", nb: "Utgående faktura" },
+    plural: { en: "sales invoices", nb: "utgående fakturaer" },
   },
 ];
 

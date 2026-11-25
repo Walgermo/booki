@@ -3249,7 +3249,6 @@ html[data-kpi-still] {
   overflow: hidden;
 }
 
-/* Booki's bar: transform only, set per frame, so it never lays out. */
 .site-proof__bar {
   display: block;
   height: 100%;
@@ -3449,12 +3448,12 @@ html[data-kpi-still] {
    it printed. */
 .receipt-race {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
   /* every receipt as tall as the longest, so the totals sit on one line */
   align-items: stretch;
   gap: 1.5rem;
   /* the counter the slips lie on */
-  padding: 1.5rem;
+  padding: clamp(0.5rem, 4vw, 1.5rem);
   border-radius: var(--bk-radius);
   background: var(--bk-muted);
 }
@@ -3665,7 +3664,7 @@ html[data-kpi-still] {
   }
 }
 
-/* The race's figures, under the receipts: the slips' tally. A label in mono
+/* The race's figures. A label in mono
    caps over each figure, the screen's value struck through and faded, Booki's
    value in full ink, so the eye reads the result and sees what it replaced. */
 .race-figures .site-figures {
@@ -3741,6 +3740,12 @@ html[data-kpi-still] {
 @media (max-width: 767px) {
   .race-figures .site-figures--four {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .race-figures .site-figures--four {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
