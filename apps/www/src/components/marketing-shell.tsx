@@ -58,8 +58,8 @@ export function MarketingShell() {
             </p>
             <p className="m-0">
               {t(
-                "Before 1.0, not on npm yet: React with the Norwegian and US profiles is supported, the rest is experimental.",
-                "Før 1.0, ikke på npm ennå: React med norsk og amerikansk profil er støttet, resten er eksperimentelt.",
+                "Before 1.0: React with the Norwegian and US profiles is supported, the rest is experimental.",
+                "Før 1.0: React med norsk og amerikansk profil er støttet, resten er eksperimentelt.",
               )}{" "}
               <a href={`${REPO_URL}/issues`} target="_blank" rel="noreferrer" className="site-link">
                 {t("Questions and bugs", "Spørsmål og feil")}

@@ -48,23 +48,12 @@ the person that the setup is experimental before you wire it.
 
 ## 1. Install
 
-Booki is not on npm yet, so `pnpm add @booki-aui/react` answers 404. Pack it from a clone
-(Node 26, pnpm 11):
-
-```bash
-git clone https://github.com/Walgermo/booki.git ../booki && cd ../booki && pnpm install
-pnpm pack:local --out <your app>/vendor/booki
-```
-
-It prints what to do next, for pnpm (an `overrides` block and a `pnpm add`) and for npm
-(one `npm install`). Commit the files in `vendor/booki` if others build the app. Don't
-use `link:`: the app then loads a second React, and nobody else can install it.
-
-Once Booki is published, this is the whole step:
-
 ```bash
 pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
 ```
+
+With npm, the same packages after `npm install`. Booki is before 1.0: read the release
+notes (the GitHub Releases, or each package's CHANGELOG) before moving to a new minor.
 
 Requires React 19+ for `@booki-aui/react`. Other stacks: `@booki-aui/web` (custom elements; Angular,
 server-rendered pages), `@booki-aui/vue`, `@booki-aui/svelte`, `@booki-aui/solid`, all with the same
@@ -558,7 +547,7 @@ submit) are refused for an agent even when its roles allow them.
 ## 7. Implementation checklist
 
 1. Detect the stack (Vite/Next, package manager, existing providers, auth).
-2. Add the packages (section 1: packed from a clone until they are on npm); import `@booki-aui/styles` once at the root if using the default look
+2. Add the packages (section 1); import `@booki-aui/styles` once at the root if using the default look
    (map `--bk-*` tokens to the product's own).
 3. Root: `BookiLocaleProvider`, `BookiAccessProvider` with the signed-in person,
    `AgentPresence` and `AgentCursor`.
@@ -575,8 +564,8 @@ submit) are refused for an agent even when its roles allow them.
 8. Prove it in the running app: `window.agent.snapshot()` lists the screen's
    controls with named actions; one `agent.act` sets an amount and the cursor
    shows it; a marked step waits for a person; the audit log has `agent:bookkeeper`.
-   Then run the readiness audit from the clone against the running screen (it only
-   reads): `pnpm --dir ../booki readiness <url of the screen> --timeout 120000` (a dev
+   Then run the readiness audit against the running screen (it only reads, and uses
+   the installed Chrome): `npx @booki-aui/readiness <url of the screen> --timeout 120000` (a dev
    server compiling the page the first time needs the longer timeout). A screen behind a
    sign-in needs a signed-in session, or it measures the sign-in page: save one with
    `npx playwright codegen --save-storage=session.json <url>` (sign in, then close the

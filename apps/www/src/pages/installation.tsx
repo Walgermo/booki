@@ -1,11 +1,8 @@
-import { version } from "../../../../packages/react/package.json";
 import { Link } from "react-router-dom";
 
 import { InstallBlock } from "../components/install-block";
 import { Section } from "../components/section";
 import { useLang } from "@/lib/lang";
-
-const REPO_URL = "https://github.com/Walgermo/booki";
 
 const NEEDS = [
   [
@@ -32,21 +29,7 @@ const NEEDS = [
   ],
 ] as const;
 
-const BUILD = `git clone ${REPO_URL}.git
-cd booki
-pnpm install
-pnpm pack:local --out ../your-product/vendor/booki`;
-
-// What `pnpm pack:local` names the files: the packages share one version.
-const ADD = `# pnpm-workspace.yaml
-overrides:
-  "@booki-aui/core": "file:./vendor/booki/booki-core-${version}.tgz"
-  "@booki-aui/primitives": "file:./vendor/booki/booki-primitives-${version}.tgz"
-  "@booki-aui/react": "file:./vendor/booki/booki-react-${version}.tgz"
-  "@booki-aui/styles": "file:./vendor/booki/booki-styles-${version}.tgz"
-
-# then
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles`;
+const ADD = "pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles";
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"
 import "@booki-aui/styles"
@@ -149,8 +132,8 @@ export function InstallationPage() {
       </h1>
       <p className="mt-4 mb-10 max-w-prose text-lg leading-relaxed text-muted-foreground text-pretty">
         {t(
-          "Five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. About five minutes once the packages are packed.",
-          "Fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med dine godkjenningsregler. Omtrent fem minutter når pakkene er pakket.",
+          "Five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. About five minutes.",
+          "Fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med dine godkjenningsregler. Omtrent fem minutter.",
         )}
       </p>
 
@@ -158,8 +141,8 @@ export function InstallationPage() {
         id="install"
         title={t("Install", "Installer")}
         note={t(
-          "The packages are not on npm yet. For now you pack them from the repo.",
-          "Pakkene er ikke på npm ennå. Foreløpig pakker du dem fra repoet.",
+          "Three packages from npm. Their peer dependencies come along.",
+          "Tre pakker fra npm. Avhengighetene de trenger, følger med.",
         )}
       >
         <ul className="site-rows mb-6">
@@ -170,27 +153,12 @@ export function InstallationPage() {
             </li>
           ))}
         </ul>
-        <p className={p}>
-          {t("Clone ", "Klon ")}
-          <a className="site-link" href={REPO_URL}>
-            {t("the repo", "repoet")}
-          </a>{" "}
-          {t(
-            "next to your product and pack it into your product, as npm would deliver it.",
-            "ved siden av produktet ditt, og pakk det inn i produktet ditt slik npm ville levert det.",
-          )}
-        </p>
-        <InstallBlock label={t("Next to your product", "Ved siden av produktet ditt")} command={BUILD} />
-        <p className={p}>
-          {t(
-            "Then add the packages. The command above prints this block with your own paths, and one line for npm.",
-            "Legg så til pakkene. Kommandoen over skriver ut denne blokken med dine egne stier, og én linje for npm.",
-          )}
-        </p>
         <InstallBlock label={t("In your product", "I produktet ditt")} command={ADD} />
         <p className={p}>
-          {t("When the packages are published this becomes one ", "Når pakkene er publisert, blir dette én ")}
-          <code>pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles</code>.
+          {t(
+            "With npm, the same three after npm install. @booki-aui/styles is the optional default look.",
+            "Med npm er det de samme tre etter npm install. @booki-aui/styles er det valgfrie standardutseendet.",
+          )}
         </p>
       </Section>
 

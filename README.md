@@ -36,8 +36,14 @@ and stop where a person has to decide. Your server checks the same rules again.
 
 ## Quick start
 
-Booki is not on npm yet: it is published once v1 has run in a real product.
-Until then, the skill packs it from a clone. What comes next is in [`ROADMAP.md`](ROADMAP.md). Give it to your coding agent:
+Booki is on npm as `@booki-aui/*`, before 1.0: the API may still change between
+releases. What comes next is in [`ROADMAP.md`](ROADMAP.md). Install it yourself:
+
+```bash
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles
+```
+
+Or give it to your coding agent:
 
 - **In your app, with a coding agent:** load the skill, or copy the full setup
   prompt with the button on [booki.dev](https://booki.dev).
@@ -65,10 +71,9 @@ Open http://localhost:5173 for the docs and the demo.
 at http://localhost:3100, and `pnpm --filter @booki-aui/example-crm dev` [the sales CRM
 example](examples/crm) at http://localhost:3200.
 
-- **In your app, by hand:** `pnpm pack:local` in a clone packs Booki as npm
-  would deliver it and prints how to add it
-  ([installation](https://booki.dev/docs/installation)). An existing Next.js
-  and shadcn/ui product: [docs/drop-in.md](docs/drop-in.md).
+- **In your app, by hand:** the [installation guide](https://booki.dev/docs/installation)
+  takes about five minutes. An existing Next.js and shadcn/ui product:
+  [docs/drop-in.md](docs/drop-in.md).
 
 ## How it works
 
