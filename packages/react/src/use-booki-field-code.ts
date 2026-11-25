@@ -37,6 +37,8 @@ export type BookiFieldCodeOptions = {
 
 export type BookiFieldCodeState = {
   code: string;
+  /** The same code, under the key `expect` compares. */
+  value: string;
   /** Every item, which the agent's `query` searches. */
   options: BookiFieldCodeItem[];
   /** The items the snapshot shows: all of a short list, none of a long one. */
@@ -103,11 +105,12 @@ export const bookiFieldCode = definePrimitive({
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["code", "items", "itemsHint", "personOnly", "refusal"],
+  controlled: ["value", "code", "items", "itemsHint", "personOnly", "refusal"],
   state: (options: BookiFieldCodeOptions): BookiFieldCodeState => {
     const all = options.options ?? [];
     return {
       code: options.value ?? "",
+      value: options.value ?? "",
       options: all,
       items: shownItems(all),
       itemsHint: itemsHint(all),
@@ -123,7 +126,10 @@ export const bookiFieldCode = definePrimitive({
     if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
     if (options.personOnly !== undefined) next.personOnly = options.personOnly;
-    if (options.value !== undefined) next.code = options.value;
+    if (options.value !== undefined) {
+      next.code = options.value;
+      next.value = options.value;
+    }
     if (options.options !== undefined) {
       next.options = options.options;
       next.items = shownItems(options.options);
@@ -140,9 +146,10 @@ export const bookiFieldCode = definePrimitive({
       // The product hears the change first and may cancel it.
       if (dispatch(context, "onValueChange", next, { reason, event })) return false;
       const ok = change("code", next, { reason, event });
+      if (ok) context.store.set({ value: next });
       // Controlled: the product passes the value back through sync; until it
       // does, the field keeps the value it holds.
-      if (ok && context.options().value !== undefined) context.store.set({ code });
+      if (ok && context.options().value !== undefined) context.store.set({ code, value: code });
       return ok;
     }
 
@@ -169,6 +176,8 @@ export const bookiFieldCode = definePrimitive({
     };
   },
   slots: (slot) => ({
+    // Names the field for the agent when the root takes no `aria-label` (`group: false`).
+    label: slot({ attrs: () => ({ "data-slot": "visually-hidden" }) }),
     root: slot({
       role: (state) => (state.group ? "group" : undefined),
       roles: ["group"],
@@ -177,7 +186,7 @@ export const bookiFieldCode = definePrimitive({
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
-      state: (state) => ({ code: state.code, refusal: state.refusal }),
+      state: (state) => ({ code: state.code, value: state.value, refusal: state.refusal }),
     }),
   }),
   agent: { actions: ["setCode"], items: (api) => api.items() },

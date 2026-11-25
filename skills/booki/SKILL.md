@@ -370,11 +370,15 @@ field): `useBookiField` from `@booki-aui/react` gives it Booki's typed agent act
 rules without replacing it. Four kinds: `amount` (`setMinor`, integer minor units),
 `code` from a closed list (`setCode`, a refusal names the options), `account` (`setAccount`:
 digits of a length range, or a closed `chart` whose unknown numbers are refused with the nearest
-ones) and `date` (`setDate`, ISO). `group: false` drops the root's `role="group"` when your field
-has its own `fieldset`. Your field calls `change(next, event)` for a person's edit and shows
-`refusal`. See "The lower threshold: useBookiField" in own-controls.md.
+ones) and `date` (`setDate`, ISO). `group: false` drops the root's `role="group"` and its
+`aria-label` when your field has its own `fieldset`; the agent's name for the field then comes from a
+hidden element, so your visible `<label>` stays the only accessible name. The snapshot
+holds `value` beside each kind's own key, so `expect` works on every kind. Your field calls
+`change(next, event)` for a person's edit and shows `refusal`. Render the product's own input or
+select inside it, never one that is on the bridge such as ui-sdk's `Input`: that registers a
+second control for the same field, and an agent's `setValue` on it skips the field's rule. See "The lower threshold: useBookiField" in own-controls.md.
 
-A free-text field (a description, a note) needs no Booki kind: `Input` from
+A free-text field on its own (a description, a note; not inside `useBookiField`) needs no Booki kind: `Input` from
 `@ui-sdk/react/input` is already on the bridge, with `setValue`, under its accessible name.
 It renders without styles, and `@booki-aui/styles` styles only Booki's own controls. Don't copy
 your design system's input classes into the screen: they drift when the design system changes.

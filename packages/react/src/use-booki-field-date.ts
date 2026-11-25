@@ -24,6 +24,8 @@ export type BookiFieldDateOptions = {
 
 export type BookiFieldDateState = {
   date: string;
+  /** The same date, under the key `expect` compares. */
+  value: string;
   refusal: string | null;
   /** The root is a `role="group"`; false when the product's field has its own. */
   group: boolean;
@@ -45,9 +47,10 @@ export const bookiFieldDate = definePrimitive({
     ...lockOptions,
     onValueChange: "callback",
   },
-  controlled: ["date", "refusal"],
+  controlled: ["value", "date", "refusal"],
   state: (options: BookiFieldDateOptions): BookiFieldDateState => ({
     date: options.value ?? "",
+    value: options.value ?? "",
     refusal: null,
     group: options.group ?? true,
     ...lockState(options),
@@ -55,7 +58,10 @@ export const bookiFieldDate = definePrimitive({
   sync: (options: BookiFieldDateOptions): Partial<BookiFieldDateState> => {
     const next: Partial<BookiFieldDateState> = { ...lockState(options) };
     if (options.group !== undefined) next.group = options.group;
-    if (options.value !== undefined) next.date = options.value;
+    if (options.value !== undefined) {
+      next.date = options.value;
+      next.value = options.value;
+    }
     return next;
   },
   api: (context) => {
@@ -67,9 +73,10 @@ export const bookiFieldDate = definePrimitive({
       // The product hears the change first and may cancel it.
       if (dispatch(context, "onValueChange", next, { reason, event })) return false;
       const ok = change("date", next, { reason, event });
+      if (ok) context.store.set({ value: next });
       // Controlled: the product passes the value back through sync; until it
       // does, the field keeps the value it holds.
-      if (ok && context.options().value !== undefined) context.store.set({ date });
+      if (ok && context.options().value !== undefined) context.store.set({ date, value: date });
       return ok;
     }
 
@@ -83,6 +90,8 @@ export const bookiFieldDate = definePrimitive({
     };
   },
   slots: (slot) => ({
+    // Names the field for the agent when the root takes no `aria-label` (`group: false`).
+    label: slot({ attrs: () => ({ "data-slot": "visually-hidden" }) }),
     root: slot({
       role: (state) => (state.group ? "group" : undefined),
       roles: ["group"],
@@ -91,7 +100,7 @@ export const bookiFieldDate = definePrimitive({
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
-      state: (state) => ({ date: state.date, refusal: state.refusal }),
+      state: (state) => ({ date: state.date, value: state.value, refusal: state.refusal }),
     }),
   }),
   agent: { actions: ["setDate"] },

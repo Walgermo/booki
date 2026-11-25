@@ -37,6 +37,8 @@ export type BookiFieldAccountOptions = {
 
 export type BookiFieldAccountState = {
   account: string;
+  /** The same account number, under the key `expect` compares. */
+  value: string;
   chart: BookiFieldAccountEntry[];
   /** The chart entries the snapshot shows: all of a short chart, none of a long one. */
   items: BookiFieldCodeItem[];
@@ -72,11 +74,12 @@ export const bookiFieldAccount = definePrimitive({
     onValueChange: "callback",
   },
   // The product owns the value: the snapshot shows these, the product sets them.
-  controlled: ["account", "items", "itemsHint", "minLength", "maxLength", "refusal"],
+  controlled: ["value", "account", "items", "itemsHint", "minLength", "maxLength", "refusal"],
   state: (options: BookiFieldAccountOptions): BookiFieldAccountState => {
     const chart = options.chart ?? [];
     return {
       account: options.value ?? "",
+      value: options.value ?? "",
       chart,
       items: shownItems(toItems(chart)),
       itemsHint: itemsHint(toItems(chart)),
@@ -92,7 +95,10 @@ export const bookiFieldAccount = definePrimitive({
     const next: Partial<BookiFieldAccountState> = { ...lockState(options) };
     if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
-    if (options.value !== undefined) next.account = options.value;
+    if (options.value !== undefined) {
+      next.account = options.value;
+      next.value = options.value;
+    }
     if (options.minLength !== undefined) next.minLength = options.minLength;
     if (options.maxLength !== undefined) next.maxLength = options.maxLength;
     if (options.chart !== undefined) {
@@ -111,9 +117,10 @@ export const bookiFieldAccount = definePrimitive({
       // The product hears the change first and may cancel it.
       if (dispatch(context, "onValueChange", next, { reason, event })) return false;
       const ok = change("account", next, { reason, event });
+      if (ok) context.store.set({ value: next });
       // Controlled: the product passes the value back through sync; until it
       // does, the field keeps the value it holds.
-      if (ok && context.options().value !== undefined) context.store.set({ account });
+      if (ok && context.options().value !== undefined) context.store.set({ account, value: account });
       return ok;
     }
 
@@ -165,6 +172,8 @@ export const bookiFieldAccount = definePrimitive({
     };
   },
   slots: (slot) => ({
+    // Names the field for the agent when the root takes no `aria-label` (`group: false`).
+    label: slot({ attrs: () => ({ "data-slot": "visually-hidden" }) }),
     root: slot({
       role: (state) => (state.group ? "group" : undefined),
       roles: ["group"],
@@ -173,7 +182,7 @@ export const bookiFieldAccount = definePrimitive({
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
-      state: (state) => ({ account: state.account, refusal: state.refusal }),
+      state: (state) => ({ account: state.account, value: state.value, refusal: state.refusal }),
     }),
   }),
   agent: { actions: ["setAccount"], items: (api) => api.items() },

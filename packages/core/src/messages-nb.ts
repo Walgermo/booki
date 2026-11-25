@@ -763,4 +763,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     "{at} trenger en ref: en komponents ref fra snapshot, eller merkelappen. Ingen steg ble kjørt.",
   "bridge.step-needs-action": '{at}, på "{ref}", trenger en handling, som "press". Ingen steg ble kjørt.',
   "bridge.step-needs-value": '{action} på "{ref}" trenger verdien, som "args": [verdi]. Ingen steg ble kjørt.',
+  "bridge.steps-stay-done": "Stegene før dette er utført.",
+  "bridge.send-again-one": "Send det på nytt med steget etter det, {total} steg i ett kall.",
+  "bridge.send-again-many": "Send det på nytt med de {rest} stegene etter det, {total} steg i ett kall.",
 };

@@ -591,7 +591,7 @@
       "readOnly",
       "value"
     ],
-    "parts": ["root"],
+    "parts": ["label", "root"],
     "dataSlots": ["field-account"]
   },
   "field-amount": {
@@ -607,19 +607,19 @@
       "readOnly",
       "value"
     ],
-    "parts": ["root"],
+    "parts": ["label", "root"],
     "dataSlots": ["field-amount"]
   },
   "field-code": {
     "actions": ["setCode"],
     "options": ["allowEmpty", "disabled", "group", "onValueChange", "options", "personOnly", "readOnly", "value"],
-    "parts": ["root"],
+    "parts": ["label", "root"],
     "dataSlots": ["field-code"]
   },
   "field-date": {
     "actions": ["setDate"],
     "options": ["disabled", "group", "onValueChange", "readOnly", "value"],
-    "parts": ["root"],
+    "parts": ["label", "root"],
     "dataSlots": ["field-date"]
   },
   "financial-date": {

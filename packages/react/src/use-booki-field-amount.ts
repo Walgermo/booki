@@ -30,6 +30,8 @@ export type BookiFieldAmountOptions = {
 export type BookiFieldAmountState = {
   /** Minor units, or null while the field is empty (with `allowEmpty`). */
   minor: number | null;
+  /** The same minor units, under the key `expect` compares. */
+  value: number | null;
   allowEmpty: boolean;
   currency: string;
   minMinor: number;
@@ -54,9 +56,10 @@ export const bookiFieldAmount = definePrimitive({
     onValueChange: "callback",
   },
   // The product owns the value: the snapshot shows these, the product sets them.
-  controlled: ["minor", "currency", "refusal"],
+  controlled: ["value", "minor", "currency", "refusal"],
   state: (options: BookiFieldAmountOptions): BookiFieldAmountState => ({
     minor: options.value ?? (options.allowEmpty ? null : 0),
+    value: options.value ?? (options.allowEmpty ? null : 0),
     allowEmpty: options.allowEmpty ?? false,
     currency: options.currency ?? "NOK",
     minMinor: options.minMinor ?? 0,
@@ -69,7 +72,10 @@ export const bookiFieldAmount = definePrimitive({
     const next: Partial<BookiFieldAmountState> = { ...lockState(options) };
     if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
-    if (options.value !== undefined) next.minor = options.value === null && !options.allowEmpty ? 0 : options.value;
+    if (options.value !== undefined) {
+      next.minor = options.value === null && !options.allowEmpty ? 0 : options.value;
+      next.value = next.minor;
+    }
     if (options.currency !== undefined) next.currency = options.currency;
     if (options.minMinor !== undefined) next.minMinor = options.minMinor;
     if (options.maxMinor !== undefined) next.maxMinor = options.maxMinor;
@@ -85,9 +91,10 @@ export const bookiFieldAmount = definePrimitive({
       if (dispatch(context, "onValueChange", next, { reason, event })) return false;
       const ok = change("minor", next, { reason, event });
       if (ok) {
+        context.store.set({ value: next });
         // Controlled: the product passes the value back through sync; until it
         // does, the field keeps the value it holds.
-        if (context.options().value !== undefined) context.store.set({ minor });
+        if (context.options().value !== undefined) context.store.set({ minor, value: minor });
       }
       return ok;
     }
@@ -117,6 +124,8 @@ export const bookiFieldAmount = definePrimitive({
     };
   },
   slots: (slot) => ({
+    // Names the field for the agent when the root takes no `aria-label` (`group: false`).
+    label: slot({ attrs: () => ({ "data-slot": "visually-hidden" }) }),
     root: slot({
       role: (state) => (state.group ? "group" : undefined),
       roles: ["group"],
@@ -125,7 +134,7 @@ export const bookiFieldAmount = definePrimitive({
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
-      state: (state) => ({ minor: state.minor, refusal: state.refusal }),
+      state: (state) => ({ minor: state.minor, value: state.value, refusal: state.refusal }),
     }),
   }),
   agent: { actions: ["setMinor"] },

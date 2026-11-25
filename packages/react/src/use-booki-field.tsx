@@ -41,8 +41,9 @@ type BookiFieldCommon = {
    * Set `false` when the field the product renders already has its own labelled group
    * (a `fieldset` with a `legend`, or `role="radiogroup"`): the root is then a plain
    * `div` without `role="group"`, so the group is not announced twice and
-   * `getByRole("group", { name })` finds one. `label` stays on the root as `aria-label`, which
-   * is how the agent snapshot reads it, and which a screen reader ignores without a role.
+   * `getByRole("group", { name })` finds one. The root then has no `aria-label` either, so the
+   * product's visible `<label>` is the only accessible name and `getByLabelText` finds its input
+   * alone; the agent reads the field's name from a hidden `label` part inside the root.
    * Default `true`.
    */
   group?: boolean;
@@ -200,24 +201,34 @@ export function useBookiField(options: BookiFieldArgs, render: (field: never) =>
 
   // The root's state is the amount's, the code's, the account's or the date's, by kind: each
   // reads only its own key.
-  // Without the group role the label stays as the root's name: ui-sdk reads the snapshot's
-  // label from the DOM name, and a screen reader ignores a name on an element with no role.
+  // With the group role the label is the root's `aria-label`. Without it, the root has no role
+  // and ARIA does not allow a name on it, so a `hidden` `label` part carries the name
+  // (`hidden`, so it shows and is read nowhere, with or without a stylesheet):
+  // ui-sdk reads the snapshot's label from that part first, and a visible `<label>` of the
+  // product's is then the only accessible name the field's input has.
+  const grouped = options.group !== false;
+  const labelPart = usePart(handle, "label", {}, { children: options.label, hidden: true }, "span") as ReactElement;
   const part = {
-    "aria-label": options.label,
+    ...(grouped ? { "aria-label": options.label } : {}),
     children: (state: object) => {
       const shown = state as RootState;
-      return render({
-        value:
-          options.kind === "amount"
-            ? shown.minor
-            : options.kind === "code"
-              ? shown.code
-              : options.kind === "account"
-                ? shown.account
-                : shown.date,
-        change,
-        refusal: shown.refusal,
-      } as never);
+      return (
+        <>
+          {grouped ? null : labelPart}
+          {render({
+            value:
+              options.kind === "amount"
+                ? shown.minor
+                : options.kind === "code"
+                  ? shown.code
+                  : options.kind === "account"
+                    ? shown.account
+                    : shown.date,
+            change,
+            refusal: shown.refusal,
+          } as never)}
+        </>
+      );
     },
   };
   return usePart(handle, "root", {}, part, "div") as ReactElement;
