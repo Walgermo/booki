@@ -56,6 +56,11 @@ pins, or ask the product's owner to approve an exception for exactly those versi
 only, never on the main branch. Never add an exception yourself, and don't change the exact pin
 in `package.json`.
 
+**A trust policy.** From 0.3.2 until v1, Booki is published straight from its release workflow
+(provenance, no human approver on npm). pnpm's `trustPolicy: no-downgrade` refuses it after an
+approved 0.3.1 (`ERR_PNPM_TRUST_DOWNGRADE`). Then stop and say so, and ask the product's owner for a
+`trustPolicyExclude` entry for exactly those versions, on your branch only. Never add one yourself.
+
 ```bash
 pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
 ```
