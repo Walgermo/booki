@@ -20,7 +20,9 @@ function chatModel() {
   if (process.env.ANTHROPIC_API_KEY) return anthropic(process.env.CRM_MODEL ?? "claude-sonnet-5-5");
   return gateway(process.env.CRM_MODEL ?? "anthropic/claude-sonnet-5.5");
 }
-const hasKey = () => Boolean(process.env.ANTHROPIC_API_KEY || process.env.AI_GATEWAY_API_KEY);
+// The gateway also takes the project's short-lived OIDC token (vercel env pull) in place of a key.
+const hasKey = () =>
+  Boolean(process.env.ANTHROPIC_API_KEY || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_OIDC_TOKEN);
 
 const text = (status: number, body: string) =>
   new Response(body, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
@@ -73,12 +75,13 @@ const instructions = (me: string) =>
 
 /**
  * What a conversation may hold: the person's text, and the assistant's text,
- * reasoning and calls to the page's tools. No files, no system messages. The
+ * reasoning, provider content and calls to the page's tools. No files, no system messages. The
  * reasoning goes back with its signature: Claude thinks before it calls a
  * tool, and Anthropic refuses the next turn if that thinking is dropped.
  */
 export function acceptedMessages(messages: { role: string; parts: { type: string }[] }[]): boolean {
-  const assistant = new Set(["text", "reasoning", "step-start", "dynamic-tool"]);
+  // `custom` is provider content the model returned (thinking through the gateway, with its metadata): it goes back as it came.
+  const assistant = new Set(["text", "reasoning", "custom", "step-start", "dynamic-tool"]);
   return messages.every(
     (message) =>
       (message.role === "user" && message.parts.every((part) => part.type === "text")) ||
