@@ -10,8 +10,8 @@ const ITEMS: Item[] = [
   {
     q: ["What is Booki?", "Hva er Booki?"],
     a: [
-      "Ready-made controls for accounting screens: amounts, accounts, VAT, vouchers, invoices, bank and approval. A person uses them like any form. An AI agent reads them as typed state and calls named actions, under the rules you set, and every step lands in your audit trail.",
-      "Ferdige kontroller for regnskapsskjermbilder: beløp, konto, mva, bilag, faktura, bank og attestering. En person bruker dem som et vanlig skjema. En AI-agent leser tilstanden deres som strukturerte data og kaller navngitte handlinger, under reglene dere setter, og hvert steg havner i revisjonssporet.",
+      "Ready-made controls for accounting screens: amounts, accounts, VAT, vouchers, invoices, bank and approval. A person uses them like any form. An AI agent reads them as typed state and calls named actions, under the rules you set, and every step lands in your audit trail. The name is a small play on words: book and UI, in one.",
+      "Ferdige kontroller for regnskapsskjermbilder: beløp, konto, mva, bilag, faktura, bank og attestering. En person bruker dem som et vanlig skjema. En AI-agent leser tilstanden deres som strukturerte data og kaller navngitte handlinger, under reglene dere setter, og hvert steg havner i revisjonssporet. Navnet er et lite ordspill: bok og UI, i ett.",
     ],
   },
   {

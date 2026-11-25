@@ -30,6 +30,11 @@
           for (var i = 0; pick && i < bars.length; i++) bars[i].setAttribute("content", pick.getAttribute("data-color"));
         }
       } catch (e) {}
+      // The hero figures' marks draw themselves once per visit, not on every page view in it.
+      try {
+        if (sessionStorage.getItem("booki-kpi-seen")) document.documentElement.setAttribute("data-kpi-still", "");
+        else sessionStorage.setItem("booki-kpi-seen", "1");
+      } catch (e) {}
     </script>
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />

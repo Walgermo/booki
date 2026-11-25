@@ -250,6 +250,9 @@ export function proofKpis() {
     after: median(pairs.map(([a]) => a.costUsd ?? 0)),
   };
   const wallMs = { before: median(pairs.map(([, r]) => r.wallMs)), after: median(pairs.map(([a]) => a.wallMs)) };
+  // Tool calls and tokens per run, the same medians: what the agent had to do and read.
+  const calls = { before: median(pairs.map(([, r]) => r.toolCalls)), after: median(pairs.map(([a]) => a.toolCalls)) };
+  const tokens = { before: median(pairs.map(([, r]) => r.tokens)), after: median(pairs.map(([a]) => a.tokens)) };
   return {
     right: {
       booki: sum(acc, (s) => s.succeeded),
@@ -260,6 +263,8 @@ export function proofKpis() {
     models: new Set(acc.map((side) => side.model)).size,
     cost,
     wallMs,
+    calls,
+    tokens,
     pairs: pairs.length,
     tasks: new Set(acc.map((side) => side.task)).size,
     cheaper: spread(costRatios),

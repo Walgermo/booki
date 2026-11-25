@@ -367,6 +367,20 @@
   margin: 1.75rem 0 0;
 }
 
+/* Four figures: two by two on a phone, with the rule only between the pairs. */
+@media (max-width: 560px) {
+  .landing-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    row-gap: 1.25rem;
+  }
+
+  .landing-hero__stats > div:nth-child(odd) {
+    border-left: 0;
+  }
+}
+
 .landing-hero__stats > div {
   display: grid;
   gap: 0.5rem;
@@ -393,11 +407,197 @@
   color: var(--bk-muted-fg);
 }
 
-/* What the figures were measured on: a caption, quieter than the hook. */
-.landing-hero__source {
-  margin: 0.875rem 0 0;
-  font-size: 0.8125rem;
+/*
+  The marks under each figure and its label (kpi-marks.tsx): faint is what a screen without
+  Booki took, ink is what it took with Booki. Same height for all four, so the
+  figures stay on one line; ink only, lime stays the agent's.
+*/
+.landing-hero__stats > div {
+  justify-items: center;
+}
+
+.kpi-mark {
+  --faint: color-mix(in oklab, var(--bk-fg) 16%, transparent);
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  margin-top: 0.125rem;
+}
+
+/* Tool calls: little call boxes, one filled. */
+.kpi-mark--calls {
+  display: grid;
+  grid-template-columns: repeat(7, 7px);
+  align-content: center;
+  gap: 3px;
+}
+
+.kpi-mark--calls i {
+  display: block;
+  animation: kpi-in 360ms ease-out both;
+  animation-delay: calc(var(--i) * 18ms);
+}
+
+.kpi-mark--calls i {
+  width: 7px;
+  height: 7px;
+  border-radius: 1.5px;
+  box-shadow: inset 0 0 0 1px var(--faint);
+}
+
+.kpi-mark--calls i[data-on] {
+  background: var(--bk-fg);
+  box-shadow: none;
+}
+
+/* Tokens: a strip of chips, a sliver read. */
+.kpi-mark--tokens {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 112px;
+}
+
+.kpi-mark__strip {
+  position: relative;
+  height: 8px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(to right, var(--faint) 0 5px, transparent 5px 7px);
+}
+
+.kpi-mark__read {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: max(var(--share), 3px);
+  border-radius: 2px;
+  background: var(--bk-fg);
+  animation: kpi-grow 600ms 200ms ease-out both;
+}
+
+.kpi-mark__ends {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--bk-mono);
+  font-size: 0.625rem;
+  line-height: 1;
   color: var(--bk-muted-fg);
+}
+
+.kpi-mark__ends b {
+  font-weight: 600;
+  color: var(--bk-fg);
+}
+
+/* Faster: a race on two labelled lanes, a finish dot at the end of each run. */
+.kpi-mark--time {
+  display: grid;
+  grid-template-columns: auto 92px;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 7px;
+}
+
+.kpi-mark__who {
+  font-family: var(--bk-mono);
+  font-size: 0.625rem;
+  line-height: 1;
+  text-align: right;
+  color: var(--bk-muted-fg);
+}
+
+.kpi-mark__who[data-on] {
+  color: var(--bk-fg);
+  font-weight: 600;
+}
+
+.kpi-mark__lane {
+  position: relative;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--faint);
+}
+
+.kpi-mark__run {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--share);
+  border-radius: 999px;
+}
+
+.kpi-mark__run::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--faint);
+  transform: translateY(-50%);
+}
+
+.kpi-mark__run[data-on] {
+  background: var(--bk-fg);
+  animation: kpi-grow 600ms 200ms ease-out both;
+}
+
+.kpi-mark__run[data-on]::after {
+  background: var(--bk-fg);
+}
+
+/* Cheaper: coins with an edge; a stack against the one coin spent. */
+.kpi-mark__coin > * {
+  fill: var(--bk-bg);
+  stroke: color-mix(in oklab, var(--bk-fg) 28%, transparent);
+  stroke-width: 1.1;
+}
+
+.kpi-mark__spent path {
+  fill: var(--bk-fg);
+  stroke: var(--bk-fg);
+  stroke-width: 1.1;
+}
+
+.kpi-mark__spent ellipse {
+  fill: color-mix(in oklab, var(--bk-fg) 72%, var(--bk-bg));
+  stroke: var(--bk-fg);
+  stroke-width: 1.1;
+}
+
+.kpi-mark--cost svg {
+  animation: kpi-in 400ms ease-out both;
+}
+
+@keyframes kpi-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@keyframes kpi-grow {
+  from {
+    width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-mark,
+  .kpi-mark * {
+    animation: none !important;
+  }
+}
+
+/* Drawn once per visit (index.html sets data-kpi-still on later page views). */
+html[data-kpi-still] {
+  .kpi-mark,
+  .kpi-mark *,
+  .kpi-mark *::after {
+    animation: none !important;
+  }
 }
 
 .landing-hero__lede {
@@ -3575,9 +3775,10 @@ main {
   gap: 0.625rem;
   max-width: 100%;
   min-height: 2rem;
-  padding: 0.25rem 0.875rem 0.25rem 0.3125rem;
+  padding: 0 0.875rem 0 0;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--bk-fg) 4%, transparent);
+  overflow: hidden;
+  background: var(--bk-card);
   box-shadow: inset 0 0 0 var(--hairline) var(--bk-border-strong);
   color: color-mix(in oklab, var(--bk-fg) 82%, var(--bk-bg));
   font-size: var(--text-ui);
@@ -3602,24 +3803,24 @@ main {
 
 @media (hover: hover) and (pointer: fine) {
   .site-news:hover {
-    background: color-mix(in oklab, var(--bk-fg) 7%, transparent);
     box-shadow: inset 0 0 0 var(--hairline) color-mix(in oklab, var(--bk-fg) 40%, transparent);
     color: var(--bk-fg);
   }
 }
 
-/* The label: a raised chip on the card colour, a link-blue dot. Lime stays the agent's colour. */
+/* The label fills the pill's left end: one quiet grey on the card, the dot in ink. Lime stays the agent's colour. */
 .site-news__tag {
   display: inline-flex;
   flex: none;
+  align-self: stretch;
   align-items: center;
   gap: 0.4375rem;
-  padding: 0.1875rem 0.5625rem 0.1875rem 0.5rem;
-  border-radius: 999px;
-  background: var(--bk-card);
+  padding: 0 0.75rem 0 0.8125rem;
+  border-radius: 999px 0 0 999px;
+  background: var(--bk-muted);
   box-shadow:
-    inset 0 0 0 var(--hairline) color-mix(in oklab, var(--bk-fg) 12%, transparent),
-    0 1px 2px color-mix(in oklab, var(--bk-fg) 8%, transparent);
+    inset 0 0 0 var(--hairline) var(--bk-border-strong),
+    inset calc(-1 * var(--hairline)) 0 0 var(--bk-border-strong);
   color: var(--bk-fg);
   font-size: 0.75rem;
   font-weight: 550;
@@ -3632,8 +3833,7 @@ main {
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 999px;
-  background: var(--bk-brand);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--bk-brand) 22%, transparent);
+  background: var(--bk-fg);
 }
 
 .site-news__text {
