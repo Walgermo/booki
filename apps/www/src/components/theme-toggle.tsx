@@ -1,5 +1,5 @@
 import { Toggle } from "@ui-sdk/react/toggle";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 import { useLang } from "@/lib/lang";
 
@@ -28,6 +28,16 @@ function apply(theme: Theme) {
   if (color) for (const bar of bars) bar.content = color;
 }
 
+const currentTheme = (): Theme =>
+  document.documentElement.getAttribute("data-bk-theme") === "dark" ? "dark" : "light";
+
+/** Calls back when <html data-bk-theme> changes. */
+function watchTheme(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-bk-theme"] });
+  return () => observer.disconnect();
+}
+
 /**
  * Paper or Night for the whole site. Follows the system until a person picks
  * one; the choice is kept in this browser. index.html applies it before the
@@ -35,9 +45,9 @@ function apply(theme: Theme) {
  */
 export function ThemeToggle() {
   const { t } = useLang();
-  const [theme, setTheme] = useState<Theme>(() =>
-    document.documentElement.getAttribute("data-bk-theme") === "dark" ? "dark" : "light",
-  );
+  // The theme is the one on <html>, set by index.html before the first paint. The prerendered
+  // HTML is Paper, so hydration starts from Paper and then takes the page's own.
+  const theme = useSyncExternalStore(watchTheme, currentTheme, () => "light" as Theme);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-color-scheme: dark)");
@@ -45,7 +55,6 @@ export function ThemeToggle() {
       if (stored()) return;
       const next = systemTheme();
       apply(next);
-      setTheme(next);
     };
     query.addEventListener("change", follow);
     return () => query.removeEventListener("change", follow);
@@ -56,12 +65,12 @@ export function ThemeToggle() {
   return (
     <Toggle
       className="site-nav-link site-text-button site-theme-toggle site-icon-toggle"
-      aria-label={t("Night theme", "Natt-tema")}
+      // The name holds the visible word too (WCAG 2.5.3), so voice control can say what it sees.
+      aria-label={`${t("Night theme", "Natt-tema")} (${theme === "dark" ? t("Paper", "Papir") : t("Night", "Natt")})`}
       pressed={theme === "dark"}
       onPressedChange={(pressed) => {
         const next: Theme = pressed ? "dark" : "light";
         apply(next);
-        setTheme(next);
         try {
           window.localStorage.setItem(KEY, next);
         } catch {

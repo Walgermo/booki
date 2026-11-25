@@ -60,6 +60,21 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         <ErpWindow agent={agent} from={markRef} to={proofRef} />
       </div>
 
+      {/* Why the agent works in the screen at all, in one picture anyone knows. */}
+      <figure className="landing-quote">
+        <blockquote>
+          <p>
+            {t(
+              "Without labels in the fuse box, you guess. Booki labels every field and button, so the agent gets it right the first time.",
+      "Uten merking i sikringsskapet må du prøve deg fram. Booki merker hvert felt og hver knapp, så agenten treffer riktig første gang.",
+            )}
+          </p>
+        </blockquote>
+        <figcaption>
+          Stian Walgermo, <span>{t("creator of Booki", "skaper av Booki")}</span>
+        </figcaption>
+      </figure>
+
       {/* After the demo, the agent's cursor goes on to the measured figures. */}
       <div ref={proofRef}>
         <ProofStrip />

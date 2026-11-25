@@ -1,7 +1,7 @@
 // Create the agent bridge before anything renders, so it sees every control.
 import "./agent";
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import { BookiLocaleProvider } from "@booki-aui/react";
@@ -12,7 +12,7 @@ import "./styles/globals.css";
 const root = document.getElementById("root");
 if (!root) throw new Error("Root missing");
 
-createRoot(root).render(
+const app = (
   <StrictMode>
     <BrowserRouter>
       <LangProvider>
@@ -21,5 +21,20 @@ createRoot(root).render(
         </BookiLocaleProvider>
       </LangProvider>
     </BrowserRouter>
-  </StrictMode>,
+  </StrictMode>
 );
+
+// The page is prerendered in English and hydrated, so the title is painted once, not again when the
+// script runs. In Norwegian (or another stored choice) the text differs from the HTML: React then
+// renders the page afresh, as before. That one mismatch is expected and not reported.
+// The dev server's page is empty: there is nothing to hydrate.
+if (root.hasChildNodes()) {
+  hydrateRoot(root, app, {
+    onRecoverableError: (error) => {
+      if (document.documentElement.lang !== "en") return;
+      reportError(error);
+    },
+  });
+} else {
+  createRoot(root).render(app);
+}

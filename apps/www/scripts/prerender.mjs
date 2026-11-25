@@ -10,13 +10,41 @@
  * The components were written for a browser, so the render runs with a
  * browser-like global (jsdom): English, light, no stored choices.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import Beasties from "beasties";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
 
+/**
+ * The CSS a page needs to draw its first screen goes inline in its <head>; the
+ * stylesheet itself loads without blocking. The Night theme is switched on by
+ * a script, so its rules are kept whatever the static page shows.
+ */
+const critical = new Beasties({
+  path: join(dirname(fileURLToPath(import.meta.url)), "..", "dist"),
+  publicPath: "/",
+  preload: "media",
+  // Beasties does not see fonts named through CSS variables; withFonts inlines the @font-face rules instead.
+  inlineFonts: false,
+  pruneSource: false,
+  allowRules: [/data-bk-theme/, /prefers-color-scheme/],
+  logLevel: "warn",
+});
+
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = join(here, "../dist");
+
+/**
+ * The stylesheet's @font-face rules, inline in the head. Without them the first
+ * paint is in a system font and the hero title paints again in Geist when the
+ * stylesheet arrives: a second, later largest paint.
+ */
+const fontFaces = readdirSync(join(dist, "assets"))
+  .filter((name) => name.endsWith(".css"))
+  .flatMap((name) => readFileSync(join(dist, "assets", name), "utf8").match(/@font-face\{[^}]*\}/g) ?? []);
+const withFonts = (html) =>
+  fontFaces.length ? html.replace("</head>", `<style>${fontFaces.join("")}</style></head>`) : html;
 const site = "https://booki.dev";
 
 const dom = new JSDOM("<!doctype html><html lang='en'><body></body></html>", { url: `${site}/` });
@@ -239,7 +267,7 @@ for (const url of urls) {
   );
   const file = url === "/" ? "index.html" : `${url.slice(1)}.html`;
   mkdirSync(dirname(join(dist, file)), { recursive: true });
-  writeFileSync(join(dist, file), html);
+  writeFileSync(join(dist, file), withFonts(await critical.process(html)));
   const markdown = toMarkdown(body, { url, title, description });
   writeFileSync(join(dist, markdownPath.slice(1)), markdown);
   pages.push({ url, title, description, markdownPath, words: markdown.split(/\s+/).length });
