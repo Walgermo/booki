@@ -951,16 +951,8 @@ html[data-kpi-still] {
 
 /* —— Site layout: things sit on the wall, separated by air and shelf lines —— */
 
-/*
-  A section: a numbered header (index, big title, note) over full-width
-  content. Pages count their own sections, so the index needs no prop.
-*/
-main {
-  counter-reset: site-section;
-}
-
+/* A section: a header (big title, note) over full-width content. */
 .site-section {
-  counter-increment: site-section;
   display: grid;
   gap: clamp(2rem, 4vw, 3rem);
   padding-block: clamp(3.5rem, 8vw, 6.5rem);
@@ -985,17 +977,6 @@ main {
   line-height: var(--leading-title);
   font-weight: 600;
   letter-spacing: var(--tracking-title);
-}
-
-.site-section > :first-child .site-section__title::before {
-  content: counter(site-section, decimal-leading-zero);
-  display: block;
-  margin-bottom: 1rem;
-  font-family: var(--bk-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: var(--tracking-caption);
-  color: var(--bk-muted-fg);
 }
 
 .site-section__note {
@@ -4103,4 +4084,272 @@ body:has([data-slot="agent-cursor"]) {
   .doc-sheet {
     min-height: var(--reserve, 0);
   }
+}
+
+/*
+  The launch post as an article (/announcing-agent-first-ui-with-booki): one
+  reading column, about 66 characters, and the figures and diagrams breaking
+  out wider. The closing band keeps the page's full width.
+*/
+.site-article {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(0, 1fr)
+    [wide-start] minmax(0, 9rem)
+    [text-start] min(42rem, 100%)
+    [text-end] minmax(0, 9rem)
+    [wide-end] minmax(0, 1fr)
+    [full-end];
+  padding-top: clamp(3rem, 7vw, 5.5rem);
+}
+
+.site-article > * {
+  grid-column: text;
+  min-width: 0;
+}
+
+.site-article > .site-article__wide {
+  grid-column: wide;
+}
+
+.site-article > .site-band {
+  grid-column: full;
+  margin-top: clamp(4rem, 8vw, 6rem);
+}
+
+.site-article__head {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.site-article__title {
+  margin: 0;
+  font-size: var(--text-title);
+  line-height: var(--leading-title);
+  letter-spacing: -0.035em;
+  font-weight: 650;
+  text-wrap: balance;
+}
+
+.site-article__dek {
+  margin: 0;
+  font-size: var(--text-lede);
+  line-height: 1.5;
+  color: var(--bk-muted-fg);
+}
+
+.site-article__figures {
+  margin: 0;
+  padding: 1.75rem 0;
+  border-block: var(--hairline) solid var(--bk-border-strong);
+}
+
+.site-article__note {
+  margin: 0.875rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--bk-muted-fg);
+}
+
+.site-article__section {
+  display: grid;
+  gap: 1rem;
+  margin-top: clamp(3.5rem, 7vw, 5rem);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.site-article__section h2 {
+  margin: 0;
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-weight: 650;
+  text-wrap: balance;
+}
+
+.site-article__section p,
+.site-article__section ul {
+  margin: 0;
+}
+
+.site-article__section ul {
+  display: grid;
+  gap: 0.625rem;
+  padding-left: 1.125rem;
+  list-style: disc;
+}
+
+.site-article__section li::marker {
+  color: var(--bk-muted-fg);
+}
+
+.site-article__wide {
+  margin-top: 2rem;
+}
+
+.site-article__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/*
+  The post's diagrams (components/announcement/diagrams.tsx), in the diagram
+  skill's editorial style: hairline boxes, no shadows, names in the text font,
+  labels in mono caps, one focal colour, which here is the agent's lime.
+  Each scrolls inside its own frame on a narrow screen.
+*/
+.dia__frame {
+  overflow-x: auto;
+  padding: 1.5rem;
+  border-radius: var(--bk-radius);
+  box-shadow: inset 0 0 0 var(--hairline) var(--bk-border);
+  background: var(--bk-card);
+}
+
+.dia svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.dia-box__mask {
+  fill: var(--bk-card);
+}
+
+.dia-box__frame {
+  fill: var(--bk-bg);
+  stroke: var(--bk-border-strong);
+  stroke-width: 1;
+}
+
+.dia-box--focal .dia-box__frame {
+  fill: var(--bk-signal-tint);
+  stroke: var(--bk-signal-ink);
+  stroke-width: 1.5;
+}
+
+.dia-name {
+  font-family: var(--bk-font);
+  font-size: 15px;
+  font-weight: 600;
+  fill: var(--bk-fg);
+}
+
+.dia-detail,
+.dia-label,
+.dia-eyebrow {
+  font-family: var(--bk-mono);
+  font-size: 11px;
+  fill: var(--bk-muted-fg);
+}
+
+.dia-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  fill: var(--bk-fg);
+}
+
+.dia-row--muted .dia-name,
+.dia-row--muted .dia-eyebrow {
+  fill: var(--bk-muted-fg);
+}
+
+.dia-row--muted .dia-box__frame {
+  stroke-dasharray: 4 3;
+}
+
+.dia-line {
+  stroke: var(--bk-muted-fg);
+  stroke-width: 1.25;
+  fill: none;
+}
+
+.dia-line--dashed {
+  stroke-dasharray: 5 4;
+}
+
+.dia-line--focal {
+  stroke: var(--bk-signal-ink);
+  stroke-width: 2;
+}
+
+.dia-arrowhead {
+  fill: var(--bk-muted-fg);
+}
+
+.dia-arrowhead--focal {
+  fill: var(--bk-signal-ink);
+}
+
+.dia-label-mask {
+  fill: var(--bk-card);
+}
+
+.dia-label {
+  letter-spacing: 0.04em;
+}
+
+.dia-label--focal {
+  font-weight: 600;
+  fill: var(--bk-signal-ink);
+}
+
+.dia-lifeline {
+  stroke: var(--bk-border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+/* The proof strip's measurement note: a quiet text toggle under the figures, no box. */
+.site-proof-about {
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+.site-proof-about summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  list-style: none;
+  text-decoration: underline;
+  text-decoration-color: var(--bk-border-strong);
+  text-underline-offset: 0.25em;
+}
+
+.site-proof-about summary::-webkit-details-marker {
+  display: none;
+}
+
+.site-proof-about summary::after {
+  content: "+";
+  font-family: var(--bk-mono);
+}
+
+.site-proof-about[open] summary::after {
+  content: "−";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-proof-about summary:hover {
+    color: var(--bk-fg);
+  }
+}
+
+.site-proof-about summary:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.site-proof-about p {
+  max-width: 72ch;
+  margin: 0.625rem 0 0;
+  line-height: 1.55;
 }

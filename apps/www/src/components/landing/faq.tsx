@@ -24,8 +24,8 @@ const ITEMS: Item[] = [
   {
     q: ["Why not just give the agent our API?", "Hvorfor ikke bare gi agenten API-et vårt?"],
     a: [
-      "For work nobody watches, like posting a thousand vouchers from a file overnight, an API is cheaper and simpler: use it. Booki is for the steps a person sees, corrects and decides in the screen they already use: the agent works there, the person watches, and approving stays theirs. We have not yet measured Booki against an agent on an API; that measurement is next, and the figures will be on this page whichever way they go.",
-      "For arbeid ingen ser på, som å bokføre tusen bilag fra en fil i løpet av natten, er et API billigere og enklere: bruk det. Booki er for stegene en person ser, retter og avgjør i skjermbildet de allerede bruker: agenten jobber der, personen ser på, og attesteringen er fortsatt deres. Vi har ennå ikke målt Booki mot en agent på et API. Den målingen kommer, og tallene havner på denne siden uansett hvordan de blir.",
+      "For work nobody watches, like posting a thousand vouchers from a file overnight, an API is cheaper and simpler: use it. Booki is for the steps a person sees, corrects and decides in the screen they already use: the agent works there, the person watches, and approving stays theirs. Booki has not yet been measured against an agent on an API; that measurement is next, and the figures will be on this page whichever way they go.",
+      "For arbeid ingen ser på, som å bokføre tusen bilag fra en fil i løpet av natten, er et API billigere og enklere: bruk det. Booki er for stegene en person ser, retter og avgjør i skjermbildet de allerede bruker: agenten jobber der, personen ser på, og attesteringen er fortsatt deres. Booki er ennå ikke målt mot en agent på et API. Den målingen kommer, og tallene havner på denne siden uansett hvordan de blir.",
     ],
   },
   {
@@ -45,8 +45,8 @@ const ITEMS: Item[] = [
   {
     q: ["Which AI models does it work with?", "Hvilke AI-modeller fungerer det med?"],
     a: [
-      "Any model that can call tools. Measured with Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash. Opus and Sonnet do these tasks right without Booki too; for them Booki saves cost and time. For the cheap models it is whether the books come out right: on our rebuilt screens they were right about four times in five, on Booki every time in the runs still counted. Five runs per cell is few, so read it as an indication.",
-      "Alle modeller som kan kalle verktøy. Målt med Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash. Opus og Sonnet klarer disse oppgavene uten Booki også; for dem sparer Booki kostnad og tid. For de billige modellene er forskjellen om regnskapet blir riktig: på våre gjenskapte skjermbilder ble resultatet riktig omtrent fire av fem ganger, på Booki hver gang i kjøringene som fortsatt telles. Fem kjøringer per celle er lite, så les det som en pekepinn.",
+      "Any model that can call tools. Measured with Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash. Opus and Sonnet do these tasks right without Booki too; for them Booki saves cost and time. For the cheap models it is whether the books come out right: on the rebuilt screens they were right about four times in five, on Booki every time in the runs still counted. Five runs per cell is few, so read it as an indication.",
+      "Alle modeller som kan kalle verktøy. Målt med Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash. Opus og Sonnet klarer disse oppgavene uten Booki også; for dem sparer Booki kostnad og tid. For de billige modellene er forskjellen om regnskapet blir riktig: på de gjenskapte skjermbildene ble resultatet riktig omtrent fire av fem ganger, på Booki hver gang i kjøringene som fortsatt telles. Fem kjøringer per celle er lite, så les det som en pekepinn.",
     ],
   },
   {

@@ -189,8 +189,8 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
           "billigere å registrere én leverandørfaktura, målt",
         ),
         source: t(
-          `Claude Opus 5.5 on our rebuild of Tripletex's supplier-invoice screen against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} an invoice, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
-          `Claude Opus 5.5 på vår gjenskaping av leverandørfakturaskjermen i Tripletex mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per faktura, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 on a rebuild of Tripletex's supplier-invoice screen against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} an invoice, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 på en gjenskaping av leverandørfakturaskjermen i Tripletex mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per faktura, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
         ),
       },
       ...(CHEAP_ACC && CHEAP_RAW
@@ -199,8 +199,8 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
               figure: `${CHEAP_ACC.succeeded}/${CHEAP_ACC.runs}`,
               text: t("invoices right with a far cheaper model", "fakturaer riktig med en langt billigere modell"),
               source: t(
-                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on our Tripletex rebuild, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} an invoice. On agent-first screens a cheaper model does the job.`,
-                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på vår Tripletex-gjenskaping, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per faktura. På agent-first-skjermer gjør en billigere modell jobben.`,
+                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on the Tripletex rebuild, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} an invoice. On agent-first screens a cheaper model does the job.`,
+                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på Tripletex-gjenskapingen, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per faktura. På agent-first-skjermer gjør en billigere modell jobben.`,
               ),
             },
           ]
@@ -406,8 +406,8 @@ const SHORTFALLS = (t: T): string[] => [
     "Ikke publisert på npm ennå. Installer fra repoet inntil videre.",
   ),
   t(
-    "No production users yet. The real-model runs are small, five per screen and model, on screens we rebuilt ourselves, and two tasks are withdrawn until they are run again.",
-    "Ingen brukere i produksjon ennå. Målingene med ekte modeller er små, fem kjøringer per skjermbilde og modell, på skjermbilder vi har gjenskapt selv, og to oppgaver er trukket tilbake til de er målt på nytt.",
+    "No production users yet. The real-model runs are small, five per screen and model, on rebuilt screens, and two tasks are withdrawn until they are run again.",
+    "Ingen brukere i produksjon ennå. Målingene med ekte modeller er små, fem kjøringer per skjermbilde og modell, på gjenskapte skjermbilder, og to oppgaver er trukket tilbake til de er målt på nytt.",
   ),
   t(
     "Server guards cover posting, approvals, payment release, period close, invoices and VAT. Other writes need guard() with a rule of your own, and you wire the caller from your own sign-in.",
@@ -549,8 +549,8 @@ export function ErpTeamsPage() {
         id="found-title"
         title={t("Why the Tripletex screen was hard", "Hvorfor skjermbildet i Tripletex var vanskelig")}
         note={t(
-          "What we found mapping its voucher screen, read only. Each one costs an agent calls, or lets it do what it should not.",
-          "Det vi fant da vi kartla bilagsskjermbildet, bare med lesetilgang. Hvert punkt koster en agent kall, eller lar den gjøre noe den ikke skal.",
+          "What mapping its voucher screen showed, read only. Each one costs an agent calls, or lets it do what it should not.",
+          "Det kartleggingen av bilagsskjermbildet viste, bare med lesetilgang. Hvert punkt koster en agent kall, eller lar den gjøre noe den ikke skal.",
         )}
       >
         <ul className="site-rows m-0 list-none p-0">
@@ -701,7 +701,7 @@ export function ErpTeamsPage() {
         kicker={t("Pilot one screen", "Pilot på ett skjermbilde")}
         title={t("Pick the screen agents struggle with most.", "Velg skjermbildet agentene sliter mest med.")}
         text={t(
-          "Tell us which one in an issue, or open the demo ERP and run a whole month-end first.",
+          "Say which one in an issue, or open the demo ERP and run a whole month-end first.",
           "Si hvilket i en issue, eller åpne demo-ERP-en og kjør en hel månedsavslutning først.",
         )}
         link={{ to: "/demo", label: t("Open the demo ERP", "Åpne demo-ERP-en") }}
