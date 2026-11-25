@@ -5,7 +5,7 @@ import { useChat } from "@ai-sdk/react";
 import { registerTools } from "@booki/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type UIMessage } from "ai";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { logDecision, pageAgent } from "./agent";
+import { asAgentWork, logDecision, pageAgent } from "./agent";
 import { TOOL_NAMES } from "./chat-tools";
 import { AGENT_ID } from "./people";
 
@@ -30,7 +30,12 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
     audit: logDecision,
   });
   signal.addEventListener("abort", unregister, { once: true });
-  const client = await createMCPClient({ transport: new WebMCPTransport({ modelContext: context }) });
+  // Every tool call the model makes runs as the agent's work, so the person switch waits for it.
+  const counted: ModelContext = {
+    getTools: (options) => context.getTools(options),
+    executeTool: (tool, input, options) => asAgentWork(() => context.executeTool(tool, input, options)),
+  };
+  const client = await createMCPClient({ transport: new WebMCPTransport({ modelContext: counted }) });
   try {
     // Registration fails silently (a permissions policy, a browser that refuses): find out now, not on the first message.
     const { tools } = await client.listTools();

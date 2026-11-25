@@ -65,7 +65,9 @@ How it fits together:
   put your sign-in in front of the route.
 - **One message, at most eight tool rounds** (`MAX_TOOL_ROUNDS`), so a model
   that keeps reading or retrying stops and hands back to the person. Switching
-  who is signed in starts a new conversation.
+  who is signed in starts a new conversation, and waits while the agent runs
+  a step (from the chat or a task): the step's change goes to the server with
+  the credential of whoever is signed in when it lands.
 - **The same rules as the tasks.** A tool call goes through the same bridge:
   marking a deal won or lost and removing an activity are refused as a
   person's, the refusal comes back as a sentence the model passes on, every

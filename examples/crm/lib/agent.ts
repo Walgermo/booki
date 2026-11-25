@@ -35,3 +35,37 @@ export function pageAgent(): AgentBridge {
   bridge ??= createBookiAgent({ agentId: AGENT_ID, allow: cursor.wrap(allow), audit: logDecision, language: "nb" });
   return bridge;
 }
+
+/**
+ * Steps the agent is running now, from the tasks or the chat. A step's change
+ * goes to the server with the credential of whoever is signed in when it
+ * lands, so the person switch waits while one runs: a step Kari asked for is
+ * never recorded as Ola's.
+ */
+let working = 0;
+const workListeners = new Set<() => void>();
+const changed = () => {
+  for (const listener of workListeners) listener();
+};
+
+/** Runs `work` as one of the agent's steps. */
+export async function asAgentWork<T>(work: () => Promise<T>): Promise<T> {
+  working += 1;
+  changed();
+  try {
+    return await work();
+  } finally {
+    working -= 1;
+    changed();
+  }
+}
+
+export const agentWorking = {
+  subscribe(listener: () => void) {
+    workListeners.add(listener);
+    return () => {
+      workListeners.delete(listener);
+    };
+  },
+  now: () => working > 0,
+};

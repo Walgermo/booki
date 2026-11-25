@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CrmApp } from "@/components/crm-app";
 import { toolNote } from "@/components/chat-panel";
@@ -17,7 +17,7 @@ type Registered = { name: string; execute: (input: unknown) => unknown } & Recor
  * rejects with an OperationError when the tool throws. `refuse` is a browser
  * that will not register them (a permissions policy).
  */
-function fakeModelContext({ refuse = false } = {}) {
+function fakeModelContext({ refuse = false, hold }: { refuse?: boolean; hold?: Promise<void> } = {}) {
   const tools = new Map<string, Registered>();
   return {
     registerTool(tool: Registered, { signal }: { signal: AbortSignal }) {
@@ -34,6 +34,7 @@ function fakeModelContext({ refuse = false } = {}) {
     },
     async executeTool(tool: { name: string }, input?: object) {
       try {
+        await hold;
         return JSON.stringify(await tools.get(tool.name)!.execute(input ?? {}));
       } catch {
         throw new DOMException("Tool execution failed.", "OperationError");
@@ -105,6 +106,29 @@ describe("the assistant on the page, through AI SDK's WebMCP client", () => {
       }),
     );
     close();
+  });
+});
+
+describe("switching who is signed in while the agent works", () => {
+  it("waits until the step has landed, so Kari's step is never recorded as Ola's", async () => {
+    render(<CrmApp initial={structuredClone(crm())} />);
+    let release!: () => void;
+    const context = fakeModelContext({ hold: new Promise<void>((resolve) => (release = resolve)) });
+    (document as unknown as { modelContext: unknown }).modelContext = context;
+    const registration = new AbortController();
+    const ola = () => screen.getByRole("button", { name: /Ola Hansen/ }) as HTMLButtonElement;
+    expect(ola().disabled).toBe(false);
+    // listTools in connectAssistant does not run a tool: it is not held.
+    const client = (await connectAssistant(context as never, registration.signal))!;
+    const call = client.callTool({ name: "crm_snapshot", arguments: {} });
+    await waitFor(() => expect(ola().disabled).toBe(true));
+    expect(screen.getByText(/Agenten jobber: bytt person/)).toBeTruthy();
+    fireEvent.click(ola());
+    expect(screen.getByRole("button", { name: /Kari Nordmann/ }).getAttribute("aria-pressed")).toBe("true");
+    release();
+    await call;
+    await waitFor(() => expect(ola().disabled).toBe(false));
+    registration.abort();
   });
 });
 
