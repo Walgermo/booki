@@ -29,6 +29,7 @@ import {
 } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
 import { RealRuns } from "./real-runs";
+import { REPO_URL } from "./shared";
 
 /**
  * The head-to-head from benchmarks/agent (`pnpm --filter agent-benchmark h2h`):
@@ -134,23 +135,30 @@ const at = (values: number[], t: number) => {
 
 function Figures({ task, t, max }: { task: BenchTask; t: number; max: number }) {
   const { t: tr } = useLang();
-  if (WITHDRAWN.includes(task)) {
+  const opusRaw = realFor(task, "anthropic/", "tripletex");
+  const opusAcc = realFor(task, "anthropic/", "acc");
+  if (opusRaw && opusAcc) {
     return (
       <div className="grid gap-3">
-        <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
-          {tr(
-            "The real-model runs of this task are withdrawn: a format hint in the Booki control held the task's answer. It will be run again. Below, the scripted best case, which knows the answer on both sides.",
-            "Kjøringene med ekte modeller for denne oppgaven er trukket tilbake: et formathint i Booki-kontrollen inneholdt svaret. Den kjøres på nytt. Under: det skriptede beste tilfellet, som kjenner svaret på begge sider.",
-          )}
-        </p>
-        <EstimateFigures task={task} t={t} max={max} />
+        <h4 className="m-0 text-sm font-semibold">{tr("Measured model results", "Målte modellresultater")}</h4>
+        <RealFigures task={task} raw={opusRaw} acc={opusAcc} />
       </div>
     );
   }
-  const opusRaw = realFor(task, "anthropic/", "tripletex");
-  const opusAcc = realFor(task, "anthropic/", "acc");
-  if (opusRaw && opusAcc) return <RealFigures task={task} raw={opusRaw} acc={opusAcc} />;
-  return <EstimateFigures task={task} t={t} max={max} />;
+  return (
+    <div className="grid gap-3">
+      <h4 className="m-0 text-sm font-semibold">{tr("Scripted estimates", "Anslag fra skriptede kjøringer")}</h4>
+      {WITHDRAWN.includes(task) && (
+        <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
+          {tr(
+            "A Booki format hint revealed the answer for this task, so we withdrew the model results. The scripted run starts with the answer on each screen.",
+            "Et formathint i Booki røpet svaret på denne oppgaven, så vi trakk tilbake modellresultatene. Skriptet starter med svaret på hvert skjermbilde.",
+          )}
+        </p>
+      )}
+      <EstimateFigures task={task} t={t} max={max} />
+    </div>
+  );
 }
 
 /** The four figures from real runs: Claude Opus 5.5 on each screen, and the cheap model's success. */
@@ -322,7 +330,7 @@ export function ErpRace() {
   const { lang, t: tr } = useLang();
   const { int, usd, seconds, calls, runDate } = formatters(lang);
   const name = (side: BenchSide) => sideName(side.name, lang);
-  const [task, setTask] = useState<BenchTask>("voucher");
+  const [task, setTask] = useState<BenchTask>("supplier-invoice");
 
   const sides = sidesFor(task);
   const max = Math.max(...sides.map((side) => side.requests));
@@ -336,12 +344,12 @@ export function ErpRace() {
         "Testet på skjermbilder gjenskapt fra to norske regnskapssystemer",
       )}
       note={tr(
-        "The same task, done by an agent on screens rebuilt from Tripletex and DNB Regnskap, and on Booki. Not run against the products themselves.",
-        "Samme oppgave, gjort av en agent på skjermbilder gjenskapt fra Tripletex og DNB Regnskap, og på Booki. Ikke kjørt mot selve produktene.",
+        "Each comparison uses the same task and sample data in Booki and on screens rebuilt from Tripletex or DNB Regnskap.",
+        "Hver sammenligning bruker samme oppgave og eksempeldata i Booki og på skjermbilder gjenskapt fra Tripletex eller DNB Regnskap.",
       )}
     >
-      <div className="grid gap-8">
-        <div className="grid gap-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
           <p className="site-label" aria-hidden="true">
             {tr("Task", "Oppgave")}
           </p>
@@ -364,15 +372,28 @@ export function ErpRace() {
           </SegmentedControl>
         </div>
 
-        <div className="site-panel grid gap-4">
-          <ReceiptRace task={task} />
-
-          {/* The receipts' sums, as the four figures a reader takes away. */}
+        <div className="site-panel grid grid-cols-[minmax(0,1fr)] gap-4">
+          <div className="grid gap-2">
+            <h3 id="benchmark-method" className="m-0 scroll-mt-6 text-lg font-semibold">
+              {tr("Method and receipts", "Metode og kvitteringer")}
+            </h3>
+            <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
+              {tr(
+                "The measured results use actual token counts and provider list prices. The scripted receipts below replay a known sequence of steps and estimate tokens from character counts.",
+                "Modellresultatene bruker målte tokenantall og listepriser fra modellleverandørene. Kvitteringene nedenfor viser skriptede steg og anslår tokenantallet ut fra antall tegn.",
+              )}{" "}
+              <a href={`${REPO_URL}/blob/main/benchmarks/agent/METHOD.md`} className="site-link">
+                {tr("Read the benchmark method", "Les hele målemetoden")}
+              </a>
+            </p>
+          </div>
           <div className="site-figures-compact race-figures">
             <Figures task={task} t={t} max={max} />
           </div>
 
-          <Disclosure title={tr("Show details and method", "Vis detaljer og metode")} className="site-disclosure--ink">
+          <ReceiptRace task={task} />
+
+          <Disclosure title={tr("Show run details", "Vis detaljer om kjøringene")} className="site-disclosure--ink">
             <div className="grid gap-6 pt-2">
               <ul className="site-rows site-rows--ink">
                 {sides
@@ -469,7 +490,7 @@ export function ErpRace() {
                 {(
                   [
                     [tr("Run", "Kjøring"), `Claude Code · ${runDate}`],
-                    ["Agent", tr("Scripted, never errs · no model", "Skriptet, tar aldri feil · ingen modell")],
+                    ["Agent", tr("Scripted steps with the answer supplied", "Skriptede steg med svaret oppgitt")],
                     [tr("Task", "Oppgave"), BENCH.tasks[task as keyof typeof BENCH.tasks] ?? task],
                     [
                       tr("Browser tools", "Nettleserverktøy"),
@@ -500,13 +521,6 @@ export function ErpRace() {
                   </div>
                 ))}
               </dl>
-              <p className="m-0 max-w-[68ch] text-sm text-ink-muted">
-                {tr(
-                  "Measured on screens rebuilt from DOM snapshots, not on Tripletex or DNB Regnskap themselves: same fields, same widgets, invented data. The figures at the top and the table of real models are measured: real models, real tokens, billed at list price. The chart is the scripted best case, a script that never errs, with tokens estimated as characters ÷ 4. The pages, the scripts and every call are in the repository:",
-                  "Målt på skjermbilder bygd opp igjen fra DOM-øyeblikksbilder, ikke på Tripletex eller DNB Regnskap selv: samme felt, samme komponenter, oppdiktede data. Tallene øverst og tabellen med ekte modeller er målt: ekte modeller, ekte tokens, fakturert til listepris. Grafen er det skriptede beste tilfellet, et skript som aldri tar feil, med tokens anslått som tegn ÷ 4. Sidene, skriptene og hvert kall ligger i repoet:",
-                )}{" "}
-                <code>pnpm proof</code> · <code>pnpm --filter agent-benchmark h2h</code>.
-              </p>
             </div>
           </Disclosure>
         </div>

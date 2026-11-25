@@ -67,22 +67,25 @@ export function ReceiptRace({ task }: { task: BenchTask }) {
   // One multiple when the screens agree ("5× as much"); otherwise each named.
   const same = others.every((other) => other.times === others[0]?.times);
   const without = same
-    ? t(`Without Booki it cost ${others[0]?.times} as much.`, `Uten Booki kostet den ${others[0]?.times} så mye.`)
+    ? t(
+        `Without Booki the estimate was ${others[0]?.times} as much.`,
+        `Uten Booki var anslaget ${others[0]?.times} så mye.`,
+      )
     : t(
-        `Without Booki it cost ${others.map((o, i) => `${o.times}${i === 0 ? " as much" : ""} on ${o.name}`).join(" and ")}.`,
-        `Uten Booki kostet den ${others.map((o, i) => `${o.times}${i === 0 ? " så mye" : ""} på ${o.name}`).join(" og ")}.`,
+        `Without Booki the estimate was ${others.map((o, i) => `${o.times}${i === 0 ? " as much" : ""} on ${o.name}`).join(" and ")}.`,
+        `Uten Booki var anslaget ${others.map((o, i) => `${o.times}${i === 0 ? " så mye" : ""} på ${o.name}`).join(" og ")}.`,
       );
 
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="receipt-race__intro">
-          <h3>{t("Same task, three receipts", "Samme oppgave, tre kvitteringer")}</h3>
+          <h3>{t("Scripted benchmark receipts", "Kvitteringer fra skriptede kjøringer")}</h3>
           {booki ? (
             <p>
               {t(
-                `Booki did it for ${f.usd(bookiCost, 3)}. ${without}`,
-                `Booki gjorde den for ${f.usd(bookiCost, 3)}. ${without}`,
+                `Estimated Booki cost: ${f.usd(bookiCost, 3)}. ${without}`,
+                `Anslått kostnad med Booki: ${f.usd(bookiCost, 3)}. ${without}`,
               )}
             </p>
           ) : null}
