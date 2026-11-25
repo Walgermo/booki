@@ -280,7 +280,10 @@ function admit(context: GuardContext, permission: Permission): void {
   }
   const personOnly = PERSON_ONLY.includes(permission) || (context.personOnly ?? []).includes(permission);
   if (actor?.kind === "agent" && personOnly) {
-    const able = roles.filter((role) => role.permissions.includes(permission)).map((role) => role.name);
+    // Who to ask: a role the refused agent holds is no answer for the reader.
+    const able = roles
+      .filter((role) => role.permissions.includes(permission) && !actor.roles.includes(role.id))
+      .map((role) => role.name);
     throw new BookiError("server.person-only", {
       permission: String(permission),
       roles: able.join(", ") || msg("permissions.none-defined"),
@@ -462,8 +465,11 @@ export function guardSubmitVatReturn(
  * A verdict as an HTTP answer, for any framework:
  * `const { status, body } = toHttp(verdict); return Response.json(body, { status })`.
  */
-export function toHttp<T>(verdict: Verdict<T>): { status: number; body: unknown } {
+export function toHttp<T>(verdict: Verdict<T>): { status: number; body: HttpBody<T> } {
   if (verdict.ok) return { status: 200, body: { ok: true, actor: verdict.actor, value: verdict.value } };
   const { status, ...body } = verdict;
   return { status, body };
 }
+
+/** What `toHttp` answers with: the value on success, `{ ok: false, code, message, issues? }` on a refusal. */
+export type HttpBody<T> = { ok: true; actor: string; value: T } | Omit<Refusal, "status">;

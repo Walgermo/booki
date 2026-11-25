@@ -141,6 +141,31 @@ describe("server guards", () => {
     expect(refused.status).toBe(403);
     expect(refused.body).toMatchObject({ ok: false, code: "permissions.denied" });
   });
+
+  it("types the body, so it can be mapped to an app's own error shape", () => {
+    const roles = [{ id: "clerk", name: "Clerk", permissions: ["note.write"] }];
+    const { status, body } = toHttp(
+      guard({ actor: { id: "y", kind: "person", roles: [] }, roles }, "note.write", () => "saved"),
+    );
+    const mapped = body.ok ? { value: body.value } : { error: body.message, code: body.code, issues: body.issues };
+    expect(status).toBe(403);
+    expect(mapped).toMatchObject({ code: "permissions.denied" });
+  });
+
+  it("does not send a person-only refusal to the roles the agent itself holds", () => {
+    const roles = [
+      { id: "partner", name: "Partner", permissions: ["finding.raise", "audit.sign-off"] },
+      { id: "agent", name: "Agent", permissions: ["finding.raise", "audit.sign-off"] },
+    ];
+    const actor: ServerActor = { id: "bookkeeper", roles: ["agent"], kind: "agent", onBehalfOf: "p1" };
+    const personOf = () => ({ id: "p1", roles: ["partner"] });
+    const en = guard({ actor, roles, personOf }, "audit.sign-off", () => true);
+    expect(en).toMatchObject({ ok: false, code: "server.person-only" });
+    expect(en.ok === false && en.message).toMatch(/roles: Partner\.$/);
+    const nb = guard({ actor, roles, personOf, locale: "nb" }, "audit.sign-off", () => true);
+    expect(nb.ok === false && nb.message).toMatch(/rollene: Partner\.$/);
+    expect(nb.ok === false && nb.message).not.toMatch(/Agent/);
+  });
 });
 
 describe("audit engagements", () => {
