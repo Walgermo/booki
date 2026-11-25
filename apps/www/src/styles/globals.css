@@ -951,16 +951,8 @@ html[data-kpi-still] {
 
 /* —— Site layout: things sit on the wall, separated by air and shelf lines —— */
 
-/*
-  A section: a numbered header (index, big title, note) over full-width
-  content. Pages count their own sections, so the index needs no prop.
-*/
-main {
-  counter-reset: site-section;
-}
-
+/* A section: a header (big title, note) over full-width content. */
 .site-section {
-  counter-increment: site-section;
   display: grid;
   gap: clamp(2rem, 4vw, 3rem);
   padding-block: clamp(3.5rem, 8vw, 6.5rem);
@@ -985,17 +977,6 @@ main {
   line-height: var(--leading-title);
   font-weight: 600;
   letter-spacing: var(--tracking-title);
-}
-
-.site-section > :first-child .site-section__title::before {
-  content: counter(site-section, decimal-leading-zero);
-  display: block;
-  margin-bottom: 1rem;
-  font-family: var(--bk-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: var(--tracking-caption);
-  color: var(--bk-muted-fg);
 }
 
 .site-section__note {
