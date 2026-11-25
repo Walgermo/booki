@@ -2,7 +2,7 @@ import { type FinancialDateKind } from "@booki-aui/core/financial-date";
 import { Field, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { financialDate } from "@booki-aui/primitives/financial-date-field";
 
@@ -40,6 +40,7 @@ function FinancialDateField({
   className,
   ...props
 }: FinancialDateFieldProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const label =
     kind === "invoice" ? profile.copy.invoiceDate : kind === "due" ? profile.copy.dueDate : profile.copy.postingDate;
@@ -54,12 +55,12 @@ function FinancialDateField({
       readOnly={readOnly}
       className={className}
       aria-label={label}
-      {...props}
+      {...rest}
     >
       {(state: { isValid: boolean; value: string }) => (
         <Field invalid={!state.isValid}>
           <FieldLabel>{label}</FieldLabel>
-          <FinancialDateControl id={id} required={required} />
+          <FinancialDateControl id={id} required={required} {...field} />
           {/* ISO YYYY-MM-DD. */}
           <FormValue name={name} value={state.value} disabled={disabled} />
           {!state.isValid ? <FieldError>Invalid date</FieldError> : null}

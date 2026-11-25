@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AmountField } from "./amount-field.js";
+import { AmountField, type AmountFieldProps } from "./amount-field.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
 
@@ -63,5 +63,61 @@ describe("an amount nobody has entered", () => {
     const plain = setup({ defaultValue: 50_000 });
     await plain.agent.act({ steps: [{ ref: plain.entry().ref, action: "clear" }] });
     expect(plain.entry()).toMatchObject({ empty: false, minor: 0 });
+  });
+});
+
+describe("onValueChange with allowEmpty", () => {
+  it("hears null when the field is emptied, so a controlled field learns it was cleared", async () => {
+    const calls: Array<number | null> = [];
+    const { agent, entry } = setup({
+      allowEmpty: true,
+      value: 5_000,
+      // Typed (minor: number | null) because allowEmpty is set.
+      onValueChange: (minor: number | null) => calls.push(minor),
+    });
+    await agent.act({ steps: [{ ref: entry().ref, action: "clear" }] });
+    expect(calls).toEqual([null]);
+  });
+
+  it("is typed with null only when allowEmpty is set", () => {
+    const empty: AmountFieldProps<true> = {
+      allowEmpty: true,
+      onValueChange: (minor: number | null) => minor,
+    };
+    const filled: AmountFieldProps<false> = { onValueChange: (minor: number) => minor };
+    // @ts-expect-error a field that may be empty reports null, which a number-only handler cannot take
+    const narrow: AmountFieldProps<true> = { allowEmpty: true, onValueChange: (minor: number) => minor };
+    expect([empty, filled, narrow]).toHaveLength(3);
+  });
+});
+
+describe("AmountField allowEmpty typed from a boolean variable", () => {
+  it("accepts an inline handler that takes null", () => {
+    const flag: boolean = Math.random() > 2;
+    const seen: Array<number | null> = [];
+    render(<AmountField allowEmpty={flag} defaultValue={100} onValueChange={(m) => seen.push(m)} />);
+    expect(seen).toEqual([]);
+  });
+});
+
+describe("AmountFieldProps in types", () => {
+  it("a wrapper that takes the bare props accepts allowEmpty, and inline handlers still infer", () => {
+    function MyAmount(props: AmountFieldProps) {
+      return <AmountField {...props} />;
+    }
+    const wrapped = (
+      <>
+        <MyAmount aria-label="a" allowEmpty />
+        <MyAmount aria-label="b" />
+        <MyAmount aria-label="c" allowEmpty onValueChange={(minor: number | null) => minor} />
+      </>
+    );
+    // allowEmpty left out: the handler gets a number.
+    const plain = <AmountField aria-label="d" onValueChange={(minor) => minor.toFixed(0)} />;
+    // allowEmpty: the handler gets number | null, so null must be handled.
+    const empty = <AmountField aria-label="e" allowEmpty onValueChange={(minor) => minor?.toFixed(0)} />;
+    // @ts-expect-error a number-only handler is wrong with allowEmpty
+    const bad = <AmountField aria-label="f" allowEmpty onValueChange={(minor: number) => minor} />;
+    expect([wrapped, plain, empty, bad]).toHaveLength(4);
   });
 });

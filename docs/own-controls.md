@@ -103,7 +103,7 @@ changes it; a value that does not exist is refused with the ones that do.
 
 ## The lower threshold: useBookiField
 
-For an amount, a closed list of codes or an ISO date, a product does not need
+For an amount, a closed list of codes, an account number or an ISO date, a product does not need
 `definePrimitive`. Wrap the field it already has in `useBookiField`: the hook
 keeps the value, adds the agent's action and its rules, and the product's own
 field is what `render` returns.
@@ -191,6 +191,37 @@ function CostCentreOwned(props: { onValueChange?: (code: string, details: { sour
   )
 }
 
+// An account number is digits. Without a `chart` any number of 4 to 10 digits is accepted
+// (`minLength` and `maxLength` change that); with a `chart` the number must be in it, and a
+// refusal names the nearest accounts. `allowEmpty` lets the field be cleared to "". The rules
+// apply to a whole number, so the render keeps a draft while a person types and calls `change` on blur.
+const chart = [
+  { number: "1500", name: "Kundefordringer" },
+  { number: "1920", name: "Bank" },
+  { number: "3000", name: "Salgsinntekt" },
+]
+function AccountField(props: { value: string; onValueChange?: (account: string, details: { source?: string }) => void }) {
+  // A person types a number a digit at a time, and "1" is not yet an account: keep what is typed
+  // as a draft and hand it to `change` on blur, where it is checked against the rules.
+  const [draft, setDraft] = useState<string | null>(null)
+  return useBookiField(
+    { kind: "account", value: props.value, chart, label: "Konto", onValueChange: props.onValueChange },
+    ({ value, change, refusal }) => (
+      <div>
+        <input
+          aria-label="Konto-felt"
+          value={draft ?? value}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={(e) => {
+            if (draft !== null && change(draft, e.nativeEvent)) setDraft(null)
+          }}
+        />
+        {refusal ? <p role="alert">{refusal}</p> : null}
+      </div>
+    ),
+  )
+}
+
 // A date is ISO YYYY-MM-DD, or "" for none.
 function DateField(props: { value: string; onValueChange?: (date: string, details: { source?: string }) => void }) {
   return useBookiField(
@@ -207,8 +238,8 @@ function DateField(props: { value: string; onValueChange?: (date: string, detail
 
 What each piece does:
 
-- **The agent's actions** are `setMinor` (amount), `setCode` (code) and `setDate`
-  (date). Each one is the same rule a person meets, so a refused value comes back
+- **The agent's actions** are `setMinor` (amount), `setCode` (code), `setAccount`
+  (account, the name `AccountPicker` uses) and `setDate` (date). Each one is the same rule a person meets, so a refused value comes back
   as `ok: false` with the sentence that says why: the unit, or the options that
   exist.
 - **The product keeps owning the value.** `value` is what the field shows; the
@@ -222,7 +253,14 @@ What each piece does:
   it, so the source is the mouse, touch or keyboard it came from.
 - **`disabled` and `readOnly` leave the agent no actions.** The snapshot entry
   is still there, with its value, and offers nothing to call.
-- **Other kinds need `definePrimitive`.** For anything beyond these three, use
+- **A field that has its own labelled group** (a `fieldset` with a `legend`, or
+  `role="radiogroup"`) takes `group: false`, on every kind. The hook renders a `div`
+  for its root, and by default that `div` is `role="group"` named by `label`, so the
+  group is announced twice and `getByRole("group", { name })` finds two. With
+  `group: false` the root has no role. `label` stays on it as `aria-label`, which is how the agent
+  snapshot reads the field's name, and which a screen reader ignores on an element without a role.
+  Without a `label` of that kind there would be no name for the agent to find the field by.
+- **Other kinds need `definePrimitive`.** For anything beyond these four, use
   the primitive above in this document.
 
 ## A free-text field: compose with your own input

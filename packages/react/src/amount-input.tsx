@@ -1,7 +1,8 @@
 import { money, type Money } from "@booki-aui/core/money";
 import { AmountField, type AmountFieldProps } from "./amount-field.js";
 
-export type AmountInputProps = Omit<AmountFieldProps, "onValueChange"> & {
+export type AmountInputProps = Omit<AmountFieldProps, "onValueChange" | "allowEmpty"> & {
+  allowEmpty?: boolean;
   /** @deprecated Prefer AmountField + onValueChange(minor). Kept for apps that need Money. */
   onValueChange?: (minor: number | null, money: Money | null) => void;
 };
@@ -15,10 +16,10 @@ function AmountInput({ onValueChange, currency, ...props }: AmountInputProps) {
     <AmountField
       currency={currency}
       {...props}
-      onValueChange={(minor) => {
+      onValueChange={(minor: number | null) => {
         if (!onValueChange) return;
         const code = currency ?? "NOK";
-        onValueChange(minor, money(minor, code));
+        onValueChange(minor, minor === null ? null : money(minor, code));
       }}
     />
   );

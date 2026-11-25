@@ -3,11 +3,13 @@
 import { BookiError } from "@booki-aui/core/msg";
 import { type PrimitiveHandle, usePart, usePrimitive } from "@ui-sdk/react/primitive";
 import type { ReactElement, ReactNode } from "react";
+import { bookiFieldAccount, type BookiFieldAccountEntry } from "./use-booki-field-account.js";
 import { bookiFieldAmount } from "./use-booki-field-amount.js";
 import { bookiFieldCode, type BookiFieldCodeItem } from "./use-booki-field-code.js";
 import { bookiFieldDate } from "./use-booki-field-date.js";
 
-export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
+export { bookiFieldAccount, bookiFieldAmount, bookiFieldCode, bookiFieldDate };
+export type { BookiFieldAccountEntry };
 
 /**
  * Gives a field the product already has Booki's typed agent actions and rules,
@@ -33,7 +35,20 @@ export { bookiFieldAmount, bookiFieldCode, bookiFieldDate };
 
 type FieldDetails = { reason: string; source?: string };
 
-type BookiFieldAmountBase = {
+/** Options every kind takes. */
+type BookiFieldCommon = {
+  /**
+   * Set `false` when the field the product renders already has its own labelled group
+   * (a `fieldset` with a `legend`, or `role="radiogroup"`): the root is then a plain
+   * `div` without `role="group"`, so the group is not announced twice and
+   * `getByRole("group", { name })` finds one. `label` stays on the root as `aria-label`, which
+   * is how the agent snapshot reads it, and which a screen reader ignores without a role.
+   * Default `true`.
+   */
+  group?: boolean;
+};
+
+type BookiFieldAmountBase = BookiFieldCommon & {
   kind: "amount";
   currency?: string;
   minMinor?: number;
@@ -61,7 +76,7 @@ export type BookiFieldAmountEmptyArgs = BookiFieldAmountBase & {
 
 export type BookiFieldAmountArgs = BookiFieldAmountFilledArgs | BookiFieldAmountEmptyArgs;
 
-export type BookiFieldCodeArgs = {
+export type BookiFieldCodeArgs = BookiFieldCommon & {
   kind: "code";
   value: string;
   options: BookiFieldCodeItem[];
@@ -75,7 +90,7 @@ export type BookiFieldCodeArgs = {
   readOnly?: boolean;
 };
 
-export type BookiFieldDateArgs = {
+export type BookiFieldDateArgs = BookiFieldCommon & {
   kind: "date";
   /** ISO `YYYY-MM-DD`, or `""` for none. */
   value: string;
@@ -85,7 +100,25 @@ export type BookiFieldDateArgs = {
   readOnly?: boolean;
 };
 
-export type BookiFieldArgs = BookiFieldAmountArgs | BookiFieldCodeArgs | BookiFieldDateArgs;
+export type BookiFieldAccountArgs = BookiFieldCommon & {
+  kind: "account";
+  /** The account number as digits, like `"1920"`. `""` is none, with `allowEmpty`. */
+  value: string;
+  /** A closed chart: an unknown number is refused and the refusal names the nearest accounts. */
+  chart?: BookiFieldAccountEntry[];
+  /** Fewest digits without a `chart`. Default 4. */
+  minLength?: number;
+  /** Most digits without a `chart`. Default 10. */
+  maxLength?: number;
+  /** The field may hold no account: `setAccount("")` or `setAccount(null)` clears it to `""`. */
+  allowEmpty?: boolean;
+  onValueChange?: (account: string, details: FieldDetails) => void;
+  label: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+};
+
+export type BookiFieldArgs = BookiFieldAmountArgs | BookiFieldCodeArgs | BookiFieldDateArgs | BookiFieldAccountArgs;
 
 export type BookiFieldRender<T> = {
   /** The value the field holds. */
@@ -96,12 +129,13 @@ export type BookiFieldRender<T> = {
   refusal: string | null;
 };
 
-type RootState = { minor: number | null; code: string; date: string; refusal: string | null };
+type RootState = { minor: number | null; code: string; date: string; account: string; refusal: string | null };
 
 type Api = {
   setMinor: (minor: unknown, event?: Event) => boolean;
   setCode: (code: unknown, event?: Event) => boolean;
   setDate: (date: unknown, event?: Event) => boolean;
+  setAccount: (account: unknown, event?: Event) => boolean;
   showRefusal: (message: string | null) => void;
 };
 
@@ -125,17 +159,34 @@ export function useBookiField(
   options: BookiFieldDateArgs,
   render: (field: BookiFieldRender<string>) => ReactNode,
 ): ReactElement;
+export function useBookiField(
+  options: BookiFieldAccountArgs,
+  render: (field: BookiFieldRender<string>) => ReactNode,
+): ReactElement;
 export function useBookiField(options: BookiFieldArgs, render: (field: never) => ReactNode): ReactElement {
   // One usePrimitive call: the definition is chosen by kind, not the hooks.
   const definition =
-    options.kind === "amount" ? bookiFieldAmount : options.kind === "code" ? bookiFieldCode : bookiFieldDate;
+    options.kind === "amount"
+      ? bookiFieldAmount
+      : options.kind === "code"
+        ? bookiFieldCode
+        : options.kind === "account"
+          ? bookiFieldAccount
+          : bookiFieldDate;
   const handle = usePrimitive(definition as never, primitiveOptions(options) as never) as unknown as PrimitiveHandle<
     typeof bookiFieldAmount
   > & { api: Api };
   const api = handle.api;
 
   const change = (next: unknown, event?: Event): boolean => {
-    const write = options.kind === "amount" ? api.setMinor : options.kind === "code" ? api.setCode : api.setDate;
+    const write =
+      options.kind === "amount"
+        ? api.setMinor
+        : options.kind === "code"
+          ? api.setCode
+          : options.kind === "account"
+            ? api.setAccount
+            : api.setDate;
     try {
       write(next, event);
     } catch (error) {
@@ -147,14 +198,23 @@ export function useBookiField(options: BookiFieldArgs, render: (field: never) =>
     return true;
   };
 
-  // The root's state is the amount's, the code's or the date's, by kind: each
+  // The root's state is the amount's, the code's, the account's or the date's, by kind: each
   // reads only its own key.
+  // Without the group role the label stays as the root's name: ui-sdk reads the snapshot's
+  // label from the DOM name, and a screen reader ignores a name on an element with no role.
   const part = {
     "aria-label": options.label,
     children: (state: object) => {
       const shown = state as RootState;
       return render({
-        value: options.kind === "amount" ? shown.minor : options.kind === "code" ? shown.code : shown.date,
+        value:
+          options.kind === "amount"
+            ? shown.minor
+            : options.kind === "code"
+              ? shown.code
+              : options.kind === "account"
+                ? shown.account
+                : shown.date,
         change,
         refusal: shown.refusal,
       } as never);

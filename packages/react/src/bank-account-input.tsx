@@ -3,7 +3,7 @@ import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki-aui/core/ro
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { IbanInput } from "./iban-input.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { type BankAccountValue, bankAccount } from "@booki-aui/primitives/bank-account-input";
@@ -59,6 +59,7 @@ function BankAccountInput({
   className,
   ...props
 }: BankAccountInputProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const kind = profile.bankAccount.kind;
 
@@ -98,20 +99,25 @@ function BankAccountInput({
         readOnly={readOnly}
         className={className}
         aria-label={profile.bankAccount.label}
-        {...props}
+        {...rest}
       >
         {(state: BankDigits) => (
           <>
             <Field invalid={routingInvalid}>
               <FieldLabel>Routing number</FieldLabel>
               <FieldDescription>9-digit ABA routing number</FieldDescription>
-              <BankAccountRouting id={id} required={required} placeholder="021000021" />
+              <BankAccountRouting id={id} required={required} placeholder="021000021" {...field} />
               {routingInvalid ? <FieldError>Invalid routing number</FieldError> : null}
             </Field>
             <Field invalid={accountInvalid}>
               <FieldLabel>Account number</FieldLabel>
               <FieldDescription>4–17 digits</FieldDescription>
-              <BankAccountAccount id={id ? `${id}-account` : undefined} required={required} placeholder="123456789" />
+              <BankAccountAccount
+                id={id ? `${id}-account` : undefined}
+                required={required}
+                placeholder="123456789"
+                aria-invalid={accountInvalid || undefined}
+              />
               {accountInvalid ? <FieldError>Invalid account number</FieldError> : null}
             </Field>
             <FormValue
@@ -144,13 +150,13 @@ function BankAccountInput({
       readOnly={readOnly}
       className={className}
       aria-label={profile.bankAccount.label}
-      {...props}
+      {...rest}
     >
       {(state: BankDigits) => (
         <Field invalid={invalid}>
           <FieldLabel>{profile.bankAccount.label}</FieldLabel>
           <FieldDescription>{profile.bankAccount.description}</FieldDescription>
-          <BankAccountKontonummer id={id} required={required} placeholder="1234 56 78903" />
+          <BankAccountKontonummer id={id} required={required} placeholder="1234 56 78903" {...field} />
           {invalid ? <FieldError>Ugyldig kontonummer (mod11)</FieldError> : null}
           <FormValue name={name} value={state.digits} disabled={disabled} />
         </Field>

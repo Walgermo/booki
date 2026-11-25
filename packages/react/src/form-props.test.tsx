@@ -24,6 +24,8 @@ type Shared = BookiFormProps & {
   ref?: Ref<HTMLDivElement>;
   "data-testid"?: string;
   "aria-describedby"?: string;
+  "aria-invalid"?: boolean;
+  "aria-errormessage"?: string;
   // Each control has its own callback signature; the tests only count calls.
   onValueChange?: (...args: any[]) => void;
 };
@@ -229,6 +231,24 @@ describe.each(specs)("$name in a form", (spec) => {
     expect(submitted()).not.toEqual(spec.initial);
   });
 
+  it("gives aria-invalid, aria-describedby and aria-errormessage to the visible input, not the wrapper", () => {
+    setup(spec, {
+      "data-testid": "root",
+      "aria-invalid": true,
+      "aria-describedby": "hint",
+      "aria-errormessage": "oops",
+    });
+    const visible = el<HTMLInputElement>(spec.visible);
+    expect(visible.getAttribute("aria-invalid")).toBe("true");
+    // A Field adds the id of its own description; the product's id stays in the list.
+    expect(visible.getAttribute("aria-describedby")?.split(" ")).toContain("hint");
+    expect(visible.getAttribute("aria-errormessage")).toBe("oops");
+    const root = el('[data-testid="root"]');
+    expect(root.getAttribute("aria-invalid")).toBeNull();
+    expect(root.getAttribute("aria-describedby")).toBeNull();
+    expect(root.getAttribute("aria-errormessage")).toBeNull();
+  });
+
   it("gives `id` and `required` to the visible input, and className, ref, aria-* and data-* to the root", () => {
     const ref = createRef<HTMLDivElement>();
     setup(spec, {
@@ -237,7 +257,6 @@ describe.each(specs)("$name in a form", (spec) => {
       className: "mine",
       ref,
       "data-testid": "root",
-      "aria-describedby": "hint",
     });
     const visible = el<HTMLInputElement>(spec.visible);
     expect(visible.id).toBe("field-1");
@@ -249,7 +268,6 @@ describe.each(specs)("$name in a form", (spec) => {
     const root = el('[data-testid="root"]');
     expect(root).toBe(ref.current);
     expect(root.classList.contains("mine")).toBe(true);
-    expect(root.getAttribute("aria-describedby")).toBe("hint");
     expect(root.contains(visible)).toBe(true);
     expect(root.getAttribute("id")).toBeNull();
 

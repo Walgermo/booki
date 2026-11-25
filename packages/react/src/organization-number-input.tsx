@@ -2,7 +2,7 @@ import { isValidOrganizationNumber, type OrganizationNumberKind } from "@booki-a
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { organizationNumber } from "@booki-aui/primitives/organization-number-input";
 
@@ -38,6 +38,7 @@ function OrganizationNumberInput({
   className,
   ...props
 }: OrganizationNumberInputProps) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const kind = profile.organizationNumber.kind;
 
@@ -52,7 +53,7 @@ function OrganizationNumberInput({
       readOnly={readOnly}
       className={className}
       aria-label={profile.organizationNumber.label}
-      {...props}
+      {...rest}
     >
       {(state: { kind: OrganizationNumberKind; digits: string }) => {
         const invalid = state.digits.length > 0 && !isValidOrganizationNumber(state.digits, state.kind);
@@ -65,6 +66,7 @@ function OrganizationNumberInput({
             <OrganizationNumberField
               id={id}
               required={required}
+              {...field}
               placeholder={profile.organizationNumber.placeholder ?? (kind === "ein" ? "12-3456789" : "974 760 673")}
             />
             {invalid ? (

@@ -28,6 +28,8 @@ export type BookiFieldCodeOptions = {
    * DOM event) goes through.
    */
   personOnly?: string[];
+  /** `false`: the root takes no `role="group"`, for a field that has its own labelled group. */
+  group?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
   onValueChange?: (code: string, details: { reason: string; source?: string }) => void;
@@ -44,13 +46,16 @@ export type BookiFieldCodeState = {
   /** The values only a person may choose. */
   personOnly: string[];
   refusal: string | null;
+  /** The root is a `role="group"`; false when the product's field has its own. */
+  group: boolean;
   disabled: boolean;
   readOnly: boolean;
 };
 
-const shownItems = (items: BookiFieldCodeItem[]): BookiFieldCodeItem[] => (items.length <= LISTED_WHOLE ? items : []);
+export const shownItems = (items: BookiFieldCodeItem[]): BookiFieldCodeItem[] =>
+  items.length <= LISTED_WHOLE ? items : [];
 
-const itemsHint = (items: BookiFieldCodeItem[]): string =>
+export const itemsHint = (items: BookiFieldCodeItem[]): string =>
   items.length <= LISTED_WHOLE
     ? ""
     : `${items.length} items, not listed here: query({ within: <this ref>, text: "a code or a whole word" }) finds one; without text it lists 50 at a time, and from: 50 reads the next 50.`;
@@ -94,6 +99,7 @@ export const bookiFieldCode = definePrimitive({
     options: "value",
     allowEmpty: "boolean",
     personOnly: "value",
+    group: "boolean",
     ...lockOptions,
     onValueChange: "callback",
   },
@@ -108,11 +114,13 @@ export const bookiFieldCode = definePrimitive({
       allowEmpty: options.allowEmpty ?? false,
       personOnly: options.personOnly ?? [],
       refusal: null,
+      group: options.group ?? true,
       ...lockState(options),
     };
   },
   sync: (options: BookiFieldCodeOptions): Partial<BookiFieldCodeState> => {
     const next: Partial<BookiFieldCodeState> = { ...lockState(options) };
+    if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
     if (options.personOnly !== undefined) next.personOnly = options.personOnly;
     if (options.value !== undefined) next.code = options.value;
@@ -162,7 +170,8 @@ export const bookiFieldCode = definePrimitive({
   },
   slots: (slot) => ({
     root: slot({
-      role: "group",
+      role: (state) => (state.group ? "group" : undefined),
+      roles: ["group"],
       attrs: (state) => ({
         "data-slot": "field-code",
         "data-disabled": state.disabled ? "" : undefined,

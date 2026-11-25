@@ -1,6 +1,6 @@
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ComponentProps } from "react";
-import { FormValue, type BookiFormProps } from "./form-props.js";
+import { FormValue, type BookiFormProps, splitFieldAria } from "./form-props.js";
 import { useBookiLocaleOptional } from "./locale.js";
 import { amountField } from "@booki-aui/primitives/amount-field";
 
@@ -16,22 +16,32 @@ const AmountFieldRoot: (typeof parts)["Root"] = parts.Root;
 const AmountFieldCurrency: (typeof parts)["Currency"] = parts.Currency;
 const AmountFieldInput: (typeof parts)["Input"] = parts.Input;
 
-export type AmountFieldProps = {
+type AmountFieldBase = {
   /** Minor units. `null` shows the field empty, with `allowEmpty`. */
   value?: number | null;
   defaultValue?: number | null;
-  /** The field may be empty, which is not 0: `clear` and deleting the text empty it. */
-  allowEmpty?: boolean;
-  /** Called when the field becomes empty. */
+  /** Called when the field becomes empty, after `onValueChange(null)`. */
   onEmpty?: (details: { reason: string; source?: string }) => void;
   currency?: string;
   /** Lowest accepted amount in minor units. Defaults to 0 (no negatives). */
   minMinor?: number;
   maxMinor?: number;
   secret?: boolean;
-  onValueChange?: (minor: number, details?: { reason: string; source?: string }) => void;
   className?: string;
   "aria-label"?: string;
+};
+
+/**
+ * `allowEmpty` decides what `onValueChange` hears. Left out or `false`: integer minor units. `true`,
+ * or a `boolean` variable that may be true: `number | null`, because the field may be emptied
+ * (clear, or deleting its text), which is not 0. `onEmpty` is called after it.
+ */
+export type AmountFieldProps<Empty extends boolean = boolean> = AmountFieldBase & {
+  allowEmpty?: Empty;
+  onValueChange?: (
+    minor: [Empty] extends [false] ? number : number | null,
+    details?: { reason: string; source?: string },
+  ) => void;
 } & BookiFormProps &
   Omit<ComponentProps<"div">, "onChange" | "defaultValue" | "children" | "id">;
 
@@ -39,10 +49,10 @@ export type AmountFieldProps = {
  * Composed amount field with BookiLocale defaults. Prefer this in apps;
  * use Root/Currency/Input parts when you need custom markup.
  */
-function AmountField({
+function AmountField<Empty extends boolean = false>({
   value,
   defaultValue,
-  allowEmpty = false,
+  allowEmpty = false as Empty,
   onEmpty,
   currency: currencyProp,
   minMinor,
@@ -57,7 +67,8 @@ function AmountField({
   className,
   "aria-label": ariaLabel,
   ...props
-}: AmountFieldProps) {
+}: AmountFieldProps<Empty>) {
+  const { field, rest } = splitFieldAria(props);
   const { profile } = useBookiLocaleOptional();
   const currency = currencyProp ?? profile.currency;
   // The name goes on the input too: a screen reader reads the text box, not the wrapper.
@@ -75,15 +86,15 @@ function AmountField({
       secret={secret}
       disabled={disabled}
       readOnly={readOnly}
-      onValueChange={onValueChange}
+      onValueChange={onValueChange as AmountFieldProps<true>["onValueChange"]}
       className={className}
       aria-label={label}
-      {...props}
+      {...rest}
     >
       {(state: { value: number | null; empty: boolean }) => (
         <>
           <AmountFieldCurrency>{currency}</AmountFieldCurrency>
-          <AmountFieldInput id={id} required={required} aria-label={label} />
+          <AmountFieldInput id={id} required={required} aria-label={label} {...field} />
           {/* Integer minor units, the same number the agent reads. */}
           <FormValue name={name} value={state.value ?? ""} disabled={disabled} />
         </>

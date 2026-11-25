@@ -82,17 +82,35 @@ Credentials / bank / KID use `data-agent-secret` (values show as `[redacted]`). 
 
 ## useBookiField (a field the product already has)
 
-`useBookiField(options, render)` from `@booki-aui/react` gives an existing input or select the agent's action and Booki's rules, without replacing it. Three kinds only:
+`useBookiField(options, render)` from `@booki-aui/react` gives an existing input or select the agent's action and Booki's rules, without replacing it. Four kinds only:
 
 | kind | value | action | snapshot keys |
 | --- | --- | --- | --- |
 | `amount` | integer minor units (`12500` = 125.00 NOK) | `setMinor` | `minor`, `currency`, `refusal` |
 | `code` | a value from the closed `options` list | `setCode` | `code`, `items`, `itemsHint`, `refusal` |
+| `account` | digits (`"1920"`); `minLength` (default 4) to `maxLength` (default 10), or a closed `chart` of `{ number, name }`; `allowEmpty` clears it to `""` | `setAccount` | `account`, `items`, `itemsHint`, `minLength`, `maxLength`, `refusal` |
 | `date` | ISO `YYYY-MM-DD`, or `""` | `setDate` | `date`, `refusal` |
 
-A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. A code field's `personOnly` lists values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused, a person's change with its DOM event goes through, and the snapshot shows the list. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
+A refusal is a sentence the agent can act on: it names the unit, the options that exist, or the `YYYY-MM-DD` form, in English and Norwegian. A code field's `personOnly` lists values only a person may choose (a deal's won and lost stages): an agent's `setCode` to one is refused, a person's change with its DOM event goes through, and the snapshot shows the list. With a `chart`, an unknown account number is refused and the refusal names the nearest accounts (all of a short chart), like `AccountPicker`; without one, text that is not digits or is outside the length range is refused. Every kind takes `group: false` when the product's field already has its own labelled group (a `fieldset` with a `legend`, or `role="radiogroup"`): the root then has no `role="group"`, so the group is not announced twice, and `label` stays on it as `aria-label` for the agent snapshot. Other kinds need `definePrimitive`. See `docs/own-controls.md`.
 
 ## Catalog
+
+### AmountField props
+
+`import { AmountField } from "@booki-aui/react"`. Integer minor units both ways. The accessible name comes from an external `<label htmlFor={id}>` (the field has no `label` prop) or `aria-label`, and it always reads with the currency: "Beløp (NOK)". The rest of the props (`className`, `ref`, `data-*`, `aria-*`) go to the wrapper `div`, except `aria-invalid`, `aria-describedby` and `aria-errormessage`, which go to the input.
+
+| Prop | Type | Notes |
+| --- | --- | --- |
+| `value` / `defaultValue` | `number` (`number \| null` with `allowEmpty`) | Minor units (12500 = 125.00). Controlled with `value`; `null` shows the field empty |
+| `allowEmpty` | `boolean` | The field may be empty, which is not 0. `clear`, `setMinor(null)` and deleting the text empty it |
+| `onValueChange` | `(minor: number, details?) => void`; with `allowEmpty`: `(minor: number \| null, details?) => void` | Hears every change. With `allowEmpty`, emptying the field reports `null`, so a controlled field learns it was cleared |
+| `AmountFieldProps` | `AmountFieldProps<Empty extends boolean = boolean>` | For wrapper authors. The bare `AmountFieldProps` has `allowEmpty?: boolean` and a `(minor: number \| null, details?)` handler, so `function MyAmount(props: AmountFieldProps) { return <AmountField {...props} /> }` accepts `<MyAmount allowEmpty />`. `<AmountField>` itself still infers: `allowEmpty` left out gives a `number` handler, `allowEmpty` gives `number \| null`. Use `AmountFieldProps<false>` to pin a wrapper to a number handler |
+| `onEmpty` | `(details) => void` | Also called when the field becomes empty, after `onValueChange(null)` |
+| `minMinor` / `maxMinor` | `number` | Range in minor units. `minMinor` defaults to 0 (no negatives) |
+| `currency` | `string` | Defaults to the locale profile's (NOK in Norway) |
+| `id` | `string` | Id of the input, for `<label htmlFor={id}>` |
+| `name`, `required`, `disabled`, `readOnly` | | Form props, see below |
+| `secret` | `boolean` | Redacts the amount in the snapshot |
 
 ### FIN `definePrimitive` (operate these)
 

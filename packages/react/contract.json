@@ -578,21 +578,47 @@
       "visually-hidden"
     ]
   },
+  "field-account": {
+    "actions": ["setAccount"],
+    "options": [
+      "allowEmpty",
+      "chart",
+      "disabled",
+      "group",
+      "maxLength",
+      "minLength",
+      "onValueChange",
+      "readOnly",
+      "value"
+    ],
+    "parts": ["root"],
+    "dataSlots": ["field-account"]
+  },
   "field-amount": {
     "actions": ["setMinor"],
-    "options": ["allowEmpty", "currency", "disabled", "maxMinor", "minMinor", "onValueChange", "readOnly", "value"],
+    "options": [
+      "allowEmpty",
+      "currency",
+      "disabled",
+      "group",
+      "maxMinor",
+      "minMinor",
+      "onValueChange",
+      "readOnly",
+      "value"
+    ],
     "parts": ["root"],
     "dataSlots": ["field-amount"]
   },
   "field-code": {
     "actions": ["setCode"],
-    "options": ["allowEmpty", "disabled", "onValueChange", "options", "personOnly", "readOnly", "value"],
+    "options": ["allowEmpty", "disabled", "group", "onValueChange", "options", "personOnly", "readOnly", "value"],
     "parts": ["root"],
     "dataSlots": ["field-code"]
   },
   "field-date": {
     "actions": ["setDate"],
-    "options": ["disabled", "onValueChange", "readOnly", "value"],
+    "options": ["disabled", "group", "onValueChange", "readOnly", "value"],
     "parts": ["root"],
     "dataSlots": ["field-date"]
   },

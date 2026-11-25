@@ -147,6 +147,16 @@ const CONTROLS: Record<string, Control> = {
     },
     probes: { setCode: { args: ["300"], names: ["Drift", "Prosjekt"] } },
   },
+  "field-account": {
+    options: {
+      value: "1500",
+      chart: [
+        { number: "1500", name: "Kundefordringer" },
+        { number: "3000", name: "Salgsinntekt" },
+      ],
+    },
+    probes: { setAccount: { args: ["9999"], names: ["1500", "3000"] } },
+  },
   "field-date": {
     options: { value: "" },
     probes: { setDate: { args: ["Smarch 3rd"], names: ["YYYY-MM-DD"] } },

@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+
 /**
  * Form participation shared by the composed Booki controls.
  *
@@ -5,7 +7,7 @@
  *   carrying its canonical value (minor units, digits, ISO date, code).
  * - `disabled`: not editable and not submitted, as in HTML.
  * - `readOnly`: shown and submitted, not editable.
- * - `required` and `id` go to the visible input.
+ * - `required`, `id`, `aria-invalid`, `aria-describedby` and `aria-errormessage` go to the visible input.
  *
  * `disabled` and `readOnly` live in each primitive's state. ui-sdk's agent
  * bridge reads those two keys itself: the snapshot lists the control with
@@ -20,7 +22,34 @@ export type BookiFormProps = {
   /** Shown and submitted, but nobody (person or agent) can change it. */
   readOnly?: boolean;
   required?: boolean;
+  /** Goes to the visible input, so a screen reader announces the error on the field. */
+  "aria-invalid"?: ComponentProps<"input">["aria-invalid"];
+  /** Goes to the visible input: the id of the hint or error text. */
+  "aria-describedby"?: string;
+  /** Goes to the visible input: the id of the error message. */
+  "aria-errormessage"?: string;
 };
+
+type FieldAria = Pick<BookiFormProps, "aria-invalid" | "aria-describedby" | "aria-errormessage">;
+
+/**
+ * Takes the three state attributes of a field out of the props that go to the
+ * wrapper, so they can be spread on the visible input instead. Only the ones
+ * given are returned: an absent one never overwrites what the part sets itself.
+ */
+export function splitFieldAria<T extends FieldAria>(props: T): { field: FieldAria; rest: Omit<T, keyof FieldAria> } {
+  const {
+    "aria-invalid": invalid,
+    "aria-describedby": describedby,
+    "aria-errormessage": errormessage,
+    ...rest
+  } = props;
+  const field: FieldAria = {};
+  if (invalid !== undefined) field["aria-invalid"] = invalid;
+  if (describedby !== undefined) field["aria-describedby"] = describedby;
+  if (errormessage !== undefined) field["aria-errormessage"] = errormessage;
+  return { field, rest };
+}
 
 export {
   inputLockAttrs,
