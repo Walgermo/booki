@@ -10,7 +10,8 @@
 
 :root,
 [data-bk-theme="light"] {
-  color-scheme: light;
+  /* Keep the host's native color scheme when only the tokens are loaded. */
+  --bk-scheme: light;
 
   /* Paper */
   --bk-bg: oklch(0.973 0.003 100);
@@ -113,7 +114,7 @@
  * the agent's colour.
  */
 [data-bk-theme="dark"] {
-  color-scheme: dark;
+  --bk-scheme: dark;
 
   --bk-bg: oklch(0.175 0.014 262);
   --bk-card: oklch(0.215 0.016 262);
@@ -160,6 +161,12 @@
   --bk-shadow-md: 0 0 0 1px oklch(1 0 0 / 0.13);
 }
 
+/* Theme wrappers opt in to native form chrome, including when nested. */
+[data-bk-theme="light"],
+[data-bk-theme="dark"] {
+  color-scheme: var(--bk-scheme);
+}
+
 /* ── Base text inside FIN surfaces ───────────────────────────────────── */
 
 :where(
@@ -198,6 +205,8 @@
 }
 
 :where([data-slot]) {
+  color-scheme: var(--bk-scheme);
+
   & :is(label) {
     display: grid;
     gap: 0.35rem;
