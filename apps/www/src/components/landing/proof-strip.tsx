@@ -68,20 +68,9 @@ export function ProofStrip() {
 
   return (
     <section aria-labelledby="benchmark-summary" className="grid gap-6">
-      <div className="grid gap-2">
-        <h2 id="benchmark-summary" className="m-0 text-lg font-semibold">
-          {t("Benchmark results from real model runs", "Måleresultater fra kjøringer med faktiske modeller")}
-        </h2>
-        <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
-          {t(
-            "We compared Booki with screens rebuilt from Tripletex and DNB Regnskap using sample data. The models entered a supplier invoice or read a dashboard.",
-            "Vi sammenlignet Booki med skjermbilder gjenskapt fra Tripletex og DNB Regnskap med eksempeldata. Modellene registrerte en leverandørfaktura eller leste et dashbord.",
-          )}{" "}
-          <a href="#benchmark-method" className="site-link">
-            {t("See the method and run receipts", "Se metoden og kvitteringene fra kjøringene")}
-          </a>
-        </p>
-      </div>
+      <h2 id="benchmark-summary" className="sr-only">
+        {t("Benchmark results", "Måleresultater")}
+      </h2>
       <dl className="site-figures site-proof m-0">
         {figures.map((figure) => (
           <div key={figure.key} data-done="">
@@ -119,14 +108,24 @@ export function ProofStrip() {
           </div>
         ))}
       </dl>
-      {/* The full summary details remain available alongside the figures. */}
       <details className="site-proof-about">
         <summary>{t("About the measurements", "Om målingene")}</summary>
+        <p>
+          {t(
+            "We asked the models to read a dashboard or enter a supplier invoice. They used the same sample data in Booki and on screens rebuilt from Tripletex and DNB Regnskap.",
+            "Vi ba modellene lese et dashbord eller registrere en leverandørfaktura. De brukte de samme eksempeldataene i Booki og på gjenskapte skjermbilder fra Tripletex og DNB Regnskap.",
+          )}
+        </p>
         <p>
           {t(
             `We ran Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash five times per model, task and screen on ${f.runDate}. We withdrew the voucher and sales invoice results after we found that a control hint revealed the answers.`,
             `Vi kjørte Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash fem ganger per modell, oppgave og skjermbilde den ${f.runDate}. Vi trakk tilbake resultatene for bilag og salgsfaktura fordi et hint i kontrollen røpet svarene. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
           )}
+        </p>
+        <p>
+          <a href="#benchmark-method" className="site-link">
+            {t("See the method and run receipts", "Se metoden og kvitteringene fra kjøringene")}
+          </a>
         </p>
       </details>
     </section>

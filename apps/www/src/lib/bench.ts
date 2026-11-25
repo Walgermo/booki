@@ -15,16 +15,16 @@ type Text = { en: string; nb: string };
 
 export const TASKS: { id: BenchTask; label: Text; short: Text; plural: Text }[] = [
   {
-    id: "supplier-invoice",
-    label: { en: "Book a supplier invoice", nb: "Bokfør en leverandørfaktura" },
-    short: { en: "Supplier invoice", nb: "Leverandørfaktura" },
-    plural: { en: "supplier invoices", nb: "leverandørfakturaer" },
-  },
-  {
     id: "dashboard",
     label: { en: "Read a dashboard", nb: "Les et dashbord" },
     short: { en: "Dashboard", nb: "Dashbord" },
     plural: { en: "dashboard reads", nb: "dashbordavlesninger" },
+  },
+  {
+    id: "supplier-invoice",
+    label: { en: "Book a supplier invoice", nb: "Bokfør en leverandørfaktura" },
+    short: { en: "Supplier invoice", nb: "Leverandørfaktura" },
+    plural: { en: "supplier invoices", nb: "leverandørfakturaer" },
   },
   {
     id: "voucher",
