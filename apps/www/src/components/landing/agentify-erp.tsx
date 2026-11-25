@@ -362,12 +362,12 @@ export function ErpWindow({
               <header className="erp-doc">
                 <div className="grid gap-1">
                   <p className="erp-window__crumb">{t("Ledger / Vouchers / New", "Regnskap / Bilag / Nytt")}</p>
-                  <h3 className="erp-doc__title">
+                  <h2 className="erp-doc__title">
                     {t("Supplier invoice 8841", "Leverandørfaktura 8841")}
                     <span className="erp-window__state" data-phase={phase}>
                       {status}
                     </span>
-                  </h3>
+                  </h2>
                   <p className="erp-doc__party">Kontorhuset AS · {t("office supplies", "kontorrekvisita")}</p>
                 </div>
                 <div className="erp-doc__total">

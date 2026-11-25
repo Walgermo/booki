@@ -10,13 +10,41 @@
  * The components were written for a browser, so the render runs with a
  * browser-like global (jsdom): English, light, no stored choices.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import Beasties from "beasties";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
 
+/**
+ * The CSS a page needs to draw its first screen goes inline in its <head>; the
+ * stylesheet itself loads without blocking. The Night theme is switched on by
+ * a script, so its rules are kept whatever the static page shows.
+ */
+const critical = new Beasties({
+  path: join(dirname(fileURLToPath(import.meta.url)), "..", "dist"),
+  publicPath: "/",
+  preload: "media",
+  // Beasties does not see fonts named through CSS variables; withFonts inlines the @font-face rules instead.
+  inlineFonts: false,
+  pruneSource: false,
+  allowRules: [/data-bk-theme/, /prefers-color-scheme/],
+  logLevel: "warn",
+});
+
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = join(here, "../dist");
+
+/**
+ * The stylesheet's @font-face rules, inline in the head. Without them the first
+ * paint is in a system font and the hero title paints again in Geist when the
+ * stylesheet arrives: a second, later largest paint.
+ */
+const fontFaces = readdirSync(join(dist, "assets"))
+  .filter((name) => name.endsWith(".css"))
+  .flatMap((name) => readFileSync(join(dist, "assets", name), "utf8").match(/@font-face\{[^}]*\}/g) ?? []);
+const withFonts = (html) =>
+  fontFaces.length ? html.replace("</head>", `<style>${fontFaces.join("")}</style></head>`) : html;
 const site = "https://booki.dev";
 
 const dom = new JSDOM("<!doctype html><html lang='en'><body></body></html>", { url: `${site}/` });
@@ -60,13 +88,90 @@ function firstHeading(body) {
   const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
   const h1 = doc.querySelector("main h1") ?? doc.querySelector("h1");
   if (!h1) return null;
-  let next = h1.nextElementSibling;
-  while (next && next.tagName !== "P") next = next.nextElementSibling;
   const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
+  // The paragraphs after the heading, until there is enough for a search result's snippet.
+  let description = "";
+  for (let next = h1.nextElementSibling; next && description.length < 110; next = next.nextElementSibling) {
+    if (next.tagName === "P") description = clean(`${description} ${next.textContent}`);
+  }
   // What a reader hears: text marked aria-hidden (the hero title's turning word) is a copy for the eye.
   const heard = h1.cloneNode(true);
   for (const hidden of heard.querySelectorAll('[aria-hidden="true"]')) hidden.remove();
-  return { title: clean(heard.textContent), description: clean(next?.textContent).slice(0, 200) };
+  return { title: clean(heard.textContent), description };
+}
+
+/** At most 160 characters, what a search result shows: whole sentences when they fit, else whole words. */
+function snippet(text) {
+  if (text.length <= 160) return text;
+  const sentences = text.slice(0, 160).match(/^.*[.!?](?=\s|$)/)?.[0];
+  if (sentences && sentences.length >= 90) return sentences;
+  return `${text.slice(0, 157).replace(/\s+\S*$/, "")}…`;
+}
+
+/**
+ * Structured data for search engines and answer engines: the site and the
+ * library on the front page, with its questions; an article and its place
+ * in the docs elsewhere. Only what the page shows.
+ */
+function structuredData(url, { title, description, body }) {
+  const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
+  const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
+  const publisher = { "@type": "Organization", name: "Booki", url: `${site}/` };
+  const graph = [];
+  if (url === "/") {
+    graph.push(
+      { "@type": "WebSite", name: "Booki", url: `${site}/`, description, publisher },
+      {
+        "@type": "SoftwareSourceCode",
+        name: "Booki",
+        description,
+        url: `${site}/`,
+        codeRepository: "https://github.com/Walgermo/booki",
+        programmingLanguage: ["TypeScript", "React"],
+        license: "https://opensource.org/licenses/MIT",
+      },
+    );
+    const faq = [...doc.querySelectorAll(".site-faq__item")]
+      .map((item) => ({
+        q: clean(item.querySelector("[data-slot='collapsible-trigger']")?.textContent),
+        a: clean(item.querySelector(".site-faq__answer")?.textContent),
+      }))
+      .filter((item) => item.q && item.a);
+    if (faq.length) {
+      graph.push({
+        "@type": "FAQPage",
+        mainEntity: faq.map((item) => ({
+          "@type": "Question",
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
+      });
+    }
+  } else {
+    const published = doc.querySelector("time[datetime]")?.getAttribute("datetime");
+    graph.push({
+      "@type": url.startsWith("/docs") ? "TechArticle" : published ? "BlogPosting" : "WebPage",
+      headline: title.replace(/ · Booki$/, ""),
+      description,
+      url: `${site}${url}`,
+      ...(published ? { datePublished: published } : {}),
+      inLanguage: "en",
+      image: `${site}/og.png`,
+      author: publisher,
+      publisher,
+    });
+    if (url.startsWith("/docs/")) {
+      graph.push({
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Docs", item: `${site}/docs` },
+          { "@type": "ListItem", position: 2, name: title.replace(/ · Booki$/, ""), item: `${site}${url}` },
+        ],
+      });
+    }
+  }
+  const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
+  return `<script type="application/ld+json">${json}</script>`;
 }
 
 const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -231,15 +336,19 @@ for (const url of urls) {
   const own = meta && meta.title.en !== template.match(/<title>([^<]*)<\/title>/)?.[1];
   const fallback = own ? null : firstHeading(body);
   const title = own ? meta.title.en : fallback?.title ? `${fallback.title} · Booki` : "Booki";
-  const description = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
+  const found = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
+  // A control's one-line summary is too short for a search result: say what every Booki control is.
+  const description =
+    url.startsWith("/docs/") && found.length < 70
+      ? `${found.replace(/\.?$/, ".")} A React control a person uses like any form and an agent operates by name, under your rules.`
+      : found;
   const markdownPath = url === "/" ? "/index.md" : `${url}.md`;
-  const html = withMeta(template, { url, title, description, markdownPath }).replace(
-    '<div id="root"></div>',
-    `<div id="root">${body}</div>`,
-  );
+  const html = withMeta(template, { url, title, description: snippet(description), markdownPath })
+    .replace("</head>", `    ${structuredData(url, { title, description: snippet(description), body })}\n  </head>`)
+    .replace('<div id="root"></div>', `<div id="root">${body}</div>`);
   const file = url === "/" ? "index.html" : `${url.slice(1)}.html`;
   mkdirSync(dirname(join(dist, file)), { recursive: true });
-  writeFileSync(join(dist, file), html);
+  writeFileSync(join(dist, file), withFonts(await critical.process(html)));
   const markdown = toMarkdown(body, { url, title, description });
   writeFileSync(join(dist, markdownPath.slice(1)), markdown);
   pages.push({ url, title, description, markdownPath, words: markdown.split(/\s+/).length });

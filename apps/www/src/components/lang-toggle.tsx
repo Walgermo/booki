@@ -12,7 +12,8 @@ export function LangToggle() {
   return (
     <Toggle
       className="site-nav-link site-text-button site-icon-toggle"
-      aria-label="Norsk"
+      // The name holds the visible code too (WCAG 2.5.3), so voice control can say what it sees.
+      aria-label={`Norsk (${lang === "nb" ? "EN" : "NO"})`}
       pressed={lang === "nb"}
       onPressedChange={(pressed) => setLang(pressed ? "nb" : "en")}
     >
