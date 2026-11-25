@@ -113,6 +113,14 @@ describe("a field with group: false", () => {
     expect(container.querySelector('[data-slot="field-account"]')!.hasAttribute("aria-label")).toBe(false);
   });
 
+  it("hides the agent's name element, so it shows nowhere without a stylesheet", () => {
+    const { container } = render(<Konto />);
+    const name = container.querySelector(
+      '[data-slot="field-account"] [data-slot="label"], [data-slot="field-account"] span',
+    );
+    expect(name?.hasAttribute("hidden")).toBe(true);
+  });
+
   it("still gives the agent the same label", () => {
     const agent = createBookiAgent();
     render(<Konto />);

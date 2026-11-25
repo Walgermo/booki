@@ -372,7 +372,7 @@ rules without replacing it. Four kinds: `amount` (`setMinor`, integer minor unit
 digits of a length range, or a closed `chart` whose unknown numbers are refused with the nearest
 ones) and `date` (`setDate`, ISO). `group: false` drops the root's `role="group"` and its
 `aria-label` when your field has its own `fieldset`; the agent's name for the field then comes from a
-visually hidden element, so your visible `<label>` stays the only accessible name. The snapshot
+hidden element, so your visible `<label>` stays the only accessible name. The snapshot
 holds `value` beside each kind's own key, so `expect` works on every kind. Your field calls
 `change(next, event)` for a person's edit and shows `refusal`. Render the product's own input or
 select inside it, never one that is on the bridge such as ui-sdk's `Input`: that registers a

@@ -43,7 +43,7 @@ type BookiFieldCommon = {
    * `div` without `role="group"`, so the group is not announced twice and
    * `getByRole("group", { name })` finds one. The root then has no `aria-label` either, so the
    * product's visible `<label>` is the only accessible name and `getByLabelText` finds its input
-   * alone; the agent reads the field's name from a visually hidden `label` part inside the root.
+   * alone; the agent reads the field's name from a hidden `label` part inside the root.
    * Default `true`.
    */
   group?: boolean;
@@ -202,11 +202,12 @@ export function useBookiField(options: BookiFieldArgs, render: (field: never) =>
   // The root's state is the amount's, the code's, the account's or the date's, by kind: each
   // reads only its own key.
   // With the group role the label is the root's `aria-label`. Without it, the root has no role
-  // and ARIA does not allow a name on it, so a visually hidden `label` part carries the name:
+  // and ARIA does not allow a name on it, so a `hidden` `label` part carries the name
+  // (`hidden`, so it shows and is read nowhere, with or without a stylesheet):
   // ui-sdk reads the snapshot's label from that part first, and a visible `<label>` of the
   // product's is then the only accessible name the field's input has.
   const grouped = options.group !== false;
-  const labelPart = usePart(handle, "label", {}, { children: options.label }, "span") as ReactElement;
+  const labelPart = usePart(handle, "label", {}, { children: options.label, hidden: true }, "span") as ReactElement;
   const part = {
     ...(grouped ? { "aria-label": options.label } : {}),
     children: (state: object) => {

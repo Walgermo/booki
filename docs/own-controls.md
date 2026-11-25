@@ -259,9 +259,10 @@ What each piece does:
   group is announced twice and `getByRole("group", { name })` finds two. With
   `group: false` the root has no role and no `aria-label`, so your own visible `<label>` is the only
   accessible name and `getByLabelText("…")` finds the input alone. The agent still finds the field by
-  `label`: the hook puts it in a visually hidden element (`data-slot="visually-hidden"`) inside the root,
-  which ui-sdk reads as the field's name. That text is also in the root's content, so
-  `getByText` finds it beside your visible label.
+  `label`: the hook puts it in a `hidden` element inside the root, which ui-sdk still reads as the
+  field's name. It is not shown and not read aloud, with or without `@booki-aui/styles`. That text is
+  still in the root's content, so `getByText(label)` finds it beside your visible label: use
+  `getByLabelText(label)` or `getByText(label, { selector: "label" })`.
 - **Render your own input, not one that is on the bridge.** What `render` returns must be the
   product's own `<input>` or `<select>`. Don't put ui-sdk's `Input` (or any other ui-sdk control)
   inside it: it registers on the bridge by itself, so one field shows up twice, as `field-account
