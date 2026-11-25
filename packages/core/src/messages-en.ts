@@ -697,6 +697,7 @@ export const EN = {
   // The agent bridge's own sentences (ui-sdk), written exactly as ui-sdk writes them, so `localize`
   // can read them back. Booki never throws these; `createBookiAgent({ language })` translates them.
   "bridge.no-component": 'No component "{ref}" on the page. Its labels: {labels}.',
+  "bridge.no-component-none": 'No component "{ref}" on the page. Its labels: none.',
   "bridge.no-component-behind":
     'No component "{ref}" on the page. Its labels: {labels}. It may be behind one of these, which a step can open first: {closed}.',
   "bridge.needs-person-press": 'Needs a person: "{confirm}". Ask them to press "{button}" themselves.',

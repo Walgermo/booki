@@ -406,3 +406,27 @@ describe("ui-sdk's own step sentences in Norwegian", () => {
     expect(msgIn("nb", "field.account-not-digits", { value: "ab" })).toContain('"ab" kan bare inneholde sifre');
   });
 });
+
+describe("the bridge's follow-up when the first step fails", () => {
+  it("translates 'Send it again' with no 'steps stay done' before it", () => {
+    const en =
+      'No component "X" on the page. Its labels: Beløp (NOK), Avbryt. Send it again with the step after it, 2 steps in one call.';
+    expect(localize(en, "nb")).toBe(
+      'Ingen komponent "X" på siden. Merkelappene på siden: Beløp (NOK), Avbryt. Send det på nytt med steget etter det, 2 steg i ett kall.',
+    );
+    const many =
+      "field-account c4 has nothing to press now. Send it again with the 5 steps after it, 6 steps in one call.";
+    expect(localize(many, "nb")).toBe(
+      "field-account c4 har ingenting å trykke på nå. Send det på nytt med de 5 stegene etter det, 6 steg i ett kall.",
+    );
+    expect(localize(en, "en")).toBe(en);
+  });
+
+  it("says a page has no labels, in Norwegian", () => {
+    const en = 'No component "Beløp (NOK)" on the page. Its labels: none.';
+    expect(localize(en, "nb")).toBe('Ingen komponent "Beløp (NOK)" på siden. Siden har ingen merkelapper.');
+    expect(localize(`${en} Send it again with the 5 steps after it, 6 steps in one call.`, "nb")).toBe(
+      'Ingen komponent "Beløp (NOK)" på siden. Siden har ingen merkelapper. Send det på nytt med de 5 stegene etter det, 6 steg i ett kall.',
+    );
+  });
+});
