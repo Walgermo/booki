@@ -224,7 +224,7 @@ actions as \`@booki-aui/react\`, generated from the same framework-free definiti
 in \`@booki-aui/primitives\`.
 
 \`\`\`bash
-pnpm add @booki-aui/${fw.id} @booki-aui/styles
+pnpm add @booki-aui/${fw.id} @booki-aui/styles @ui-sdk/core@${VERSION} @ui-sdk/${fw.id}@${VERSION}
 \`\`\`
 
 Each control is a namespace of parts, like \`AmountField.Root\` and
