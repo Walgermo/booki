@@ -1,5 +1,21 @@
 # @booki/core
 
+## 0.4.0
+
+### Minor Changes
+
+- [#135](https://github.com/Walgermo/booki/pull/135) [`46d3d02`](https://github.com/Walgermo/booki/commit/46d3d02b3f6995d4d1324502b466cc3b83ce3ff4) Thanks [@Walgermo](https://github.com/Walgermo)! - Require credit notes to use the original invoice's currency. If an issued credit note uses a different currency, correct that ledger record before calculating the remaining credit or finalizing another credit note. Invoice calculations now refuse amounts outside the safe integer range.
+  
+  Money conversions use the published ISO 4217 minor unit, including zero decimals for CLP and three for BHD. For codes without a defined minor unit in the current list, conversion and formatting throw `money.no-minor-unit` and typed amount parsing returns `null`.
+
+### Patch Changes
+
+- [#138](https://github.com/Walgermo/booki/pull/138) [`889d7b0`](https://github.com/Walgermo/booki/commit/889d7b094fec6db989f9009456ffb9a0734484a5) Thanks [@Walgermo](https://github.com/Walgermo)! - Keep the full English message catalogue out of the standalone AmountField bundle by loading only amount, money, and locale messages at startup. The complete English and Norwegian catalogues remain available through the translation API.
+
+- [#141](https://github.com/Walgermo/booki/pull/141) [`2222b4b`](https://github.com/Walgermo/booki/commit/2222b4bc1413edc8f09f6426806428c39a63633b) Thanks [@Walgermo](https://github.com/Walgermo)! - Link the npm package homepages to the Booki installation guide.
+
+- [#136](https://github.com/Walgermo/booki/pull/136) [`ff41c97`](https://github.com/Walgermo/booki/commit/ff41c973b01bde428c59c9542b0b8468ba40925c) Thanks [@Walgermo](https://github.com/Walgermo)! - Keep invalid AmountField drafts visible for correction and block native form submission until the amount is valid.
+
 ## 0.3.3
 
 No changes in this release.

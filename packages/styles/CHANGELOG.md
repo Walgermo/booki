@@ -1,5 +1,13 @@
 # @booki/styles
 
+## 0.4.0
+
+### Patch Changes
+
+- [#141](https://github.com/Walgermo/booki/pull/141) [`2222b4b`](https://github.com/Walgermo/booki/commit/2222b4bc1413edc8f09f6426806428c39a63633b) Thanks [@Walgermo](https://github.com/Walgermo)! - Link the npm package homepages to the Booki installation guide.
+
+- [#134](https://github.com/Walgermo/booki/pull/134) [`cc38202`](https://github.com/Walgermo/booki/commit/cc38202316778d31014017f7599b3d2948b49ac5) Thanks [@Walgermo](https://github.com/Walgermo)! - Keep the host page's native color scheme when importing Booki styles. Booki controls default to light and follow explicit Booki theme wrappers.
+
 ## 0.3.3
 
 No changes in this release.
