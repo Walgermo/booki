@@ -1,5 +1,11 @@
 # @booki/readiness
 
+## 0.2.1
+
+### Patch Changes
+
+- [#117](https://github.com/Walgermo/booki/pull/117) [`cd2641e`](https://github.com/Walgermo/booki/commit/cd2641ed58e1663d7d65efbd3932c4628643a86b) Thanks [@Walgermo](https://github.com/Walgermo)! - A page whose bridge has no controls and that has no fields or charts no longer reads as a pass. The console prints "no score", the HTML report says nothing was measured, and the JSON report gets `measured: false`, `grade: "not measured"` and a `notMeasured` text that points to opening the form first and calling `check(page)`. A page without a bridge but with fields is still scored, with `bridge-missing`. `score` stays in the JSON. `--fail-under` exits 1 for an unmeasured page.
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @booki/solid
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [[`6a7055c`](https://github.com/Walgermo/booki/commit/6a7055c05fad4d0dacda520afc5fe5823750fa4c), [`1c95020`](https://github.com/Walgermo/booki/commit/1c95020e1ea0a99556ea58b79e0a590711fdb621)]:
+  - @booki-aui/core@0.3.0
+  - @booki-aui/primitives@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
