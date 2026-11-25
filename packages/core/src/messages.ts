@@ -145,6 +145,12 @@ function localizeText(text: string, language: MessageLanguage): string {
     const rest = after === "" ? "" : ` ${localizeText(after, language)}`;
     return `${head} ${msgIn(language, "bridge.steps-stay-done")}${rest}`;
   }
+  // The bridge also ends a failed call with "Send it again with …" when steps were left, whether
+  // or not steps before it ran. Split it off the same way, so it is translated in either case.
+  const again = text.indexOf(" Send it again with the ");
+  if (again > 0) {
+    return `${localizeText(text.slice(0, again), language)} ${localizeText(text.slice(again + 1), language)}`;
+  }
   // ui-sdk adds a sentence that starts in lower case ("press takes …") after "takes no …".
   // A within-sentence placeholder only stops at a capital, so split it off before matching.
   const press = text.indexOf(". press takes ");

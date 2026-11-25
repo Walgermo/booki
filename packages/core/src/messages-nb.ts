@@ -732,6 +732,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
     'Aktiviteten "{id}" har ingenting å kontrollere den mot: ingen kalenderhendelse, samtalelogg eller referat.',
   "activity.issue.overdue": 'Oppgaven "{id}" hadde frist {due} og er ikke gjort.',
   "bridge.no-component": 'Ingen komponent "{ref}" på siden. Merkelappene på siden: {labels}.',
+  "bridge.no-component-none": 'Ingen komponent "{ref}" på siden. Siden har ingen merkelapper.',
   "bridge.no-component-behind":
     'Ingen komponent "{ref}" på siden. Merkelappene på siden: {labels}. Den kan ligge bak en av disse, som et steg kan åpne først: {closed}.',
   "bridge.needs-person-press": 'Krever en person: "{confirm}". Be dem trykke "{button}" selv.',
