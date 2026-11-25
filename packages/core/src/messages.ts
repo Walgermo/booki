@@ -145,6 +145,12 @@ function localizeText(text: string, language: MessageLanguage): string {
     const rest = after === "" ? "" : ` ${localizeText(after, language)}`;
     return `${head} ${msgIn(language, "bridge.steps-stay-done")}${rest}`;
   }
+  // ui-sdk adds a sentence that starts in lower case ("press takes …") after "takes no …".
+  // A within-sentence placeholder only stops at a capital, so split it off before matching.
+  const press = text.indexOf(". press takes ");
+  if (press > 0) {
+    return `${localizeText(text.slice(0, press + 1), language)} ${localizeText(text.slice(press + 2), language)}`;
+  }
   const whole = matchWhole(text, language);
   if (whole !== undefined) return whole;
   // A run of sentences, such as issues joined with a space. Take the longest
