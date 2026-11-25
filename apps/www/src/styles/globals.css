@@ -408,7 +408,7 @@
 }
 
 /*
-  The marks under the figures (kpi-marks.tsx): faint is what a screen without
+  The marks under each figure and its label (kpi-marks.tsx): faint is what a screen without
   Booki took, ink is what it took with Booki. Same height for all four, so the
   figures stay on one line; ink only, lime stays the agent's.
 */
@@ -598,13 +598,6 @@ html[data-kpi-still] {
   .kpi-mark *::after {
     animation: none !important;
   }
-}
-
-/* What the figures were measured on: a caption, quieter than the hook. */
-.landing-hero__source {
-  margin: 0.875rem 0 0;
-  font-size: 0.8125rem;
-  color: var(--bk-muted-fg);
 }
 
 .landing-hero__lede {

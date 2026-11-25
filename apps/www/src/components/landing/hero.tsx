@@ -50,31 +50,25 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         <dl className="landing-hero__stats">
           <div>
             <dt>{fewer(kpi.calls)}</dt>
-            <CallsMark {...kpi.calls} />
             <dd>{t("fewer tool calls", "færre verktøykall")}</dd>
+            <CallsMark {...kpi.calls} />
           </div>
           <div>
             <dt>{fewer(kpi.tokens)}</dt>
-            <TokensMark {...kpi.tokens} format={thousands} />
             <dd>{t("fewer tokens", "færre tokens")}</dd>
+            <TokensMark {...kpi.tokens} format={thousands} />
           </div>
           <div>
             <dt>{times(kpi.faster.median)}</dt>
-            <TimeMark ratio={kpi.faster.median} without={t("without", "uten")} withBooki={t("with", "med")} />
             <dd>{t("faster", "raskere")}</dd>
+            <TimeMark ratio={kpi.faster.median} without={t("without", "uten")} withBooki={t("with", "med")} />
           </div>
           <div>
             <dt>{times(kpi.cheaper.median)}</dt>
-            <CostMark ratio={kpi.cheaper.median} />
             <dd>{t("cheaper", "billigere")}</dd>
+            <CostMark ratio={kpi.cheaper.median} />
           </div>
         </dl>
-        <p className="landing-hero__source">
-          {t(
-            `Medians over ${kpi.tasks} tasks and ${kpi.models} models, against the same screens without Booki.`,
-            `Medianer over ${kpi.tasks} oppgaver og ${kpi.models} modeller, mot de samme skjermene uten Booki.`,
-          )}
-        </p>
         {/* The section's 76px sits under the header (logo and the news link), then 20 to the hook, 28 to the figures, 56 to the button. */}
         <div className="mt-14 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
           <PromptButton prompt={AGENT_PROMPT} />
