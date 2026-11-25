@@ -126,8 +126,8 @@ export function AnnouncementPage() {
         <ul>
           <li>
             {t(
-              "The packages are at 0.1 and not on npm yet: you build them from the repository, and the agent bridge may still change.",
-              "Pakkene er på 0.1 og ikke på npm ennå: dere bygger dem fra repoet, og agentbroen kan fortsatt endre seg.",
+              "The packages are before 1.0: the agent bridge may still change between releases.",
+              "Pakkene er før 1.0: agentbroen kan fortsatt endre seg mellom versjoner.",
             )}
           </li>
           <li>
