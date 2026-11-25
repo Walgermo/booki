@@ -83,11 +83,11 @@ function invoiceDeeds(books: Books, batch: PaymentBatch): Deed[] {
 }
 
 const now = () => new Date().toISOString();
-let sequence = 0;
 
 function log(books: Books, actor: ServerActor | undefined, action: string, target: string, detail?: string) {
   books.audit.unshift({
-    id: `a${++sequence}`,
+    // The books outlive a hot reload (see store.ts) and a counter in this module does not: an id of its own.
+    id: `a-${crypto.randomUUID()}`,
     at: now(),
     actor: actor ? actorLabel(actor) : "unknown",
     action,

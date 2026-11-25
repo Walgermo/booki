@@ -719,4 +719,9 @@ export const EN = {
   "bridge.number-range": "setValue on {name} ({ref}) takes a number from {min} to {max}, not {value}.",
   "bridge.number-min": "setValue on {name} ({ref}) takes a number of {min} or more, not {value}.",
   "bridge.number-max": "setValue on {name} ({ref}) takes a number of {max} or less, not {value}.",
+  "bridge.act-shape": 'act takes { "steps": [{ "ref": "…", "action": "…", "args": […] }] }, not {given}. No step ran.',
+  "bridge.act-extra": 'act takes "steps" and nothing else, not "{key}". No step ran.',
+  "bridge.step-needs-ref": "{at} needs a ref: a component's ref from snapshot, or its label. No step ran.",
+  "bridge.step-needs-action": '{at}, on "{ref}", needs an action, like "press". No step ran.',
+  "bridge.step-needs-value": '{action} on "{ref}" needs its value, as "args": [value]. No step ran.',
 } as const;

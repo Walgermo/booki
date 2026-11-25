@@ -1,6 +1,6 @@
 import { checkPattern, mount } from "@ui-sdk/core/testing";
 import { act, cleanup, fireEvent, render } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { accountPicker } from "@booki/primitives/account-picker";
 import { accountingPeriod } from "@booki/primitives/accounting-period-select";
 import { currencySelect } from "@booki/primitives/currency-select";
@@ -449,5 +449,19 @@ describe("CurrencySelect's trigger", () => {
         "aria-label",
       ),
     ).toBe("Currency");
+  });
+});
+
+describe("CurrencySelect, controlled", () => {
+  it("takes no default when it is given a value, so ui-sdk does not warn on every render", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <CurrencySelect value="EUR" onValueChange={() => {}} />
+        <CurrencySelect />
+      </BookiLocaleProvider>,
+    );
+    expect(warn.mock.calls.flat().join(" ")).not.toMatch(/got `value` and `defaultValue`/);
+    warn.mockRestore();
   });
 });

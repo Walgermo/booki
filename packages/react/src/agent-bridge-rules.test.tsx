@@ -159,6 +159,31 @@ describe('registerTools with allow: "bridge"', () => {
     expect(rows[0]).toMatchObject({ actor: "agent:browser", action: "agent.failed", target: "Amount" });
   });
 
+  it("answers a call without steps with ui-sdk's sentence, instead of throwing", async () => {
+    const tools = webmcp();
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({ agentId: "assistant", language: "nb" });
+    registerTools(agent, { allow: "bridge", audit: (row) => rows.push(row), agentId: "browser" });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <AmountField aria-label="Amount" />
+      </BookiLocaleProvider>,
+    );
+    // What a model sends when it gets the shape wrong.
+    const result = (await tools.find((tool) => tool.name === "act")!.execute({ step: [] })) as {
+      ok: boolean;
+      error: { message: string };
+    };
+    expect(result.ok).toBe(false);
+    expect(result.error.message).toMatch(/^act tar \{ "steps"/);
+    await expect(agent.act({ foo: 1 } as never)).resolves.toMatchObject({ ok: false });
+    await expect(agent.act(null as never)).resolves.toMatchObject({ ok: false });
+    expect(rows[0]).toMatchObject({ action: "agent.failed", target: "act" });
+    // The sentence quotes what was sent, which can be an account number: the row does not.
+    await tools.find((tool) => tool.name === "act")!.execute({ steps: [], kid: "12345678903" });
+    expect(JSON.stringify(rows)).not.toContain("12345678903");
+  });
+
   it("refuses a prefix with a gate of its own", () => {
     webmcp();
     const agent = createBookiAgent({ agentId: "assistant" });

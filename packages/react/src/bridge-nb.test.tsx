@@ -90,4 +90,27 @@ describe("the bridge's own sentences with language nb", () => {
     const result = (await agent.act({ steps: [{ ref: "Antall", action: "setValue", args: [25] }] })) as Result;
     expect(result.error?.message).toMatch(/^setValue på Antall \(c\d+\) tar et tall fra 1 til 20, ikke 25\.$/);
   });
+
+  it("says in Norwegian what is wrong with a call in the wrong shape", async () => {
+    const agent = createBookiAgent({ agentId: "test", language: "nb" });
+    render(
+      <NumberInput defaultValue={2} min={1} max={20} aria-label="Antall">
+        <NumberInputGroup>
+          <NumberInputControl />
+        </NumberInputGroup>
+      </NumberInput>,
+    );
+    const act = async (input: unknown) => ((await agent.act(input as never)) as Result).error?.message;
+    expect(await act({ step: [] })).toMatch(/^act tar \{ "steps": .* ikke \{"step":\[\]\}\. Ingen steg ble kjørt\.$/);
+    expect(await act({ steps: [{ ref: "Antall", action: "setValue", args: [3] }], why: 1 })).toBe(
+      'act tar "steps" og ingenting annet, ikke "why". Ingen steg ble kjørt.',
+    );
+    expect(await act({ steps: [{ action: "setValue", args: [3] }] })).toMatch(/^steps\[0\] trenger en ref/);
+    expect(await act({ steps: [{ ref: "Antall" }] })).toBe(
+      'steps[0], på "Antall", trenger en handling, som "press". Ingen steg ble kjørt.',
+    );
+    expect(await act({ steps: [{ ref: "Antall", action: "setValue" }] })).toBe(
+      'setValue på "Antall" trenger verdien, som "args": [verdi]. Ingen steg ble kjørt.',
+    );
+  });
 });

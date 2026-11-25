@@ -14,13 +14,14 @@ import {
   RecurringRevenue,
   StageDurationChart,
 } from "@booki/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { Answer, Crm, Write } from "@/lib/crm";
-import { cursor, listenToDecisions, pageAgent } from "@/lib/agent";
+import { agentWorking, cursor, listenToDecisions, pageAgent } from "@/lib/agent";
 import { AGREEMENTS, COMPANIES, HISTORY, OPEN_STAGES, PAST_STAYS, STAGES, STAGE_TARGETS, TODAY } from "@/lib/data";
 import { OWNERS, PEOPLE, ROLES, nameOf, type PersonId } from "@/lib/people";
 import { track } from "@/lib/writes";
 import { AgentPanel } from "./agent-panel";
+import { ChatPanel } from "./chat-panel";
 import { DealPanel } from "./deal-panel";
 
 /**
@@ -34,6 +35,8 @@ export function CrmApp({ initial }: { initial: Crm }) {
   const [dealId, setDealId] = useState("D-101");
   const [refusal, setRefusal] = useState<string | null>(null);
   const person = PEOPLE.find((p) => p.id === me)!;
+  // While the agent runs a step, its change is on its way to the server as the person signed in now.
+  const agentBusy = useSyncExternalStore(agentWorking.subscribe, agentWorking.now, () => false);
 
   const send = useCallback(
     async (write: Write, source?: string): Promise<Answer> => {
@@ -58,7 +61,9 @@ export function CrmApp({ initial }: { initial: Crm }) {
 
   useEffect(
     () =>
-      listenToDecisions((row) => void send({ action: "agent-step", step: row.action, target: row.target }, "agent")),
+      listenToDecisions(
+        (row) => void send({ action: "agent-step", step: row.action, target: row.target, detail: row.detail }, "agent"),
+      ),
     [send],
   );
 
@@ -109,11 +114,18 @@ export function CrmApp({ initial }: { initial: Crm }) {
                     type="button"
                     data-variant={p.id === me ? undefined : "secondary"}
                     aria-pressed={p.id === me}
+                    disabled={agentBusy && p.id !== me}
+                    aria-describedby={agentBusy ? "switch-wait" : undefined}
                     onClick={() => setMe(p.id)}
                   >
                     {p.name} · {p.title}
                   </button>
                 ))}
+                {agentBusy ? (
+                  <span id="switch-wait" role="status" className="self-center text-sm text-[color:var(--bk-muted-fg)]">
+                    Agenten jobber: bytt person når den er ferdig.
+                  </span>
+                ) : null}
               </fieldset>
               {refusal ? (
                 <p role="alert" className="rounded-md border border-[color:var(--bk-danger)] p-3 text-sm">
@@ -207,8 +219,10 @@ export function CrmApp({ initial }: { initial: Crm }) {
               />
             </section>
           </main>
-          <aside className="min-w-0">
+          <aside className="grid min-w-0 content-start gap-4">
             <AgentPanel me={me} dealId={deal.id} />
+            {/* A new conversation for each person: one person's chat is not the next one's. */}
+            <ChatPanel key={me} me={me} />
           </aside>
         </div>
       </BookiAccessProvider>

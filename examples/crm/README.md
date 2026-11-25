@@ -30,7 +30,53 @@ in Norwegian; the code is commented in English.
 
 Each task reports what it did and what waits for a person. The scripted agent
 needs no key and runs the same every time; a model uses the same bridge
-(`snapshot`, then `act`), as in the accounts-payable example.
+(`snapshot`, then `act`), as the chat below shows.
+
+## Ask the agent (WebMCP)
+
+Below the tasks, **Spør agenten** is a chat with a model. You type "flytt
+Konsernrapportering til forhandling" and the board moves. There are no
+screenshots, no clicks, and no tools written for this app: Booki's
+`registerTools` offers the page's own `snapshot`, `act` and `query` through
+WebMCP, and [AI SDK's WebMCP client](https://ai-sdk.dev/cookbook/next/webmcp-tools)
+reads them from the page and hands them to the model.
+
+1. In Chrome, turn on `chrome://flags/#enable-webmcp-testing` and relaunch.
+2. Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`.
+3. Start the dev server and open http://localhost:3200.
+
+How it fits together:
+
+- **`lib/assistant.ts`, in the tab.** `registerTools(pageAgent(), { allow:
+  "bridge", prefix: "crm", agentId, audit })` registers `crm_snapshot`,
+  `crm_act` and `crm_query`. `createMCPClient` with
+  `Experimental_WebMCPTransport` lists them before each message and runs each
+  tool call the model makes.
+- **`lib/chat.ts`, on the server.** `createMCPTools` turns the definitions the
+  page sent into the model's tools, with no `execute`: running them belongs to
+  the tab. It takes only the three `crm_` tools, and text and tool results in
+  the conversation (no files, no system messages). A failed model call reads
+  as a Norwegian sentence, never the provider's own error text.
+- **Local only.** The example has no sign-in in front of the model, so
+  `pnpm dev` listens on 127.0.0.1 alone, and the route refuses requests that
+  another website in your browser could send (Origin, Fetch Metadata, a Host
+  that is not local). The headers are no protection against a program on the
+  network, which can write any header; listening on 127.0.0.1 is. In your app,
+  put your sign-in in front of the route.
+- **One message, at most eight tool rounds** (`MAX_TOOL_ROUNDS`), so a model
+  that keeps reading or retrying stops and hands back to the person. Switching
+  who is signed in starts a new conversation, and waits while the agent runs
+  a step (from the chat or a task): the step's change goes to the server with
+  the credential of whoever is signed in when it lands.
+- **The same rules as the tasks.** A tool call goes through the same bridge:
+  marking a deal won or lost and removing an activity are refused as a
+  person's, the refusal comes back as a sentence the model passes on, every
+  refusal reaches the audit trail, and every change goes to the server with
+  the agent's credential, because it reports `source: "agent"`.
+
+The chat is experimental on both sides (WebMCP in Chrome, the transport in
+AI SDK). Without WebMCP it says how to turn it on and the rest of the page
+works as before.
 
 ## What to look at
 
@@ -68,3 +114,10 @@ pnpm --filter @booki/example-crm test
 `test/crm.test.ts` checks the server's rules on their own. `test/tasks.test.tsx`
 renders the page, runs each task through the bridge and checks what reached
 the server, with the page's `fetch` going straight to the real handler.
+`test/assistant.test.tsx` opens AI SDK's WebMCP client on the page's tools,
+with a stand-in for the browser's WebMCP, and calls them as the chat does (no
+model): a move goes through as the agent, closing a deal is refused and
+recorded, a call in the wrong shape gets a sentence back. It also checks the
+round limit, what the person reads for each kind of failure, and that the
+route refuses other websites, files, system messages and tools that are not
+the page's.

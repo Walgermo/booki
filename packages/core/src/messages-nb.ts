@@ -746,4 +746,11 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "bridge.number-range": "setValue på {name} ({ref}) tar et tall fra {min} til {max}, ikke {value}.",
   "bridge.number-min": "setValue på {name} ({ref}) tar et tall på {min} eller mer, ikke {value}.",
   "bridge.number-max": "setValue på {name} ({ref}) tar et tall på {max} eller mindre, ikke {value}.",
+  "bridge.act-shape":
+    'act tar { "steps": [{ "ref": "…", "action": "…", "args": […] }] }, ikke {given}. Ingen steg ble kjørt.',
+  "bridge.act-extra": 'act tar "steps" og ingenting annet, ikke "{key}". Ingen steg ble kjørt.',
+  "bridge.step-needs-ref":
+    "{at} trenger en ref: en komponents ref fra snapshot, eller merkelappen. Ingen steg ble kjørt.",
+  "bridge.step-needs-action": '{at}, på "{ref}", trenger en handling, som "press". Ingen steg ble kjørt.',
+  "bridge.step-needs-value": '{action} på "{ref}" trenger verdien, som "args": [verdi]. Ingen steg ble kjørt.',
 };

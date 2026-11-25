@@ -76,7 +76,8 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
 
   /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
   const run = async (input: ActInput, actOptions?: ActOptions) => {
-    const lone = input.steps.length === 1 ? input.steps[0] : undefined;
+    // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
+    const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
     if (lone) currentStep.set(bridge, lone.action);
     try {
       return await bridge.act(input as never, actOptions);
@@ -92,7 +93,7 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
     // nothing and leaves no trace. Checked after the call, when the button is on
     // the page even if an earlier step in it made the button appear.
     const failed = result.ok ? undefined : result.error;
-    const step = failed ? input.steps?.[failed.step] : undefined;
+    const step = failed && Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
     const person = step ? personOnlyPress(bridge, step) : null;
     if (failed && step && person) {
       markRefused({ ref: step.ref, label: person.entry.label, action: step.action });

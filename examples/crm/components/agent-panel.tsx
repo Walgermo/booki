@@ -2,7 +2,7 @@
 
 import { localize } from "@booki/core/messages";
 import { useState } from "react";
-import { pageAgent } from "@/lib/agent";
+import { asAgentWork, pageAgent } from "@/lib/agent";
 import { nameOf } from "@/lib/people";
 import { TASKS, runTask, type Report, type TaskId } from "@/lib/tasks";
 
@@ -23,7 +23,7 @@ export function AgentPanel({ me, dealId }: { me: string; dealId: string }) {
   const run = async (task: TaskId) => {
     setRunning(task);
     try {
-      setReport({ task, report: await runTask(pageAgent(), task, { dealId, me }) });
+      setReport({ task, report: await asAgentWork(() => runTask(pageAgent(), task, { dealId, me })) });
     } finally {
       setRunning(null);
     }
