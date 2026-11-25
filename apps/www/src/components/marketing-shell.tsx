@@ -27,12 +27,18 @@ export function MarketingShell() {
           {/* The launch post, one quiet line under the mark; not on the post itself. */}
           {onPost ? null : (
             <Link to={ANNOUNCEMENT_PATH} className="site-news">
-              <span className="site-news__tag">{t("New", "Nytt")}</span>
+              <span className="site-news__tag">{t("New", "Nyhet")}</span>
               <span className="site-news__text">
-                {t("Announcing agent-first UI with Booki", "Vi lanserer agent-first UI med Booki")}
+                {t(
+                  `Booki v${__BOOKI_VERSION__} is out: UI for people and agents`,
+                  `Booki v${__BOOKI_VERSION__} lansert: UI for mennesker og agenter`,
+                )}
               </span>
-              <span aria-hidden="true" className="site-news__arrow">
-                →
+              <span className="site-news__more">
+                {t("Read more", "Les mer")}
+                <span aria-hidden="true" className="site-news__arrow">
+                  →
+                </span>
               </span>
             </Link>
           )}
