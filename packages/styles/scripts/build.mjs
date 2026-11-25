@@ -8,12 +8,14 @@ import { fileURLToPath } from "node:url";
 const PARTS = ["booki.css", "agent.css"];
 
 // Size budgets for dist/base.css, the file every page loads. base.css states
-// the component scope once per group of rules (CSS nesting), so it grew back
-// into 62 copies of the scope list before. The build fails above these, so
+// the component scope once per group of rules (CSS nesting): three groups,
+// each a :where([data-slot]) { … } block in booki.css. Add a rule to one of
+// them rather than starting a new group: every group is another copy of the
+// 62-name scope list. The build fails above these, so
 // it cannot grow back unnoticed. Set them to the measured size, rounded up to
 // the next 250 bytes, when a change makes base.css smaller or larger on purpose.
-const BASE_RAW_BUDGET = 59750;
-const BASE_GZIP_BUDGET = 7500;
+const BASE_RAW_BUDGET = 43500;
+const BASE_GZIP_BUDGET = 7250;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 rmSync(join(root, "dist"), { recursive: true, force: true });

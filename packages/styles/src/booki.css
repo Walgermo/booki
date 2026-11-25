@@ -191,6 +191,12 @@
 
 /* ── Shared form chrome ──────────────────────────────────────────────── */
 
+@media (pointer: coarse) {
+  :root {
+    --bk-control-h: 2.75rem;
+  }
+}
+
 :where([data-slot]) {
   & :is(label) {
     display: grid;
@@ -249,15 +255,7 @@
       font-size: 0.875rem;
     }
   }
-}
 
-@media (pointer: coarse) {
-  :root {
-    --bk-control-h: 2.75rem;
-  }
-}
-
-:where([data-slot]) {
   & select {
     appearance: none;
     padding-right: 2rem;
@@ -311,85 +309,97 @@
     opacity: 0.55;
     cursor: not-allowed;
   }
-}
 
-:where([data-slot]) button,
-:where([data-slot="payment-confirm-actions"]) button,
-:where([data-slot="sca-prompt-actions"]) button,
-:where([data-slot="exception-banner-actions"]) button,
-:where([data-slot="approval-gate-actions"]) button,
-:where([data-slot="attestation-status-actions"]) button,
-:where([data-slot="attestation-status-approve"]),
-:where([data-slot="attestation-status-reject"]),
-:where([data-slot="attestation-status-escalate"]),
-:where([data-slot="country-toggle"]) button {
-  appearance: none;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  min-height: var(--bk-control-h);
-  padding: 0.4rem 0.9rem;
-  border: 1px solid transparent;
-  border-radius: var(--bk-radius-sm);
-  background: var(--bk-primary);
-  color: var(--bk-primary-fg);
-  font: inherit;
-  font-size: 0.8125rem;
-  font-weight: var(--bk-font-weight-medium);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
-  cursor: pointer;
-  transition:
-    background-color var(--bk-duration) var(--bk-ease-out),
-    border-color var(--bk-duration) var(--bk-ease-out),
-    color var(--bk-duration) var(--bk-ease-out),
-    box-shadow var(--bk-duration) var(--bk-ease-out),
-    transform var(--bk-duration) ease-out;
-}
-
-:where([data-slot]) button:focus-visible,
-:where([data-slot="attestation-status-approve"]):focus-visible,
-:where([data-slot="attestation-status-reject"]):focus-visible,
-:where([data-slot="attestation-status-escalate"]):focus-visible {
-  outline: 2px solid var(--bk-ring);
-  outline-offset: 2px;
-}
-
-/* Zero specificity, like the base rule: a button that carries its own class
-   (a ui-sdk part, the host's own) keeps its look on hover. With plain
-   :where([data-slot]) button:hover this outranked every class and turned such
-   buttons into dark primaries with dark text. */
-@media (hover: hover) and (pointer: fine) {
-  :where([data-slot] button:hover:not(:disabled)),
-  :where([data-slot="attestation-status-approve"]:hover:not(:disabled)) {
-    background: color-mix(in srgb, var(--bk-primary) 88%, var(--bk-primary-fg));
+  /* Buttons. The attestation decisions are parts of a component in the scope,
+     so "& :where(…)" reaches them and keeps their specificity at zero. */
+  & button,
+  & :where([data-slot="attestation-status-approve"]),
+  & :where([data-slot="attestation-status-reject"]),
+  & :where([data-slot="attestation-status-escalate"]) {
+    appearance: none;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-height: var(--bk-control-h);
+    padding: 0.4rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--bk-radius-sm);
+    background: var(--bk-primary);
+    color: var(--bk-primary-fg);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: var(--bk-font-weight-medium);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background-color var(--bk-duration) var(--bk-ease-out),
+      border-color var(--bk-duration) var(--bk-ease-out),
+      color var(--bk-duration) var(--bk-ease-out),
+      box-shadow var(--bk-duration) var(--bk-ease-out),
+      transform var(--bk-duration) ease-out;
   }
-}
 
-:where([data-slot] button:active:not(:disabled)),
-:where([data-slot="attestation-status-approve"]:active:not(:disabled)),
-:where([data-slot="attestation-status-reject"]:active:not(:disabled)),
-:where([data-slot="attestation-status-escalate"]:active:not(:disabled)) {
-  transform: scale(0.97);
-}
+  & button:focus-visible,
+  & :where([data-slot="attestation-status-approve"]):focus-visible,
+  & :where([data-slot="attestation-status-reject"]):focus-visible,
+  & :where([data-slot="attestation-status-escalate"]):focus-visible {
+    outline: 2px solid var(--bk-ring);
+    outline-offset: 2px;
+  }
 
-:where([data-slot]) button[data-variant="secondary"],
-:where([data-slot="attestation-status-reject"]),
-:where([data-slot="attestation-status-escalate"]) {
-  background: var(--bk-card);
-  border-color: var(--bk-border);
-  color: var(--bk-fg);
-  box-shadow: var(--bk-shadow-xs);
-}
+  /* Zero specificity, like the base rule: a button that carries its own class
+     (a ui-sdk part, the host's own) keeps its look on hover. With a plain
+     "button:hover" this outranked every class and turned such buttons into
+     dark primaries with dark text. */
+  @media (hover: hover) and (pointer: fine) {
+    & :where(button:hover:not(:disabled)),
+    & :where([data-slot="attestation-status-approve"]:hover:not(:disabled)) {
+      background: color-mix(in srgb, var(--bk-primary) 88%, var(--bk-primary-fg));
+    }
+  }
 
-@media (hover: hover) and (pointer: fine) {
-  :where([data-slot]) button[data-variant="secondary"]:hover:not(:disabled),
-  :where([data-slot="attestation-status-reject"]):hover:not(:disabled),
-  :where([data-slot="attestation-status-escalate"]):hover:not(:disabled) {
-    background: var(--bk-muted);
-    border-color: var(--bk-border-strong);
+  & :where(button:active:not(:disabled)),
+  & :where([data-slot="attestation-status-approve"]:active:not(:disabled)),
+  & :where([data-slot="attestation-status-reject"]:active:not(:disabled)),
+  & :where([data-slot="attestation-status-escalate"]:active:not(:disabled)) {
+    transform: scale(0.97);
+  }
+
+  & button[data-variant="secondary"],
+  & :where([data-slot="attestation-status-reject"]),
+  & :where([data-slot="attestation-status-escalate"]) {
+    background: var(--bk-card);
+    border-color: var(--bk-border);
+    color: var(--bk-fg);
+    box-shadow: var(--bk-shadow-xs);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    & button[data-variant="secondary"]:hover:not(:disabled),
+    & :where([data-slot="attestation-status-reject"]):hover:not(:disabled),
+    & :where([data-slot="attestation-status-escalate"]):hover:not(:disabled) {
+      background: var(--bk-muted);
+      border-color: var(--bk-border-strong);
+    }
+  }
+
+  /* Field description / error (ui-sdk Field children) */
+  & p {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--bk-muted-fg);
+  }
+
+  & [data-slot$="-error"],
+  & [role="alert"]:not([data-slot="exception-banner"]) {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--bk-danger);
   }
 }
 
@@ -408,24 +418,6 @@
 
 :where([data-slot="field"]) > [data-slot="field-error"] {
   order: 3;
-}
-
-:where([data-slot]) {
-  /* Field description / error (ui-sdk Field children) */
-  & p {
-    margin: 0;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    font-weight: 400;
-    color: var(--bk-muted-fg);
-  }
-
-  & [data-slot$="-error"],
-  & [role="alert"]:not([data-slot="exception-banner"]) {
-    margin: 0;
-    font-size: 0.8125rem;
-    color: var(--bk-danger);
-  }
 }
 
 /* ── Text link ───────────────────────────────────────────────────────── */
@@ -1549,19 +1541,23 @@
 /* ── Reduced motion ──────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  :where([data-slot]) :is(input, select, textarea, button),
-  :where([data-slot="attestation-status-approve"]),
-  :where([data-slot="attestation-status-reject"]),
-  :where([data-slot="attestation-status-escalate"]),
-  :where([data-slot="country-toggle"]) button,
-  [data-slot="voucher-lines-table"] tbody tr {
-    transition: none;
+  :where([data-slot]) {
+    & :is(input, select, textarea, button),
+    & :where([data-slot="attestation-status-approve"]),
+    & :where([data-slot="attestation-status-reject"]),
+    & :where([data-slot="attestation-status-escalate"]) {
+      transition: none;
+    }
+
+    & button:active:not(:disabled),
+    & :where([data-slot="attestation-status-approve"]):active:not(:disabled),
+    & :where([data-slot="attestation-status-reject"]):active:not(:disabled),
+    & :where([data-slot="attestation-status-escalate"]):active:not(:disabled) {
+      transform: none;
+    }
   }
 
-  :where([data-slot]) button:active:not(:disabled),
-  :where([data-slot="attestation-status-approve"]):active:not(:disabled),
-  :where([data-slot="attestation-status-reject"]):active:not(:disabled),
-  :where([data-slot="attestation-status-escalate"]):active:not(:disabled) {
-    transform: none;
+  [data-slot="voucher-lines-table"] tbody tr {
+    transition: none;
   }
 }
