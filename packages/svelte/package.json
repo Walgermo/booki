@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/svelte",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Booki for Svelte (experimental) — agent-first accounting controls as Svelte components: the same rules, state and agent actions as @booki-aui/react.",
   "type": "module",
   "license": "MIT",
