@@ -24,6 +24,13 @@ on:
 # later push still updates the Version Packages pull request. `plan` shares the
 # npm queue with `publish`, so it looks at npm only after the release before it
 # has finished, and a push that brings nothing new asks for no second approval.
+#
+# Every job uses `queue: max`. GitHub's default keeps one pending job per group and
+# cancels it when a newer one queues; here that would drop a run whose versions a
+# later Version Packages merge has already bumped again (0.2.1 never published or
+# tagged when 0.2.2 follows while a release waits for approval). With a queue each
+# run plans and publishes its own commit, oldest first, and publish.mjs skips what
+# npm already has, so nothing is published twice.
 permissions:
   contents: read
 
@@ -32,6 +39,7 @@ jobs:
     concurrency:
       group: release-version-${{ github.ref }}
       cancel-in-progress: false
+      queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -76,6 +84,7 @@ jobs:
     concurrency:
       group: release-npm-${{ github.ref }}
       cancel-in-progress: false
+      queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -95,6 +104,7 @@ jobs:
     concurrency:
       group: release-npm-${{ github.ref }}
       cancel-in-progress: false
+      queue: max
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: npm
