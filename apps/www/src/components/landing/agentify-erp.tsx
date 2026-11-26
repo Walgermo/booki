@@ -246,6 +246,7 @@ export function ErpWindow({
       </div>
       <ErpFrame
         brand="kvadruptex"
+        context={t("Fiscal year 2026 · Oslo", "Regnskapsår 2026 · Oslo")}
         label={t("Demo ERP", "Demo-ERP")}
         tabs={tabs}
         path="/analog-angst/bilag/ny"

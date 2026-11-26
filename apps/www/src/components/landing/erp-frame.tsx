@@ -34,6 +34,7 @@ export type FrameTab = {
 export function ErpFrame({
   brand,
   label,
+  context,
   tabs,
   path,
   search,
@@ -44,6 +45,8 @@ export function ErpFrame({
 }: {
   brand: Brand;
   label: string;
+  /** The line under the company name in the app's top bar, such as the fiscal year. */
+  context: string;
   tabs: FrameTab[];
   path: string;
   search: string;
@@ -123,7 +126,7 @@ export function ErpFrame({
             </span>
             <span className="erp-app__company">
               Analog Angst AS
-              <span>{t("Fiscal year 2026 · Oslo", "Regnskapsår 2026 · Oslo")}</span>
+              <span>{context}</span>
             </span>
             <span className="erp-app__avatar" aria-hidden="true">
               KN

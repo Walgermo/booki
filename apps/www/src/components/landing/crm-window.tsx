@@ -136,6 +136,7 @@ export function CrmWindow({
       </div>
       <ErpFrame
         brand="acrm"
+        context={t("Sales team · Oslo", "Salgsteam · Oslo")}
         label={t("Demo CRM", "Demo-CRM")}
         tabs={tabs}
         path="/analog-angst/salg"
