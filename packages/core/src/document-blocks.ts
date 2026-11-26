@@ -667,7 +667,8 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
   const push = (element: Element, type: BlockType, extra: Partial<DocBlock> = {}, from: Element = element) => {
     const content = read(from);
     if (!content) return embed(element);
-    const attrs = attrsOf(element, type === "callout" ? "data-callout" : undefined);
+    const defaultCallout = type === "callout" && element.getAttribute("data-callout") === "";
+    const attrs = attrsOf(element, defaultCallout ? "data-callout" : undefined);
     blocks.push(
       cleanBlock({
         id: idFor(element.getAttribute(idAttr)),
@@ -767,7 +768,7 @@ export function toHtml(blocks: DocBlock[], options: HtmlOptions = {}): string {
         html += `<blockquote${attrs(block)}><p>${inline(block)}</p></blockquote>`;
         break;
       case "callout":
-        html += `<aside${attrs(block, { "data-callout": "" })}><p>${inline(block)}</p></aside>`;
+        html += `<aside${attrs(block, { "data-callout": block.attrs?.["data-callout"] ?? "" })}><p>${inline(block)}</p></aside>`;
         break;
       case "divider":
         html += `<hr${attrs(block)}>`;
