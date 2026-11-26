@@ -660,23 +660,66 @@
   }
 }
 
-/* "See the prompt": both prompts in full, behind a disclosure. */
+/* Both prompts in full, shown by "See the prompt". */
 .landing-hero__prompt {
   width: 100%;
   max-width: 44rem;
   text-align: left;
 }
 
-.landing-hero__prompt summary {
-  cursor: pointer;
-  min-height: 2.25rem;
-  display: flex;
+/* The prompt button centred, with "See the prompt" off to its right as a quiet text link. */
+.landing-hero__cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  font-size: 0.8125rem;
+  column-gap: 1.25rem;
+  width: 100%;
+}
+
+.landing-hero__cta > :first-child {
+  grid-column: 2;
+}
+
+.landing-hero__cta > .landing-hero__see {
+  grid-column: 3;
+  justify-self: start;
+}
+
+/* A phone: the link under the button, both centred. */
+@media (max-width: 560px) {
+  .landing-hero__cta {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    row-gap: 0.25rem;
+  }
+
+  .landing-hero__cta > :first-child,
+  .landing-hero__cta > .landing-hero__see {
+    grid-column: 1;
+    justify-self: center;
+  }
+}
+
+.landing-hero__see {
+  min-height: 2.75rem;
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
   color: var(--bk-muted-fg);
   text-decoration: underline;
   text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.landing-hero__see:hover {
+  color: var(--bk-fg);
+}
+
+.landing-hero__see:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
 }
 
 .landing-hero__prompt .site-code {

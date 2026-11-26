@@ -1,5 +1,6 @@
 import { TextLink } from "@booki-aui/react";
-import { useRef } from "react";
+import { Button } from "@ui-sdk/react/button";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useLang } from "@/lib/lang";
@@ -15,6 +16,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
   const { t } = useLang();
   const markRef = useRef<HTMLSpanElement>(null);
   const proofRef = useRef<HTMLDivElement>(null);
+  const [promptOpen, setPromptOpen] = useState(false);
   return (
     <section className="site-ledger grid grid-cols-[minmax(0,1fr)] gap-12 pt-12 pb-16 md:gap-20 md:pt-[76px] md:pb-24">
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
@@ -106,16 +108,27 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             </span>
           </li>
         </ol>
-        <div className="mt-6 grid justify-items-center gap-2">
-          <PromptButton prompt={AGENT_PROMPT} />
+        <div className="mt-6 grid w-full grid-cols-[minmax(0,1fr)] justify-items-center gap-2">
+          <div className="landing-hero__cta">
+            <PromptButton prompt={AGENT_PROMPT} />
+            <Button
+              type="button"
+              className="landing-hero__see"
+              aria-expanded={promptOpen}
+              aria-controls="hero-prompts"
+              onClick={() => setPromptOpen((open) => !open)}
+            >
+              {promptOpen ? t("Hide the prompt", "Skjul prompten") : t("See the prompt", "Se prompten")}
+            </Button>
+          </div>
           <p className="m-0 text-sm text-muted-foreground">
             {t(
               "Your agent explains Booki and asks before changing anything. About 30 min.",
               "Agenten forklarer Booki og spør før den endrer noe. Rundt 30 min.",
             )}
           </p>
-          <details className="landing-hero__prompt">
-            <summary>{t("See the prompt", "Se prompten")}</summary>
+          {/* In the page either way, so the prompts are part of its text; shown on request. */}
+          <div id="hero-prompts" className="landing-hero__prompt" hidden={!promptOpen}>
             <InstallBlock
               label={t("One screen (the button above)", "Ett skjermbilde (knappen over)")}
               command={AGENT_PROMPT}
@@ -124,7 +137,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
               label={t("The whole app instead: takes hours", "Hele appen i stedet: tar timer")}
               command={AGENT_PROMPT_FULL}
             />
-          </details>
+          </div>
         </div>
         <nav
           aria-label={t("Read more", "Les mer")}
