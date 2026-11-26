@@ -11,7 +11,7 @@ import {
   type AgentPolicyOptions,
 } from "@booki-aui/primitives/agent-policy";
 import { isPersonOnly } from "@booki-aui/primitives/person-only";
-import { BookiError, type MessageLanguage } from "@booki-aui/core/msg";
+import { BookiError, msg, type MessageLanguage } from "@booki-aui/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
@@ -489,6 +489,25 @@ function createHistory(agent: AgentBridge, options: BookiHistoryOptions = {}) {
     ...history,
     seek: (to: number) => asPerson(() => history.seek(to)),
     undoSource: (source: string) => asPerson(() => history.undoSource(source)),
+    /**
+     * Undoes one entry, by id, only while it is still the latest applied change.
+     * Checked when its turn runs, not when it is asked for: a change a person
+     * makes while an agent turn holds the undo back is kept, and the undo is
+     * refused (`history.later-changes`). An unknown id is refused with the ids there are.
+     */
+    undoEntry: (id: string) =>
+      asPerson(async () => {
+        const entries = history.entries();
+        const index = entries.findIndex((item) => item.id === id);
+        if (index < 0) {
+          throw new BookiError("history.no-entry", {
+            id,
+            entries: entries.map((item) => item.id).join(", ") || msg("word.none"),
+          });
+        }
+        if (index !== history.position() - 1) throw new BookiError("history.later-changes", { id });
+        return history.seek(index);
+      }),
   };
 }
 

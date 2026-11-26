@@ -92,6 +92,25 @@ describe("onValueChange with allowEmpty", () => {
     expect(blank.input().value).toBe("");
     expect((document.querySelector("input[name=amount]") as HTMLInputElement).value).toBe("");
   });
+
+  it("one deletion a controlled owner does not take is reported once, and a later deletion again", () => {
+    const onValueChange = vi.fn();
+    const onEmpty = vi.fn();
+    const { entry, input } = setup({ allowEmpty: true, value: 5_000, onValueChange, onEmpty });
+    fireEvent.focus(input());
+    fireEvent.input(input(), { target: { value: "" } });
+    fireEvent.blur(input());
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    expect(onValueChange).toHaveBeenCalledWith(null, expect.anything());
+    expect(onEmpty).toHaveBeenCalledTimes(1);
+    expect(entry()).toMatchObject({ empty: false, value: 5_000 });
+    expect(input().value).toBe("50,00");
+    fireEvent.focus(input());
+    fireEvent.input(input(), { target: { value: "" } });
+    fireEvent.blur(input());
+    expect(onValueChange).toHaveBeenCalledTimes(2);
+    expect(onEmpty).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("history and an emptied amount", () => {

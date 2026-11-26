@@ -65,6 +65,32 @@ describe("activity rules", () => {
     expect(() => completeTask(note, "agent", NOW)).toThrow(/is a note, not a task/);
   });
 
+  it("places a day-only entry at the start of the local day when asked", () => {
+    const zone = process.env.TZ;
+    process.env.TZ = "Europe/Oslo";
+    try {
+      // 00:05 in Oslo on 25 November is 23:05 UTC on the 24th.
+      const LATE = "2026-11-24T23:10:00Z";
+      const call = logActivity(
+        { id: "A-1", kind: "call", subject: "Call", at: "2026-11-24T23:05:00Z", evidence: "x" },
+        "kari",
+        LATE,
+      );
+      const email = logActivity(
+        { id: "A-2", kind: "email", subject: "Mail", at: "2026-11-25" },
+        "kari",
+        LATE,
+        "2026-11-25",
+      );
+      expect(lastTouch([call, email])?.id).toBe("A-2");
+      expect(lastTouch([call, email], { dayStart: "local" })?.id).toBe("A-1");
+      expect(timeline([email, call], { dayStart: "local" }).map((a) => a.id)).toEqual(["A-1", "A-2"]);
+    } finally {
+      if (zone === undefined) delete process.env.TZ;
+      else process.env.TZ = zone;
+    }
+  });
+
   it("orders the timeline, finds the next and overdue tasks and the last contact", () => {
     const items = [
       logActivity({ id: "A-1", kind: "note", subject: "Note", at: "2026-11-23T08:00:00Z" }, "kari", NOW),

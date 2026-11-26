@@ -58,10 +58,12 @@ export type Options = {
 const todayOf = (options: Options) => options.today ?? localToday();
 
 export function derive(activities: Activity[], today: string) {
-  const touch = lastTouch(activities);
+  // Day-only entries are the person's day (as `logActivity` takes them), not the UTC one.
+  const order = { dayStart: "local" } as const;
+  const touch = lastTouch(activities, order);
   const open = openTasks(activities);
   return {
-    timeline: timeline(activities),
+    timeline: timeline(activities, order),
     openTasks: open.map((task) => task.id),
     nextTask: open[0]?.id ?? null,
     overdue: overdueTasks(activities, today),

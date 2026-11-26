@@ -65,6 +65,35 @@ fromMajor(125000.5, "NOK").minor   // 12500050
 decimalFromMinor(12500050, "NOK")  // "125000.50", send this back as the column's value
 ```
 
+### Store the scale with the amount
+
+An integer of minor units means nothing without the number of decimals it
+counts, and that number is not fixed: ISO 4217 changes a currency's minor unit
+by amendment (CLF went from 0 to 4 decimals in 2014). Booki follows the current
+ISO 4217 list. Before 0.4.0 it counted only JPY (0) and KWD (3) differently from
+2, so amounts saved then in BIF, CLP, DJF, GNF, ISK, KMF, KRW, PYG, RWF, UGX,
+UYI, VND, VUV, XAF, XOF and XPF (0 decimals now), BHD, IQD, JOD, LYD, OMR and
+TND (3) or CLF and UYW (4) count a different number of decimals today.
+
+Keep the scale next to the integer, in the same `{ amount, currency, scale }`
+shape a Dinero.js snapshot uses, and read it back exactly:
+
+```ts
+import { legacyMinorDigitsFor, money, moneyFromScaled, rescaleMinor, toScaled } from "@booki-aui/core/money"
+
+toScaled(money(15000, "CLP"))                                // { amount: 15000, currency: "CLP", scale: 0 }
+moneyFromScaled({ amount: 1500000, currency: "CLP", scale: 2 }) // { minor: 15000, currency: "CLP" }
+rescaleMinor(1550, 2, "CLP")                                  // refused: 15.50 has no whole peso
+
+// An integer saved before 0.4.0 without a scale: rescale it once, from the decimals it was saved in.
+rescaleMinor(saved, legacyMinorDigitsFor(currency), currency)
+```
+
+Adding decimals is always exact. Dropping them is refused unless the dropped
+digits are zeros, so a rounding only happens when you choose one. Rescale only
+amounts the old version wrote: an integer already in the current ISO minor
+units must not be rescaled again, which is why the scale belongs in the record.
+
 A deal or quote in any currency: give `CurrencySelect` the list your product
 takes (`currencies={["NOK", "EUR", "USD", "SEK"]}`); the agent's refusal names
 them. `AmountField` follows the `currency` you pass it.

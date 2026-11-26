@@ -147,6 +147,8 @@ export const EN = {
   "reconciliation.match-not-suggested": 'Match "{id}" is {status}. Only a suggestion can be withdrawn.',
   "agent.not-text": '{action} takes text, like "12345678903"; got {got}.',
   "agent.needs-person": 'Needs a person: "{confirm}". Ask them to do it themselves.',
+  "history.later-changes": 'Later changes came after history entry "{id}"; undo those first.',
+  "history.no-entry": 'No history entry "{id}". Entries: {entries}.',
   "agent-token.secret-short": "An agent token secret is at least 32 characters.",
   "agent-token.ttl": "ttlSeconds is a whole number from 1 to 86400, not {value}.",
   "agent-token.grant": "An agent token needs agentId and onBehalfOf.",

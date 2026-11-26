@@ -44,6 +44,8 @@ export type AmountFieldState = {
   focused: boolean;
   /** Value when the current human edit began (focus); restored on a refused blur. */
   editStart: number | null;
+  /** A controlled field's blank draft was already reported as a clear the owner has not applied; blur does not report it again. */
+  clearHeld: boolean;
   currency: string;
   locale: string;
   minMinor: number;
@@ -120,6 +122,7 @@ export const amountField = definePrimitive({
       draftRefusal: null,
       focused: false,
       editStart: null,
+      clearHeld: false,
       currency,
       locale,
       minMinor: options.minMinor ?? 0,
@@ -223,7 +226,7 @@ export const amountField = definePrimitive({
       context.options().onEmpty?.({ reason });
       if (context.options().value === undefined) context.store.set({ value: null, minor: null });
       // Controlled: the owner passes `value={null}` back through sync; until it does, the field holds its amount.
-      else context.store.set({ minor: held, empty: false });
+      else context.store.set({ minor: held, empty: false, clearHeld: true });
       context.store.set({ draft: "", draftRefusal: null });
       return true;
     }
@@ -270,7 +273,7 @@ export const amountField = definePrimitive({
       /** Human input: major-unit text as typed. Not an agent action. */
       setDraftMajorText: (draft: string, event?: unknown) => {
         if (isLocked(context.store.get())) return;
-        context.store.set({ draft });
+        context.store.set({ draft, clearHeld: false });
         commitDraft(draft, "input", asEvent(event));
       },
       focus: () => {
@@ -279,14 +282,17 @@ export const amountField = definePrimitive({
         context.store.set({
           focused: true,
           editStart: value,
+          clearHeld: false,
           draft: draftRefusal ? draft : value === null ? "" : formatMinor(value, currency, locale),
         });
       },
       blur: (event?: unknown) => {
         if (isLocked(context.store.get())) return;
-        const { draft, editStart } = context.store.get();
-        context.store.set({ focused: false, editStart: null });
-        if (!commitDraft(draft, "blur", asEvent(event))) {
+        const { draft, editStart, clearHeld } = context.store.get();
+        context.store.set({ focused: false, editStart: null, clearHeld: false });
+        // The same blank draft was reported on input and the owner kept its amount: one edit, one notification.
+        const reported = clearHeld && draft.trim() === "";
+        if (!reported && !commitDraft(draft, "blur", asEvent(event))) {
           // Refused (unparseable or out of range): keystrokes may have
           // committed a prefix, so put back the amount from before the edit.
           const { draftRefusal } = context.store.get();

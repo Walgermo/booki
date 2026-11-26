@@ -122,6 +122,83 @@ export function toMajor(value: Money): number {
   return value.minor / 10 ** digits;
 }
 
+/**
+ * An integer amount together with the number of decimals it counts: what to
+ * store when the reader must not depend on today's ISO 4217 table. The same
+ * shape as a Dinero.js snapshot (`amount`, `currency`, `scale`).
+ */
+export type ScaledAmount = {
+  /** Integer count of 10^-scale major units. */
+  amount: number;
+  currency: BookiCurrencyCode;
+  /** How many decimals `amount` counts: 2 means 1500000 is 15000.00. */
+  scale: number;
+};
+
+function checkScale(scale: unknown): number {
+  if (typeof scale !== "number" || !Number.isInteger(scale) || scale < 0 || scale > 18) {
+    throw moneyMessages.error("money.not-scale", { value: String(scale) });
+  }
+  return scale;
+}
+
+/**
+ * An integer counted at `fromScale` decimals, exactly in `currency`'s current
+ * ISO 4217 minor units. Adding decimals is always exact; dropping them is
+ * refused unless the dropped digits are zeros, so a rounding never happens
+ * without you choosing it. `rescaleMinor(1500000, 2, "CLP")` is 15000;
+ * `rescaleMinor(1550, 2, "CLP")` is refused (15.50 has no whole peso).
+ */
+export function rescaleMinor(minor: number, fromScale: number, currency: BookiCurrencyCode): number {
+  if (!Number.isSafeInteger(minor)) throw moneyMessages.error("money.not-safe-integer", { value: String(minor) });
+  const from = checkScale(fromScale);
+  const to = minorDigitsFor(currency);
+  let value = BigInt(minor);
+  if (to >= from) value *= 10n ** BigInt(to - from);
+  else {
+    const divisor = 10n ** BigInt(from - to);
+    if (value % divisor !== 0n) {
+      throw moneyMessages.error("money.rescale-lossy", {
+        amount: String(minor),
+        from,
+        to,
+        currency: currency.toUpperCase(),
+      });
+    }
+    value /= divisor;
+  }
+  if (value > BigInt(Number.MAX_SAFE_INTEGER) || value < -BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw moneyMessages.error("money.not-safe-integer", { value: value.toString() });
+  }
+  return Number(value) || 0;
+}
+
+/** A stored `{ amount, currency, scale }` as Money in the currency's current minor units, exactly (see `rescaleMinor`). */
+export function moneyFromScaled(scaled: ScaledAmount): Money {
+  if (typeof scaled !== "object" || scaled === null || typeof scaled.currency !== "string") {
+    throw moneyMessages.error("money.scaled-format");
+  }
+  return money(rescaleMinor(scaled.amount, scaled.scale, scaled.currency), scaled.currency);
+}
+
+/** Money with the scale it counts, to store next to the integer so a reader never has to guess the decimals. */
+export function toScaled(value: Money): ScaledAmount {
+  return { amount: value.minor, currency: value.currency.toUpperCase(), scale: minorDigitsFor(value.currency) };
+}
+
+// Fraction digits Booki used before 0.4.0: this table, and 2 for every other code.
+const BEFORE_0_4: Record<string, number> = { NOK: 2, USD: 2, EUR: 2, GBP: 2, SEK: 2, DKK: 2, JPY: 0, KWD: 3 };
+
+/**
+ * The decimals Booki before 0.4.0 counted a currency's minor units in: 0 for
+ * JPY, 3 for KWD, and 2 for every other code. For amounts saved by those
+ * versions without a scale: `rescaleMinor(saved, legacyMinorDigitsFor(c), c)`.
+ * Only the currencies where this differs from `minorDigitsFor` changed value.
+ */
+export function legacyMinorDigitsFor(currency: BookiCurrencyCode): number {
+  return BEFORE_0_4[currency.toUpperCase()] ?? 2;
+}
+
 export function addMoney(a: Money, b: Money): Money {
   assertSameCurrency(a, b);
   return money(a.minor + b.minor, a.currency);

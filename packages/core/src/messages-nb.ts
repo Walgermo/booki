@@ -153,6 +153,8 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "reconciliation.match-not-suggested": 'Avstemmingen "{id}" er {status}. Bare et forslag kan trekkes tilbake.',
   "agent.not-text": '{action} tar tekst, som "12345678903"; fikk {got}.',
   "agent.needs-person": 'Krever en person: "{confirm}". Be dem gjøre det selv.',
+  "history.later-changes": 'Det er gjort endringer etter historikkoppføringen "{id}"; angre dem først.',
+  "history.no-entry": 'Ingen historikkoppføring "{id}". Oppføringer: {entries}.',
   "agent-token.secret-short": "En hemmelighet for agenttokens har minst 32 tegn.",
   "agent-token.ttl": "ttlSeconds er et helt tall fra 1 til 86400, ikke {value}.",
   "agent-token.grant": "Et agenttoken trenger agentId og onBehalfOf.",
@@ -228,6 +230,11 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "money.not-safe-integer": "Money.minor må være et trygt heltall, ikke {value}",
   "money.not-finite": "fromMajor forventer et endelig tall, ikke {value}",
   "money.currency-mismatch": "Valutaene er ulike: {a} og {b}",
+  "money.not-scale": "En skala er antall desimaler heltallet teller, et helt tall fra 0 til 18, ikke {value}.",
+  "money.rescale-lossy":
+    "{amount} med {from} desimaler er ikke et helt antall minste enheter i {currency} ({to} desimaler). Rund av først, med vilje.",
+  "money.scaled-format":
+    'Et skalert beløp er { amount, currency, scale }, for eksempel { amount: 1500000, currency: "CLP", scale: 2 }.',
   "fx.rate-format": "En valutakurs er et heltall i milliondeler over null (11,2345 er 11234500), ikke {value}.",
   "fx.amount-format": "Et beløp er et heltall i minste myntenhet, ikke {value}.",
   "fx.no-rate":

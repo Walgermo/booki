@@ -9,6 +9,10 @@ import {
   parseMajorInput,
   parseToMinor,
   parseToMoney,
+  legacyMinorDigitsFor,
+  moneyFromScaled,
+  rescaleMinor,
+  toScaled,
 } from "./money.js";
 
 const NBSP = " ";
@@ -240,5 +244,40 @@ describe("formatMoney", () => {
       "(1 234,50)",
     );
     expect(formatMoney(money(0, "NOK"), { locale: "nb-NO", zero: "–" })).toBe("–");
+  });
+});
+
+describe("amounts saved at another scale", () => {
+  it("rescales exactly to the current ISO 4217 minor units and refuses a rounding", () => {
+    // CLP has 0 decimals in ISO 4217; Booki before 0.4.0 counted it in 2.
+    expect(rescaleMinor(1_500_000, 2, "CLP")).toBe(15_000);
+    expect(() => rescaleMinor(1_550, 2, "CLP")).toThrow(/1550 at 2 decimals is not a whole number of CLP/);
+    // BHD has 3 decimals: going up is always exact.
+    expect(rescaleMinor(12_345, 2, "BHD")).toBe(123_450);
+    expect(rescaleMinor(-700, 2, "NOK")).toBe(-700);
+    expect(Object.is(rescaleMinor(-0, 0, "NOK"), 0)).toBe(true);
+    expect(() => rescaleMinor(1.5, 2, "CLP")).toThrow(/safe integer/);
+    expect(() => rescaleMinor(100, -1, "CLP")).toThrow(/whole number from 0 to 18, not -1/);
+    expect(() => rescaleMinor(100, 2.5, "CLP")).toThrow(/not 2\.5/);
+    expect(() => rescaleMinor(Number.MAX_SAFE_INTEGER, 0, "NOK")).toThrow(/safe integer/);
+  });
+
+  it("stores the scale with the amount and reads it back whatever today's table says", () => {
+    expect(toScaled(money(15_000, "clp"))).toEqual({ amount: 15_000, currency: "CLP", scale: 0 });
+    expect(moneyFromScaled({ amount: 1_500_000, currency: "CLP", scale: 2 })).toEqual({
+      minor: 15_000,
+      currency: "CLP",
+    });
+    expect(moneyFromScaled(toScaled(money(123_450, "BHD")))).toEqual({ minor: 123_450, currency: "BHD" });
+    expect(() => moneyFromScaled(null as never)).toThrow(/\{ amount, currency, scale \}/);
+  });
+
+  it("knows the decimals versions before 0.4.0 used, so only changed amounts are rescaled", () => {
+    expect(legacyMinorDigitsFor("CLP")).toBe(2);
+    expect(legacyMinorDigitsFor("jpy")).toBe(0);
+    expect(legacyMinorDigitsFor("KWD")).toBe(3);
+    expect(rescaleMinor(123_450, legacyMinorDigitsFor("NOK"), "NOK")).toBe(123_450);
+    expect(rescaleMinor(1_500_000, legacyMinorDigitsFor("CLP"), "CLP")).toBe(15_000);
+    expect(rescaleMinor(12_345, legacyMinorDigitsFor("BHD"), "BHD")).toBe(123_450);
   });
 });
