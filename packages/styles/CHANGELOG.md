@@ -1,5 +1,19 @@
 # @booki/styles
 
+## 0.5.0
+
+### Patch Changes
+
+- [#184](https://github.com/Walgermo/booki/pull/184) [`eb83ef8`](https://github.com/Walgermo/booki/commit/eb83ef87b6a3eaa8c91e63a27879710904361cd2) Thanks [@Walgermo](https://github.com/Walgermo)! - Preserve fractional basis points when calculating invoice and voucher tax. Payment batch approval and release now require a real calendar date. Aging reports, filtered money columns and party drill-downs calculate totals exactly and refuse totals outside the safe minor-unit range.
+  
+  New working-paper proposals receive opaque, durable IDs. Read the ID from the proposal or bridge result when accepting, rejecting or withdrawing it. Existing pending proposals keep their IDs. HTML-backed papers preserve callout editability and list item identities. In the editor, Alt+Down focuses the command or mention list. Arrow keys, Home and End navigate, Enter selects, and Escape returns to the text without changing it.
+  
+  Conformance checks on an empty bridge now report an incomplete result and return `conforms: false`. Run the check after the screen mounts.
+
+- [#189](https://github.com/Walgermo/booki/pull/189) [`b17d729`](https://github.com/Walgermo/booki/commit/b17d72939a92b91d794ad69dcb63aad7d8266011) Thanks [@Walgermo](https://github.com/Walgermo)! - AgentStatus now uses the same Booki pointer as the live React and Web cursors. Each of its five states keeps its own badge and localized label. The corresponding exported SVGs use the same centered stem. The waiting label has stronger contrast on Paper. The cursor presses at its tip when work begins and when a live step runs. Reduced motion keeps the pointer still.
+  
+  Read-only cursor steps inspect the control without a press. Missing targets, cancellation, overlapping steps and detachment clear stale visuals. Cursor narration omits arguments on secret controls. Both renderers honor custom travel times and keep labels above low targets.
+
 ## 0.4.4
 
 ### Patch Changes

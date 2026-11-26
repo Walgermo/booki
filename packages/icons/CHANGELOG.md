@@ -1,5 +1,17 @@
 # @booki-aui/icons
 
+## 0.5.0
+
+### Patch Changes
+
+- [#188](https://github.com/Walgermo/booki/pull/188) [`8285000`](https://github.com/Walgermo/booki/commit/82850007aa473f9c3d3aec92a6ec102574557d28) Thanks [@Walgermo](https://github.com/Walgermo)! - Improve eight icons at 16 and 20 px. Separate the forecast dashes from the trend line, connect the steps in the cash-flow waterfall, distinguish the risk matrix and payment batch from similar icons, and make the credit-note minus and stop square easier to see. Align the banknote marks and extend the bank columns to their base.
+
+- [#190](https://github.com/Walgermo/booki/pull/190) [`5379c90`](https://github.com/Walgermo/booki/commit/5379c907f922d1c47e8902181487b117a209e8a9) Thanks [@Walgermo](https://github.com/Walgermo)! - Add thirteen icons for customer due diligence, sanctions and monitoring, account mapping and structured imports, external confirmations, auditor independence, and period rollover. The icon catalog recognizes spaced and hyphenated English and Norwegian search terms.
+
+- [#189](https://github.com/Walgermo/booki/pull/189) [`b17d729`](https://github.com/Walgermo/booki/commit/b17d72939a92b91d794ad69dcb63aad7d8266011) Thanks [@Walgermo](https://github.com/Walgermo)! - AgentStatus now uses the same Booki pointer as the live React and Web cursors. Each of its five states keeps its own badge and localized label. The corresponding exported SVGs use the same centered stem. The waiting label has stronger contrast on Paper. The cursor presses at its tip when work begins and when a live step runs. Reduced motion keeps the pointer still.
+  
+  Read-only cursor steps inspect the control without a press. Missing targets, cancellation, overlapping steps and detachment clear stale visuals. Cursor narration omits arguments on secret controls. Both renderers honor custom travel times and keep labels above low targets.
+
 ## 0.4.4
 
 ### Patch Changes

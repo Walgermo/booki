@@ -1,5 +1,18 @@
 # @booki/web
 
+## 0.5.0
+
+### Patch Changes
+
+- [#189](https://github.com/Walgermo/booki/pull/189) [`b17d729`](https://github.com/Walgermo/booki/commit/b17d72939a92b91d794ad69dcb63aad7d8266011) Thanks [@Walgermo](https://github.com/Walgermo)! - AgentStatus now uses the same Booki pointer as the live React and Web cursors. Each of its five states keeps its own badge and localized label. The corresponding exported SVGs use the same centered stem. The waiting label has stronger contrast on Paper. The cursor presses at its tip when work begins and when a live step runs. Reduced motion keeps the pointer still.
+  
+  Read-only cursor steps inspect the control without a press. Missing targets, cancellation, overlapping steps and detachment clear stale visuals. Cursor narration omits arguments on secret controls. Both renderers honor custom travel times and keep labels above low targets.
+
+- [#187](https://github.com/Walgermo/booki/pull/187) [`1f8fe32`](https://github.com/Walgermo/booki/commit/1f8fe32f46b4d3c29ec6934642b44cb75a79b732) Thanks [@Walgermo](https://github.com/Walgermo)! - Upgrade the UI SDK peers to `0.1.0-beta.18`. Install the matching `@ui-sdk/core` and framework packages when upgrading Booki. A stopped agent call queued behind a person's decision now returns its cancellation immediately. The tool audit records a cancelled action as `agent.cancelled`. The pending decision and the order of history restores are preserved.
+- Updated dependencies [[`eb83ef8`](https://github.com/Walgermo/booki/commit/eb83ef87b6a3eaa8c91e63a27879710904361cd2), [`c735db6`](https://github.com/Walgermo/booki/commit/c735db698802f13d18b7aa698a07a5bd49099f5d), [`b17d729`](https://github.com/Walgermo/booki/commit/b17d72939a92b91d794ad69dcb63aad7d8266011), [`1f8fe32`](https://github.com/Walgermo/booki/commit/1f8fe32f46b4d3c29ec6934642b44cb75a79b732)]:
+  - @booki-aui/core@0.5.0
+  - @booki-aui/primitives@0.5.0
+
 ## 0.4.4
 
 ### Patch Changes
