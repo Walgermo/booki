@@ -29,6 +29,7 @@
     }
     .frame { max-width: 1200px; width: 100%; min-width: 0; }
     .diagram-container { width: 100%; overflow-x: auto; }
+    .diagram-container:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
     .eyebrow {
       font-family: var(--font-mono);
       font-size: 0.75rem;
@@ -68,7 +69,7 @@
     <p class="eyebrow">Architecture · Booki</p>
     <h1>How Booki works</h1>
     <p class="sub">One definition per control, one bridge for the agent, and the same rules again on your server. Lime marks only what is the agent&#x27;s.</p>
-    <div class="diagram-container">
+    <div class="diagram-container" tabindex="0" role="region" aria-label="How Booki works (diagram, scrolls sideways)">
       <svg viewBox="0 0 1080 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="how-booki-works-title how-booki-works-desc">
         <title id="how-booki-works-title">How Booki works</title>
         <desc id="how-booki-works-desc">A control is defined once in @booki-aui/primitives with rules from @booki-aui/core, wrapped for React and generated for Web Components, Vue, Svelte and Solid; an agent reads and acts through createBookiAgent, which records audit rows and refuses a person&#x27;s decisions, and @booki-aui/core/server checks every write again.</desc>
