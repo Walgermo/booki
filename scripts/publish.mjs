@@ -44,6 +44,22 @@ function known(name, version) {
   }
 }
 
+/** True when `a` is a lower release (X.Y.Z) than `b`. */
+function older(a, b) {
+  const [x, y] = [a, b].map((v) => v.split(".").map(Number));
+  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] < y[i];
+  return false;
+}
+
+/** The version npm's `latest` dist-tag points at, or null for a package npm has never seen. */
+function latest(name) {
+  try {
+    return run("npm", ["view", name, "dist-tags.latest"]) || null;
+  } catch {
+    return null;
+  }
+}
+
 const packages = readdirSync(join(root, "packages"))
   .map((dir) => join(root, "packages", dir))
   .flatMap((dir) => {
@@ -71,8 +87,15 @@ for (const { dir, manifest } of pending) {
   run("pnpm", ["pack", "--pack-destination", out], { cwd: dir });
   const tarball = readdirSync(out).find((file) => !before.has(file));
   if (!tarball) throw new Error(`pnpm pack wrote no tarball for ${name}`);
-  // A prerelease (0.3.0-next.1) goes to the `next` dist-tag, never to `latest`.
-  const distTag = version.includes("-") ? ["--tag", "next"] : [];
+  // A prerelease (0.3.0-next.1) goes to the `next` dist-tag, never to `latest`. Releases
+  // queue oldest first, but GitHub does not promise the start order: a release older than
+  // npm's `latest` goes to `previous`, so `latest` never moves backwards.
+  const current = version.includes("-") ? null : latest(name);
+  const distTag = version.includes("-")
+    ? ["--tag", "next"]
+    : current && !current.includes("-") && older(version, current)
+      ? ["--tag", "previous"]
+      : [];
   const command = stage ? ["stage", "publish"] : ["publish"];
   run("npm", [...command, join(out, tarball), "--access", "public", "--provenance", ...distTag], {
     stdio: ["ignore", "inherit", "inherit"],

@@ -66,15 +66,16 @@ describe("readiness checks on fixture pages", () => {
 
   it("skips read-only fields when comparing with an empty bridge", async () => {
     // Read-only input and textarea, a field in an aria-readonly grid: no one can change them.
-    // A read-only checkbox still toggles, and the plain Notat field is editable.
+    // A read-only checkbox still toggles, the plain Notat field is editable, and so is the
+    // Merknad cell that overrides its grid with aria-readonly="false".
     const report = await run("empty-bridge-readonly");
-    expect(tally(report)).toEqual({ "bridge-missing": 1, "field-not-on-bridge": 2 });
+    expect(tally(report)).toEqual({ "bridge-missing": 1, "field-not-on-bridge": 3 });
     expect(
       report.findings
         .filter((f) => f.rule === "field-not-on-bridge")
         .map((f) => f.element?.name)
         .sort(),
-    ).toEqual(["Godkjent", "Notat"]);
+    ).toEqual(["Godkjent", "Merknad", "Notat"]);
   });
 
   it("measures a page with focusable cells and an ungated button but no fields", async () => {

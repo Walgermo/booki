@@ -433,8 +433,11 @@ export function bridgeCoverage(element: Element, entries: Array<{ component: str
       !["checkbox", "radio", "file", "range", "color", "hidden", "button", "submit", "reset", "image"].includes(
         (element as HTMLInputElement).type,
       ));
+  // The nearest aria-readonly decides: a gridcell with aria-readonly="false" is editable
+  // inside a read-only grid.
   const readOnly =
-    (textLike && (element as HTMLInputElement).readOnly === true) || element.closest("[aria-readonly=true]") !== null;
+    (textLike && (element as HTMLInputElement).readOnly === true) ||
+    element.closest("[aria-readonly]")?.getAttribute("aria-readonly") === "true";
   return {
     inRoot: inside(element),
     agentHidden: element.closest("[data-agent-hidden]") !== null,

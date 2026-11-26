@@ -131,3 +131,10 @@ pnpm changeset pre enter next
 
 Versions then come out as `0.2.0-next.0`, `-next.1`, and publish to the `next`
 dist-tag. Leave with `pnpm changeset pre exit` before the final release.
+
+## Releases that queue
+
+Each Release run waits its turn instead of replacing the one before it, so two
+Version Packages merges in a row publish and tag both versions, oldest first.
+Should an older version still reach npm after a newer one, it goes to the
+`previous` dist-tag and `latest` stays on the newer version.

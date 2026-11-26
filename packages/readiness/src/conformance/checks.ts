@@ -42,6 +42,13 @@ const isNamed = (value: unknown): value is string => typeof value === "string" &
 const isMinorKey = (key: string) => key === "minor" || key.endsWith("Minor");
 const isDateKey = (key: string) => key === "date" || key.endsWith("Date");
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+// An extracted field: the value read from a document and how sure the extraction was.
+const isExtracted = (value: unknown): value is { value: unknown; confidence: number } =>
+  value !== null &&
+  typeof value === "object" &&
+  !Array.isArray(value) &&
+  "value" in value &&
+  typeof (value as { confidence?: unknown }).confidence === "number";
 // Controls whose `value` is a date, or an amount in minor units.
 const DATE_COMPONENTS = new Set(["financial-date", "field-date"]);
 const AMOUNT_COMPONENTS = new Set(["amount-field", "field-amount"]);
@@ -95,7 +102,13 @@ const checks: ConformanceCheck[] = [
       const bad: string[] = [];
       // Every level, arrays too (a voucher's lines). A date control's canonical `value` is a
       // date as well; its `formatted` is for people and is not checked.
-      const visit = (value: unknown, path: string, key: string, dateValue: boolean) => {
+      const visit = (value: unknown, path: string, key: string, dateValue: boolean): void => {
+        // A value read from a document ({ value, confidence }, a supplier invoice's
+        // fields) is checked by what it holds.
+        if ((isMinorKey(key) || isDateKey(key)) && isExtracted(value)) {
+          visit(value.value, `${path}.value`, key, false);
+          return;
+        }
         if (isMinorKey(key) && !(value === null || Number.isInteger(value)))
           bad.push(`${path}=${JSON.stringify(value)}`);
         const isDate = value === null || (typeof value === "string" && DATE.test(value));
