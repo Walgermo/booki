@@ -57,7 +57,9 @@ export function ApFlow({ initial }: { initial: Books }) {
   // Steps refused in the page never become a write, so they are logged on their own.
   useEffect(
     () =>
-      listenToDecisions((row) => void send({ action: "agent-step", step: row.action, target: row.target }, "agent")),
+      listenToDecisions(
+        (row) => void send({ action: "agent-step", step: row.action, target: row.target, detail: row.detail }, "agent"),
+      ),
     [send],
   );
 

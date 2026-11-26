@@ -43,7 +43,7 @@ export type Write =
   | { action: "prepare-batch" }
   | { action: "batch"; batch: PaymentBatch }
   | { action: "matches"; matches: ReconciliationMatch[] }
-  | { action: "agent-step"; step: string; target: string }
+  | { action: "agent-step"; step: string; target: string; detail?: string }
   | { action: "reset" };
 
 export type Answer = { ok: true; books: Books } | (Refusal & { books: Books });
@@ -357,7 +357,14 @@ export function apply(books: Books, actor: ServerActor | undefined, write: Write
       case "agent-step":
         // What the page says an agent was refused. Logged as the agent's, by its credential; it changes nothing.
         if (actor.kind !== "agent") throw refusal(403, "agent-step.person", "Bare agenten logger egne steg.");
-        log(books, actor, `steg: ${String(write.step).slice(0, 40)}`, String(write.target).slice(0, 80));
+        // The reason goes with it, as text and bounded, so the trail says why the step was refused.
+        log(
+          books,
+          actor,
+          `steg: ${String(write.step).slice(0, 40)}`,
+          String(write.target).slice(0, 80),
+          typeof write.detail === "string" ? write.detail.slice(0, 200) : undefined,
+        );
         break;
       default:
         throw refusal(400 as Refusal["status"], "write.unknown", "Ukjent handling.");
