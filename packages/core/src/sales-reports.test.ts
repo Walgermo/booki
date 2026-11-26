@@ -45,6 +45,29 @@ describe("funnel", () => {
     expect(localize(view.issues.find((i) => /more records/.test(i))!, "nb")).toMatch(/skal aldri stige/);
   });
 
+  it("finds a biggest drop that rounds to zero percent, and ranks drops exactly", () => {
+    const tiny = funnel([
+      { id: "lead", label: "Lead", count: 3000 },
+      { id: "qualified", label: "Qualified", count: 2999 },
+      { id: "won", label: "Won", count: 2999 },
+    ]);
+    expect(tiny.steps[1]!.stepConversionPct).toBe(100);
+    expect(tiny.biggestDropId).toBe("qualified");
+    // 1 of 3001 and 1 of 3000 both round to 0.0 %; the second loses the larger share.
+    const close = funnel([
+      { id: "a", label: "A", count: 3001 },
+      { id: "b", label: "B", count: 3000 },
+      { id: "c", label: "C", count: 2999 },
+    ]);
+    expect(close.biggestDropId).toBe("c");
+    expect(
+      funnel([
+        { id: "a", label: "A", count: 5 },
+        { id: "b", label: "B", count: 5 },
+      ]).biggestDropId,
+    ).toBeNull();
+  });
+
   it("counts a record at every step up to the furthest it reached", () => {
     expect(reachedCounts([["lead"], ["lead", "quote"], ["won"], []], ["lead", "quote", "won"])).toEqual([3, 2, 1]);
   });
@@ -97,6 +120,21 @@ describe("forecastByPeriod", () => {
     expect(view.unverified).toEqual(["D7"]);
   });
 
+  it("leaves out deals closing outside the range, whatever the grouping", () => {
+    const edge = [
+      deal({ id: "E1", stageId: "won", closedAt: "2026-10-20T10:00:00Z", valueMinor: 7_00 }),
+      deal({ id: "E2", expectedClose: "2027-01-15", valueMinor: 9_00 }),
+    ];
+    const all = [...deals, ...edge];
+    const total = (grouping: "month" | "quarter") =>
+      forecastByPeriod(all, stages, { ...options, grouping }).periods.reduce(
+        (sum, p) => ({ won: sum.won + p.wonMinor, open: sum.open + p.committedMinor + p.bestCaseMinor }),
+        { won: 0, open: 0 },
+      );
+    expect(total("quarter")).toEqual(total("month"));
+    expect(total("quarter")).toEqual({ won: 40_000_00, open: 100_000_00 + 333 });
+  });
+
   it("groups by quarter and checks its arguments", () => {
     expect(forecastByPeriod(deals, stages, { ...options, grouping: "quarter" }).periods.map((p) => p.period)).toEqual([
       "2026-Q4",
@@ -127,6 +165,35 @@ describe("timeInStage", () => {
     expect(view.map((s) => s.stageId)).toEqual(["lead", "quote"]);
     expect(view[0]).toMatchObject({ count: 3, medianDays: 4, longestDays: 10, current: ["D3"], overTarget: [] });
     expect(view[1]).toMatchObject({ count: 1, medianDays: 54, targetDays: 30, overTarget: ["D4"] });
+  });
+
+  it("takes the mean of the two middle stays for an even count", () => {
+    const view = timeInStage(
+      [
+        { dealId: "D1", stageId: "quote", enteredAt: "2026-10-01", leftAt: "2026-10-15" },
+        { dealId: "D2", stageId: "quote", enteredAt: "2026-10-01", leftAt: "2026-12-03" },
+        { dealId: "D3", stageId: "lead", enteredAt: "2026-10-01", leftAt: "2026-10-15" },
+      ],
+      stages,
+      "2026-12-31",
+    );
+    // 14 and 63 days: 38.5, to the nearest whole day.
+    expect(view.find((s) => s.stageId === "quote")?.medianDays).toBe(39);
+    expect(view.find((s) => s.stageId === "lead")?.medianDays).toBe(14);
+    expect(timeInStage([], stages, "2026-12-31")[0]?.medianDays).toBeNull();
+  });
+
+  it("counts the time that passed for a finished stay with times at both ends", () => {
+    const view = timeInStage(
+      [
+        { dealId: "D1", stageId: "lead", enteredAt: "2026-10-01T23:59:00Z", leftAt: "2026-10-02T00:01:00Z" },
+        { dealId: "D2", stageId: "quote", enteredAt: "2026-10-01T09:00:00Z", leftAt: "2026-10-02T09:00:00Z" },
+      ],
+      stages,
+      "2026-12-31",
+    );
+    expect(view[0]).toMatchObject({ medianDays: 0, longestDays: 0 });
+    expect(view[1]).toMatchObject({ medianDays: 1, longestDays: 1 });
   });
 });
 
