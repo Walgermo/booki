@@ -202,6 +202,19 @@ function withMeta(template, { url, title, description, markdownPath }) {
 function toMarkdown(body, { url, title, description }) {
   const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
   const root = doc.querySelector("main") ?? doc.body;
+  // A collapsed section (the FAQ, code behind a disclosure) is content a person opens with
+  // one click: its title becomes a line of bold text and its panel stays, before buttons
+  // and hidden elements are dropped below.
+  for (const section of root.querySelectorAll('[data-slot="collapsible"]')) {
+    const trigger = section.querySelector(':scope > [data-slot="collapsible-trigger"]');
+    const panel = section.querySelector(':scope > [data-slot="collapsible-panel"]');
+    if (!trigger || !panel) continue;
+    const name = (trigger.querySelector("span") ?? trigger).textContent.replace(/\s+/g, " ").trim();
+    const title = doc.createElement("p");
+    if (name) title.append(Object.assign(doc.createElement("strong"), { textContent: name }));
+    trigger.replaceWith(title);
+    panel.removeAttribute("hidden");
+  }
   for (const el of root.querySelectorAll(
     "nav, header, footer, svg, script, style, [aria-hidden='true'], [hidden], [data-markdown-hidden], button",
   )) {
@@ -252,6 +265,10 @@ function toMarkdown(body, { url, title, description }) {
       const width = Math.max(...rows.map((row) => row.length));
       const line = (row) => `| ${[...row, ...Array(width - row.length).fill("")].join(" | ")} |`;
       return void blocks.push([line(rows[0]), `|${" --- |".repeat(width)}`, ...rows.slice(1).map(line)].join("\n"));
+    }
+    // A div that holds only text is a paragraph too (the Money preview's amounts).
+    if (tag === "div" && node.children.length === 0) {
+      return void (text() && blocks.push(text()));
     }
     for (const child of node.children) walk(child);
   };
@@ -348,6 +365,16 @@ for (const url of urls) {
   const markdown = toMarkdown(body, { url, title, description });
   writeFileSync(join(dist, markdownPath.slice(1)), markdown);
   pages.push({ url, title, description, markdownPath, words: markdown.split(/\s+/).length });
+  // What the Markdown must not lose: a collapsed FAQ answer, the US controls on an English
+  // docs page, and the Money preview's amounts.
+  const expected = {
+    "/": ["**What is Booki?**", "Ready-made controls for accounting screens"],
+    "/docs/bank-account-input": ["routing"],
+    "/docs/money": ["$125.00"],
+  }[url];
+  for (const text of expected ?? []) {
+    if (!markdown.includes(text)) failures.push(`${markdownPath}: the Markdown has no "${text}"`);
+  }
 }
 if (failures.length) {
   console.error(`prerender: ${failures.length} page(s) did not render whole:\n  ${failures.join("\n  ")}`);

@@ -1,6 +1,7 @@
 import { BookiLogo } from "@/components/booki-logo";
-import { useBookiLocale } from "@booki-aui/react";
-import { useEffect } from "react";
+import { BookiLocaleProvider } from "@booki-aui/react";
+import type { CountryCode } from "@booki-aui/core/locale";
+import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { LangToggle } from "@/components/lang-toggle";
@@ -53,8 +54,11 @@ export function DocsShell() {
   const { lang, t } = useLang();
   // One switch, not two: the language picks the country profile the component
   // pages show (Norwegian: NO, kontonummer and MVA; English: US, ABA and sales tax).
-  const { setCountry } = useBookiLocale();
-  useEffect(() => setCountry(lang === "nb" ? "NO" : "US"), [lang, setCountry]);
+  // Chosen during render, not in an effect, so the prerendered English HTML (and the
+  // Markdown made from it) shows the same US controls as the live English page.
+  // A pick on the CountryToggle page holds until the language changes.
+  const [picked, setPicked] = useState<{ lang: string; country: CountryCode } | null>(null);
+  const country: CountryCode = picked?.lang === lang ? picked.country : lang === "nb" ? "NO" : "US";
   return (
     <div className="min-h-svh bg-background text-foreground">
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
@@ -89,7 +93,9 @@ export function DocsShell() {
             <NavGroups />
           </nav>
           <main className="min-w-0 py-8 lg:py-10">
-            <Outlet />
+            <BookiLocaleProvider country={country} onCountryChange={(next) => setPicked({ lang, country: next })}>
+              <Outlet />
+            </BookiLocaleProvider>
           </main>
         </div>
       </div>
