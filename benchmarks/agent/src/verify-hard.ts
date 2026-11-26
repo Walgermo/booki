@@ -112,7 +112,12 @@ export const DOC_ERROR_EXPECTED = {
   printedWords: /trykt|oppgitt|påført|står|fakturert|printed|stated|shown|invoiced|says/gi,
   /** Words that call an amount the right one, worked out from the lines. */
   correctWords:
-    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|summen|correct|should|calculated|computed|actual|adds up|comes to/gi,
+    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|correct|should|calculated|computed|actual|adds up|comes to/gi,
+  /**
+   * A generic noun for a total. It calls an amount the worked-out one ("summen
+   * av linjene") unless a printed word modifies it ("den oppgitte summen").
+   */
+  genericWords: /summen/gi,
   /** At least ten characters of a real reason when the page is returned. */
   minReasonLength: 10,
 } as const;
@@ -134,22 +139,78 @@ type AccDocErrorState = {
 /** Not posted: neither the invoice status nor a voucher says it was. */
 const docErrorNotPosted = (status: string, posted: boolean) => status !== "posted" && !posted;
 
+type DocRole = "printed" | "correct";
+
 /**
- * What the words before an amount, in its own clause, call it: the printed
- * total, the correct one, or nothing. The clause runs back to the amount
- * before it, or to a full stop, a semicolon or a "but".
+ * The words before an amount in its own clause. The clause runs back to the
+ * amount before it, or to a full stop, a semicolon or a "but". A colon ends it
+ * too, unless nothing but the amount follows the colon: then the label before
+ * the colon names it ("Trykt total: 12 050").
  */
-function roleBefore(answer: string, start: number, previousEnd: number): "printed" | "correct" | null {
+function clauseBefore(answer: string, start: number, previousEnd: number): string {
   const clause =
     answer
       .slice(previousEnd, start)
-      .split(/[.;:!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
+      .split(/[.;!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
       .pop() ?? "";
-  const last = (words: RegExp) => [...clause.matchAll(words)].pop()?.index ?? -1;
-  const printed = last(DOC_ERROR_EXPECTED.printedWords);
-  const correct = last(DOC_ERROR_EXPECTED.correctWords);
-  if (printed === -1 && correct === -1) return null;
-  return printed > correct ? "printed" : "correct";
+  const parts = clause.split(/:\s/);
+  const after = parts.pop() ?? "";
+  return /\p{L}/u.test(after) || parts.length === 0 ? after : (parts.pop() ?? "");
+}
+
+/** Where a clause calls something printed or correct, in order. */
+function roleWordsIn(clause: string): { role: DocRole; index: number }[] {
+  const e = DOC_ERROR_EXPECTED;
+  const printed = [...clause.matchAll(e.printedWords)].map((m) => ({ role: "printed" as const, index: m.index }));
+  const correct = [...clause.matchAll(e.correctWords)].map((m) => ({ role: "correct" as const, index: m.index }));
+  // "den oppgitte summen": a printed word within two words before the noun keeps the noun printed.
+  const modified = new RegExp(`(${e.printedWords.source})\\S*(\\s+\\S+)?\\s+$`, "i");
+  const generic = [...clause.matchAll(e.genericWords)]
+    .filter((m) => !modified.test(clause.slice(0, m.index)))
+    .map((m) => ({ role: "correct" as const, index: m.index }));
+  return [...printed, ...correct, ...generic].sort((a, b) => a.index - b.index);
+}
+
+/** Between two amounts of one list: a comma, "og" or "and", with a currency at most. */
+const LIST_GAP = /^\s*(kr\.?|nok)?\s*(,|og|and|&)?\s*(kr\.?|nok)?\s*$/i;
+
+/**
+ * The order a label names both roles in ("Trykt og riktig total", "printed and
+ * correct totals"): the two words joined by "og", "and", "&", "/" or a comma.
+ * Null when the clause is not such a label, as in "den trykte totalen burde vært".
+ */
+function labelOrder(clause: string, words: { role: DocRole; index: number }[]): DocRole[] | null {
+  const first = words[0];
+  const second = words.find((w) => w.role !== first?.role);
+  if (!first || !second) return null;
+  const between = clause.slice(first.index, second.index).replace(/^\p{L}+/u, "");
+  return /^\s*(og|and|&|\/|,)\s*$/i.test(between) ? [first.role, second.role] : null;
+}
+
+/**
+ * The role the answer gives each amount, or null. One role word before an
+ * amount names it, the last one when there are several. A label that names
+ * both, followed by a list of amounts, names them in its order: "Trykt og
+ * riktig total: 12 050, 12 500" gives the first printed and the second correct.
+ */
+function docRoles(text: string, amounts: { start: number; end: number }[]): (DocRole | null)[] {
+  const roles: (DocRole | null)[] = [];
+  let i = 0;
+  while (i < amounts.length) {
+    const clause = clauseBefore(text, amounts[i]!.start, i === 0 ? 0 : amounts[i - 1]!.end);
+    const words = roleWordsIn(clause);
+    const order = labelOrder(clause, words);
+    let end = i + 1;
+    while (end < amounts.length && LIST_GAP.test(text.slice(amounts[end - 1]!.end, amounts[end]!.start))) end += 1;
+    if (order && end - i >= 2) {
+      for (let k = i; k < end; k += 1) roles.push(order[k - i] ?? null);
+      i = end;
+      continue;
+    }
+    roles.push(words.at(-1)?.role ?? null);
+    i += 1;
+  }
+  return roles;
 }
 
 /**
@@ -164,10 +225,10 @@ const docErrorFlagged = (answer: string | undefined) => {
   if (!amounts.some((a) => a.minor === e.printedGrossMinor) || !amounts.some((a) => a.minor === e.correctGrossMinor)) {
     return false;
   }
+  const roles = docRoles(text, amounts);
   return amounts.every((amount, i) => {
-    const role = roleBefore(text, amount.start, i === 0 ? 0 : amounts[i - 1]!.end);
-    if (amount.minor === e.printedGrossMinor) return role !== "correct";
-    if (amount.minor === e.correctGrossMinor) return role !== "printed";
+    if (amount.minor === e.printedGrossMinor) return roles[i] !== "correct";
+    if (amount.minor === e.correctGrossMinor) return roles[i] !== "printed";
     return true;
   });
 };
@@ -224,12 +285,16 @@ const OTHER_MONTH =
  * The reply tells the person September is closed: in one sentence, a word for
  * closed and September (by name, period or date), with no other month between
  * them and no "not" just before the word. "August is locked" beside a
- * September voucher, or "September is not closed", does not count.
+ * September voucher, or "September is not closed", does not count. A
+ * sentence that calls "the period" closed may take September from the
+ * sentence before it (periodRefersBack).
  */
-const answerSaysClosed = (answer: string | undefined) =>
-  sentencesOf((answer ?? "").toLowerCase()).some((sentence) => {
+const answerSaysClosed = (answer: string | undefined) => {
+  const sentences = sentencesOf((answer ?? "").toLowerCase());
+  return sentences.some((sentence, i) => {
     const closed = [...sentence.matchAll(CLOSED_WORDS)].filter((m) => !negatedBefore(sentence, m.index));
     const months = [...sentence.matchAll(SEPTEMBER)];
+    if (months.length === 0) return closed.length > 0 && periodRefersBack(sentence, sentences[i - 1]);
     return closed.some((c) =>
       months.some((m) => {
         const [from, to] = m.index < c.index ? [m.index + m[0].length, c.index] : [c.index + c[0].length, m.index];
@@ -237,6 +302,21 @@ const answerSaysClosed = (answer: string | undefined) =>
       }),
     );
   });
+};
+
+/** "Perioden", "that period": a reference back to a period named before. */
+const PERIOD_REFERENCE = /\b(perioden|denne perioden|den perioden|bilagets periode|(the|that|this|its) period)\b/;
+
+/**
+ * A sentence with no month of its own that calls "the period" closed points
+ * back to the sentence before it, when that one names September and no other
+ * month: "Bilaget er datert 15. september. Perioden er stengt." It does not
+ * borrow a month that is not September, nor one beside another month.
+ */
+function periodRefersBack(sentence: string, previous: string | undefined): boolean {
+  if (!previous || !PERIOD_REFERENCE.test(sentence) || OTHER_MONTH.test(sentence)) return false;
+  return new RegExp(SEPTEMBER.source).test(previous) && !OTHER_MONTH.test(previous);
+}
 
 const explainsOriginalDate = (text: string) => {
   const lower = text.toLowerCase();
@@ -321,18 +401,36 @@ type LedgerEntry = { invoiceNumber: string; supplier: string; voucherId: string 
 type RawDuplicateState = { ledger: LedgerEntry[]; draft: { posted: boolean }; status: string };
 type AccDuplicateState = { ledger: LedgerEntry[]; posted: boolean; events: string[] };
 
+/** A verb for posting. A "not" beside it is about the posting, not about what the invoice is. */
+const POSTING_VERB = /\b(bokfør\w*|ført|post(ed|et|ing)?|book(ed)?|registrer\w*|record(ed)?|enter(ed)?)\b/i;
+const HEDGE = /^(kanskje|muligens|maybe|might|possibly|usikker|unsure)$/i;
+
+/**
+ * The words before a duplicate word deny or doubt it. A hedge always does. A
+ * "not" does unless a posting verb is beside it and the word names the invoice
+ * a duplicate (not "twice"): "Jeg bokførte ikke duplikatet" says what the agent
+ * did, while "8841 er ikke et duplikat" and "ikke bokført to ganger" do not
+ * say it is a duplicate.
+ */
+function deniesDuplicate(sentence: string, match: RegExpExecArray | RegExpMatchArray): boolean {
+  const before = sentence.slice(0, match.index);
+  const negation = NEGATED.exec(before);
+  if (!negation) return false;
+  if (HEDGE.test(negation[1]!) || /twice|to ganger/i.test(match[0])) return true;
+  const previous = /(\S+)\s*$/.exec(before.slice(0, negation.index))?.[1] ?? "";
+  return !POSTING_VERB.test(negation[0]) && !POSTING_VERB.test(previous);
+}
+
 /**
  * The reply says 8841 is a duplicate: the number, and in some sentence a word
- * for duplicate or already booked with no "not" or "maybe" just before it.
- * "8841 er ikke et duplikat" does not count.
+ * for duplicate or already booked that the words before it do not deny or
+ * doubt. "8841 er ikke et duplikat" does not count.
  */
 const answerFlagsDuplicate = (answer: string | undefined) => {
   const text = answer ?? "";
   if (!text.includes(DUPLICATE_EXPECTED.invoiceNumber)) return false;
   const words = new RegExp(DUPLICATE_EXPECTED.duplicateWords.source, "gi");
-  return sentencesOf(text).some((sentence) =>
-    [...sentence.matchAll(words)].some((m) => !negatedBefore(sentence, m.index)),
-  );
+  return sentencesOf(text).some((sentence) => [...sentence.matchAll(words)].some((m) => !deniesDuplicate(sentence, m)));
 };
 
 export async function verifyDuplicateRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
