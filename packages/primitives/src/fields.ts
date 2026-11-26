@@ -1,3 +1,4 @@
+import { decimalFromMinor, minorDigitsFor } from "@booki-aui/core/money";
 import { BookiError } from "@booki-aui/core/msg";
 import { dispatch } from "@ui-sdk/core";
 
@@ -83,4 +84,31 @@ export function commitSecret<T>(
   // A controlled value waits for the owner to pass it back.
   if (context.options()[key] === undefined) context.store.set({ [key]: next });
   return true;
+}
+
+/**
+ * Minor units as the text a person edits, at the currency's own number of
+ * decimals (none for JPY or CLP, three for BHD), so typing it back stores the
+ * same amount. Exact: no float on the way. A code with no ISO minor unit shows
+ * two decimals, as before.
+ */
+export function minorInputText(
+  minor: number,
+  currency: string | undefined,
+  locale: string,
+  grouping: boolean = true,
+): string {
+  let digits = 2;
+  let exact: string = String(minor / 100);
+  try {
+    digits = minorDigitsFor(currency ?? "USD");
+    exact = decimalFromMinor(minor, currency ?? "USD");
+  } catch {
+    // An unknown code: keep the two-decimal reading.
+  }
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+    useGrouping: grouping,
+  }).format(exact as unknown as number);
 }

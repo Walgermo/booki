@@ -1,4 +1,4 @@
-import { textOf } from "./fields.js";
+import { minorInputText, textOf } from "./fields.js";
 import {
   finalizeInvoice,
   invoiceIssues,
@@ -322,10 +322,7 @@ export const invoiceEditor = definePrimitive({
       if (field === "description") return line.description;
       if (field === "quantity") return String(line.quantityMilli / 1000);
       if (field === "discount") return String((line.discountBp ?? 0) / 100);
-      return new Intl.NumberFormat(state.locale, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(line.unitPriceMinor / 100);
+      return minorInputText(line.unitPriceMinor, state.invoice.currency, state.locale);
     };
     return {
       root: slot({

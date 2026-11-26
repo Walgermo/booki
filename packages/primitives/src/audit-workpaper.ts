@@ -30,7 +30,7 @@ import { parseToMinor } from "@booki-aui/core/money";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { BookiError } from "@booki-aui/core/msg";
 import { refuseDenied } from "./access.js";
-import { checkFields } from "./fields.js";
+import { checkFields, minorInputText } from "./fields.js";
 
 export type Options = {
   workpaper?: Workpaper;
@@ -130,6 +130,7 @@ export const auditWorkpaper = definePrimitive({
     return {
       workpaper,
       locale: options.locale ?? "en-US",
+      currency: options.currency ?? "USD",
       refusal: "",
       drafts: {} as Record<string, string>,
       // Read before the first try, so an agent draws the sample right the first time.
@@ -145,6 +146,8 @@ export const auditWorkpaper = definePrimitive({
     context.onOptions(() => {
       const { locale } = context.options();
       if (locale && locale !== context.store.get().locale) context.store.set({ locale });
+      const currency = context.options().currency ?? "USD";
+      if (currency !== context.store.get().currency) context.store.set({ currency });
       const next = derive(context.store.get().workpaper, context.options());
       const now = context.store.get();
       if (
@@ -331,7 +334,7 @@ export const auditWorkpaper = definePrimitive({
     };
   },
   slots: (slot) => {
-    type CellState = { workpaper: Workpaper; drafts: Record<string, string>; locale: string };
+    type CellState = { workpaper: Workpaper; drafts: Record<string, string>; locale: string; currency: string };
     const find = (state: CellState, id: string) => state.workpaper.items.find((item) => item.id === id);
     const fixed = (state: CellState) => (signed(state.workpaper) ? "" : undefined);
     return {
@@ -399,11 +402,7 @@ export const auditWorkpaper = definePrimitive({
           else if (field === "evidence") value = item?.evidenceId ?? "";
           else if (field === "note") value = item?.note ?? "";
           else if (item?.misstatementMinor !== undefined) {
-            value = new Intl.NumberFormat(state.locale, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-              useGrouping: false,
-            }).format(item.misstatementMinor / 100);
+            value = minorInputText(item.misstatementMinor, state.currency, state.locale, false);
           }
           return { type: "text", autoComplete: "off", value, disabled: fixed(state) };
         },

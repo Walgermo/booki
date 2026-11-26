@@ -1,3 +1,4 @@
+import { isoMinorUnits } from "./currency-minor-units.js";
 import { BookiError, msg } from "./msg.js";
 
 /** Text from a document, put into a sentence of ours: one line, at most 60 characters, quoted. */
@@ -134,7 +135,8 @@ function checkedValue(invoiceId: string, field: SupplierInvoiceField, value: unk
     return text;
   }
   if (field === "currency") {
-    if (!/^[A-Z]{3}$/.test(text)) {
+    // A code with no ISO minor unit ("UDS") cannot be formatted, so it would break the amounts shown.
+    if (!/^[A-Z]{3}$/.test(text) || isoMinorUnits(text) === undefined) {
       throw new BookiError("supplier-invoice.field-currency", {
         id: String(invoiceId),
         value: String(JSON.stringify(value)),
