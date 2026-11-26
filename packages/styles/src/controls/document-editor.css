@@ -187,10 +187,7 @@
 
 /* ── The "/" and "@" menu ─────────────────────────────────────────────── */
 [data-slot="document-editor-menu"] {
-  position: absolute;
-  top: 100%;
-  left: 0.5rem;
-  z-index: 20;
+  margin-inline-start: 0.5rem;
   display: grid;
   width: min(20rem, calc(100% - 0.5rem));
   max-height: 18rem;

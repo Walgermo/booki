@@ -1,6 +1,6 @@
 import type { EditorDocument } from "@booki-aui/core/document-blocks";
 import { mount } from "@ui-sdk/core/testing";
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";
 import { DocumentEditor, documentEditor, type DocumentAuditEvent } from "./document-editor.js";
@@ -194,6 +194,63 @@ describe("DocumentEditor", () => {
       refs: [{ kind: "evidence", id: "e12", label: "Invoice 12" }],
     });
     expect(audit.at(-1)).toMatchObject({ action: "mention", detail: "evidence e12" });
+  });
+
+  it("lets a person focus the command list, navigate it, and cancel at the original caret", () => {
+    const { block, changes } = editor();
+    const area = block("b2");
+    area.focus();
+    fireEvent.input(area, { target: { value: "/ remaining text", selectionStart: 1, selectionEnd: 1 } });
+    const list = screen.getByRole("listbox", { name: "Commands" });
+    expect(list.tabIndex).toBe(0);
+    fireEvent.keyDown(area, { key: "ArrowDown", altKey: true });
+    expect(document.activeElement).toBe(list);
+    const options = screen.getAllByRole("option");
+    for (const [key, index] of [
+      ["End", -1],
+      ["ArrowDown", 0],
+      ["ArrowUp", -1],
+      ["Home", 0],
+    ] as const) {
+      fireEvent.keyDown(list, { key });
+      const option = options.at(index)!;
+      expect(list.getAttribute("aria-activedescendant")).toBe(option.id);
+      expect(area.getAttribute("aria-activedescendant")).toBe(option.id);
+      expect(screen.getByRole("option", { selected: true })).toBe(option);
+    }
+    fireEvent.keyDown(list, { key: "Escape" });
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(document.activeElement).toBe(area);
+    expect(area.selectionStart).toBe(1);
+    expect(changes.at(-1)?.blocks[1]?.text).toBe("/ remaining text");
+  });
+
+  it("selects a mention from the focused list and returns to the edited block", () => {
+    const { block, changes } = editor();
+    const area = block("b2");
+    area.focus();
+    fireEvent.input(area, { target: { value: "See @", selectionStart: 5 } });
+    const list = screen.getByRole("listbox", { name: "Mentions" });
+    fireEvent.keyDown(area, { key: "ArrowDown", altKey: true });
+    fireEvent.keyDown(list, { key: "ArrowDown" });
+    fireEvent.keyDown(list, { key: "Enter" });
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(document.activeElement).toBe(area);
+    expect(changes.at(-1)?.blocks[1]?.text).toBe("See @Kari Nordmann ");
+  });
+
+  it("audits a single edit when focus leaves the list for another block", () => {
+    const { block, audit } = editor();
+    const area = block("b2");
+    area.focus();
+    fireEvent.input(area, { target: { value: "/head", selectionStart: 5 } });
+    fireEvent.keyDown(area, { key: "ArrowDown", altKey: true });
+    expect(audit.filter((row) => row.action === "edit-text")).toHaveLength(0);
+    const list = screen.getByRole("listbox");
+    expect(fireEvent.keyDown(list, { key: "Tab" })).toBe(true);
+    fireEvent.blur(list, { relatedTarget: block("b1") });
+    expect(screen.queryByRole("listbox")).toBeNull();
+    expect(audit.filter((row) => row.action === "edit-text")).toHaveLength(1);
   });
 
   it("Enter splits a block and the edit is audited once on blur", () => {
