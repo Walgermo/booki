@@ -61,6 +61,8 @@ export type DocBlock = {
   text: string;
   /** Heading level, 1 to 3. Headings only. */
   level?: 1 | 2 | 3;
+  /** Callout only. The classification stored by the host in HTML data-callout. */
+  calloutKind?: string;
   /** Todo only. */
   checked?: boolean;
   refs?: BlockRef[];
@@ -161,6 +163,7 @@ function assertType(type: unknown): BlockType {
 export function cleanBlock(block: DocBlock): DocBlock {
   const type = assertType(block.type);
   const out: DocBlock = { id: String(block.id), type, text: type === "divider" ? "" : String(block.text ?? "") };
+  if (type === "callout" && block.calloutKind) out.calloutKind = block.calloutKind;
   if (type === "embed" && block.raw !== undefined) out.raw = String(block.raw);
   if (block.origin) out.origin = { by: String(block.origin.by), proposal: String(block.origin.proposal) };
   if (block.attrs && Object.keys(block.attrs).length) out.attrs = { ...block.attrs };
@@ -683,7 +686,8 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
     const tag = element.tagName;
     if (tag === "P") push(element, "paragraph");
     else if (/^H[1-6]$/.test(tag)) push(element, "heading", { level: Math.min(3, Number(tag[1])) as 1 | 2 | 3 });
-    else if (tag === "ASIDE" && element.hasAttribute("data-callout")) push(element, "callout");
+    else if (tag === "ASIDE" && element.hasAttribute("data-callout"))
+      push(element, "callout", { calloutKind: element.getAttribute("data-callout")! });
     else if (tag === "BLOCKQUOTE") push(element, "quote");
     else if (tag === "HR") blocks.push({ id: idFor(element.getAttribute(idAttr)), type: "divider", text: "" });
     else if (tag === "UL" || tag === "OL") {
@@ -767,7 +771,7 @@ export function toHtml(blocks: DocBlock[], options: HtmlOptions = {}): string {
         html += `<blockquote${attrs(block)}><p>${inline(block)}</p></blockquote>`;
         break;
       case "callout":
-        html += `<aside${attrs(block, { "data-callout": "" })}><p>${inline(block)}</p></aside>`;
+        html += `<aside${attrs(block, { "data-callout": block.calloutKind ?? "" })}><p>${inline(block)}</p></aside>`;
         break;
       case "divider":
         html += `<hr${attrs(block)}>`;

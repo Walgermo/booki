@@ -262,6 +262,7 @@ const checks: ConformanceCheck[] = [
     level: "MUST",
     run: async (target) => {
       const snap = await components(target);
+      if (!snap.length) return skip("No mounted controls to check for person-only actions.");
       const offered = snap.flatMap((c) => c.actions.filter((a) => PERSON_ACTION.test(a)).map((a) => `${c.ref}.${a}`));
       if (offered.length > 0) {
         return fail(`An agent is offered person-only actions: ${offered.join(", ")}.`);

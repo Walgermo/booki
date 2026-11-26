@@ -141,6 +141,7 @@ type RootState = {
   asOf: string;
   partyId: string | null;
   refusal: string;
+  issues: string[];
   query: TableQuery;
   view: { total: number; matching: number; page: number; pageCount: number };
   totals: AgingTotals;
@@ -236,7 +237,8 @@ function AgedBalances({
         // The page shows one page of parties (100 by default); the agent's snapshot is capped too.
         const buckets = state.buckets;
         const partyLabel = state.kind === "payable" ? copy.supplier : copy.customer;
-        const aged = state.asOf !== "";
+        const issue = state.issues[0];
+        const aged = state.asOf !== "" && !issue;
         const drilled = state.party;
         const from = state.view.matching === 0 ? 0 : (state.view.page - 1) * state.query.pageSize + 1;
         const to = Math.min(state.view.matching, state.view.page * state.query.pageSize);
@@ -309,7 +311,11 @@ function AgedBalances({
               ) : null}
             </div>
 
-            {!aged ? (
+            {issue ? (
+              <p data-slot="aged-balances-error" role="alert">
+                {say(issue)}
+              </p>
+            ) : !aged ? (
               <p data-slot="aged-balances-empty">{copy.noDate}</p>
             ) : drilled ? (
               <>

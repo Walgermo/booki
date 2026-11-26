@@ -1,5 +1,5 @@
 import { sumMinorUnits } from "./money.js";
-import { BookiError } from "./msg.js";
+import { BookiError, isBookiError } from "./msg.js";
 
 /**
  * The view logic every Booki table shares: sort, search, filter per column,
@@ -63,7 +63,7 @@ export type TableView<Row> = {
   matching: number;
   page: number;
   pageCount: number;
-  /** Sums over every matching row (not just the page), per summed column. */
+  /** Sums over every matching row (not just the page), per summed column. A hidden money total outside the safe range is omitted. */
   totals: Record<string, number>;
   /** Visible columns, in order. */
   columns: TableColumn<Row>[];
@@ -143,7 +143,12 @@ export function matchingRows<Row>(rows: Row[], columns: TableColumn<Row>[], quer
 }
 
 /** The rows a query shows, with counts and totals. Pages past the end show the last page. */
-export function tableView<Row>(rows: Row[], columns: TableColumn<Row>[], query: TableQuery): TableView<Row> {
+export function tableView<Row>(
+  rows: Row[],
+  columns: TableColumn<Row>[],
+  query: TableQuery,
+  { requireHiddenTotals = false } = {},
+): TableView<Row> {
   const out = matchingRows(rows, columns, query);
   const visible = columns.filter((column) => !query.hidden.includes(column.id));
 
@@ -152,8 +157,19 @@ export function tableView<Row>(rows: Row[], columns: TableColumn<Row>[], query: 
     const summed = column.total ?? column.kind === "money";
     if (!summed) continue;
     const value = (row: Row) => Number(column.value(row)) || 0;
-    totals[column.id] =
-      column.kind === "money" ? sumMinorUnits(out, value) : out.reduce((sum, row) => sum + value(row), 0);
+    try {
+      totals[column.id] =
+        column.kind === "money" ? sumMinorUnits(out, value) : out.reduce((sum, row) => sum + value(row), 0);
+    } catch (error) {
+      // Keep representable hidden totals in the public result. A hidden overflow need not block the visible page.
+      if (
+        requireHiddenTotals ||
+        !query.hidden.includes(column.id) ||
+        !isBookiError(error) ||
+        error.code !== "money.not-safe-integer"
+      )
+        throw error;
+    }
   }
 
   const pageCount = Math.max(1, Math.ceil(out.length / query.pageSize));

@@ -24,6 +24,15 @@ describe("tableView", () => {
     expect(view.totals).toEqual({ amount: 184_900 });
   });
 
+  it("renders visible columns when only a hidden money total is out of range", () => {
+    const hidden = columns.map((column) => ({ ...column, hidden: column.id === "amount" }));
+    const amounts = [Number.MAX_SAFE_INTEGER, 1].map((amount, i) => ({ ...rows[i]!, amount }));
+    const query = defaultQuery(hidden);
+    expect(tableView(amounts, hidden, query).totals).not.toHaveProperty("amount");
+    expect(tableView(rows, hidden, query).totals.amount).toBe(184_900);
+    expect(() => tableView(amounts, hidden, { ...query, hidden: [] })).toThrow(/safe integer/);
+  });
+
   it("sorts by kind, keeps ties in order and puts empty values last both ways", () => {
     const q = defaultQuery(columns);
     const asc = tableView(rows, columns, { ...q, sort: { column: "amount", direction: "asc" } });
