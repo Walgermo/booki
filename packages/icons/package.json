@@ -1,0 +1,56 @@
+{
+  "name": "@booki-aui/icons",
+  "version": "0.4.2",
+  "private": true,
+  "description": "Booki's duotone icons for accounting UI: SVG files, their markup as strings, and a small React component.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Walgermo/booki.git",
+    "directory": "packages/icons"
+  },
+  "homepage": "https://booki.dev/docs",
+  "bugs": {
+    "url": "https://github.com/Walgermo/booki/issues"
+  },
+  "keywords": [
+    "accounting",
+    "icons",
+    "svg",
+    "duotone"
+  ],
+  "sideEffects": false,
+  "files": [
+    "*.svg",
+    "lib",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./react": {
+      "types": "./lib/react.d.ts",
+      "default": "./lib/react.js"
+    },
+    "./svg/*.svg": "./*.svg"
+  },
+  "scripts": {
+    "generate": "node ./scripts/generate.mjs",
+    "test": "node --test scripts/*.test.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

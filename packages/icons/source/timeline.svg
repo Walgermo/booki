@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="activity-timeline activity" data-waive-detail-budget="three entries each need a dot and a text line, joined by the line that makes it a timeline">
+  <circle cx="6.75" cy="4.75" r="1.75"/>
+  <circle cx="6.75" cy="12" r="1.75"/>
+  <circle cx="6.75" cy="19.25" r="1.75"/>
+  <path d="M6.75 6.5v3.75"/>
+  <path d="M6.75 13.75v3.75"/>
+  <path d="M12.25 4.75h8"/>
+  <path d="M12.25 12h6"/>
+  <path d="M12.25 19.25h7"/>
+  <circle cx="6.75" cy="4.75" r="1.75" data-role="silhouette"/>
+  <circle cx="6.75" cy="12" r="1.75" data-role="silhouette"/>
+  <circle cx="6.75" cy="19.25" r="1.75" data-role="silhouette"/>
+</svg>

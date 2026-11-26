@@ -1,4 +1,5 @@
 import { BookiLogo } from "@/components/booki-logo";
+import { Icon } from "@booki-aui/icons/react";
 import { BookiLocaleProvider } from "@booki-aui/react";
 import type { CountryCode } from "@booki-aui/core/locale";
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { useLang } from "@/lib/lang";
 
 import { catalog } from "../catalog";
 import { catalogText } from "../catalog-nb";
-import { NAV_SECTIONS, plainName } from "../docs-nav";
+import { NAV_SECTIONS, PAGE_ICON, plainName } from "../docs-nav";
 const REPO_URL = "https://github.com/Walgermo/booki";
 
 // These three pages live outside /docs; the /docs/* paths remain only as redirects for old links.
@@ -37,7 +38,8 @@ function NavGroups() {
               return (
                 <li key={name}>
                   <NavLink to={docPath(name)} end={name === "introduction"} className="site-nav-link site-docnav-link">
-                    {plainName(name, lang) ?? catalogText(item, lang).title}
+                    {PAGE_ICON[name] ? <Icon name={PAGE_ICON[name]} className="site-docnav-icon" /> : null}
+                    <span>{plainName(name, lang) ?? catalogText(item, lang).title}</span>
                   </NavLink>
                 </li>
               );

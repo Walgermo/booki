@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="kpi kpi-stat">
+  <path d="M4.397 16.75A1.5 1.5 0 0 1 2.925 14.96A9.25 9.25 0 0 1 21.075 14.96A1.5 1.5 0 0 1 19.603 16.75Z"/>
+  <path d="M4.397 16.75A1.5 1.5 0 0 1 2.925 14.96A9.25 9.25 0 0 1 21.075 14.96A1.5 1.5 0 0 1 19.603 16.75Z" data-role="silhouette"/>
+  <path d="M12 16.75l3.75-3.75" data-role="detail"/>
+</svg>

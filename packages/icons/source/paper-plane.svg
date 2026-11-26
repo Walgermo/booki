@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="payment-confirm send" data-waive-angle="paper plane wings are long and narrow; at 45 degrees the plane turns into an arrowhead">
+  <path d="M12.137 5.703L5.67 7.916A1.5 1.5 0 0 0 5.42 10.642L10.134 13.294A1.5 1.5 0 0 1 10.706 13.866L13.358 18.58A1.5 1.5 0 0 0 16.084 18.33L20.51 5.395A1.5 1.5 0 0 0 18.605 3.49Z"/>
+  <path d="M12.137 5.703L5.67 7.916A1.5 1.5 0 0 0 5.42 10.642L10.134 13.294A1.5 1.5 0 0 1 10.706 13.866L13.358 18.58A1.5 1.5 0 0 0 16.084 18.33L20.51 5.395A1.5 1.5 0 0 0 18.605 3.49Z" data-role="silhouette"/>
+  <path d="M10.5 13.5l4.75-4.75" data-role="detail"/>
+</svg>

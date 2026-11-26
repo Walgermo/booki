@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="money-amount money coins">
+  <path d="M5.868 13.757A6 6 0 1 1 13.757 5.868"/>
+  <path d="M5.868 13.757A6 6 0 1 1 13.757 5.868A9.5 9.5 0 0 0 5.868 13.757Z" data-role="silhouette"/>
+  <circle cx="15.25" cy="15.25" r="6"/>
+  <circle cx="15.25" cy="15.25" r="6" data-role="silhouette"/>
+  <circle cx="15.25" cy="15.25" r="2.5" data-role="detail"/>
+</svg>

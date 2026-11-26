@@ -1189,6 +1189,18 @@ html[data-kpi-still] {
   hyphens: auto;
 }
 
+/* 16 px, the size the icons are drawn for; the text's colour, a shade quieter. */
+.site-docnav-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  opacity: 0.85;
+}
+
+.site-docnav-link[aria-current="page"] .site-docnav-icon {
+  opacity: 1;
+}
+
 .site-code-name {
   font-family: var(--bk-mono);
   font-size: 0.875rem;

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="bank bank-account bank-reconciliation" data-waive-angle="a 45-degree roof leaves no room for columns; the classic bank pediment is shallower" data-waive-gap="the eaves of a pediment always narrow to a point; this is the roof, not two parts touching">
+  <path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z"/>
+  <path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z" data-role="silhouette"/>
+  <path d="M6.75 12.75v4"/>
+  <path d="M12 12.75v4"/>
+  <path d="M17.25 12.75v4"/>
+  <path d="M2.75 20.25h18.5"/>
+</svg>

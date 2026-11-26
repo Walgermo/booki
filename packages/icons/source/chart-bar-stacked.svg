@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="aging-chart aging" data-waive-detail-budget="three bars each need their own divider to read as stacked segments">
+  <path d="M2.25 20.25h19.5"/>
+  <path d="M3.25 20.25V10.75A1 1 0 0 1 4.25 9.75H5.75A1 1 0 0 1 6.75 10.75V20.25"/>
+  <path d="M10.25 20.25V5.75A1 1 0 0 1 11.25 4.75H12.75A1 1 0 0 1 13.75 5.75V20.25"/>
+  <path d="M17.25 20.25V13.75A1 1 0 0 1 18.25 12.75H19.75A1 1 0 0 1 20.75 13.75V20.25"/>
+  <path d="M3.25 15.25h3.5" data-role="detail"/>
+  <path d="M10.25 12.25h3.5" data-role="detail"/>
+  <path d="M17.25 16.75h3.5" data-role="detail"/>
+  <path d="M3.25 15.25H6.75V20.25H3.25Z" data-role="silhouette"/>
+  <path d="M10.25 12.25H13.75V20.25H10.25Z" data-role="silhouette"/>
+  <path d="M17.25 16.75H20.75V20.25H17.25Z" data-role="silhouette"/>
+</svg>
