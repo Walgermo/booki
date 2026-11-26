@@ -322,6 +322,7 @@
   },
   "dependencies": {
     "@booki-aui/core": "workspace:*",
+    "@booki-aui/icons": "workspace:*",
     "@booki-aui/primitives": "workspace:*"
   },
   "peerDependencies": {

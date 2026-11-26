@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="image-file photo picture png jpeg jpg gif webp svg avif bilde bildefil">
+  <rect x="2.75" y="4.75" width="18.5" height="14.5" rx="1.5"/>
+  <rect x="2.75" y="4.75" width="18.5" height="14.5" rx="1.5" data-role="silhouette"/>
+  <path d="M2.75 16.75l5.793-5.793a1 1 0 0 1 1.414 0l3.293 3.293 2.293-2.293a1 1 0 0 1 1.414 0l4.293 4.293" data-role="detail"/>
+  <path d="M13 8.25h.5" data-role="detail"/>
+</svg>

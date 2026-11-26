@@ -39,6 +39,30 @@ element.innerHTML = iconSvg("banknote", 20)
 `iconSvg` throws on an unknown name and lists the names. The plain files are at
 `@booki-aui/icons/svg/<name>.svg`.
 
+## Attachments and file pickers
+
+Use `FileIcon` for a browser `File` or the same `{ name, type }` metadata. It
+includes only the ten file-family icons and accepts the standard icon props.
+
+```tsx
+import { FileIcon } from "@booki-aui/icons/react"
+
+<FileIcon file={{ name: "statement.pdf", type: "application/pdf" }} size={20} />
+```
+
+In any framework, `getFileIconName` from `@booki-aui/icons/file` resolves PDF,
+text and Word documents, spreadsheets, slide decks, images, video, audio,
+archives, and code or structured text. It picks a recognized extension first,
+falls back to MIME type, then returns `document` for anything else. It uses
+metadata for icon display and does not validate file contents.
+
+```ts
+import { iconSvg } from "@booki-aui/icons"
+import { getFileIconName } from "@booki-aui/icons/file"
+
+element.innerHTML = iconSvg(getFileIconName({ name: "ledger.csv" }))
+```
+
 ## Changing or adding an icon
 
 The sources are in `source/` (geometry only, one SVG per icon; shared shapes in

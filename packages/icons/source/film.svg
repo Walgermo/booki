@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="video-file movie mp4 webm mov film videofil" data-waive-heavy="the two edge rails distinguish the movie frame from a generic play window at 16 px" data-waive-angle="the conventional play triangle fits between the film strip rails without touching them">
+  <rect x="2.75" y="5.25" width="18.5" height="13.5" rx="1.5"/>
+  <rect x="2.75" y="5.25" width="18.5" height="13.5" rx="1.5" data-role="silhouette"/>
+  <path d="M6.25 5.25v13.5M17.75 5.25v13.5" data-role="detail"/>
+  <path d="M9.75 8.75v6.5l4.5-3.25Z" data-role="detail"/>
+</svg>

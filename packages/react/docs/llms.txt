@@ -171,6 +171,8 @@ A refusal is a sentence the agent can act on: it names the unit, the options tha
 
 Form props: AmountField, the selects, the bank / reference / organization / IBAN / invoice inputs and FinancialDateField take `name`, `id`, `disabled`, `readOnly`, `required`. `name` submits the canonical value with a native `<form>` (integer minor units, digits, ISO date, or the code; US bank accounts submit `${name}.routingNumber` and `${name}.accountNumber`). A `disabled` or `readOnly` control is listed in the snapshot with `disabled: true` and no actions, and a step on it fails with "… takes no <action> now. It takes: nothing." Ask the person instead of retrying.
 
+DocumentEditor file mentions show a file-type icon in the suggestion list. Supply `fileName` when the label differs from the original filename, or `mimeType` when the extension is unknown. Evidence mentions can use the same metadata.
+
 ### Display / human-gated (not domain primitives)
 
 | Component | Notes |

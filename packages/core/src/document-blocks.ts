@@ -47,6 +47,10 @@ export type Mention = {
   id: string;
   /** What the person reads, and what follows `@` in the text. */
   label: string;
+  /** The original file name, when the display label differs. */
+  fileName?: string;
+  /** MIME type of a file or attached evidence, when known. */
+  mimeType?: string;
   /** A second line in the menu, such as a file's date or a person's role. */
   hint?: string;
 };

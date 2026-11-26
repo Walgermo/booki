@@ -135,7 +135,7 @@ tests your own screens against it.
 | `@booki-aui/core` | The rules with no framework, and the server guard. **Supported.** |
 | `@booki-aui/primitives` | Every control's definition: state, agent actions and rules. **Supported.** |
 | `@booki-aui/styles` | The optional default look, "Paper and Ink" ([`DESIGN.md`](DESIGN.md)). **Supported.** |
-| `@booki-aui/icons` | 145 duotone icons for accounting, auditing and agent UI, in React or any framework ([browse](https://booki.dev/docs/icons)). **Supported.** |
+| `@booki-aui/icons` | 153 duotone icons for accounting, auditing and agent UI, in React or any framework ([browse](https://booki.dev/docs/icons)). **Supported.** |
 | `@booki-aui/vue` · `svelte` · `solid` · `web` | The same controls for Vue, Svelte, Solid and custom elements. Experimental. |
 
 Country profiles: Norway (NO) and the United States (US) are supported. Sweden,

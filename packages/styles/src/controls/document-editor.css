@@ -189,6 +189,7 @@
 [data-slot="document-editor-menu"] {
   margin-inline-start: 0.5rem;
   display: grid;
+  grid-auto-rows: max-content;
   width: min(20rem, calc(100% - 0.5rem));
   max-height: 18rem;
   overflow-y: auto;
@@ -219,6 +220,18 @@
 
 [data-slot="document-editor-option"][data-active] {
   background: var(--bk-accent);
+}
+
+[data-slot="document-editor-option-label"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-slot="document-editor-option-label"] > svg {
+  flex: none;
 }
 
 [data-slot="document-editor-option-kind"],

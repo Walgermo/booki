@@ -303,6 +303,37 @@ describe("DocumentEditor", () => {
     expect(changes.at(-1)?.blocks[1]?.text).toBe("/ remaining text");
   });
 
+  it("shows the file type beside the mention, keeps its accessible name, and inserts the selected file", () => {
+    const { block, changes } = editor({
+      mentions: [
+        { id: "report", kind: "file", label: "Quarterly report", fileName: "Q3.PDF" },
+        { id: "budget", kind: "file", label: "Budget.xlsx" },
+        { id: "note", kind: "file", label: "Working file", mimeType: "application/x-unknown" },
+        { id: "scan", kind: "evidence", label: "Receipt", mimeType: "image/png" },
+        { id: "owner", kind: "person", label: "Kari" },
+      ],
+    });
+    const area = block("b2");
+    fireEvent.input(area, { target: { value: "@", selectionStart: 1 } });
+    for (const [label, icon] of [
+      ["Quarterly report", "document-pdf"],
+      ["Budget.xlsx", "document-table"],
+      ["Working file", "document"],
+      ["Receipt", "image"],
+    ]) {
+      const option = screen.getByRole("option", { name: new RegExp(label!) });
+      const svg = option.querySelector("svg");
+      expect(svg?.dataset.icon).toBe(icon);
+      expect(svg?.getAttribute("aria-hidden")).toBe("true");
+    }
+    expect(screen.getByRole("option", { name: /Kari/ }).querySelector("svg")).toBeNull();
+    fireEvent.input(area, { target: { value: "@Q3", selectionStart: 3 } });
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    fireEvent.keyDown(area, { key: "Enter" });
+    expect(area.value).toBe("@Quarterly report ");
+    expect(changes.at(-1)?.blocks[1]?.refs).toEqual([{ id: "report", kind: "file", label: "Quarterly report" }]);
+  });
+
   it("selects a mention from the focused list and returns to the edited block", () => {
     const { block, changes } = editor();
     const area = block("b2");

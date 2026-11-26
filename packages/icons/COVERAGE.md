@@ -2,7 +2,7 @@
 
 # What the icons cover
 
-145 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
+153 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
 Booki (its `data-aliases`), and what the search on booki.dev/docs/icons finds it by. Missing a use
 case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 
@@ -56,6 +56,19 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `camera` | receipt photo, capture, scan receipt |
 | `inbox` | supplier invoice inbox, inbox |
 | `stamp` | vat return, filing |
+
+## File formats
+
+| Icon | Stands for |
+| --- | --- |
+| `document` | file, attachment, generic file, dokument, fil, vedlegg |
+| `document-pdf` | pdf, portable document, fixed layout file, pdf fil |
+| `presentation` | slide deck, slides, presentation file, ppt, pptx, keynote, odp, lysbilder, presentasjon |
+| `image` | image file, photo, picture, png, jpeg, jpg, gif, webp, svg, avif, bilde, bildefil |
+| `film` | video file, movie, mp4, webm, mov, film, videofil |
+| `audio-wave` | audio file, sound, sound file, music, mp3, wav, flac, ogg, lyd, lydfil |
+| `document-zip` | zip, compressed file, file archive, tar, gzip, rar, 7z, komprimert fil, arkivfil |
+| `document-code` | code file, source file, json, xml, yaml, html, css, javascript, typescript, sql, kildekode, kodefil |
 
 ## Money and payments
 
