@@ -13,6 +13,7 @@ import {
 import { isPersonOnly } from "@booki-aui/primitives/person-only";
 import { BookiError, msg, type MessageLanguage } from "@booki-aui/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
+import { emitCall, markReporting, nextCallId, type AgentCallResult, type AgentCallStep } from "./agent-calls.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
 
@@ -87,25 +88,53 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   // unmarked steps and refuses `data-agent-confirm` steps with "Needs a
   // person: …", which tells the agent what to do next. Answering `false` here
   // would read as "The person said no" although nobody was asked.
-  const allow = bookiAllow(options);
+  const decide = bookiAllow(options);
+  // The call `act` is running, so a step that waits for the app's `allow` (a person) is reported as waiting.
+  let runningCall: number | undefined;
+  const allow =
+    decide && options.allow
+      ? (step: Parameters<typeof decide>[0], context: Parameters<typeof decide>[1]) => {
+          if (runningCall !== undefined && step.confirm && !isPersonOnly(step.confirm)) {
+            emitCall(agent, { type: "waiting", id: runningCall, ref: step.ref, confirm: step.confirm });
+          }
+          return decide(step, context);
+        }
+      : decide;
   const bridge = createAgent(allow ? { timeout, allow } : { timeout });
   const language = options.language && options.language !== "en" ? options.language : undefined;
 
   /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
-  const run = (input: ActInput, actOptions?: ActOptions) =>
+  const run = (input: ActInput, actOptions: ActOptions | undefined, id: number) =>
     inTurn(bridge, async () => {
       // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
       const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
       if (lone) currentStep.set(bridge, lone.action);
+      runningCall = id;
+      emitCall(agent, { type: "start", id, steps: stepsOf(input) });
       try {
         return await bridge.act(input as never, actOptions);
       } finally {
+        runningCall = undefined;
         if (lone) currentStep.delete(bridge);
       }
     });
 
+  /** Each call is reported to `AgentLog`: when it starts, when a step waits for a person, and its result. */
   const act = async (input: ActInput, actOptions?: ActOptions) => {
-    let result = (await run(input, actOptions)) as ActResult;
+    const id = nextCallId();
+    try {
+      const result = await actOnce(input, actOptions, id);
+      emitCall(agent, { type: "end", id, result: result as AgentCallResult });
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      emitCall(agent, { type: "end", id, result: { ok: false, error: { step: 0, message } } });
+      throw error;
+    }
+  };
+
+  const actOnce = async (input: ActInput, actOptions: ActOptions | undefined, id: number) => {
+    let result = (await run(input, actOptions, id)) as ActResult;
     // A press on a Booki control's button that is a person's decision (sign off,
     // release): the bridge answers "nothing to press now", which tells the agent
     // nothing and leaves no trace. Checked after the call, when the button is on
@@ -137,7 +166,20 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
 
   const agent = { ...bridge, act } as AgentBridge;
   bridges.set(agent, bridge);
+  markReporting(agent);
   return agent;
+}
+
+/** A call's steps as `AgentLog` reads them; anything that is not a step is left out. */
+function stepsOf(input: ActInput): AgentCallStep[] {
+  if (!Array.isArray(input?.steps)) return [];
+  return input.steps
+    .filter((step) => step !== null && typeof step === "object")
+    .map((step) => ({
+      ref: String(step.ref ?? ""),
+      action: String(step.action ?? ""),
+      args: Array.isArray(step.args) ? step.args : [],
+    }));
 }
 
 type ActInput = { steps: { ref: string; action: string; args?: unknown[] }[] };

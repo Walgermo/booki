@@ -267,6 +267,15 @@ export * from "./document-signoff.js";
 export * from "./sheet-stack.js";
 export * from "./confirm-dialog.js";
 export { IconButton, type IconButtonProps } from "./icon-button.js";
+export {
+  AgentLog,
+  useAgentLog,
+  type AgentLogProps,
+  type AgentLogRow,
+  type AgentLogStatus,
+  type UseAgentLogOptions,
+} from "./agent-log.js";
+export { AgentSnapshot, type AgentSnapshotEntry, type AgentSnapshotProps } from "./agent-snapshot.js";
 export * from "./toasts.js";
 export * from "./client-requests.js";
 export * from "./deal-pipeline.js";

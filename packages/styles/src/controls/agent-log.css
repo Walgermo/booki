@@ -1,0 +1,102 @@
+/* ── Agent log: what an agent did on the page (AgentLog) ──────────────── */
+
+/* Machine output sits on ink. It sizes to its rows; the list caps its height and scrolls. */
+[data-slot="agent-log"] {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-ink);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-heading"] {
+  margin: 0;
+  color: var(--bk-ink-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-scroll"] {
+  min-height: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bk-ink-border) transparent;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-empty"] {
+  margin: 0;
+  color: var(--bk-ink-muted);
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-rows"] {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-row"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.25rem 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--bk-ink-border);
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-row"]:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-call"] {
+  min-width: 0;
+  color: var(--bk-ink-fg);
+  font: inherit;
+  overflow-wrap: anywhere;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-detail"] {
+  grid-column: 1 / -1;
+  color: var(--bk-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+/* The answer as a small tag: done is the agent's own signal, refused is danger. */
+:where([data-slot="agent-log"]) [data-slot="agent-log-tag"] {
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--bk-radius-sm);
+  box-shadow: inset 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-tag"][data-status="done"] {
+  background: var(--bk-signal);
+  box-shadow: none;
+  color: var(--bk-signal-fg);
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-tag"][data-status="refused"] {
+  box-shadow: inset 0 0 0 1px var(--bk-ink-danger);
+  color: var(--bk-ink-danger);
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-tag"][data-status="waiting"] {
+  color: var(--bk-ink-fg);
+}
+
+:where([data-slot="agent-log"]) [data-slot="agent-log-count"] {
+  color: var(--bk-ink-danger);
+}

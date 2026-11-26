@@ -62,6 +62,8 @@ export default defineConfig({
     "src/access.tsx",
     "src/booki-agent.ts",
     "src/agent-presence.tsx",
+    "src/agent-log.tsx",
+    "src/agent-snapshot.tsx",
     "src/agent-cursor.tsx",
     "src/locale.tsx",
   ],
