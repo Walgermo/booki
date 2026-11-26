@@ -157,6 +157,33 @@ describe("AgentSnapshot", () => {
     );
   });
 
+  it("with dialogs, also shows an open dialog outside its scope", async () => {
+    function WithDialog({ agent, dialogs }: { agent: ReturnType<typeof createBookiAgent>; dialogs: boolean }) {
+      const scope = useRef<HTMLDivElement | null>(null);
+      return (
+        <>
+          <div ref={scope}>
+            <AmountField defaultValue={1} aria-label="Total" />
+          </div>
+          <div role="dialog" aria-label="Confirm">
+            <AmountField defaultValue={2} aria-label="In dialog" />
+          </div>
+          <AgentSnapshot agent={agent} scope={scope} dialogs={dialogs} />
+        </>
+      );
+    }
+    const agent = createBookiAgent();
+    const { rerender } = en(<WithDialog agent={agent} dialogs={false} />);
+    await waitFor(() => expect(document.querySelectorAll('[data-slot="agent-snapshot-entry"]')).toHaveLength(1));
+    rerender(
+      <BookiLocaleProvider defaultCountry="US">
+        <WithDialog agent={agent} dialogs />
+      </BookiLocaleProvider>,
+    );
+    await waitFor(() => expect(document.querySelectorAll('[data-slot="agent-snapshot-entry"]')).toHaveLength(2));
+    expect(document.querySelector('[data-slot="agent-snapshot"]')?.textContent).toContain("In dialog");
+  });
+
   it("writes its words in Norwegian for a Norwegian page", async () => {
     const agent = createBookiAgent();
     en(
