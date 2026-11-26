@@ -57,6 +57,21 @@
     ]
   },
   {
+    "id": "files",
+    "en": "File formats",
+    "nb": "Filformater",
+    "icons": [
+      "document",
+      "document-pdf",
+      "presentation",
+      "image",
+      "film",
+      "audio-wave",
+      "document-zip",
+      "document-code"
+    ]
+  },
+  {
     "id": "money",
     "en": "Money and payments",
     "nb": "Penger og betaling",

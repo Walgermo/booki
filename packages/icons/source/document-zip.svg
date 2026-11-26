@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="zip compressed-file file-archive tar gzip rar 7z komprimert-fil arkivfil">
+  <path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/>
+  <path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5" data-role="detail"/>
+  <path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z" data-role="silhouette"/>
+  <path d="M9.75 11.25H12v6.5H9.75m2.25-3.25h2.25" data-role="detail"/>
+</svg>

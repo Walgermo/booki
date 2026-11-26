@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="slide-deck slides presentation-file ppt pptx keynote odp lysbilder presentasjon">
+  <rect x="2.75" y="4.75" width="18.5" height="11.5" rx="1.5"/>
+  <rect x="2.75" y="4.75" width="18.5" height="11.5" rx="1.5" data-role="silhouette"/>
+  <path d="M7.25 8.25h9.5M7.25 12.75h5.5" data-role="detail"/>
+  <path d="M12 16.25v4m-4 0h8"/>
+</svg>

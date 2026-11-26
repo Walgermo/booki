@@ -32,6 +32,10 @@
       "types": "./lib/index.d.ts",
       "default": "./lib/index.js"
     },
+    "./file": {
+      "types": "./lib/file.d.ts",
+      "default": "./lib/file.js"
+    },
     "./react": {
       "types": "./lib/react.d.ts",
       "default": "./lib/react.js"
