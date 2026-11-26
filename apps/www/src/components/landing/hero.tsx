@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { useLang } from "@/lib/lang";
-import { ErpWindow } from "./agentify-erp";
+import { DemoCarousel } from "./demo-carousel";
 import { HeroTitle } from "./hero-title";
 import { PromptButton } from "./prompt-button";
 import { ProofStrip } from "./proof-strip";
@@ -54,7 +54,7 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         </nav>
       </div>
 
-      <ErpWindow agent={agent} from={markRef} to={proofRef} />
+      <DemoCarousel agent={agent} from={markRef} to={proofRef} />
 
       <div ref={proofRef}>
         <ProofStrip />

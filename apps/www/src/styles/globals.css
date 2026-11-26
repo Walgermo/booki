@@ -2490,6 +2490,20 @@ html[data-kpi-still] {
    mixed from Booki's own tokens (brand blue at one corner, the agent's lime
    at the other), so the window reads as a product shot, not a page section.
    Each glow fades through several stops, so it never bands. */
+/* Homepage demos: the demo window's browser tabs switch between them, only on the
+   visitor's click. A short fade, as when a browser tab paints. */
+@media (prefers-reduced-motion: no-preference) {
+  .demo-carousel__panel {
+    animation: demo-carousel-in 180ms ease-out;
+  }
+}
+
+@keyframes demo-carousel-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .erp-stage {
   display: grid;
   padding: clamp(1.25rem, 5vw, 4.5rem) clamp(0.75rem, 5vw, 4.5rem);
@@ -2551,10 +2565,14 @@ html[data-kpi-still] {
   zoom: 0.84;
   --kvx-blue: var(--bk-brand);
   --kvx-on-blue: var(--bk-ink-fg);
+  /* A-CRM, the agentic CRM: green from the success token, so it never reads as Kvadruptex. */
+  --trk-green: var(--bk-success);
+  --trk-on-green: var(--bk-ink-fg);
 }
 
 [data-bk-theme="dark"] .erp-window {
   --kvx-blue: color-mix(in oklch, var(--bk-brand) 42%, var(--bk-ink));
+  --trk-green: color-mix(in oklch, var(--bk-success) 60%, var(--bk-ink));
 }
 
 /* Browser chrome: Chrome on macOS, drawn with tokens. */
@@ -2596,7 +2614,24 @@ html[data-kpi-still] {
   background: var(--bk-success);
 }
 
+.erp-chrome__tablist {
+  display: flex;
+  align-items: end;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
 .erp-chrome__tab {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -2605,6 +2640,16 @@ html[data-kpi-still] {
   padding: 0.5rem 0.625rem;
   border-radius: 0.625rem 0.625rem 0 0;
   color: var(--bk-muted-fg);
+}
+
+.erp-chrome__tab:not([data-active]):hover {
+  color: var(--bk-fg);
+  background: color-mix(in oklab, var(--bk-card) 55%, transparent);
+}
+
+.erp-chrome__tab:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: -2px;
 }
 
 .erp-chrome__tab[data-active] {
@@ -2732,7 +2777,11 @@ html[data-kpi-still] {
   letter-spacing: -0.01em;
 }
 
-/* "tex", lighter: the nod to the screen it parodies. */
+.erp-window[data-brand="acrm"] .erp-app__word {
+  color: var(--bk-success);
+}
+
+/* "tex" (and A-CRM's "CRM"), lighter: the nod to the screen it parodies. */
 .erp-app__word span {
   color: var(--bk-muted-fg);
   font-weight: 450;
@@ -2879,7 +2928,15 @@ html[data-kpi-still] {
 }
 
 @media (max-width: 40rem) {
-  .erp-chrome__tab:not([data-active]),
+  .erp-chrome__tablist {
+    flex: 1;
+  }
+  .erp-chrome__tab {
+    flex: 1 1 0;
+    width: auto;
+  }
+  .erp-chrome__close,
+  .erp-chrome__new,
   .erp-chrome__nav,
   .erp-app__search,
   .erp-app__company span {
