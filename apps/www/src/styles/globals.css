@@ -1512,6 +1512,33 @@ html[data-kpi-still] {
   text-wrap: balance;
 }
 
+/* Docs: the header stays at the top while the page scrolls, on the page's own background,
+   with its hairline under it; the sidebar sticks below it. */
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  min-height: 4.25rem;
+  background: var(--bk-bg);
+  border-bottom: var(--hairline) solid var(--bk-border-strong);
+  /* the background runs edge to edge, past the centred column */
+  box-shadow: 0 0 0 100vmax var(--bk-bg);
+  clip-path: inset(0 -100vmax);
+}
+
+@media (min-width: 1024px) {
+  .docs-sidebar {
+    position: sticky;
+    top: 4.25rem;
+    max-height: calc(100svh - 4.25rem);
+  }
+}
+
+/* Anchored headings land below the sticky header. */
+:root:has(.docs-header) {
+  scroll-padding-top: 5rem;
+}
+
 /* Docs sidebar: sections by accounting task, one plain name per line. On a phone the
    sections sit side by side in columns inside the "Browse the docs" disclosure. */
 .site-docnav {

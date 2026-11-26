@@ -120,19 +120,19 @@ export function ComponentDocPage() {
         className={
           stacked || name === "money"
             ? "mt-8 grid gap-8"
-            : "mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] xl:items-start"
+            : "mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start"
         }
       >
-        <Preview
-          sheetRef={sheet}
-          reserve={PREVIEW_RESERVE[name]}
-          above={
-            name !== "money" ? <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} /> : undefined
-          }
-        >
+        <Preview sheetRef={sheet} reserve={PREVIEW_RESERVE[name]}>
           <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
         </Preview>
-        {name !== "money" && <AgentView key={`${name}-${country}-${run}`} scope={sheet} />}
+        {/* The agent's side, in its own column: run it, see its calls, see what it reads. */}
+        {name !== "money" && (
+          <div className="grid min-w-0 content-start gap-6">
+            <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} />
+            <AgentView key={`${name}-${country}-${run}`} scope={sheet} />
+          </div>
+        )}
       </div>
       {item.install ? (
         <InstallBlock label={t("Install", "Installer")} command={item.install} className="mt-10 mb-0 max-w-prose" />
