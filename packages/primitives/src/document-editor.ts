@@ -50,7 +50,15 @@ export type SlashCommand = {
 };
 
 /** One row in the open "/" or "@" menu. */
-export type MenuItem = { id: string; label: string; hint?: string; group?: string; kind?: string };
+export type MenuItem = {
+  id: string;
+  label: string;
+  hint?: string;
+  group?: string;
+  kind?: string;
+  fileName?: string;
+  mimeType?: string;
+};
 
 export type DocumentAuditEvent = {
   /** What happened: propose-insert, propose-edit, propose-move, propose-remove, accept, reject, withdraw, edit-text, insert, remove, move, turn-into, check, command. */
@@ -204,9 +212,18 @@ function menuItems(menu: Menu | null, options: Options): MenuItem[] {
       .map(({ id, label, hint, group }) => ({ id, label, ...(hint ? { hint } : {}), ...(group ? { group } : {}) }));
   }
   return (options.mentions ?? [])
-    .filter((item) => [item.label, item.id, item.hint ?? ""].some((word) => word.toLowerCase().includes(query)))
+    .filter((item) =>
+      [item.label, item.id, item.hint ?? "", item.fileName ?? ""].some((word) => word.toLowerCase().includes(query)),
+    )
     .slice(0, 20)
-    .map(({ id, label, hint, kind }) => ({ id, label, kind, ...(hint ? { hint } : {}) }));
+    .map(({ id, label, hint, kind, fileName, mimeType }) => ({
+      id,
+      label,
+      kind,
+      hint: hint ?? (fileName !== label ? fileName : undefined),
+      fileName,
+      mimeType,
+    }));
 }
 
 /** The "/" or "@" being typed just before the caret, if any. */

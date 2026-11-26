@@ -221,6 +221,18 @@
   background: var(--bk-accent);
 }
 
+[data-slot="document-editor-option-label"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+[data-slot="document-editor-option-label"] > svg {
+  flex: none;
+}
+
 [data-slot="document-editor-option-kind"],
 [data-slot="document-editor-option-hint"] {
   font-size: 0.75rem;

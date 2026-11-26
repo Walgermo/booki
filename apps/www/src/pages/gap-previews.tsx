@@ -165,6 +165,10 @@ const NOTE_PAGE: EditorDocument = {
 const NOTE_MENTIONS: Mention[] = [
   { kind: "evidence", id: "e1042", label: "Invoice 1042", hint: "2026-12-30 · 48 200,00" },
   { kind: "file", id: "f-sample", label: "Cut-off sample.xlsx" },
+  { kind: "file", id: "f-statement", label: "Bank statement.pdf" },
+  { kind: "file", id: "f-letter", label: "Confirmation letter.docx" },
+  { kind: "file", id: "f-receipt", label: "Receipt scan.png" },
+  { kind: "file", id: "f-export", label: "Ledger extracts.zip" },
   { kind: "person", id: "kari", label: "Kari Nordmann", hint: "Manager" },
   { kind: "page", id: "05.1", label: "05.1 Revenue planning" },
 ];

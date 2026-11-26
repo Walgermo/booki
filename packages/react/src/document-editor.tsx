@@ -6,6 +6,7 @@ import type {
   EditorDocument,
   Mention,
 } from "@booki-aui/core/document-blocks";
+import { FileIcon } from "@booki-aui/icons/react";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { Fragment, type ReactNode } from "react";
@@ -398,7 +399,13 @@ function DocumentEditor({
                                 </p>
                               ) : null}
                               <DocumentEditorOption id={optionId(doc.id, block.id, item.id)} value={item.id}>
-                                <span data-slot="document-editor-option-label">{item.label}</span>
+                                <span data-slot="document-editor-option-label">
+                                  {item.kind === "file" ||
+                                  (item.kind === "evidence" && (item.fileName || item.mimeType)) ? (
+                                    <FileIcon file={{ name: item.fileName ?? item.label, type: item.mimeType }} />
+                                  ) : null}
+                                  {item.label}
+                                </span>
                                 {item.kind ? (
                                   <span data-slot="document-editor-option-kind">
                                     {copy.kind[item.kind as Mention["kind"]] ?? item.kind}

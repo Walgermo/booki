@@ -319,6 +319,9 @@ importers:
       '@booki-aui/core':
         specifier: workspace:*
         version: link:../core
+      '@booki-aui/icons':
+        specifier: workspace:*
+        version: link:../icons
       '@booki-aui/primitives':
         specifier: workspace:*
         version: link:../primitives
