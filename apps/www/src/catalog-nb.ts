@@ -186,6 +186,10 @@ const NB: Record<string, { title?: string; description: string }> = {
   "cashflow-waterfall": {
     description: "Inngående saldo, hver inn- og utbetaling, utgående saldo, og en kontroll på at det går opp.",
   },
+  "chart-of-accounts": {
+    description:
+      "Hele kontoplanen under kontoklassene, med søk, filtre, redigering i linjen og kontroller: doble kontonumre, numre utenfor klassen, manglende SAF-T-kobling. En agent foreslår; en person tar endringen i bruk.",
+  },
   "account-picker": { description: "Entydig valg fra kontoplanen." },
   "tax-code-select": { description: "Norske mva-koder / amerikanske sales tax-koder fra BookiLocale-profilen." },
   "payment-confirm": { description: "Skriv APPROVE + data-agent-confirm." },

@@ -155,6 +155,10 @@
       "types": "./dist/fixed-assets.d.ts",
       "default": "./dist/fixed-assets.js"
     },
+    "./chart-of-accounts": {
+      "types": "./dist/chart-of-accounts.d.ts",
+      "default": "./dist/chart-of-accounts.js"
+    },
     "./fx": {
       "types": "./dist/fx.d.ts",
       "default": "./dist/fx.js"

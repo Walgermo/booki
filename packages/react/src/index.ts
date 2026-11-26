@@ -295,6 +295,7 @@ export * from "./funnel-chart.js";
 export * from "./forecast-chart.js";
 export * from "./recurring-revenue.js";
 export * from "./stage-duration.js";
+export * from "./chart-of-accounts.js";
 export * from "./fixed-asset-register.js";
 export * from "./data-table.js";
 export * from "./trend-chart.js";

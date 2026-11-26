@@ -173,6 +173,7 @@ meaning.
 | `evidence-list` | `assertEvidenced`, `linkAttachment`, `setKind` |
 | `vat-return` | `assertReady`, `back`, `openBox` |
 | `fixed-asset-register` | `assertRunnable`, `back`, `openAsset`, `proposeRun`, `setPeriod` |
+| `chart-of-accounts` | `filterClass`, `find`, `mapStandard`, `propose`, `setProposal`, `setVatCode` |
 | `audit-workpaper` | `assertReadyForSignOff`, `drawSample`, `setEvidence`, `setNote`, `setResult`, `setTickMark` |
 | `ledger-table` | `back`, `explainVariance`, `openAccount`, `setRange`, `showVoucher` |
 | `aged-balances` | `back`, `openParty`, `overdue`, `setAsOf` |

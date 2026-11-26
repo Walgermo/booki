@@ -717,6 +717,58 @@ export const AGENT_DEMOS: Record<string, Demo> = {
       b(`Closed the top sheet; ${String(e?.top)} is on top.`, `Lukket øverste ark; ${String(e?.top)} ligger øverst.`),
     ),
   ],
+  "chart-of-accounts": ({ country }) => {
+    const norway = country === "NO";
+    const matching = (e: Entry | undefined) => num((e?.view as { matching?: number } | undefined)?.matching);
+    return [
+      act("chart-of-accounts", "find", [norway ? "rekvisita" : "software"], (e) =>
+        b(
+          `Searched the chart: ${matching(e)} account matches, ${String(list<{ number: string; name: string }>(e?.rows)[0]?.number)} ${String(list<{ number: string; name: string }>(e?.rows)[0]?.name)}.`,
+          `Søkte i kontoplanen: ${matching(e)} konto passer, ${String(list<{ number: string; name: string }>(e?.rows)[0]?.number)} ${String(list<{ number: string; name: string }>(e?.rows)[0]?.name)}.`,
+        ),
+      ),
+      norway
+        ? act(
+            "chart-of-accounts",
+            "mapStandard",
+            ["6800", "6800"],
+            b(
+              "Mapped 6800 to SAF-T standard account 6800: the chart has no missing mapping left.",
+              "Koblet 6800 til SAF-T-standardkonto 6800: ingen kontoer mangler kobling.",
+            ),
+          )
+        : act(
+            "chart-of-accounts",
+            "setVatCode",
+            ["6300", "TAX0"],
+            b(
+              "Set 6300 Software subscriptions to no sales tax.",
+              "Satte 6300 Software subscriptions til uten salgsskatt.",
+            ),
+          ),
+      act("chart-of-accounts", "find", [""], b("Cleared the search.", "Fjernet søket.")),
+      act(
+        "chart-of-accounts",
+        "propose",
+        [
+          norway
+            ? {
+                number: "6810",
+                name: "Programvare og lisenser",
+                type: "expense",
+                vatCode: "1",
+                standardAccount: "6810",
+              }
+            : { number: "6310", name: "Cloud hosting", type: "expense" },
+        ],
+        b(
+          "Proposed a new account. It waits on screen until a person commits it.",
+          "Foreslo en ny konto. Den venter på skjermen til en person tar den i bruk.",
+        ),
+      ),
+      refused("chart-of-accounts", "propose", [{ number: norway ? "1920" : "1010", type: "liability" }]),
+    ];
+  },
   "fixed-asset-register": ({ fmt }) => [
     act(
       "fixed-asset-register",
@@ -1011,6 +1063,7 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   "agent-status": [136, 88],
   "document-signoff": [592, 336],
   "sheet-stack": [712, 736],
+  "chart-of-accounts": [4656, 2104],
   "fixed-asset-register": [1152, 848],
   "data-table": [696, 592],
   "kpi-stat": [120, 128],

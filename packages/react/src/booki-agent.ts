@@ -426,31 +426,36 @@ function auditValue(value: unknown, max = 200): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
-type Row = { id: string | number } & Record<string, unknown>;
+type Row = Record<string, unknown>;
+/** A record's key: its `id`, or for an account (which has none) its `number`. */
+const keyOf = (item: Row): string | number | undefined =>
+  typeof item.id === "string" || typeof item.id === "number"
+    ? item.id
+    : typeof item.number === "string"
+      ? item.number
+      : undefined;
 const isRows = (value: unknown): value is Row[] =>
-  Array.isArray(value) &&
-  value.every(
-    (item) => item && typeof item === "object" && (typeof item.id === "string" || typeof item.id === "number"),
-  );
+  Array.isArray(value) && value.every((item) => item && typeof item === "object" && keyOf(item as Row) !== undefined);
 const isPlain = (value: unknown): value is Record<string, unknown> =>
   value !== null && typeof value === "object" && !Array.isArray(value);
 const same = (a: unknown, b: unknown) => auditValue(a, 10_000) === auditValue(b, 10_000);
 
-/** What changed between two lists of records, by id: added, removed, and each changed field. */
+/** What changed between two lists of records, by key: added, removed, and each changed field. */
 function rowChanges(next: Row[], before: Row[]): string[] {
   const out: string[] = [];
   for (const row of next) {
-    const old = before.find((item) => item.id === row.id);
+    const old = before.find((item) => keyOf(item) === keyOf(row));
     if (!old) {
-      out.push(`+${row.id}${rowSummary(row)}`);
+      out.push(`+${keyOf(row)}${rowSummary(row)}`);
       continue;
     }
     const fields = Object.keys({ ...old, ...row })
       .filter((key) => !same(row[key], old[key]))
       .map((key) => `${key}=${auditValue(row[key], 40)} (was ${auditValue(old[key], 40)})`);
-    if (fields.length) out.push(`${row.id}: ${fields.join(", ")}`);
+    if (fields.length) out.push(`${keyOf(row)}: ${fields.join(", ")}`);
   }
-  for (const old of before) if (!next.some((row) => row.id === old.id)) out.push(`-${old.id}${rowSummary(old)}`);
+  for (const old of before)
+    if (!next.some((row) => keyOf(row) === keyOf(old))) out.push(`-${keyOf(old)}${rowSummary(old)}`);
   return out;
 }
 
@@ -461,7 +466,15 @@ function rowChanges(next: Row[], before: Row[]): string[] {
  */
 function rowSummary(row: Row): string {
   const fields = Object.entries(row)
-    .filter(([key, value]) => key !== "id" && value !== undefined && value !== null && value !== "" && value !== 0)
+    .filter(
+      ([key, value]) =>
+        key !== "id" &&
+        !(key === "number" && row.id === undefined) &&
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        value !== 0,
+    )
     .filter(([, value]) => !(isPlain(value) && Object.keys(value).length === 0))
     .map(([key, value]) => `${key}=${auditValue(value, 40)}`);
   return fields.length ? ` (${fields.join(", ")})` : "";
@@ -474,7 +487,7 @@ function rowSummary(row: Row): string {
  */
 function changeText(key: string, value: unknown, previous: unknown): string {
   let parts: string[] | null = null;
-  if (isRows(value) && isRows(previous)) parts = rowChanges(value, previous);
+  if (isRows(value) && (isRows(previous) || previous === null)) parts = rowChanges(value, previous ?? []);
   else if (isPlain(value) && isPlain(previous)) {
     parts = [];
     for (const field of Object.keys({ ...previous, ...value })) {

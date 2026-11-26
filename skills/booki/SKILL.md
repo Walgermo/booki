@@ -505,6 +505,7 @@ Use only what the screen needs. Prefer `definePrimitive` entries:
 | AuditFindings | `@booki-aui/react` | findings with basis and evidence; agent drafts and cites, a person confirms or withdraws; confidential text stays unread |
 | ClientRequests | `@booki-aui/react` | requests to the client; agent drafts and records answers, a person sends, reminds and judges; email stays out of the snapshot |
 | FixedAssetRegister | `@booki-aui/react` | schedules and a proposed depreciation run; a person confirms |
+| ChartOfAccounts | `@booki-aui/react` | the whole chart under its classes (NS 4102 on NO); agent `find`s, maps VAT codes and SAF-T standard accounts, and `propose`s accounts; a person commits and activates |
 | DataTable | `@booki-aui/react` | any list: sort, search, filter, pages, columns, selection, totals, CSV; agent reads the page and counts |
 | KpiStat, TrendChart, BarChart, AgingChart, CashflowWaterfall | `@booki-aui/react` | dashboard figures and charts; the agent reads numbers, periods and buckets from the snapshot, never pixels; `drill` to pick a period, bar, bucket or step |
 | BankAccountInput | `@booki-aui/react` | secret; NO kontonummer / US ABA |

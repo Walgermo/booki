@@ -35,6 +35,7 @@ export default defineConfig({
     "src/recurring.ts",
     "src/funnel.ts",
     "src/fixed-assets.ts",
+    "src/chart-of-accounts.ts",
     "src/fx.ts",
     "src/permissions.ts",
     "src/server.ts",

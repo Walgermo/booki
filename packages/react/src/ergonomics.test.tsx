@@ -588,6 +588,36 @@ const CONTROLS: Record<string, Control> = {
       clear: NOTHING,
     },
   },
+  "chart-of-accounts": {
+    options: {
+      country: "NO",
+      defaultAccounts: [
+        { number: "1920", name: "Bankinnskudd", type: "asset", active: true, standardAccount: "1920", locked: true },
+        { number: "6800", name: "Kontorrekvisita", type: "expense", active: true },
+      ],
+      taxCodes: [{ code: "1" }, { code: "0" }],
+    },
+    probes: {
+      ...tableProbes("number"),
+      find: FREE_TEXT,
+      filterClass: { args: ["9"], names: ["1 (1000–1999)", "8 (8000–8999)"] },
+      propose: {
+        object: (extra) => [{ number: "6810", name: "Programvare", type: "expense", ...extra }],
+        fields: ["number", "name", "type", "vatCode", "standardAccount"],
+        format: "proposeFormat",
+      },
+      setProposal: {
+        object: (extra) => [[{ number: "6810", name: "Programvare", type: "expense", ...extra }]],
+        fields: ["number", "name", "type", "vatCode", "standardAccount"],
+        format: "proposeFormat",
+      },
+      setVatCode: [
+        { args: ["9999", "1"], names: ["1920", "6800"] },
+        { args: ["6800", "25"], names: ["1", "0"] },
+      ],
+      mapStandard: { args: ["9999", "1920"], names: ["1920", "6800"] },
+    },
+  },
   "fixed-asset-register": {
     options: {
       defaultAssets: [

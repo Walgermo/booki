@@ -52,7 +52,8 @@ existing refusals is unchanged unless the row says otherwise.
 | `bank-reconciliation` | 2, 3, 4 | Unknown match id refused in English only; which argument is the bank line and which the open post was not visible. | `reconciliation.no-match`; `matchFormat` says bank line ids first, then open posts. |
 | `bar-chart` | 2 | Unknown or folded category and a bad limit refused in English only. | `chart.no-category`, `chart.category-folded`, `chart.other-folds`, `chart.bad-limit`. |
 | `cashflow-waterfall` | 2 | Unknown step refused in English only. | `chart.no-step`, `chart.balance-not-step`. |
-| `close-checklist` | – | No gap: core's `close.no-task` already lists the tasks in both languages. | – |
+| `chart-of-accounts` | 1, 2, 4 | New control (26 November 2026). | `propose` and `setProposal` refuse an unknown field and list the fields; an unknown account, class, VAT code or standard account is refused with what exists (`chart.no-account`, `chart.no-class`, `chart.unknown-vat-code`, `chart.unknown-standard`); `proposeFormat` and `queryFormat` in the snapshot. |
+| `close-checklist` | – No gap: core's `close.no-task` already lists the tasks in both languages. | – |
 | `currency-select` | 2 | Unknown currency refused in English only. | `select.unknown-currency`. |
 | `data-table` | 2, 3, 4 | `selectRows` refused an unknown row without naming any; a bad sort direction was accepted; a money column's unit depended on the app's column name; no hint that pages are 1-based. | `table.unknown-row-listed` names the rows on the page; `setSort` checks the direction; money columns carry `unit: "minor"`; `queryFormat` in the snapshot. |
 | `evidence-list` | 2 | Unknown or already linked file refused in English only. | `attachment.no-file`, `attachment.already-linked`. |

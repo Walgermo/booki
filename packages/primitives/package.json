@@ -138,6 +138,10 @@
       "types": "./dist/financial-date-field.d.ts",
       "default": "./dist/financial-date-field.js"
     },
+    "./chart-of-accounts": {
+      "types": "./dist/chart-of-accounts.d.ts",
+      "default": "./dist/chart-of-accounts.js"
+    },
     "./fixed-asset-register": {
       "types": "./dist/fixed-asset-register.d.ts",
       "default": "./dist/fixed-asset-register.js"

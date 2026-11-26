@@ -5,6 +5,8 @@ import type { Activity } from "@booki-aui/core/activity";
 import type { Deal, PipelineStage, StageStay } from "@booki-aui/core/pipeline";
 import type { RecurringAgreement } from "@booki-aui/core/recurring";
 import {
+  ChartOfAccounts,
+  useBookiLocale,
   AgedBalances,
   AgentStatus,
   type AgentStatusState,
@@ -41,6 +43,10 @@ import {
   AUDIT_MATERIALITY,
   AUDIT_POPULATION,
   CHART_NUMBERS,
+  CHART_OF_ACCOUNTS_NO,
+  CHART_OF_ACCOUNTS_US,
+  CHART_TAX_NO,
+  CHART_TAX_US,
   EVIDENCE_LINKED,
   EVIDENCE_POOL,
   EXPENSE_CLAIM,
@@ -453,6 +459,18 @@ const CLIENT_REQUESTS: ClientRequest[] = [
   },
 ];
 
+/** The chart of accounts in the reader's country: NS 4102 for Norway, the common ranges for the US. */
+function ChartOfAccountsPreview() {
+  const { country } = useBookiLocale();
+  const norway = country === "NO";
+  return (
+    <ChartOfAccounts
+      defaultAccounts={norway ? CHART_OF_ACCOUNTS_NO : CHART_OF_ACCOUNTS_US}
+      taxCodes={norway ? CHART_TAX_NO : CHART_TAX_US}
+    />
+  );
+}
+
 /** Live previews for the docs pages, on the shared demo books. */
 export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
   "kpi-stat": () => (
@@ -574,6 +592,7 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
   "activity-timeline": () => (
     <ActivityTimeline defaultActivities={TIMELINE} people={PIPELINE_OWNERS} today="2026-11-24" actor="kari" />
   ),
+  "chart-of-accounts": () => <ChartOfAccountsPreview />,
   "fixed-asset-register": () => <FixedAssetRegister defaultAssets={ASSETS} defaultPeriod="2026-10" />,
   "data-table": () => (
     <DataTable

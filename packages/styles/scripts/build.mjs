@@ -15,7 +15,7 @@ const PARTS = ["booki.css", "agent.css"];
 // it cannot grow back unnoticed. Set them to the measured size, rounded up to
 // the next 250 bytes, when a change makes base.css smaller or larger on purpose.
 // BOOKI_STYLES_BASE_BUDGET lowers the raw budget, for the test that a build over it writes nothing.
-const BASE_RAW_BUDGET = Number(process.env.BOOKI_STYLES_BASE_BUDGET ?? 43500);
+const BASE_RAW_BUDGET = Number(process.env.BOOKI_STYLES_BASE_BUDGET ?? 43750);
 const BASE_GZIP_BUDGET = 7250;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");

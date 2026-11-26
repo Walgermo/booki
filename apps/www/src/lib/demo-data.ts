@@ -1,4 +1,6 @@
 import type {
+  ChartAccount,
+  ChartTaxCode,
   AttachmentFile,
   Attachment,
   ExpenseClaimData,
@@ -73,6 +75,94 @@ export const SUPPLIER_INVOICES: SupplierInvoice[] = [
   },
 ];
 export const CHART_NUMBERS = ["1500", "1920", "2400", "2711", "3000", "6340", "6800", "7140"];
+
+const account = (
+  number: string,
+  name: string,
+  type: ChartAccount["type"],
+  more: Partial<ChartAccount> = {},
+): ChartAccount => ({ number, name, type, active: true, ...more });
+
+/**
+ * Nordlys AS's chart of accounts (NS 4102), with the SAF-T standard account
+ * each maps to. 6800 has no mapping yet and 7320 is no longer used.
+ */
+export const CHART_OF_ACCOUNTS_NO: ChartAccount[] = [
+  account("1200", "Maskiner og anlegg", "asset", { standardAccount: "1200", locked: true }),
+  account("1250", "Inventar", "asset", { standardAccount: "1250", locked: true }),
+  account("1500", "Kundefordringer", "asset", { standardAccount: "1500", locked: true }),
+  account("1920", "Bankinnskudd", "asset", { standardAccount: "1920", locked: true }),
+  account("1950", "Bankinnskudd for skattetrekk", "asset", { standardAccount: "1950", locked: true }),
+  account("2000", "Aksjekapital", "equity", { standardAccount: "2000", locked: true }),
+  account("2050", "Annen egenkapital", "equity", { standardAccount: "2050" }),
+  account("2400", "Leverandørgjeld", "liability", { standardAccount: "2400", locked: true }),
+  account("2600", "Forskuddstrekk", "liability", { standardAccount: "2600", locked: true }),
+  account("2700", "Utgående merverdiavgift", "liability", { standardAccount: "2700", locked: true }),
+  account("2710", "Inngående merverdiavgift", "liability", { standardAccount: "2710", locked: true }),
+  account("2740", "Oppgjørskonto merverdiavgift", "liability", { standardAccount: "2740" }),
+  account("2770", "Skyldig arbeidsgiveravgift", "liability", { standardAccount: "2770", locked: true }),
+  account("3000", "Salgsinntekt, avgiftspliktig", "income", { vatCode: "3", standardAccount: "3000", locked: true }),
+  account("3100", "Salgsinntekt, avgiftsfri", "income", { vatCode: "5", standardAccount: "3100" }),
+  account("4300", "Innkjøp av varer for videresalg", "expense", {
+    vatCode: "1",
+    standardAccount: "4300",
+    locked: true,
+  }),
+  account("5000", "Lønn til ansatte", "expense", { standardAccount: "5000", locked: true }),
+  account("5400", "Arbeidsgiveravgift", "expense", { standardAccount: "5400", locked: true }),
+  account("6000", "Avskrivning på varige driftsmidler", "expense", { standardAccount: "6000" }),
+  account("6300", "Leie lokale", "expense", { vatCode: "0", standardAccount: "6300", locked: true }),
+  account("6800", "Kontorrekvisita", "expense", { vatCode: "1", locked: true }),
+  account("6860", "Møte, kurs, oppdatering", "expense", { vatCode: "1", standardAccount: "6860" }),
+  account("7140", "Reisekostnad, ikke oppgavepliktig", "expense", { vatCode: "1", standardAccount: "7140" }),
+  account("7320", "Reklamekostnad", "expense", { vatCode: "1", standardAccount: "7320", active: false }),
+  account("7770", "Bank- og kortgebyrer", "expense", { standardAccount: "7770", locked: true }),
+  account("8050", "Annen renteinntekt", "income", { standardAccount: "8050" }),
+  account("8150", "Annen rentekostnad", "expense", { standardAccount: "8150" }),
+  account("8300", "Betalbar skatt", "expense", { standardAccount: "8300" }),
+];
+
+/** The SAF-T VAT codes the Norwegian chart uses. */
+export const CHART_TAX_NO: ChartTaxCode[] = [
+  { code: "0", label: "Ingen mva" },
+  { code: "1", label: "Inngående 25 %" },
+  { code: "11", label: "Inngående 15 %" },
+  { code: "3", label: "Utgående 25 %" },
+  { code: "31", label: "Utgående 15 %" },
+  { code: "5", label: "Utgående 0 %" },
+];
+
+/** A US company's chart in the common ranges. Advertising is no longer used. */
+export const CHART_OF_ACCOUNTS_US: ChartAccount[] = [
+  account("1000", "Cash on hand", "asset", { locked: true }),
+  account("1010", "Checking account", "asset", { locked: true }),
+  account("1200", "Accounts receivable", "asset", { locked: true }),
+  account("1500", "Equipment", "asset", { locked: true }),
+  account("1510", "Accumulated depreciation", "asset"),
+  account("2000", "Accounts payable", "liability", { locked: true }),
+  account("2100", "Sales tax payable", "liability", { locked: true }),
+  account("2200", "Payroll liabilities", "liability", { locked: true }),
+  account("3000", "Owner's equity", "equity", { locked: true }),
+  account("3900", "Retained earnings", "equity"),
+  account("4000", "Sales revenue", "income", { vatCode: "TAX8875", locked: true }),
+  account("4100", "Service revenue", "income", { vatCode: "TAX0" }),
+  account("5000", "Cost of goods sold", "expense", { locked: true }),
+  account("6000", "Rent", "expense", { locked: true }),
+  account("6100", "Utilities", "expense"),
+  account("6200", "Office supplies", "expense", { locked: true }),
+  account("6300", "Software subscriptions", "expense"),
+  account("6400", "Advertising", "expense", { active: false }),
+  account("7000", "Salaries and wages", "expense", { locked: true }),
+  account("7100", "Payroll taxes", "expense", { locked: true }),
+  account("8000", "Interest income", "income"),
+  account("8100", "Interest expense", "expense"),
+  account("9000", "Income tax expense", "expense"),
+];
+
+export const CHART_TAX_US: ChartTaxCode[] = [
+  { code: "TAX0", label: "No sales tax" },
+  { code: "TAX8875", label: "8.875% sales tax" },
+];
 
 const HASH = (seed: string) => seed.repeat(64).slice(0, 64);
 export const EVIDENCE_LINKED: Attachment[] = [

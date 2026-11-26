@@ -45,6 +45,8 @@ export const PERMISSIONS = [
   "deal.close",
   /** Remove a logged call, email, meeting, note or task from a customer's history. */
   "activity.remove",
+  /** Commit a change to the chart of accounts, or activate or deactivate an account. */
+  "chart.maintain",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number] | (string & {});
