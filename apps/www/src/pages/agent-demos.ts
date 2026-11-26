@@ -699,6 +699,38 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     ),
     refused("document-signoff", "sign", ["reviewed"]),
   ],
+  "document-editor": () => [
+    read("document-editor", (e) =>
+      b(
+        `Reads the page as ${list(e?.blocks).length} blocks, and ${list(e?.mentions).length} things it may mention.`,
+        `Leser siden som ${list(e?.blocks).length} blokker, og ${list(e?.mentions).length} ting den kan nevne.`,
+      ),
+    ),
+    act(
+      "document-editor",
+      "findBlocks",
+      ["January"],
+      b("Found the block about the January invoices.", "Fant blokken om januarfakturaene."),
+    ),
+    act(
+      "document-editor",
+      "insertBlock",
+      [
+        {
+          after: "b4",
+          type: "callout",
+          text: "Conclusion: cut-off is fair once the two January invoices move to next year.",
+          mentions: ["e1042"],
+          reason: "Draft the conclusion from the test",
+        },
+      ],
+      b(
+        "Proposed a conclusion that names the invoice. The page is unchanged until a person accepts.",
+        "Foreslo en konklusjon som nevner fakturaen. Siden er uendret til en person godtar.",
+      ),
+    ),
+    refused("document-editor", "accept", ["p1"]),
+  ],
   "sheet-stack": () => [
     read("sheet-stack", (e) =>
       b(
@@ -1062,6 +1094,7 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   toasts: [88, 96],
   "agent-status": [136, 88],
   "document-signoff": [592, 336],
+  "document-editor": [720, 640],
   "sheet-stack": [712, 736],
   "chart-of-accounts": [4656, 2104],
   "fixed-asset-register": [1152, 848],

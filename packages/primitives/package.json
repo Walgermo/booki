@@ -222,6 +222,10 @@
       "types": "./dist/agent-cursor.d.ts",
       "default": "./dist/agent-cursor.js"
     },
+    "./document-editor": {
+      "types": "./dist/document-editor.d.ts",
+      "default": "./dist/document-editor.js"
+    },
     "./document-signoff": {
       "types": "./dist/document-signoff.d.ts",
       "default": "./dist/document-signoff.js"

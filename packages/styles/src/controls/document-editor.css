@@ -1,0 +1,333 @@
+/*
+ * DocumentEditor: a working paper as blocks. Paper for what a person wrote;
+ * an agent's proposal sits on signal tint with a signal edge until a person
+ * decides it. The blocks are plain text areas without a field's frame, so the
+ * page reads as one sheet.
+ */
+[data-slot="document-editor"] {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="document-editor-status"] {
+  justify-self: start;
+  margin: 0;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-slot="document-editor-blocks"] {
+  display: grid;
+  gap: 0.125rem;
+}
+
+[data-slot="document-editor-empty"] {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-row"] {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.5rem;
+}
+
+[data-slot="document-editor-row"][data-proposal] {
+  border-left-color: var(--bk-signal);
+}
+
+[data-slot="document-editor-row"][data-proposal="remove"] [data-slot="document-editor-block"] {
+  text-decoration: line-through;
+  text-decoration-color: var(--bk-signal-ink);
+  color: var(--bk-muted-fg);
+}
+
+/* The block's text: no frame, it is the page. */
+[data-slot="document-editor"] [data-slot="document-editor-block"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;
+}
+
+[data-slot="document-editor"] [data-slot="document-editor-block"]:focus-visible {
+  border: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+[data-slot="document-editor-row"]:focus-within {
+  background: color-mix(in srgb, var(--bk-accent) 55%, transparent);
+}
+
+/* The hint shows only in the block being written. */
+[data-slot="document-editor"] [data-slot="document-editor-block"]:not(:focus)::placeholder {
+  color: transparent;
+}
+
+[data-slot="document-editor-row"][data-type="heading"] [data-slot="document-editor-block"] {
+  font-weight: var(--bk-font-weight-semibold);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+[data-slot="document-editor-row"][data-type="heading"][data-level="1"] [data-slot="document-editor-block"] {
+  font-size: 1.75rem;
+}
+
+[data-slot="document-editor-row"][data-type="heading"][data-level="2"] [data-slot="document-editor-block"] {
+  font-size: 1.375rem;
+}
+
+[data-slot="document-editor-row"][data-type="heading"][data-level="3"] [data-slot="document-editor-block"] {
+  font-size: 1.125rem;
+}
+
+[data-slot="document-editor-row"][data-type="quote"] {
+  border-left-color: var(--bk-border-strong);
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-row"][data-type="callout"] {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-muted);
+}
+
+[data-slot="document-editor-row"][data-type="todo"]:has(input:checked) [data-slot="document-editor-block"] {
+  color: var(--bk-muted-fg);
+  text-decoration: line-through;
+}
+
+[data-slot="document-editor-marker"] {
+  flex: none;
+  min-width: 1.25rem;
+  color: var(--bk-muted-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+[data-slot="document-editor-row"][data-type="bullet"] [data-slot="document-editor-marker"]::before {
+  content: "•";
+}
+
+[data-slot="document-editor-row"] > input[type="checkbox"] {
+  flex: none;
+  align-self: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--bk-fg);
+}
+
+[data-slot="document-editor-divider"] {
+  flex: 1 1 auto;
+  margin: 0.75rem 0;
+  border: 0;
+  border-top: 1px solid var(--bk-border-strong);
+}
+
+[data-slot="document-editor-refs"] {
+  display: none;
+}
+
+[data-slot="document-editor-mention"] {
+  display: inline-block;
+  padding: 0 0.3rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-wood);
+  font-size: 0.875em;
+  white-space: nowrap;
+}
+
+/* ── The "/" and "@" menu ─────────────────────────────────────────────── */
+[data-slot="document-editor-menu"] {
+  position: absolute;
+  top: 100%;
+  left: 0.5rem;
+  z-index: 20;
+  display: grid;
+  width: min(20rem, calc(100% - 0.5rem));
+  max-height: 18rem;
+  overflow-y: auto;
+  padding: 0.25rem;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+}
+
+[data-slot="document-editor-group"] {
+  margin: 0;
+  padding: 0.4rem 0.5rem 0.2rem;
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-option"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--bk-radius-sm);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+[data-slot="document-editor-option"][data-active] {
+  background: var(--bk-accent);
+}
+
+[data-slot="document-editor-option-kind"],
+[data-slot="document-editor-option-hint"] {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-option-hint"] {
+  grid-column: 1 / -1;
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── An agent's proposal ──────────────────────────────────────────────── */
+[data-slot="document-editor-proposal"] {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-left: 2px solid var(--bk-signal);
+  border-radius: 0 var(--bk-radius-sm) var(--bk-radius-sm) 0;
+  background: var(--bk-signal-tint);
+}
+
+[data-slot="document-editor-proposal-head"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-signal-ink);
+}
+
+[data-slot="document-editor-agent"] {
+  padding: 0 0.35rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+}
+
+[data-slot="document-editor-reason"] {
+  flex-basis: 100%;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-ghosts"] {
+  display: grid;
+  gap: 0.25rem;
+}
+
+[data-slot="document-editor-ghost"] {
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+[data-slot="document-editor-ghost"][data-type="heading"] {
+  font-weight: var(--bk-font-weight-semibold);
+  font-size: 1.125rem;
+}
+
+[data-slot="document-editor-ghost"][data-type="bullet"]::before {
+  content: "• ";
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-ghost"] hr {
+  border: 0;
+  border-top: 1px solid var(--bk-border-strong);
+}
+
+[data-slot="document-editor-diff"] {
+  display: grid;
+  gap: 0.35rem;
+}
+
+[data-slot="document-editor-was"],
+[data-slot="document-editor-becomes"] {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+[data-slot="document-editor-was"] del {
+  color: var(--bk-muted-fg);
+  text-decoration-color: var(--bk-muted-fg);
+  overflow-wrap: anywhere;
+}
+
+[data-slot="document-editor-diff-label"] {
+  font-size: 0.75rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="document-editor-decide"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* A quiet action inside the page: ghost, never the primary. */
+[data-slot="document-editor-add"] {
+  justify-self: start;
+  min-height: 2rem;
+  padding-inline: 0.5rem;
+  background: transparent;
+  color: var(--bk-muted-fg);
+  font-weight: 400;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="document-editor-add"]:hover {
+    background: var(--bk-muted);
+    color: var(--bk-fg);
+  }
+}
+
+[data-slot="document-editor-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}

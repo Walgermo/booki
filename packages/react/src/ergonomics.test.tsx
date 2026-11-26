@@ -206,6 +206,60 @@ const CONTROLS: Record<string, Control> = {
     options: {},
     probes: { setStatus: { args: ["maybe"], names: ["pending", "approved", "rejected", "escalated"] } },
   },
+  "document-editor": {
+    options: {
+      defaultDocument: {
+        id: "05.3",
+        version: 1,
+        blocks: [
+          { id: "b1", type: "heading", level: 2, text: "Revenue" },
+          { id: "b2", type: "paragraph", text: "Sales" },
+        ],
+        proposals: [
+          {
+            id: "p1",
+            op: "remove",
+            blockId: "b2",
+            before: { id: "b2", type: "paragraph", text: "Sales" },
+            by: "agent:x",
+            at: "2026-01-01T00:00:00Z",
+          },
+        ],
+      },
+      mentions: [{ kind: "evidence", id: "e12", label: "Invoice 12" }],
+    },
+    probes: {
+      findBlocks: FREE_TEXT,
+      insertBlock: [
+        {
+          object: (extra) => [{ after: "b1", text: "x", ...extra }],
+          fields: ["after", "text", "type", "mentions"],
+          format: "insertFormat",
+        },
+        { args: [{ after: "nope", text: "x" }], names: ["b1", "b2"] },
+        { args: [{ after: "b1", type: "table", text: "x" }], names: ["paragraph", "heading", "callout"] },
+        { args: [{ after: "b1", text: "x", mentions: ["nope"] }], names: ["e12"] },
+      ],
+      editBlock: [
+        {
+          object: (extra) => ["b1", { text: "x", ...extra }],
+          fields: ["text", "type", "level", "mentions"],
+          format: "editFormat",
+        },
+        { args: ["nope", { text: "x" }], names: ["b1", "b2"] },
+      ],
+      moveBlock: [
+        { object: (extra) => ["b1", { after: "b2", ...extra }], fields: ["after", "reason"], format: "moveFormat" },
+        { args: ["nope", { after: null }], names: ["b1", "b2"] },
+      ],
+      removeBlock: { args: ["nope"], names: ["b1", "b2"] },
+      runCommand: [
+        { args: ["nope", { block: "b1" }], names: ["text", "heading2", "divider"] },
+        { object: (extra) => ["text", { block: "b1", ...extra }], fields: ["block", "reason"], format: "moveFormat" },
+      ],
+      withdrawProposal: { args: ["nope"], names: ["p1"] },
+    },
+  },
   "document-signoff": {
     options: { defaultDocument: { id: "05.3", version: 2, saveState: "saved", openPoints: [], signatures: [] } },
     probes: { assertSignable: NOTHING },

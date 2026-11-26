@@ -293,6 +293,10 @@
       "types": "./dist/cashflow-waterfall.d.ts",
       "default": "./dist/cashflow-waterfall.js"
     },
+    "./document-editor": {
+      "types": "./dist/document-editor.d.ts",
+      "default": "./dist/document-editor.js"
+    },
     "./document-signoff": {
       "types": "./dist/document-signoff.d.ts",
       "default": "./dist/document-signoff.js"

@@ -257,6 +257,10 @@ const results: Record<string, Said> = {
     "Records an OK test result on the first sampled item under the agent's identity.",
     "Registrerer godkjent testresultat på den første posten i utvalget med agenten som aktør.",
   ),
+  "document-editor": note(
+    "A proposal p1 appears under block b4 in the agent's colour. The blocks stay as they were until a person presses Accept.",
+    "Et forslag p1 dukker opp under blokk b4 i agentens farge. Blokkene er som før til en person trykker Godta.",
+  ),
   "sheet-stack": note(
     "Closes sheets above 05.3.2 and makes that sheet the top one.",
     "Lukker arkene over 05.3.2 og gjør det arket til det øverste.",

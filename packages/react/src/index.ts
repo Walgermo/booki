@@ -263,6 +263,7 @@ export * from "./aged-balances.js";
 export * from "./vat-return.js";
 export * from "./audit-workpaper.js";
 export * from "./audit-findings.js";
+export * from "./document-editor.js";
 export * from "./document-signoff.js";
 export * from "./sheet-stack.js";
 export * from "./confirm-dialog.js";

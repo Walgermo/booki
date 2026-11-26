@@ -27,6 +27,7 @@ import {
   StageDurationChart,
   ActivityTimeline,
   ConfirmDialog,
+  DocumentEditor,
   DocumentSignoff,
   EvidenceList,
   SheetStack,
@@ -59,7 +60,7 @@ import {
   VAT_TRANSACTIONS,
 } from "@/lib/demo-data";
 import { CASHFLOW, COST_BY_ACCOUNT, COSTS, OPENING, REVENUE, series } from "@/components/erp-dashboard";
-import type { ClientRequest, Finding, SignableDocument, StackSheet } from "@booki-aui/react";
+import type { ClientRequest, EditorDocument, Finding, Mention, SignableDocument, StackSheet } from "@booki-aui/react";
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLang } from "@/lib/lang";
 import { Button as SiteButton } from "@/components/ui/button";
@@ -133,6 +134,40 @@ const WORKPAPER_DOCUMENT: SignableDocument = {
     { level: "performed", by: "nina", byName: "Nina", at: "2026-11-18T14:05:00Z", version: 3, openPoints: [] },
   ],
 };
+
+// A working-paper note: the agent may propose; a person accepts or rejects.
+const NOTE_PAGE: EditorDocument = {
+  id: "05.4-cut-off",
+  version: 6,
+  blocks: [
+    { id: "b1", type: "heading", level: 2, text: "Revenue cut-off" },
+    {
+      id: "b2",
+      type: "paragraph",
+      text: "Sales are recognised when goods are delivered. 25 deliveries around year end were traced to delivery notes.",
+    },
+    { id: "b3", type: "bullet", text: "No exceptions among the December deliveries" },
+    {
+      id: "b4",
+      type: "bullet",
+      text: "Two January deliveries were invoiced in December, see @Invoice 1042",
+      refs: [{ kind: "evidence", id: "e1042", label: "Invoice 1042" }],
+    },
+    {
+      id: "b5",
+      type: "todo",
+      text: "Ask @Kari Nordmann about credit notes after year end",
+      refs: [{ kind: "person", id: "kari", label: "Kari Nordmann" }],
+    },
+  ],
+  proposals: [],
+};
+const NOTE_MENTIONS: Mention[] = [
+  { kind: "evidence", id: "e1042", label: "Invoice 1042", hint: "2026-12-30 · 48 200,00" },
+  { kind: "file", id: "f-sample", label: "Cut-off sample.xlsx" },
+  { kind: "person", id: "kari", label: "Kari Nordmann", hint: "Manager" },
+  { kind: "page", id: "05.1", label: "05.1 Revenue planning" },
+];
 
 // Opened from the working paper down to one customer, so there is a stack to go back through.
 const SHEETS: StackSheet[] = [
@@ -555,6 +590,7 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
     </InBrowser>
   ),
   "document-signoff": () => <DocumentSignoff defaultDocument={WORKPAPER_DOCUMENT} actor="kari" actorName="Kari" />,
+  "document-editor": () => <DocumentEditor defaultDocument={NOTE_PAGE} mentions={NOTE_MENTIONS} actor="nina" />,
   "sheet-stack": () => <SheetStackPreview />,
   "agent-status": () => <AgentStatusPreview />,
   "client-requests": () => <ClientRequests defaultRequests={CLIENT_REQUESTS} today="2026-11-15" actor="nina" />,
