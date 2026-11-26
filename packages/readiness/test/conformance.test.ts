@@ -59,11 +59,12 @@ describe("conformance: the reference", () => {
   });
 
   it("returns an incomplete result until the screen has mounted controls", async () => {
-    const { ref } = referenceTarget();
-    const report = await runConformance({ bridge: broken(ref, { snapshot: () => [] }) });
+    const { ref, target } = referenceTarget();
+    const report = await runConformance({ bridge: broken(ref, { snapshot: () => [] }), personOnly: target.personOnly });
     expect(report.conforms).toBe(false);
     expect(statusOf(report, "bridge-shape")).toBe("skip");
     expect(formatConformance(report)).toMatch(/Incomplete conformance check/);
+    expect(statusOf(report, "person-only-not-offered")).toBe("skip");
   });
 
   it("formats one line per check and a summary with the skipped count", async () => {

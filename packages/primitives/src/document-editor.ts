@@ -499,6 +499,46 @@ export const documentEditor = definePrimitive({
       return true;
     };
 
+    let deferBlurDismissal: (() => boolean) | undefined;
+    const bindMenu = (element: HTMLElement) => {
+      const page = element.ownerDocument;
+      const listeners = new AbortController();
+      const options = { capture: true, signal: listeners.signal };
+      let pressed = false;
+      let pending = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const finish = () => {
+        pressed = false;
+        if (pending) {
+          pending = false;
+          closeMenu();
+        }
+      };
+      // A blur during mouse-down must leave the next target under the pointer until click.
+      page.addEventListener(
+        "pointerdown",
+        (event) => {
+          if (event.isPrimary) pressed = true;
+        },
+        options,
+      );
+      page.addEventListener("click", finish, options);
+      page.addEventListener("pointercancel", finish, options);
+      page.addEventListener(
+        "pointerup",
+        () => {
+          timer = setTimeout(finish, 0);
+        },
+        options,
+      );
+      page.defaultView?.addEventListener("blur", finish, { signal: listeners.signal });
+      deferBlurDismissal = () => (pending = pressed);
+      return () => {
+        listeners.abort();
+        clearTimeout(timer);
+        deferBlurDismissal = undefined;
+      };
+    };
     const left = (id: string, nextFocus?: EventTarget | null) => {
       if (nextFocus && nextFocus === context.element("menu")) return;
       const before = editing.get(id);
@@ -515,7 +555,7 @@ export const documentEditor = definePrimitive({
           doc(),
         );
       }
-      if (context.store.get().menu?.blockId === id) closeMenu();
+      if (context.store.get().menu?.blockId === id && !deferBlurDismissal?.()) closeMenu();
     };
     const moveOption = (menu: Menu, index: number) => {
       const items = context.store.get().items;
@@ -696,6 +736,7 @@ export const documentEditor = definePrimitive({
           context.store.set({ menu, items: menuItems(menu, context.options()) });
         }),
       left,
+      bindMenu,
       /** Person: a key in a block. Returns true when the editor handled it. */
       key: (id: string, event: KeyboardEvent) =>
         shown(() => {
@@ -962,6 +1003,7 @@ export const documentEditor = definePrimitive({
     menu: slot({
       role: "listbox",
       keys: ["ArrowDown", "ArrowUp", "Home", "End", "Enter", " ", "Escape"],
+      bind: (element, { api }) => api.bindMenu(element),
       present: (state) => Boolean(state.menu && state.items.length),
       attrs: (state) => ({
         tabindex: "0",

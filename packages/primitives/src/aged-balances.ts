@@ -12,7 +12,7 @@ import {
   type OpenItemKind,
   type OverdueParty,
 } from "@booki-aui/core/aging";
-import { BookiError } from "@booki-aui/core/msg";
+import { BookiError, isBookiError } from "@booki-aui/core/msg";
 import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";
@@ -135,7 +135,7 @@ function view<Row>(
 ) {
   const bucket = query.filters[BUCKET_FILTER];
   const kept = bucket ? rows.filter((row) => inBucket(row, bucket)) : rows;
-  const shown = tableView(kept, columns, withoutBucket(query));
+  const shown = tableView(kept, columns, withoutBucket(query), { requireHiddenTotals: true });
   return { ...shown, total: rows.length };
 }
 
@@ -245,6 +245,22 @@ export function derive(
   };
 }
 
+/** Supplied records or controlled props can arrive before their owner can correct an unsafe total. */
+function display(
+  options: Options,
+  asOf: string,
+  partyId: string | null,
+  query: TableQuery,
+  tableQuery: TableQuery | null,
+) {
+  try {
+    return { ...derive(options, asOf, partyId, query, tableQuery), issues: [] as string[] };
+  } catch (error) {
+    if (!isBookiError(error) || error.code !== "money.not-safe-integer") throw error;
+    return { ...derive({ ...options, items: [] }, "", null), issues: [error.message] };
+  }
+}
+
 /**
  * Receivables or payables by age. The snapshot holds `kind`, `asOf`, the
  * `buckets`, the page of `rows` (one per party, capped, with `total` and
@@ -280,6 +296,7 @@ export const agedBalances = definePrimitive({
     "total",
     "truncated",
     "totals",
+    "issues",
     "partyId",
     "party",
     "query",
@@ -306,7 +323,7 @@ export const agedBalances = definePrimitive({
       tableQuery: null as TableQuery | null,
       refusal: "",
       queryFormat: QUERY_FORMAT,
-      ...derive(options, asOf, partyId, query, null),
+      ...display(options, asOf, partyId, query, null),
     };
   },
   sync: (options: Options) => ({
@@ -332,12 +349,12 @@ export const agedBalances = definePrimitive({
       const asOf = options.asOf === undefined ? state.asOf : options.asOf;
       const partyId = options.partyId === undefined ? state.partyId : options.partyId;
       const query = options.query ?? state.query;
-      context.store.set({ query, ...derive(options, asOf, partyId, query, state.tableQuery) });
+      context.store.set({ query, ...display(options, asOf, partyId, query, state.tableQuery) });
     });
 
     const refresh = () => {
       const { asOf, partyId, query, tableQuery } = context.store.get();
-      context.store.set({ refusal: "", ...derive(context.options(), asOf, partyId, query, tableQuery) });
+      context.store.set({ refusal: "", ...display(context.options(), asOf, partyId, query, tableQuery) });
     };
     const shown = <T>(run: () => T): T => {
       try {
@@ -358,7 +375,8 @@ export const agedBalances = definePrimitive({
     function setAsOf(date: unknown, event?: Event) {
       const asOf = String(date ?? "").trim();
       // Throws for anything but a real YYYY-MM-DD date.
-      derive(context.options(), asOf === "" ? "not a date" : asOf, context.store.get().partyId);
+      const { partyId, query, tableQuery } = context.store.get();
+      derive(context.options(), asOf === "" ? "not a date" : asOf, partyId, query, tableQuery);
       const ok = change("asOf", asOf, { reason: "set-as-of", event });
       if (ok) refresh();
       return ok;
@@ -397,8 +415,10 @@ export const agedBalances = definePrimitive({
       apply: (next, reason, event) => {
         // Throws on a bad query, before anything changes.
         normalizeQuery(columns(), withoutBucket(next));
+        const { asOf, partyId, tableQuery } = context.store.get();
+        const derived = derive(context.options(), asOf, partyId, next, tableQuery);
         const ok = change("query", next, { reason, event });
-        if (ok) refresh();
+        if (ok && context.options().query === undefined) context.store.set({ ...derived, refusal: "", issues: [] });
         return ok;
       },
       refuse: (message) => {
@@ -475,6 +495,7 @@ export const agedBalances = definePrimitive({
         asOf: state.asOf,
         partyId: state.partyId,
         refusal: state.refusal,
+        issues: state.issues,
         query: state.query,
         view: state.view,
         totals: state.totals,

@@ -29,6 +29,9 @@ importers:
       oxlint:
         specifier: 1.94.0
         version: 1.94.0
+      playwright-core:
+        specifier: ^1.65.1
+        version: 1.65.1
       tsx:
         specifier: ^4.20.6
         version: 4.23.15

@@ -7,6 +7,7 @@ import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";
 import { AgedBalances, agedBalances } from "./aged-balances.js";
+import * as csv from "./csv-download.js";
 import { LedgerTable, ledgerTable } from "./ledger-table.js";
 import { BookiLocaleProvider } from "./locale.js";
 import { VatReturn, vatReturn } from "./vat-return.js";
@@ -329,6 +330,46 @@ describe("AgedBalances", () => {
     item("6", "tax", "2026-04-01", 900_00, "payable"),
   ];
   const ui = <AgedBalances items={items} defaultAsOf="2026-04-30" />;
+
+  const offsetting = [
+    item("one", "Group A", "2026-04-10", Number.MAX_SAFE_INTEGER),
+    item("two", "Group B", "2026-04-10", 1),
+    item("three", "Credit C", "2026-04-10", -1),
+  ];
+
+  it("leaves the query, rows, totals and CSV intact after an unsafe search", async () => {
+    const onQueryChange = vi.fn();
+    const { act, entry } = setup(
+      "aged-balances",
+      "Aged receivables",
+      <AgedBalances items={offsetting} defaultAsOf="2026-04-30" onQueryChange={onQueryChange} />,
+    );
+    const { rows, totals, query, view } = entry();
+    expect((await act("setSearch", ["Group"])).ok).toBe(false);
+    expect(entry()).toMatchObject({ rows, totals, query, view });
+    expect(onQueryChange).not.toHaveBeenCalled();
+    const download = vi.spyOn(csv, "downloadCsv").mockImplementation(() => {});
+    try {
+      fireEvent.click(document.querySelector('[data-slot="aged-balances-export"]')!);
+      expect(download.mock.calls[0]?.[1]).toMatchObject(
+        rows.map((row: { partyId: string }) => ({ partyId: row.partyId })),
+      );
+    } finally {
+      download.mockRestore();
+    }
+  });
+
+  it("shows an issue for unrepresentable input and recovers when the owner corrects it", () => {
+    const show = (balances: OpenItem[]) => <AgedBalances items={balances} defaultAsOf="2026-04-30" />;
+    const { entry, alert, view } = setup("aged-balances", "Aged receivables", show(offsetting.slice(0, 2)));
+    expect(entry().issues[0]).toMatch(/safe integer/);
+    expect(alert()).toMatch(/safe integer/);
+    expect(document.querySelector('[data-slot="aged-balances-export"]')).toBeNull();
+    view.rerender(<BookiLocaleProvider defaultCountry="US">{show(offsetting)}</BookiLocaleProvider>);
+    expect(entry().issues).toEqual([]);
+    expect(entry().totals.totalMinor).toBe(Number.MAX_SAFE_INTEGER);
+    expect(alert()).toBe("");
+  });
 
   it("keeps filtered and drilled minor-unit totals exact on the bridge", async () => {
     const max = Number.MAX_SAFE_INTEGER;
