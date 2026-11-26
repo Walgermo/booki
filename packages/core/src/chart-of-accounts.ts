@@ -321,6 +321,18 @@ function issuesOf(scheme: ChartScheme, account: ChartAccount, count: number, rep
       }
     }
   }
+  if (!hasRanges(scheme) && namedClass && isAccountType(account.type) && !namedClass.types.includes(account.type)) {
+    add(
+      "type-mismatch",
+      "error",
+      msg("chart.type-not-in-class", {
+        number,
+        type: `"${account.type}"`,
+        class: namedClass.id,
+        types: namedClass.types.map((type) => `"${type}"`).join(", "),
+      }),
+    );
+  }
   if (!isAccountType(account.type)) {
     add(
       "type-mismatch",
@@ -413,9 +425,15 @@ export function checkChange(
   pending: readonly ProposedChange[] = [],
 ): ProposedChange {
   const number = accountNumberOf(change.number);
-  const existing = accounts.find((account) => account.number === number);
-  const adding = !existing && pending.some((item) => item.number === number && item.kind === "add");
-  const out: ProposedChange = { kind: existing ? "edit" : "add", number };
+  // Checked against the chart as the proposal so far leaves it, so changes apply in order:
+  // a number freed by a renumbering is free, and one taken by it or by an addition is taken.
+  const chart = applyChanges(accounts, pending);
+  const existing = chart.find((account) => account.number === number);
+  const adding = pending.some((item) => item.kind === "add" && item.number === number);
+  const original = accounts.some((account) => account.number === number);
+  // Taken by a renumbering earlier in the proposal: a new account there would collide with it.
+  if (existing && !original && !adding) throw new BookiError("chart.exists", { number });
+  const out: ProposedChange = { kind: existing && original ? "edit" : "add", number };
   if (change.name !== undefined) {
     const name = String(change.name).trim();
     if (name === "") throw new BookiError("chart.name-empty", { number });
@@ -437,10 +455,9 @@ export function checkChange(
       if (!existing)
         throw new BookiError("chart.no-account", {
           number,
-          numbers: accounts.map((a) => a.number).join(", ") || msg("word.none"),
+          numbers: chart.map((a) => a.number).join(", ") || msg("word.none"),
         });
-      const taken = accounts.some((account) => account.number === next) || pending.some((item) => item.number === next);
-      if (taken) throw new BookiError("chart.exists", { number: next });
+      if (chart.some((account) => account.number === next)) throw new BookiError("chart.exists", { number: next });
       out.newNumber = next;
     }
   }
@@ -449,7 +466,7 @@ export function checkChange(
     if (out.type !== undefined && out.type !== existing.type)
       throw new BookiError("chart.locked", { number, field: "type" });
   }
-  if (!existing && !adding && (out.name === undefined || out.type === undefined)) {
+  if (!existing && (out.name === undefined || out.type === undefined)) {
     throw new BookiError("chart.new-needs", { number, types: ACCOUNT_TYPES.join(", ") });
   }
   return out;
@@ -459,7 +476,9 @@ export function checkChange(
 export function mergeChanges(before: readonly ProposedChange[], next: readonly ProposedChange[]): ProposedChange[] {
   const out = before.map((change) => ({ ...change }));
   for (const change of next) {
-    const at = out.findIndex((item) => item.number === change.number);
+    // The same account: an addition and its later changes, or edits of one account. A new
+    // account at a number an earlier renumbering freed is a change of its own.
+    const at = out.findIndex((item) => item.number === change.number && item.kind === change.kind);
     if (at < 0) out.push({ ...change });
     else out[at] = { ...out[at]!, ...change, kind: out[at]!.kind };
   }
@@ -470,13 +489,22 @@ export function mergeChanges(before: readonly ProposedChange[], next: readonly P
 export function applyChanges(accounts: readonly ChartAccount[], changes: readonly ProposedChange[]): ChartAccount[] {
   const out = accounts.map((account) => ({ ...account }));
   for (const change of changes) {
-    const { kind: _kind, number, newNumber, ...fields } = change;
-    const at = out.findIndex((account) => account.number === number);
+    const { kind, number, newNumber, ...fields } = change;
     const patch = Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== undefined));
-    if (at < 0) {
+    const earlier = changes.slice(0, changes.indexOf(change));
+    // An addition is always a new account, never a patch of whatever holds the number by now:
+    // if the number is taken, the duplicate shows and blocks the commit.
+    if (kind === "add" && !earlier.some((item) => item.kind === "add" && item.number === number)) {
       out.push(clean({ active: true, ...(patch as unknown as Omit<ChartAccount, "number" | "active">), number }));
       continue;
     }
+    // A later change to an account added earlier adds to the newest one with that number.
+    const at =
+      kind === "add"
+        ? out.map((account) => account.number).lastIndexOf(number)
+        : out.findIndex((account) => account.number === number);
+    // An edit of an account that is no longer there changes nothing; commit checks the proposal again.
+    if (at < 0) continue;
     out[at] = clean({ ...out[at]!, ...patch, ...(newNumber ? { number: newNumber } : {}) });
   }
   return out;
@@ -489,14 +517,30 @@ function clean(account: ChartAccount): ChartAccount {
   return out;
 }
 
-/** The chart with one account's fields changed. */
+/**
+ * The chart with one row's fields changed. The row is its place in the chart,
+ * not its number: a duplicated number is two rows, and an edit changes one.
+ */
 export function editAccount(
   accounts: readonly ChartAccount[],
-  number: string,
+  at: number,
   patch: Partial<Pick<ChartAccount, "name" | "vatCode" | "standardAccount" | "active">>,
 ): ChartAccount[] {
-  findAccount(accounts, number);
-  return accounts.map((account) => (account.number === number ? clean({ ...account, ...patch }) : account));
+  if (!Number.isInteger(at) || at < 0 || at >= accounts.length) {
+    throw new BookiError("chart.no-row", { row: String(at), rows: accounts.length });
+  }
+  return accounts.map((account, index) => (index === at ? clean({ ...account, ...patch }) : account));
+}
+
+/**
+ * The one row with this number, for a change named by number. A number that
+ * is in the chart twice is refused: which row is meant cannot be told.
+ */
+export function rowOfNumber(accounts: readonly ChartAccount[], number: unknown): number {
+  const found = findAccount(accounts, number);
+  const count = accounts.filter((account) => account.number === found.number).length;
+  if (count > 1) throw new BookiError("chart.ambiguous", { number: found.number, count });
+  return accounts.indexOf(found);
 }
 
 /**

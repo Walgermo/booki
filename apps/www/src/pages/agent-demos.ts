@@ -982,7 +982,7 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   "agent-status": [136, 88],
   "document-signoff": [592, 336],
   "sheet-stack": [712, 736],
-  "chart-of-accounts": [4544, 4272],
+  "chart-of-accounts": [4656, 2104],
   "fixed-asset-register": [1152, 848],
   "data-table": [696, 592],
   "kpi-stat": [120, 128],

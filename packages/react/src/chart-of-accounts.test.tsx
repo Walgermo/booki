@@ -362,8 +362,8 @@ describe("ChartOfAccounts for a person", () => {
 describe("chartOfAccounts (ui-sdk mount)", () => {
   const html = `<root>
     <heading value="1">1</heading>
-    <cell value="6800#name"></cell>
-    <active value="6800#active">Active</active>
+    <cell value="7#name"></cell>
+    <active value="7#active">Active</active>
     <commit>Commit</commit>
     <discard>Discard</discard>
   </root>`;
@@ -381,7 +381,7 @@ describe("chartOfAccounts (ui-sdk mount)", () => {
       html,
     );
     try {
-      await view.click(view.part("active", "6800#active")!);
+      await view.click(view.part("active", "7#active")!);
       expect(view.state.accounts.find((a) => a.number === "6800")?.active).toBe(false);
       expect(view.changes.at(-1)).toMatchObject({ key: "accounts", reason: "deactivate-account", source: "mouse" });
       await view.click(view.part("commit")!);
@@ -406,5 +406,96 @@ describe("chartOfAccounts (ui-sdk mount)", () => {
     } finally {
       view.unmount();
     }
+  });
+});
+
+describe("ChartOfAccounts review fixes", () => {
+  it("edits and deactivates one row of a duplicated number, not both", () => {
+    const twice = [...NO, acc("6800", "Kontorrekvisita (gammel)", "expense", { standardAccount: "6800" })];
+    const changes: ChartAccount[][] = [];
+    const { button } = setup(<Owned initial={twice} onChange={(next) => changes.push(next)} />);
+    const names = [...document.querySelectorAll<HTMLInputElement>('[aria-label="Navn, konto 6800"]')];
+    expect(names).toHaveLength(2);
+    fireEvent.change(names[1]!, { target: { value: "Rekvisita, utgått" } });
+    fireEvent.blur(names[1]!);
+    expect(
+      changes
+        .at(-1)!
+        .filter((a) => a.number === "6800")
+        .map((a) => a.name),
+    ).toEqual(["Kontorrekvisita", "Rekvisita, utgått"]);
+    fireEvent.click(button("Deaktiver 6800 Rekvisita, utgått"));
+    expect(
+      changes
+        .at(-1)!
+        .filter((a) => a.number === "6800")
+        .map((a) => a.active),
+    ).toEqual([true, false]);
+  });
+
+  it("refuses an agent's VAT code edit on a duplicated number", async () => {
+    const twice = [...NO, acc("6800", "Kontorrekvisita (gammel)", "expense")];
+    const { act } = setup(<ChartOfAccounts defaultAccounts={twice} />);
+    const result = await act("setVatCode", ["6800", "1"]);
+    expect(result.error?.message).toContain("Account 6800 is in the chart 2 times");
+  });
+
+  it("checks a proposal's VAT code and standard account against the lists, like the direct edits", async () => {
+    const { act, entry } = setup(
+      <ChartOfAccounts
+        defaultAccounts={NO}
+        taxCodes={[{ code: "1" }, { code: "0" }]}
+        standardAccounts={[{ number: "6800" }, { number: "6810" }]}
+      />,
+    );
+    const vat = await act("propose", [{ number: "6810", name: "Programvare", type: "expense", vatCode: "25" }]);
+    expect(vat.error?.message).toBe('No VAT code "25". VAT codes: 1, 0.');
+    const standard = await act("setProposal", [
+      [{ number: "6810", name: "Programvare", type: "expense", standardAccount: "6820" }],
+    ]);
+    expect(standard.error?.message).toContain('No standard account "6820".');
+    expect(entry().proposal).toBeNull();
+    const ok = await act("propose", [{ number: "6810", name: "Programvare", type: "expense", vatCode: "1" }]);
+    expect(ok.ok).toBe(true);
+  });
+
+  it("finds in a chart with more than 500 accounts left after the filters", () => {
+    const many = Array.from({ length: 700 }, (_, i) =>
+      acc(String(1000 + i), `Konto ${i}`, "asset", { standardAccount: "1000" }),
+    );
+    const view = mount(chartOfAccounts, { country: "NO", defaultAccounts: many }, "<root></root>");
+    try {
+      const out = view.api.find("1699") as { matching: number; accounts: { number: string; row: number }[] };
+      expect(out.matching).toBe(1);
+      expect(out.accounts[0]).toMatchObject({ number: "1699", row: 699 });
+      expect((view.api.find("Konto") as { matching: number }).matching).toBe(700);
+    } finally {
+      view.unmount();
+    }
+  });
+
+  it("undoes a proposal over an earlier one, and takes back a proposal that carries kind", async () => {
+    const { agent, entry, act } = setup(<ChartOfAccounts defaultAccounts={NO} />);
+    const first = await act("setProposal", [[{ kind: "add", number: "6810", name: "Programvare", type: "expense" }]]);
+    expect(first.ok).toBe(true);
+    const history = createBookiHistory(agent, { keys: [...BOOKI_HISTORY_KEYS, "proposal"] });
+    await act("propose", [{ number: "1500", name: "Kundefordringer, innland" }]);
+    expect(entry().proposal).toHaveLength(2);
+    expect(await history.undoSource("agent")).toEqual([]);
+    expect(entry().proposal).toEqual([{ kind: "add", number: "6810", name: "Programvare", type: "expense" }]);
+  });
+
+  it("sorts the card layout with a visible order select, and keeps no hidden header in the tab order", async () => {
+    const { field } = setup(<ChartOfAccounts defaultAccounts={NO} />);
+    fireEvent.change(field<HTMLSelectElement>("Rekkefølge"), { target: { value: "name:asc" } });
+    expect(document.querySelector('[data-slot="chart-of-accounts-row"] th')?.textContent).toMatch(/^1920/);
+    expect(field<HTMLSelectElement>("Rekkefølge").value).toBe("name:asc");
+    const { readFileSync } = await import("node:fs");
+    const here = new URL(import.meta.url).pathname.replace(/[^/]*$/, "");
+    const css = readFileSync(`${here}../../styles/src/controls/chart-of-accounts.css`, "utf8");
+    const narrow = css.slice(css.indexOf("@container"));
+    expect(narrow).toMatch(/thead \{\s*display: none;/);
+    expect(narrow).toMatch(/\[data-slot="chart-of-accounts-order"\] \{\s*display: grid;/);
+    expect(narrow).not.toContain("clip-path");
   });
 });

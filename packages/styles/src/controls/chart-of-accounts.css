@@ -426,6 +426,11 @@
   color: var(--bk-danger);
 }
 
+/* The card layout's sort. A wide list sorts from its header, so this is not shown (nor focusable) there. */
+[data-slot="chart-of-accounts-order"] {
+  display: none;
+}
+
 /* Narrow: each account becomes a small card, labelled field by field. */
 @container chart-of-accounts (max-width: 40rem) {
   [data-slot="chart-of-accounts-table"],
@@ -433,12 +438,17 @@
     display: block;
   }
 
+  /* The header's sort buttons give way to the order select: nothing hidden stays in the tab order. */
   [data-slot="chart-of-accounts-table"] thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+    display: none;
+  }
+
+  [data-slot="chart-of-accounts-order"] {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--bk-muted-fg);
   }
 
   /* Number, name and status on the first line; type, VAT code and standard account under them. */

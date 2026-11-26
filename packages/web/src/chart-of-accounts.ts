@@ -11,6 +11,7 @@ export const ChartOfAccountsElements: Record<string, CustomElementConstructor | 
   search: { tag: "booki-chart-of-accounts-search", target: wrappedChild("input"), display: "contents" },
   classes: { tag: "booki-chart-of-accounts-classes", target: wrappedChild("select"), display: "contents" },
   status: { tag: "booki-chart-of-accounts-status", target: wrappedChild("select"), display: "contents" },
+  order: { tag: "booki-chart-of-accounts-order", target: wrappedChild("select"), display: "contents" },
   sort: { tag: "booki-chart-of-accounts-sort", target: wrappedButton, display: "contents" },
   heading: { tag: "booki-chart-of-accounts-heading", target: wrappedButton, display: "contents" },
   cell: { tag: "booki-chart-of-accounts-cell", target: wrappedChild("input"), display: "contents" },

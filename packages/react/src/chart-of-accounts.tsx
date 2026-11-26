@@ -35,6 +35,7 @@ const TAGS = {
   search: "input",
   classes: "select",
   status: "select",
+  order: "select",
   sort: "button",
   heading: "button",
   cell: "input",
@@ -51,6 +52,7 @@ const ChartOfAccountsRoot: (typeof parts)["Root"] = parts.Root;
 const ChartOfAccountsSearch: (typeof parts)["Search"] = parts.Search;
 const ChartOfAccountsClasses: (typeof parts)["Classes"] = parts.Classes;
 const ChartOfAccountsStatus: (typeof parts)["Status"] = parts.Status;
+const ChartOfAccountsOrder: (typeof parts)["Order"] = parts.Order;
 const ChartOfAccountsSort: (typeof parts)["Sort"] = parts.Sort;
 const ChartOfAccountsHeading: (typeof parts)["Heading"] = parts.Heading;
 const ChartOfAccountsCell: (typeof parts)["Cell"] = parts.Cell;
@@ -70,6 +72,10 @@ const COPY = {
     allClasses: "All classes",
     status: "Status",
     allStatuses: "Active and inactive",
+    order: "Order",
+    chartOrder: "Chart order",
+    ascending: "ascending",
+    descending: "descending",
     active: "Active",
     inactive: "Inactive",
     number: "Number",
@@ -109,6 +115,10 @@ const COPY = {
     allClasses: "Alle klasser",
     status: "Status",
     allStatuses: "Aktive og inaktive",
+    order: "Rekkefølge",
+    chartOrder: "Kontoplanens rekkefølge",
+    ascending: "stigende",
+    descending: "synkende",
     active: "Aktiv",
     inactive: "Inaktiv",
     number: "Nummer",
@@ -261,7 +271,7 @@ function ChartOfAccounts({
         const issuesOf = (number: string) => state.allIssues.filter((issue) => issue.number === number);
         const groups = groupAccounts(
           rules,
-          state.pageRows.map((row) => ({ ...row, class: row.class ?? undefined }) as ChartAccount),
+          state.pageRows.map((row) => ({ ...row, class: row.class ?? undefined }) as ChartAccount & { row: number }),
         );
         const from = state.view.matching === 0 ? 0 : (state.view.page - 1) * state.query.pageSize + 1;
         const to = Math.min(state.view.matching, state.view.page * state.query.pageSize);
@@ -381,6 +391,30 @@ function ChartOfAccounts({
             ) : null}
 
             <div data-slot="chart-of-accounts-scroll">
+              {/* The card layout has no header row: this is its sort. Hidden (not focusable) on a wide list. */}
+              <label data-slot="chart-of-accounts-order">
+                <span>{copy.order}</span>
+                <ChartOfAccountsOrder aria-label={copy.order}>
+                  <option value="">{copy.chartOrder}</option>
+                  {(
+                    [
+                      ["number", copy.number],
+                      ["name", copy.name],
+                      ["type", copy.type],
+                      ["vatCode", copy.vatCode],
+                      ["standardAccount", standardLabel],
+                      ["active", copy.status],
+                    ] as const
+                  ).flatMap(([id, label]) => [
+                    <option key={`${id}:asc`} value={`${id}:asc`}>
+                      {label}, {copy.ascending}
+                    </option>,
+                    <option key={`${id}:desc`} value={`${id}:desc`}>
+                      {label}, {copy.descending}
+                    </option>,
+                  ])}
+                </ChartOfAccountsOrder>
+              </label>
               <table data-slot="chart-of-accounts-table">
                 <thead>
                   <tr>
@@ -453,7 +487,7 @@ function ChartOfAccounts({
                               const error = issues.some((issue) => issue.level === "error");
                               return (
                                 <tr
-                                  key={account.number}
+                                  key={account.row}
                                   data-slot="chart-of-accounts-row"
                                   data-inactive={account.active ? undefined : ""}
                                   data-locked={account.locked ? "" : undefined}
@@ -469,7 +503,7 @@ function ChartOfAccounts({
                                   </th>
                                   <td data-slot="chart-of-accounts-name" data-label={copy.name}>
                                     <ChartOfAccountsCell
-                                      value={cellKey(account.number, "name")}
+                                      value={cellKey(account.row, "name")}
                                       aria-label={copy.editLabel(copy.name, account.number)}
                                       aria-invalid={issues.some((issue) => issue.code === "name-empty") || undefined}
                                     />
@@ -489,7 +523,7 @@ function ChartOfAccounts({
                                   <td data-slot="chart-of-accounts-code" data-label={copy.vatCode}>
                                     {taxCodes && taxCodes.length > 0 ? (
                                       <ChartOfAccountsVat
-                                        value={account.number}
+                                        value={String(account.row)}
                                         aria-label={copy.editLabel(copy.vatCode, account.number)}
                                       >
                                         <option value="">{copy.noVat}</option>
@@ -501,14 +535,14 @@ function ChartOfAccounts({
                                       </ChartOfAccountsVat>
                                     ) : (
                                       <ChartOfAccountsCell
-                                        value={cellKey(account.number, "vatCode")}
+                                        value={cellKey(account.row, "vatCode")}
                                         aria-label={copy.editLabel(copy.vatCode, account.number)}
                                       />
                                     )}
                                   </td>
                                   <td data-slot="chart-of-accounts-code" data-label={standardLabel}>
                                     <ChartOfAccountsCell
-                                      value={cellKey(account.number, "standardAccount")}
+                                      value={cellKey(account.row, "standardAccount")}
                                       aria-label={copy.editLabel(standardLabel, account.number)}
                                       inputMode="numeric"
                                       aria-invalid={
@@ -521,7 +555,7 @@ function ChartOfAccounts({
                                   </td>
                                   <td data-slot="chart-of-accounts-status" data-label={copy.status}>
                                     <ChartOfAccountsActive
-                                      value={activeKey(account.number)}
+                                      value={activeKey(account.row)}
                                       aria-label={copy.activeAction(
                                         `${account.number} ${account.name}`,
                                         account.active,
@@ -575,6 +609,7 @@ export {
   ChartOfAccountsSearch,
   ChartOfAccountsSort,
   ChartOfAccountsStatus,
+  ChartOfAccountsOrder,
   ChartOfAccountsVat,
   chartOfAccounts,
 };

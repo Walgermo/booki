@@ -7,6 +7,7 @@ const parts = {
   search: "input",
   classes: "select",
   status: "select",
+  order: "select",
   sort: "button",
   heading: "button",
   cell: "input",

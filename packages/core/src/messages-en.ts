@@ -580,6 +580,10 @@ export const EN = {
   "chart.no-proposal": "There is no proposed change to the chart of accounts.",
   "chart.proposal-blocked": "The proposed chart has errors, so it cannot be committed: {issues}",
   "chart.bad-status": '"{value}" is not an account status. Use active, inactive, or "" for all.',
+  "chart.type-not-in-class": "Account {number} is {type}, which class {class} does not hold. It holds {types}.",
+  "chart.no-row": "There is no row {row} in the chart. It has {rows} rows, counted from 0.",
+  "chart.ambiguous":
+    "Account {number} is in the chart {count} times, so which one to change cannot be told. Give one a new number first: propose({ number, newNumber }).",
   "ledger.no-voucher": 'No voucher "{key}" in this ledger. Vouchers include: {numbers}.',
   "supplier-invoice.no-invoice": 'No supplier invoice "{id}". Invoices: {ids}.',
   "vat.box-is-total": 'Box "{id}" is a total of boxes {boxes} and has no vouchers of its own. Open one of those.',

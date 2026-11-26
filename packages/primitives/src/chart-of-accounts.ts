@@ -10,7 +10,7 @@ import {
   classOf,
   classRange,
   editAccount,
-  findAccount,
+  rowOfNumber,
   mergeChanges,
   proposalIssues,
   type AccountChange,
@@ -21,7 +21,7 @@ import {
   type ProposedChange,
 } from "@booki-aui/core/chart-of-accounts";
 import { BookiError } from "@booki-aui/core/msg";
-import { normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
+import { matchingRows, normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
 import { QUERY_FORMAT, buttonKey, checkFields, recordOf, textOf } from "./fields.js";
@@ -78,8 +78,12 @@ export const DEFAULT_PAGE_SIZE = 100;
 export const EDITABLE = ["name", "vatCode", "standardAccount"] as const;
 export type EditableField = (typeof EDITABLE)[number];
 
-/** One account as the agent and the list read it: `class` is the class it is grouped under. */
-export type ChartRow = Omit<ChartAccount, "class"> & { class: string | null };
+/**
+ * One account as the agent and the list read it: `class` is the class it is
+ * grouped under, `row` its place in the chart. A duplicated number is two
+ * rows, so a person's edit or status press names the row, not the number.
+ */
+export type ChartRow = Omit<ChartAccount, "class"> & { class: string | null; row: number };
 
 /** A class with how many accounts it holds. */
 export type ChartClassSummary = {
@@ -154,10 +158,14 @@ export function matchingAccounts(scheme: ChartScheme, accounts: readonly ChartAc
   return { kept, query: withoutExtras(fitted) };
 }
 
-export const rowOf = (scheme: ChartScheme, account: ChartAccount): ChartRow => ({
+export const rowOf = (scheme: ChartScheme, account: ChartAccount, row: number): ChartRow => ({
   ...account,
   class: classOf(scheme, account)?.id ?? null,
+  row,
 });
+
+/** Each account's place in the chart, by identity: filters and sorts keep the objects. */
+const placesOf = (accounts: readonly ChartAccount[]) => new Map(accounts.map((account, index) => [account, index]));
 
 /** Everything derived from the accounts, the query and the proposal. */
 export function derive(
@@ -178,7 +186,8 @@ export function derive(
     const id = classOf(scheme, account)?.id;
     if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
   }
-  const page = shown.rows.map((account) => rowOf(scheme, account));
+  const places = placesOf(accounts);
+  const page = shown.rows.map((account) => rowOf(scheme, account, places.get(account) ?? -1));
   return {
     scheme: { id: scheme.id, requiresStandard: scheme.requiresStandard, digits: scheme.digits },
     classes: scheme.classes.map(
@@ -345,24 +354,33 @@ export const chartOfAccounts = definePrimitive({
       return value;
     }
 
-    function setVatCode(number: unknown, code: unknown, event?: Event) {
-      const account = findAccount(accounts(), textOf(number, "setVatCode"));
+    /** A person's row: its place in the chart. */
+    const rowAt = (raw: unknown) => {
+      const at = Number(raw);
+      const account = accounts()[at];
+      if (!Number.isInteger(at) || !account) {
+        throw new BookiError("chart.no-row", { row: String(raw), rows: accounts().length });
+      }
+      return at;
+    };
+    function setVatCodeAt(at: number, code: unknown, event?: Event) {
+      const account = accounts()[at]!;
       const value = vatCodeOf(code, "setVatCode");
       if ((account.vatCode ?? "") === value) return false;
-      return commitAccounts(editAccount(accounts(), account.number, { vatCode: value }), "set-vat-code", event);
+      return commitAccounts(editAccount(accounts(), at, { vatCode: value }), "set-vat-code", event);
     }
-    function mapStandard(number: unknown, standard: unknown, event?: Event) {
-      const account = findAccount(accounts(), textOf(number, "mapStandard"));
+    function mapStandardAt(at: number, standard: unknown, event?: Event) {
+      const account = accounts()[at]!;
       const value = standardOf(standard, "mapStandard");
       if ((account.standardAccount ?? "") === value) return false;
-      return commitAccounts(editAccount(accounts(), account.number, { standardAccount: value }), "map-standard", event);
+      return commitAccounts(editAccount(accounts(), at, { standardAccount: value }), "map-standard", event);
     }
-    function rename(number: unknown, name: unknown, event?: Event) {
-      const account = findAccount(accounts(), textOf(number, "rename"));
+    function renameAt(at: number, name: unknown, event?: Event) {
+      const account = accounts()[at]!;
       const value = textOf(name, "rename").trim();
       if (value === "") throw new BookiError("chart.name-empty", { number: account.number });
       if (account.name === value) return false;
-      return commitAccounts(editAccount(accounts(), account.number, { name: value }), "rename-account", event);
+      return commitAccounts(editAccount(accounts(), at, { name: value }), "rename-account", event);
     }
 
     /** Check changes one by one against the chart and what is already proposed. */
@@ -371,13 +389,27 @@ export const chartOfAccounts = definePrimitive({
       if (items.length === 0) throw new BookiError("chart.nothing-proposed", { example: PROPOSE_EXAMPLE });
       let pending = base;
       const out: ProposedChange[] = [];
-      for (const item of items) {
+      for (const raw of items) {
+        // A proposal read back from history or staging carries the `kind` it was checked with: worked out again here.
+        const item =
+          raw !== null && typeof raw === "object" && !Array.isArray(raw) && "kind" in raw
+            ? (({ kind: _kind, ...rest }) => rest)(raw as Record<string, unknown>)
+            : raw;
         const fields = checkFields(action, item, ACCOUNT_CHANGE_FIELDS, PROPOSE_EXAMPLE);
+        if (fields.vatCode !== undefined) vatCodeOf(fields.vatCode, action);
+        if (fields.standardAccount !== undefined) standardOf(fields.standardAccount, action);
         const next = checkChange(scheme(), accounts(), fields as AccountChange, pending);
         out.push(next);
         pending = mergeChanges(pending, [next]);
       }
       return out;
+    }
+
+    function applyQuery(next: TableQuery, reason: string, event?: Event) {
+      normalizeQuery(chartColumns, withoutExtras(next));
+      const ok = change("query", next, { reason, event });
+      if (ok) refresh();
+      return ok;
     }
 
     const table = queryMethods({
@@ -388,27 +420,23 @@ export const chartOfAccounts = definePrimitive({
       },
       query: () => context.store.get().query,
       pageCount: () => context.store.get().view.pageCount,
-      apply: (next, reason, event) => {
-        normalizeQuery(chartColumns, withoutExtras(next));
-        const ok = change("query", next, { reason, event });
-        if (ok) refresh();
-        return ok;
-      },
+      apply: (next, reason, event) => applyQuery(next, reason, event),
       refuse: (message) => {
         if (context.store.get().refusal !== message) context.store.set({ refusal: message });
       },
     });
 
-    /** The draft key of one cell: "1500#name". */
+    /** The draft key of one cell: "<row>#name". */
     const cellOf = (key: string) => {
       const at = key.lastIndexOf("#");
-      return { number: key.slice(0, at), field: key.slice(at + 1) as EditableField };
+      return { row: key.slice(0, at), field: key.slice(at + 1) as EditableField };
     };
     function editCell(key: string, text: string, event?: Event) {
-      const { number, field } = cellOf(key);
-      if (field === "name") return rename(number, text, event);
-      if (field === "vatCode") return setVatCode(number, text, event);
-      if (field === "standardAccount") return mapStandard(number, text, event);
+      const { row, field } = cellOf(key);
+      const at = rowAt(row);
+      if (field === "name") return renameAt(at, text, event);
+      if (field === "vatCode") return setVatCodeAt(at, text, event);
+      if (field === "standardAccount") return mapStandardAt(at, text, event);
       return false;
     }
 
@@ -423,8 +451,13 @@ export const chartOfAccounts = definePrimitive({
         const state = context.store.get();
         const query = { ...(context.options().query ?? state.query), search, page: 1 };
         const { kept, query: plain } = matchingAccounts(scheme(), accounts(), query);
-        const matches = tableView(kept, chartColumns, { ...plain, page: 1, pageSize: kept.length || 1 }).rows;
-        return { matching: matches.length, accounts: matches.slice(0, 10).map((account) => rowOf(scheme(), account)) };
+        // Every match, before paging: no page size of its own, so a chart of any size is searched.
+        const matches = matchingRows(kept, chartColumns, plain);
+        const places = placesOf(accounts());
+        return {
+          matching: matches.length,
+          accounts: matches.slice(0, 10).map((account) => rowOf(scheme(), account, places.get(account) ?? -1)),
+        };
       },
       /** Agent: show one class only, by its id (`classes` in the snapshot). "" shows every class. */
       filterClass: (classId: string) => table.setFilter(CLASS_FILTER, textOf(classId, "filterClass")),
@@ -449,9 +482,11 @@ export const chartOfAccounts = definePrimitive({
         return setProposalValue(next, "set-proposal");
       },
       /** Agent: the account's default VAT code. "" clears it. */
-      setVatCode: (number: string, code: string) => setVatCode(number, code),
+      setVatCode: (number: string, code: string) =>
+        setVatCodeAt(rowOfNumber(accounts(), textOf(number, "setVatCode")), code),
       /** Agent: the SAF-T standard account an account maps to, 2 or 4 digits. "" clears it. */
-      mapStandard: (number: string, standardAccount: string) => mapStandard(number, standardAccount),
+      mapStandard: (number: string, standardAccount: string) =>
+        mapStandardAt(rowOfNumber(accounts(), textOf(number, "mapStandard")), standardAccount),
 
       // Everything below is for a person. It is not in `agent.actions`, so the
       // bridge refuses a step that names it.
@@ -459,11 +494,24 @@ export const chartOfAccounts = definePrimitive({
         shown(() => table.filterByPerson(CLASS_FILTER, classId, event)),
       statusByPerson: (status: string, event?: Event) =>
         shown(() => table.filterByPerson(STATUS_FILTER, status, event)),
+      /** Person: the order of the list, "<column>:asc", "<column>:desc", or "" for chart order. */
+      orderByPerson: (value: string, event?: Event) =>
+        shown(() => {
+          const text = String(value ?? "");
+          if (text === "") return applyQuery({ ...context.store.get().query, sort: null }, "clear-sort", event);
+          const [column = "", direction = "asc"] = text.split(":");
+          if (direction !== "asc" && direction !== "desc") {
+            throw new BookiError("table.bad-direction", { direction });
+          }
+          return applyQuery({ ...context.store.get().query, sort: { column, direction }, page: 1 }, "set-sort", event);
+        }),
       /** Person only. Puts the proposal into the chart. Refused while it has errors. */
       commit: (event?: Event) =>
         gated("commit", () => {
           const { proposal } = context.store.get();
           if (!proposal || proposal.length === 0) throw new BookiError("chart.no-proposal");
+          // The chart may have changed since it was proposed: check it again, in order.
+          checked(proposal, "commit", []);
           const errors = proposalIssues(scheme(), accounts(), proposal).filter((issue) => issue.level === "error");
           if (errors.length > 0) {
             throw new BookiError("chart.proposal-blocked", { issues: errors.map((issue) => issue.message) });
@@ -475,11 +523,12 @@ export const chartOfAccounts = definePrimitive({
       /** Person only. Drops the proposal. */
       discard: (event?: Event) => shown(() => setProposalValue(null, "discard-proposal", event)),
       /** Person only. Activate an inactive account or deactivate an active one. */
-      toggleActive: (number: string, event?: Event) =>
+      toggleActive: (row: number | string, event?: Event) =>
         gated("toggleActive", () => {
-          const account = findAccount(accounts(), number);
+          const at = rowAt(row);
+          const account = accounts()[at]!;
           return commitAccounts(
-            editAccount(accounts(), account.number, { active: !account.active }),
+            editAccount(accounts(), at, { active: !account.active }),
             account.active ? "deactivate-account" : "activate-account",
             event,
           );
@@ -492,7 +541,7 @@ export const chartOfAccounts = definePrimitive({
           collapsed: collapsed.includes(id) ? collapsed.filter((item) => item !== id) : [...collapsed, id],
         });
       },
-      /** Hold what a person types in a cell, "1500#name". */
+      /** Hold what a person types in a cell, "<row>#name". */
       setDraft: (key: string, text: string) => {
         context.store.set({ drafts: { ...context.store.get().drafts, [key]: String(text ?? "") } });
       },
@@ -507,7 +556,8 @@ export const chartOfAccounts = definePrimitive({
         return ok;
       },
       /** A person picked a VAT code from the list. */
-      pickVatCode: (number: string, code: string, event?: Event) => shown(() => setVatCode(number, code, event)),
+      pickVatCode: (row: number | string, code: string, event?: Event) =>
+        shown(() => setVatCodeAt(rowAt(row), code, event)),
       // Sort, search, filter and pages, like every list control (`@booki-aui/core/table`).
       ...table,
     };
@@ -558,6 +608,20 @@ export const chartOfAccounts = definePrimitive({
         },
       },
     }),
+    // The order of the list: "<column>:asc", "<column>:desc", or "" for chart order. The card
+    // layout has no header row, so its sort is this select.
+    order: slot({
+      attrs: (state) => ({ value: state.query.sort ? `${state.query.sort.column}:${state.query.sort.direction}` : "" }),
+      on: {
+        input: (event, { api }) => {
+          try {
+            api.orderByPerson((event.target as HTMLSelectElement).value, event);
+          } catch {
+            /* shown in the control */
+          }
+        },
+      },
+    }),
     // Active, inactive, or "" for both.
     status: slot({
       attrs: (state) => ({ value: state.query.filters[STATUS_FILTER] ?? "" }),
@@ -595,15 +659,14 @@ export const chartOfAccounts = definePrimitive({
       }),
       press: ({ api, key }) => api.toggleClass(String(key)),
     }),
-    // A cell a person edits: `value` is "<number>#name", "<number>#vatCode" or "<number>#standardAccount".
+    // A cell a person edits: `value` is "<row>#name", "<row>#vatCode" or "<row>#standardAccount".
     cell: slot<{ value: string }>({
       props: { value: "string" },
       attrs: (state, part) => {
         const key = String(part.key);
         const at = key.lastIndexOf("#");
-        const number = key.slice(0, at);
         const field = key.slice(at + 1) as EditableField;
-        const account = state.accounts.find((item) => item.number === number);
+        const account = state.accounts[Number(key.slice(0, at))];
         return {
           type: "text",
           autoComplete: "off",
@@ -633,11 +696,11 @@ export const chartOfAccounts = definePrimitive({
         },
       },
     }),
-    // A VAT code picked from the app's list. `value` is the account number.
+    // A VAT code picked from the app's list. `value` is the row.
     vat: slot<{ value: string }>({
       props: { value: "string" },
       attrs: (state, part) => ({
-        value: state.accounts.find((item) => item.number === String(part.key))?.vatCode ?? "",
+        value: state.accounts[Number(part.key)]?.vatCode ?? "",
       }),
       on: {
         input: (event, { api, key }) => {
@@ -649,12 +712,11 @@ export const chartOfAccounts = definePrimitive({
         },
       },
     }),
-    // Activate or deactivate one account: a person's decision. `value` is its `buttonKey`, "1500#active".
+    // Activate or deactivate one account: a person's decision. `value` is its `buttonKey`, "<row>#active".
     active: slot<{ value: string }>({
       props: { value: "string" },
       attrs: (state, part) => {
-        const number = recordOf(part.key);
-        const account = state.accounts.find((item) => item.number === number);
+        const account = state.accounts[Number(recordOf(part.key))];
         return {
           type: "button",
           "data-variant": "secondary",
@@ -743,9 +805,9 @@ export const chartOfAccounts = definePrimitive({
   },
 });
 
-/** The key of one account's activate button, "1500#active". */
-export const activeKey = (number: string) => buttonKey(number, "active");
-/** The key of one editable cell, "1500#name". */
-export const cellKey = (number: string, field: EditableField) => `${number}#${field}`;
+/** The key of one row's activate button, "3#active": a row is its place in the chart. */
+export const activeKey = (row: number) => buttonKey(String(row), "active");
+/** The key of one editable cell, "3#name". */
+export const cellKey = (row: number, field: EditableField) => `${row}#${field}`;
 
 export type { AccountChange, AccountIssue, AccountType, ChartAccount, ChartScheme, ProposedChange };

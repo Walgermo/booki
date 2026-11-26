@@ -17,6 +17,7 @@ import {
   groupAccounts,
   mergeChanges,
   proposalIssues,
+  rowOfNumber,
   type ChartAccount,
 } from "./chart-of-accounts.js";
 import { localize } from "./messages.js";
@@ -218,7 +219,7 @@ describe("changes", () => {
   });
 
   it("edits one account and clears an emptied field", () => {
-    const next = editAccount(NO, "3000", { vatCode: "" });
+    const next = editAccount(NO, 4, { vatCode: "" });
     expect(next.find((a) => a.number === "3000")).not.toHaveProperty("vatCode");
   });
 
@@ -229,6 +230,50 @@ describe("changes", () => {
     expect(message).toMatch(/^No account "1950" in the chart of 60\. Closest: /);
     expect(message).toContain("1900");
     expect(localize(message, "nb")).toContain("Nærmeste");
+  });
+});
+
+describe("review fixes", () => {
+  it("applies changes in order: a number taken by a renumbering is refused, one it freed can be reused", () => {
+    const renumber = [checkChange(NS4102_SCHEME, NO, { number: "1500", newNumber: "1510" })];
+    expect(() =>
+      checkChange(NS4102_SCHEME, NO, { number: "1510", name: "Andre fordringer", type: "asset" }, renumber),
+    ).toThrow("Account 1510 already exists.");
+    // 1500 is free once renumbered: a new account there is an addition of its own, not an edit of the old one.
+    const reuse = checkChange(NS4102_SCHEME, NO, { number: "1500", name: "Nye fordringer", type: "asset" }, renumber);
+    const merged = mergeChanges(renumber, [reuse]);
+    expect(merged).toHaveLength(2);
+    const next = applyChanges(NO, merged);
+    expect(next.filter((a) => a.number === "1510").map((a) => a.name)).toEqual(["Kundefordringer"]);
+    expect(next.filter((a) => a.number === "1500").map((a) => a.name)).toEqual(["Nye fordringer"]);
+  });
+
+  it("never lets an addition overwrite an account that holds its number by now; the duplicate blocks", () => {
+    const stale = [{ kind: "add" as const, number: "1920", name: "Ny bank", type: "asset" as const }];
+    const next = applyChanges(NO, stale);
+    expect(next.filter((a) => a.number === "1920").map((a) => a.name)).toEqual(["Bankinnskudd", "Ny bank"]);
+    expect(proposalIssues(NS4102_SCHEME, NO, stale).map((issue) => issue.code)).toContain("duplicate");
+  });
+
+  it("edits one row of a duplicated number, and refuses to pick one by number", () => {
+    const twice = [...NO, acc("1920", "Bank 2", "asset")];
+    const next = editAccount(twice, twice.length - 1, { name: "Driftskonto" });
+    expect(next.filter((a) => a.number === "1920").map((a) => a.name)).toEqual(["Bankinnskudd", "Driftskonto"]);
+    expect(() => editAccount(twice, 99, { name: "x" })).toThrow("There is no row 99 in the chart.");
+    expect(() => rowOfNumber(twice, "1920")).toThrow("Account 1920 is in the chart 2 times");
+    expect(rowOfNumber(twice, "1500")).toBe(1);
+  });
+
+  it("checks the type against the named class in a scheme without ranges, with no empty brackets", () => {
+    const issues = accountIssues(TYPE_SCHEME, [
+      acc("100", "Rent", "expense", { class: "asset", standardAccount: undefined }),
+    ]);
+    expect(issues.map((issue) => issue.code)).toEqual(["type-mismatch"]);
+    expect(issues[0]!.message).toBe('Account 100 is "expense", which class asset does not hold. It holds "asset".');
+    expect(issues[0]!.message).not.toContain("()");
+    expect(localize(issues[0]!.message, "nb")).toBe(
+      'Konto 100 er "expense", som klasse asset ikke har. Den har "asset".',
+    );
   });
 });
 

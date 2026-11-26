@@ -622,6 +622,10 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "chart.no-proposal": "Det finnes ingen foreslått endring i kontoplanen.",
   "chart.proposal-blocked": "Den foreslåtte kontoplanen har feil og kan ikke tas i bruk: {issues}",
   "chart.bad-status": '"{value}" er ikke en kontostatus. Bruk active, inactive eller "" for alle.',
+  "chart.type-not-in-class": "Konto {number} er {type}, som klasse {class} ikke har. Den har {types}.",
+  "chart.no-row": "Det finnes ingen rad {row} i kontoplanen. Den har {rows} rader, talt fra 0.",
+  "chart.ambiguous":
+    "Konto {number} står {count} ganger i kontoplanen, så det er uklart hvilken som skal endres. Gi én av dem et nytt nummer først: propose({ number, newNumber }).",
   "ledger.no-voucher": 'Ikke noe bilag "{key}" i denne hovedboken. Bilag blant annet: {numbers}.',
   "supplier-invoice.no-invoice": 'Ingen leverandørfaktura "{id}". Fakturaer: {ids}.',
   "vat.box-is-total": 'Posten "{id}" er summen av postene {boxes} og har ingen bilag selv. Åpne en av dem.',
