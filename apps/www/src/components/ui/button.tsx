@@ -1,41 +1,25 @@
-import {
-  isValidElement,
-  type ButtonHTMLAttributes,
-  type ElementType,
-  type ReactElement,
-  type ReactNode,
-  type Ref,
-} from "react";
+import { isValidElement, type ElementType, type ReactElement, type ReactNode, type Ref } from "react";
 
-import { Button as SdkButton } from "@ui-sdk/react/button";
+import { Button as BookiButton, type ButtonProps as BookiButtonProps } from "@booki-aui/react";
 
-import { cn } from "@/lib/utils";
-
-const variants = {
-  primary: "border-transparent bg-primary text-primary-foreground hover:bg-[var(--primary-hover)]",
-  secondary:
-    "border-transparent bg-secondary text-secondary-foreground shadow-[var(--elevation-raised)] hover:bg-muted hover:shadow-[var(--elevation-raised-hover)]",
-  outline: "border-transparent bg-card text-foreground shadow-[var(--elevation-ring)] hover:bg-muted",
-  ghost: "border-transparent bg-transparent text-foreground hover:bg-muted",
-} as const;
-
-const sizes = {
-  sm: "min-h-10 px-3 text-xs",
-  md: "min-h-10 px-4 text-sm",
-  lg: "min-h-11 px-5 text-sm",
-} as const;
+/** The site's names; `outline` reads as Booki's secondary and `lg` as its control height. */
+const VARIANT = { primary: "primary", secondary: "secondary", outline: "secondary", ghost: "ghost" } as const;
+const SIZE = { sm: "sm", md: "md", lg: "md" } as const;
 
 export type ButtonProps = {
-  variant?: keyof typeof variants;
-  size?: keyof typeof sizes;
+  variant?: keyof typeof VARIANT;
+  size?: keyof typeof SIZE;
+  /** Style a link (or another element) as a button: it gets Booki's button look, not its role. */
   asChild?: boolean;
   className?: string;
   children?: ReactNode;
   ref?: Ref<HTMLButtonElement>;
-} & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children">;
+} & Omit<BookiButtonProps, "variant" | "size" | "className" | "children" | "ref">;
 
 /**
- * Docs/marketing chrome button. Prefer composition via `asChild` over style props.
+ * The site's button: Booki's own Button, so the docs and landing use the library's look
+ * and an agent finds and presses every button over the bridge. `asChild` puts the same
+ * look on a link.
  */
 function Button({
   variant = "primary",
@@ -44,43 +28,29 @@ function Button({
   className,
   children,
   ref,
-  type = "button",
-  disabled,
   ...props
 }: ButtonProps) {
-  const classes = cn(
-    "inline-flex items-center justify-center gap-1.5 rounded-[var(--bk-radius-sm)] border font-medium no-underline",
-    "transition-[color,background-color,box-shadow,transform] duration-150 ease-out",
-    "active:scale-[0.97]",
-    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground",
-    "disabled:pointer-events-none disabled:opacity-50",
-    variants[variant],
-    sizes[size],
-    className,
-  );
+  const look = { "data-booki-button": "", "data-variant": VARIANT[variant], "data-size": SIZE[size] };
 
   if (asChild && isValidElement(children)) {
-    const child = children as ReactElement<{
-      className?: string;
-      ref?: Ref<HTMLElement>;
-    }>;
+    const child = children as ReactElement<{ className?: string; ref?: Ref<HTMLElement> }>;
     const Child = child.type as ElementType;
     return (
       <Child
         {...child.props}
-        className={cn(classes, child.props.className)}
-        ref={(ref as Ref<HTMLElement>) ?? child.props.ref}
         {...props}
+        {...look}
+        data-slot="button"
+        className={[className, child.props.className].filter(Boolean).join(" ") || undefined}
+        ref={(ref as Ref<HTMLElement>) ?? child.props.ref}
       />
     );
   }
 
-  // The ui-sdk Button, so every button on the site is a control an agent can
-  // find in the snapshot and press over the bridge, the same as the library's.
   return (
-    <SdkButton ref={ref} type={type} disabled={disabled} className={classes} {...(props as Record<string, unknown>)}>
+    <BookiButton ref={ref} variant={VARIANT[variant]} size={SIZE[size]} className={className} {...props}>
       {children}
-    </SdkButton>
+    </BookiButton>
   );
 }
 
