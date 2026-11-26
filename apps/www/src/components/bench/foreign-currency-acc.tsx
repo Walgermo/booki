@@ -54,6 +54,7 @@ export type BookiForeignState = {
       creditMinor: number;
       foreignMinor?: number;
       currency?: string;
+      vatCode?: string;
     }[];
     rateScaled: number | null;
     posted: boolean;
@@ -109,7 +110,7 @@ export function BookiForeign() {
   );
 
   // For the benchmark's end-state checks only. The lines carry their foreign
-  // amount and currency as flat fields; the rate is the one a line records.
+  // amount, currency and VAT code as flat fields; the rate is the one a line records.
   useEndState<BookiForeignState>("__accForeign", {
     voucher: {
       date,
@@ -119,6 +120,7 @@ export function BookiForeign() {
         creditMinor: line.creditMinor,
         foreignMinor: line.foreign?.amountMinor,
         currency: line.foreign?.currency,
+        vatCode: line.vatCode,
       })),
       rateScaled: lines.find((line) => line.foreign)?.foreign?.rateScaled ?? null,
       posted,

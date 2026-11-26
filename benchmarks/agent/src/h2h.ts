@@ -310,7 +310,7 @@ async function main() {
         );
       }
     }
-    const versions = collectVersions(browser, { headed: values.headed, mcpServer });
+    const versions = collectVersions(browser, { headed: values.headed, mcpServer, origin });
     console.log(`\n${printVersions(versions)}`);
 
     const dir = path.join(REPO_ROOT, "benchmarks/agent/results");

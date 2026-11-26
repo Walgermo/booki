@@ -41,14 +41,22 @@ function git(): Versions["git"] {
   };
 }
 
-export function collectVersions(browser: Browser, options: { headed: boolean; mcpServer?: string | null }): Versions {
+/**
+ * `origin` is the site the run used: an MCP session is launched with an
+ * allowlist for it (openSession), so the recorded arguments carry it too.
+ * Per-strategy `--caps` are recorded with each strategy, not here.
+ */
+export function collectVersions(
+  browser: Pick<Browser, "version">,
+  options: { headed: boolean; mcpServer?: string | null; origin?: string },
+): Versions {
   return {
     node: process.version,
     chrome: browser.version(),
     playwrightCore: versionOf("playwright-core"),
     playwrightMcp: versionOf("@playwright/mcp"),
     playwrightMcpServer: options.mcpServer ?? null,
-    playwrightMcpArgs: mcpArgs({ headed: options.headed }),
+    playwrightMcpArgs: mcpArgs({ headed: options.headed, origin: options.origin }),
     modelContextProtocolSdk: versionOf("@modelcontextprotocol/sdk"),
     uiSdkReact: versionOf("@ui-sdk/react"),
     anthropicSdk: versionOf("@anthropic-ai/sdk"),

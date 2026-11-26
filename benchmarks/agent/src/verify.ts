@@ -7,7 +7,7 @@ import { vatPostings } from "@booki-aui/core/voucher";
 import type { Session } from "./session.js";
 
 /** The Norwegian profile's VAT codes, as the Booki voucher page uses them. */
-const NO_VAT_CODES = [
+export const NO_VAT_CODES = [
   { code: "MVA0", percent: 0 },
   { code: "MVA15", percent: 15 },
   { code: "MVA25", percent: 25 },

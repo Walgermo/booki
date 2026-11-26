@@ -7,6 +7,7 @@
 
 import { isValidKid } from "@booki-aui/core";
 import { ageItems, type OpenItem } from "@booki-aui/core/aging";
+import { invoiceTotals } from "@booki-aui/core/invoice";
 
 export class ApiError extends Error {
   constructor(message: string) {
@@ -265,10 +266,9 @@ function assertMinor(value: unknown, field: string, { positive }: { positive: bo
 }
 
 function assertIsoDate(value: unknown, field: string): asserts value is string {
-  const valid =
-    typeof value === "string" &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    new Date(`${value}T00:00:00Z`).toISOString().slice(0, 10) === value;
+  // A month or day out of range (2026-13-01) is an invalid Date, whose toISOString throws.
+  const parsed = typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(`${value}T00:00:00Z`) : null;
+  const valid = parsed !== null && Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
   if (!valid) throw new ApiError(`${field} must be an ISO date yyyy-mm-dd; got ${JSON.stringify(value)}.`);
 }
 
@@ -406,6 +406,8 @@ export class BookkeepingApi {
 
     const supplier = findSupplier(input.supplier);
     assertText(input.invoiceNumber, "invoiceNumber");
+    // Stored and compared without surrounding spaces: " 8841 " is invoice 8841.
+    const invoiceNumber = input.invoiceNumber.trim();
     assertIsoDate(input.invoiceDate, "invoiceDate");
     assertIsoDate(input.dueDate, "dueDate");
     if (input.dueDate < input.invoiceDate) {
@@ -419,11 +421,11 @@ export class BookkeepingApi {
     const vat = findVatCode(input.vatCode);
 
     const duplicate = this.#supplierInvoices.find(
-      (invoice) => invoice.supplier === supplier.number && invoice.invoiceNumber === input.invoiceNumber,
+      (invoice) => invoice.supplier === supplier.number && invoice.invoiceNumber === invoiceNumber,
     );
     if (duplicate) {
       throw new ApiError(
-        `Supplier invoice ${input.invoiceNumber} from ${supplier.number} is already registered as ${duplicate.id}.`,
+        `Supplier invoice ${invoiceNumber} from ${supplier.number} is already registered as ${duplicate.id}.`,
       );
     }
 
@@ -439,7 +441,7 @@ export class BookkeepingApi {
       id: `si-${this.#supplierInvoices.length + 1}`,
       supplier: supplier.number,
       supplierName: supplier.name,
-      invoiceNumber: input.invoiceNumber,
+      invoiceNumber,
       invoiceDate: input.invoiceDate,
       dueDate: input.dueDate,
       kid: input.kid,
@@ -489,8 +491,25 @@ export class BookkeepingApi {
       };
     });
 
-    const netMinor = lines.reduce((sum, line) => sum + line.netMinor, 0);
-    const vatMinor = lines.reduce((sum, line) => sum + line.vatMinor, 0);
+    // The totals are the screen's: net summed per VAT rate and the VAT rounded once
+    // per rate (invoiceTotals), not the sum of each line's rounded VAT. A line's
+    // vatMinor is that line alone, so the lines' VAT can differ from the total by
+    // an øre or two.
+    const totals = invoiceTotals(
+      lines.map((line, index) => {
+        const percent = findVatCode(line.vatCode).percent;
+        return {
+          id: String(index + 1),
+          description: line.description,
+          quantityMilli: line.quantityMilli,
+          unitPriceMinor: line.unitPriceMinor,
+          taxCategory: percent > 0 ? "S" : "Z",
+          taxRateBp: percent * 100,
+        };
+      }),
+    );
+    const netMinor = totals.netMinor;
+    const vatMinor = totals.taxMinor;
     const record: SalesInvoice = {
       id: `inv-${this.#salesInvoices.length + 1}`,
       customer: customer.number,
@@ -498,7 +517,7 @@ export class BookkeepingApi {
       lines,
       netMinor,
       vatMinor,
-      grossMinor: netMinor + vatMinor,
+      grossMinor: totals.grossMinor,
       status: "draft",
       created: true,
       actor,
