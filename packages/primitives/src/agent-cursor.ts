@@ -33,8 +33,11 @@ export type AgentCursorState = {
   /** What the agent is doing, for the label, in plain English words. */
   action: string;
   target: string;
-  /** The step itself, for narration in another language. */
-  step: { action: string; args: readonly unknown[] } | null;
+  /**
+   * The step itself, for narration in another language. `currency` is the
+   * target's, when it says what its minor units count (an amount field).
+   */
+  step: { action: string; args: readonly unknown[]; currency?: string } | null;
   /**
    * True while the target itself moves (the page scrolls, layout shifts): the
    * ring should stick to it at once. False when it glides to a new target.
@@ -126,6 +129,15 @@ function isCovered(el: Element, point: { x: number; y: number }): boolean {
 }
 
 /** Plain words for an action, so the label reads like a person narrating. */
+/** The target's currency, from its `data-currency`, when it has one. */
+function currencyOf(step: AgentCursorStep): { currency?: string } {
+  const root = elementOf(step.ref);
+  const currency = (root?.closest("[data-currency]") ?? root?.querySelector("[data-currency]"))?.getAttribute(
+    "data-currency",
+  );
+  return currency ? { currency } : {};
+}
+
 function describe(step: AgentCursorStep): string {
   const verb = step.action.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
   const first = step.args?.[0];
@@ -244,7 +256,7 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
       phase: "move",
       action: describe(step),
       target: step.label ?? step.component,
-      step: { action: step.action, args: step.args ?? [] },
+      step: { action: step.action, args: step.args ?? [], ...currencyOf(step) },
       ...measure(el),
     });
     startTracking();

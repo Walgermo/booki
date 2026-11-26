@@ -306,6 +306,8 @@ export const amountField = definePrimitive({
     root: slot({
       attrs: (state) => ({
         "data-slot": "amount-field",
+        // What `minor` counts the smallest unit of, for whatever narrates an agent's step on it.
+        "data-currency": state.currency,
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),
