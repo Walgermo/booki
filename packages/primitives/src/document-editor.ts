@@ -52,6 +52,8 @@ export type SlashCommand = {
 
 /** One row in the open "/" or "@" menu. */
 export type MenuItem = {
+  type?: BlockType;
+  level?: SlashCommand["level"];
   id: string;
   label: string;
   hint?: string;
@@ -210,7 +212,7 @@ function menuItems(menu: Menu | null, options: Options): MenuItem[] {
         [command.label, command.id, ...(command.keywords ?? [])].some((word) => word.toLowerCase().includes(query)),
       )
       .slice(0, 20)
-      .map(({ id, label, hint, group }) => ({ id, label, ...(hint ? { hint } : {}), ...(group ? { group } : {}) }));
+      .map(({ id, label, hint, group, type, level }) => ({ id, label, hint, group, type, level }));
   }
   return (options.mentions ?? [])
     .filter((item) =>
