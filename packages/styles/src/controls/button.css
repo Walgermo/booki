@@ -1,0 +1,120 @@
+/* ── Button: primary, secondary, ghost (Button) ──────────────────────── */
+
+/* Keyed on data-booki-button as well as data-slot: other libraries set
+   data-slot="button" and data-variant on their own buttons too. Two
+   attributes outrank the base rules for a button inside a component
+   (button, button[data-variant]), so these hold wherever a Button sits. */
+[data-slot="button"][data-booki-button] {
+  appearance: none;
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--bk-control-h);
+  margin: 0;
+  padding: 0.4rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--bk-radius-sm);
+  font: inherit;
+  font-size: 0.875rem;
+  /* The same weight in every state: a heavier hover would shift the text. */
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color var(--bk-duration) var(--bk-ease-out),
+    background-color var(--bk-duration) var(--bk-ease-out),
+    box-shadow var(--bk-duration) var(--bk-ease-out),
+    transform var(--bk-duration) var(--bk-ease-out);
+}
+
+/* Smaller to look at, the same to hit: the box is 32px, the target stays the
+   control height. */
+[data-slot="button"][data-booki-button][data-size="sm"] {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+[data-slot="button"][data-booki-button][data-size="sm"]::before {
+  content: "";
+  position: absolute;
+  top: calc((100% - var(--bk-control-h)) / 2);
+  bottom: calc((100% - var(--bk-control-h)) / 2);
+  left: 0;
+  right: 0;
+}
+
+/* Primary: ink on paper. Inside an ink panel --bk-primary is the signal, so
+   it becomes the agent's button there with no rule of its own. */
+[data-slot="button"][data-booki-button][data-variant="primary"] {
+  background: var(--bk-primary);
+  color: var(--bk-primary-fg);
+}
+
+/* Secondary: a raised card. The ring is a shadow, not a border, so hover
+   changes only the colours and the shadow. */
+[data-slot="button"][data-booki-button][data-variant="secondary"] {
+  background: var(--bk-card);
+  color: var(--bk-fg);
+  box-shadow:
+    0 0 0 1px var(--bk-border),
+    var(--bk-shadow-xs);
+}
+
+/* Ghost: text until hovered. */
+[data-slot="button"][data-booki-button][data-variant="ghost"] {
+  background: transparent;
+  color: var(--bk-fg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="button"][data-booki-button][data-variant="primary"]:hover:not(:disabled, [aria-disabled="true"]) {
+    background: color-mix(in srgb, var(--bk-primary) 88%, var(--bk-primary-fg));
+  }
+
+  [data-slot="button"][data-booki-button][data-variant="secondary"]:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--bk-muted);
+    box-shadow:
+      0 0 0 1px var(--bk-border-strong),
+      var(--bk-shadow-xs);
+  }
+
+  [data-slot="button"][data-booki-button][data-variant="ghost"]:hover:not(:disabled, [aria-disabled="true"]) {
+    background: var(--bk-muted);
+  }
+}
+
+[data-slot="button"][data-booki-button]:active:not(:disabled, [aria-disabled="true"]) {
+  transform: scale(0.97);
+}
+
+/* Neutral: the ring is the text colour, never the signal. */
+[data-slot="button"][data-booki-button]:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 2px;
+}
+
+[data-slot="button"][data-booki-button]:disabled,
+[data-slot="button"][data-booki-button][aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* A pending onClick (it returned a Promise): busy, not broken. */
+[data-slot="button"][data-booki-button][data-pending] {
+  cursor: progress;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="button"][data-booki-button]:active:not(:disabled, [aria-disabled="true"]) {
+    transform: none;
+  }
+}

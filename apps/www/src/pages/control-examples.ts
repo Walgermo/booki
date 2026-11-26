@@ -80,6 +80,17 @@ export function AgentReceipts() {
     "Switching to US changes the active profile for other Booki controls under the provider. This is a person's setting.",
     "Bytter personen til US, endres den aktive profilen for andre Booki-kontroller under provideren.",
   ),
+  button: jsx(
+    `import { Button } from "@booki-aui/react"
+
+<Button onClick={saveDraft}>Save draft</Button>
+<Button variant="secondary" data-agent-confirm="Sending a payment needs a person">
+  Send payment
+</Button>
+<Button variant="ghost" size="sm">Copy</Button>`,
+    "An agent presses Save draft by its words. A press on Send payment waits for a person. type defaults to button, so neither submits a form by accident.",
+    "En agent trykker Lagre utkast etter ordene. Et trykk på Send betaling venter på en person. type er button som standard, så ingen av dem sender et skjema ved et uhell.",
+  ),
 };
 
 const results: Record<string, Said> = {

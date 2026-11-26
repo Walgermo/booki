@@ -1,6 +1,10 @@
 /* ── Icon button: an icon, named by its label (IconButton) ────────────── */
 
-/* Square, so a row of them lines up; the icon takes the text colour. */
+/* Square, so a row of them lines up; the icon takes the text colour. This
+   file comes after button.css and wins on shape (two attributes each). The
+   colours here are the quiet look for a page that loads this file alone; a
+   variant rule in button.css has three attributes and wins (IconButton is a
+   Button, ghost by default). */
 [data-slot="button"][data-icon-button] {
   display: inline-flex;
   align-items: center;
@@ -17,6 +21,12 @@
   font-size: 0.875rem;
   cursor: pointer;
   touch-action: manipulation;
+}
+
+[data-slot="button"][data-icon-button][data-size="sm"] {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0 0.375rem;
 }
 
 :where([data-slot="button"][data-icon-button]):hover {
