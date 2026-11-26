@@ -50,6 +50,8 @@ const DocumentEditorAdd: (typeof parts)["Add"] = parts.Add;
 const DocumentEditorUndo: (typeof parts)["Undo"] = parts.Undo;
 const DocumentEditorRedo: (typeof parts)["Redo"] = parts.Redo;
 
+const listMarkers: Partial<Record<BlockType, string>> = { bullet: "•", numbered: "1.", todo: "☐" };
+
 const COPY = {
   EN: {
     label: "Document",
@@ -217,7 +219,7 @@ function withChips(text: string, refs: BlockRef[] | undefined, render: (ref: Blo
     const hit = refs
       .map((ref) => ({ ref, at: rest.indexOf(`@${ref.label}`) }))
       .filter((item) => item.at >= 0)
-      .sort((a, b) => a.at - b.at)[0];
+      .sort((a, b) => a.at - b.at || b.ref.label.length - a.ref.label.length)[0];
     if (!hit) {
       out.push(rest);
       break;
@@ -389,7 +391,32 @@ function DocumentEditor({
                           {renderEmbed ? renderEmbed(block) : block.text || copy.type.embed}
                         </div>
                       ) : (
-                        <DocumentEditorBlock value={block.id} aria-label={label} placeholder={copy.placeholder} />
+                        <div data-slot="document-editor-input">
+                          {block.refs?.length ? (
+                            <div
+                              data-slot="document-editor-highlights"
+                              aria-hidden="true"
+                              style={{ display: "var(--bk-editor-highlights-display, none)" }}
+                            >
+                              {withChips(block.text, block.refs, (ref) => (
+                                <span data-slot="document-editor-highlight">@{ref.label}</span>
+                              ))}
+                            </div>
+                          ) : null}
+                          <DocumentEditorBlock
+                            value={block.id}
+                            aria-label={label}
+                            placeholder={copy.placeholder}
+                            onScroll={(event) => {
+                              const area = event.currentTarget;
+                              const highlights = area.previousElementSibling;
+                              if (highlights) {
+                                highlights.scrollTop = area.scrollTop;
+                                highlights.scrollLeft = area.scrollLeft;
+                              }
+                            }}
+                          />
+                        </div>
                       )}
                       {block.refs?.length ? (
                         <span data-slot="document-editor-refs">
@@ -414,7 +441,14 @@ function DocumentEditor({
                                 </p>
                               ) : null}
                               <DocumentEditorOption id={optionId(doc.id, block.id, item.id)} value={item.id}>
-                                <span data-slot="document-editor-option-label">
+                                <span
+                                  data-slot="document-editor-option-label"
+                                  data-format={item.type}
+                                  data-level={item.level}
+                                >
+                                  {item.type && listMarkers[item.type] ? (
+                                    <span aria-hidden="true">{listMarkers[item.type]}</span>
+                                  ) : null}
                                   {item.kind === "file" ||
                                   (item.kind === "evidence" && (item.fileName || item.mimeType)) ? (
                                     <FileIcon file={{ name: item.fileName ?? item.label, type: item.mimeType }} />
