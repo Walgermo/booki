@@ -230,6 +230,36 @@ describe("conformance: broken variants", () => {
     expect(message).toContain('Due.value="23.11.2026"');
   });
 
+  it("checks an extracted invoice field by the value it holds", async () => {
+    const { ref, target } = referenceTarget();
+    const inbox = (netMinor: unknown, invoiceDate: unknown) => ({
+      ref: "Inbox",
+      component: "supplier-invoice-inbox",
+      label: "Inbox",
+      actions: [],
+      invoices: [{ id: "si-1", fields: { netMinor, invoiceDate } }],
+    });
+    const valid = broken(ref, {
+      snapshot: () => [
+        ...ref.bridge.snapshot(),
+        inbox({ value: 1240000, confidence: 0.97 }, { value: "2026-10-12", confidence: 0.96 }),
+      ],
+    });
+    expect(statusOf(await runConformance({ ...target, bridge: valid }), "snapshot-values")).toBe("pass");
+
+    const malformed = broken(ref, {
+      snapshot: () => [
+        ...ref.bridge.snapshot(),
+        inbox({ value: 12400.5, confidence: 0.97 }, { value: "12.10.2026", confidence: 0.96 }),
+      ],
+    });
+    const report = await runConformance({ ...target, bridge: malformed });
+    expect(statusOf(report, "snapshot-values")).toBe("fail");
+    const message = report.checks.find((c) => c.id === "snapshot-values")?.message ?? "";
+    expect(message).toContain("Inbox.invoices[0].fields.netMinor.value=12400.5");
+    expect(message).toContain('Inbox.invoices[0].fields.invoiceDate.value="12.10.2026"');
+  });
+
   it("fails only the SHOULD check when an unsigned request gets 200", async () => {
     const { ref, target } = referenceTarget();
     const server: ConformanceTarget["server"] = (actor, permission) =>
