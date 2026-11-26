@@ -1671,7 +1671,8 @@ html[data-kpi-still] {
   list-style: none;
 }
 
-.site-icons-tile {
+/* A tile is a Booki ghost button with its own shape: these rules outrank the button's. */
+[data-slot="button"][data-booki-button].site-icons-tile {
   display: grid;
   justify-items: center;
   gap: 0.625rem;
@@ -1680,6 +1681,7 @@ html[data-kpi-still] {
   padding: 1rem 0.5rem 0.75rem;
   border: 1px solid var(--bk-border);
   border-radius: var(--bk-radius);
+  white-space: normal;
 }
 
 .site-icons-tile[data-copied] {
@@ -2585,9 +2587,16 @@ html[data-kpi-still] {
 }
 
 /* The Copy button on ink: quiet until hovered. */
-.code-panel__copy {
-  min-height: 2rem;
+/* Copy sits on ink: a ghost button in ink colours. */
+[data-slot="button"][data-booki-button].code-panel__copy {
   color: var(--bk-ink-muted);
+}
+
+@media (hover: hover) {
+  [data-slot="button"][data-booki-button].code-panel__copy:hover {
+    background: var(--bk-ink-raised);
+    color: var(--bk-ink-fg);
+  }
 }
 
 /* A plain list separated by hairlines. */
