@@ -38,8 +38,9 @@ function firstTimeThisSession(): boolean {
  * `rotate` lists what the last word may be, the title's own last word first.
  * The title is sized for the longest of them, so the line never outgrows its
  * width; the word's slot takes each word's measured width, so the line stays
- * centred as it changes. A screen reader, a page without JavaScript and a
- * visitor who asked for reduced motion get the first word and no change.
+ * centred as it changes. The word goes round once and settles on the first.
+ * A screen reader, a page without JavaScript and a visitor who asked for
+ * reduced motion get the first word and no change.
  */
 export function HeroTitle(props: TitleProps) {
   // Another text (another language) is another title: measured again, and at rest.
@@ -77,16 +78,22 @@ function Title({ text, className, mark, markRef, rotate }: TitleProps) {
     turned: false,
   });
 
-  // The last word changes on a slow clock, only while the title is on screen and the tab is in front.
+  // The last word goes round once on a slow clock, only while the title is on screen and the tab
+  // is in front, and stops on the title's own word: the page does not keep changing while it is read.
   useEffect(() => {
     if (variants.length < 2) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let timer = 0;
+    let step = 0;
     const next = () => {
       const node = title.current;
       const onScreen = node ? node.getBoundingClientRect().bottom > 0 : false;
       if (onScreen && !document.hidden) {
-        setTurn((now) => ({ shown: (now.shown + 1) % variants.length, left: now.shown, turned: true }));
+        const from = step % variants.length;
+        step += 1;
+        setTurn({ shown: step % variants.length, left: from, turned: true });
+        // Back on the first word: the round is done, and the clock stops.
+        if (step === variants.length) return;
       }
       timer = window.setTimeout(next, EVERY);
     };
