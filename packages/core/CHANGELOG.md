@@ -1,5 +1,23 @@
 # @booki/core
 
+## 0.5.0
+
+### Minor Changes
+
+- [#184](https://github.com/Walgermo/booki/pull/184) [`eb83ef8`](https://github.com/Walgermo/booki/commit/eb83ef87b6a3eaa8c91e63a27879710904361cd2) Thanks [@Walgermo](https://github.com/Walgermo)! - Preserve fractional basis points when calculating invoice and voucher tax. Payment batch approval and release now require a real calendar date. Aging reports, filtered money columns and party drill-downs calculate totals exactly and refuse totals outside the safe minor-unit range.
+  
+  New working-paper proposals receive opaque, durable IDs. Read the ID from the proposal or bridge result when accepting, rejecting or withdrawing it. Existing pending proposals keep their IDs. HTML-backed papers preserve callout editability and list item identities. In the editor, Alt+Down focuses the command or mention list. Arrow keys, Home and End navigate, Enter selects, and Escape returns to the text without changing it.
+  
+  Conformance checks on an empty bridge now report an incomplete result and return `conforms: false`. Run the check after the screen mounts.
+
+### Patch Changes
+
+- [#186](https://github.com/Walgermo/booki/pull/186) [`c735db6`](https://github.com/Walgermo/booki/commit/c735db698802f13d18b7aa698a07a5bd49099f5d) Thanks [@Walgermo](https://github.com/Walgermo)! - Preserve the classification of HTML callouts, such as `data-callout="warning"`, when a working paper is opened and saved.
+  
+  Keep editor buttons in place during pointer clicks below open suggestions. Rejected aging filters now preserve the report and CSV. Unrepresentable aging reports show an issue, and a hidden money column with an unrepresentable total no longer prevents other columns from rendering.
+  
+  Conformance checks skip the person-only probe until the screen has mounted controls.
+
 ## 0.4.4
 
 ### Patch Changes
