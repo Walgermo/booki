@@ -85,6 +85,14 @@ export type Options = {
   onePending?: boolean;
   /** A person's methods their role does not allow, each with the reason. Set by `BookiAccessProvider`. */
   denied?: Record<string, string>;
+  /**
+   * The proposals that wait, when the app stores them itself (its own table, a server queue). With `onProposalsChange`
+   * they outlive the page: pass back what you stored. `defaultProposals` seeds them once.
+   */
+  proposals?: DocProposal[];
+  defaultProposals?: DocProposal[];
+  /** Every change to the waiting proposals: proposed, accepted, rejected, withdrawn. */
+  onProposalsChange?: (proposals: DocProposal[], details: { reason: string }) => void;
   onDocumentChange?: (
     document: EditorDocument,
     details: { reason: string; source?: string; cancel?: () => void },
@@ -121,7 +129,7 @@ export const DEFAULT_COMMANDS: SlashCommand[] = [
 ];
 
 /** What the agent reads for a block. */
-export type BlockView = DocBlock & { proposal?: string };
+export type BlockView = Omit<DocBlock, "raw" | "attrs"> & { proposal?: string };
 
 /** What the agent reads for a proposal: what it would do, in plain fields. */
 export type ProposalView = {
@@ -169,7 +177,8 @@ export function derive(document: EditorDocument, options: Options) {
     version: document.version,
     // Not `readOnly`: the bridge would then offer no actions, and the agent would not learn why.
     locked: Boolean(options.readOnly),
-    blocks: document.blocks.map((block): BlockView => {
+    // The app's markup and attributes stay out of the snapshot: the agent reads words.
+    blocks: document.blocks.map(({ raw: _raw, attrs: _attrs, ...block }): BlockView => {
       const id = waiting.get(block.id);
       return id ? { ...block, proposal: id } : block;
     }),
@@ -241,6 +250,9 @@ export const documentEditor = definePrimitive({
     readOnly: "boolean",
     onePending: "boolean",
     denied: "value",
+    proposals: "value",
+    defaultProposals: "value",
+    onProposalsChange: "callback",
     onDocumentChange: "callback",
     onAudit: "callback",
     onCommand: "callback",
@@ -257,7 +269,9 @@ export const documentEditor = definePrimitive({
     "moveFormat",
   ],
   state: (options: Options) => {
-    const document = options.document ?? options.defaultDocument ?? EMPTY_DOCUMENT;
+    const base = options.document ?? options.defaultDocument ?? EMPTY_DOCUMENT;
+    const queue = options.proposals ?? options.defaultProposals;
+    const document = queue ? { ...base, proposals: queue } : base;
     return {
       document,
       refusal: "",
@@ -271,9 +285,9 @@ export const documentEditor = definePrimitive({
   },
   sync: (options: Options) => {
     const base = { locked: Boolean(options.readOnly) };
-    return options.document === undefined
-      ? base
-      : { ...base, document: options.document, ...derive(options.document, options) };
+    if (options.document === undefined) return base;
+    const document = options.proposals ? { ...options.document, proposals: options.proposals } : options.document;
+    return { ...base, document, ...derive(document, options) };
   },
   api: (context) => {
     const change = createChange(context);
@@ -286,8 +300,18 @@ export const documentEditor = definePrimitive({
     const audit = (row: Omit<DocumentAuditEvent, "documentId" | "version" | "at">, after: EditorDocument) => {
       context.options().onAudit?.({ ...row, documentId: after.id, version: after.version, at: now() });
     };
+    // Proposals the app controls without controlling the blocks: take each new list as it arrives.
+    context.onOptions((options) => {
+      if (options.proposals === undefined || options.document !== undefined) return;
+      const current = context.store.get().document;
+      if (current.proposals === options.proposals) return;
+      const next = { ...current, proposals: options.proposals };
+      context.store.set({ document: next, ...derive(next, options) });
+    });
     const commit = (next: EditorDocument, reason: string, event?: Event) => {
+      const before = context.store.get().document.proposals;
       const ok = change("document", next, { reason, event });
+      if (ok && before !== next.proposals) context.options().onProposalsChange?.(next.proposals, { reason });
       if (ok && context.options().document === undefined) {
         context.store.set({ refusal: "", ...derive(next, context.options()) });
       } else if (ok) context.store.set({ refusal: "" });
@@ -633,9 +657,11 @@ export const documentEditor = definePrimitive({
             "### ": { type: "heading", level: 3 },
           };
           const hit = block.type === "paragraph" ? shortcut[text] : undefined;
+          // A person's change makes the block theirs: the agent's origin goes.
+          const { origin: _origin, ...own } = block;
           const next = hit
-            ? cleanBlock({ ...block, ...hit, text: "" } as DocBlock)
-            : cleanBlock({ ...block, text: String(text) });
+            ? cleanBlock({ ...own, ...hit, text: "" } as DocBlock)
+            : cleanBlock({ ...own, text: String(text) });
           setBlocks(replace(next), hit ? "turn-into" : "edit-text", asEvent(event), Boolean(hit));
           const trigger = hit ? null : triggerAt(String(text), Number(caret));
           if (!trigger) return closeMenu();
@@ -712,7 +738,7 @@ export const documentEditor = definePrimitive({
               return true;
             }
             const previous = blocks[index - 1];
-            if (!previous) return false;
+            if (!previous || previous.type === "embed") return false;
             if (doc().proposals.some((item) => item.blockId === id || item.blockId === previous.id)) return false;
             const merged =
               previous.type === "divider"

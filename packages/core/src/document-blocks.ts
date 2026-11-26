@@ -11,7 +11,16 @@ import { BookiError } from "./msg.js";
  * rejects it, so a proposal never overwrites work the agent did not see.
  */
 
-export type BlockType = "paragraph" | "heading" | "bullet" | "numbered" | "todo" | "quote" | "callout" | "divider";
+export type BlockType =
+  | "paragraph"
+  | "heading"
+  | "bullet"
+  | "numbered"
+  | "todo"
+  | "quote"
+  | "callout"
+  | "divider"
+  | "embed";
 
 export const BLOCK_TYPES: readonly BlockType[] = [
   "paragraph",
@@ -22,7 +31,11 @@ export const BLOCK_TYPES: readonly BlockType[] = [
   "quote",
   "callout",
   "divider",
+  "embed",
 ];
+
+/** Types an agent or a person can create. `embed` only comes from the app's content (a table, a data node). */
+export const EDITABLE_TYPES: readonly BlockType[] = BLOCK_TYPES.filter((type) => type !== "embed");
 
 /** What an `@` mention points at. The app passes the list; the editor never invents one. */
 export type MentionKind = "file" | "evidence" | "person" | "page";
@@ -51,6 +64,12 @@ export type DocBlock = {
   /** Todo only. */
   checked?: boolean;
   refs?: BlockRef[];
+  /** Who wrote it, when an agent's proposal put it there; cleared when a person changes the block. */
+  origin?: { by: string; proposal: string };
+  /** Embed only: the app's own markup, kept as it came (a table, a figure, a data node). `text` is its words. */
+  raw?: string;
+  /** The block element's other attributes from the app's markup (e.g. data-origin), written back as they came. */
+  attrs?: Record<string, string>;
 };
 
 export type ProposalOp = "insert" | "edit" | "move" | "remove";
@@ -133,7 +152,7 @@ export function newBlockId(document: EditorDocument): string {
 
 function assertType(type: unknown): BlockType {
   if (!BLOCK_TYPES.includes(type as BlockType)) {
-    throw new BookiError("doc.unknown-type", { type: String(type), types: BLOCK_TYPES.join(", ") });
+    throw new BookiError("doc.unknown-type", { type: String(type), types: EDITABLE_TYPES.join(", ") });
   }
   return type as BlockType;
 }
@@ -142,6 +161,9 @@ function assertType(type: unknown): BlockType {
 export function cleanBlock(block: DocBlock): DocBlock {
   const type = assertType(block.type);
   const out: DocBlock = { id: String(block.id), type, text: type === "divider" ? "" : String(block.text ?? "") };
+  if (type === "embed" && block.raw !== undefined) out.raw = String(block.raw);
+  if (block.origin) out.origin = { by: String(block.origin.by), proposal: String(block.origin.proposal) };
+  if (block.attrs && Object.keys(block.attrs).length) out.attrs = { ...block.attrs };
   if (type === "heading") {
     const level = Number(block.level ?? 2);
     if (![1, 2, 3].includes(level)) throw new BookiError("doc.heading-level", { level: String(block.level) });
@@ -158,8 +180,12 @@ export function cleanBlock(block: DocBlock): DocBlock {
 
 /** Apply a patch, reading mention labels from the app's list. */
 export function patchBlock(block: DocBlock, patch: BlockPatch, mentions: Mention[] = []): DocBlock {
+  if (block.type === "embed") throw new BookiError("doc.embed-fixed", { id: block.id });
   const next: DocBlock = { ...block };
-  if (patch.type !== undefined) next.type = assertType(patch.type);
+  if (patch.type !== undefined) {
+    next.type = assertType(patch.type);
+    if (next.type === "embed") throw new BookiError("doc.embed-new", { types: EDITABLE_TYPES.join(", ") });
+  }
   if (patch.text !== undefined) next.text = String(patch.text);
   if (patch.level !== undefined) next.level = patch.level;
   if (patch.checked !== undefined) next.checked = Boolean(patch.checked);
@@ -229,6 +255,7 @@ export function proposeInsert(
   if (wanted.length === 0) throw new BookiError("doc.nothing-to-insert", {});
   const blocks: DocBlock[] = [];
   for (const block of wanted) {
+    if (block.type === "embed") throw new BookiError("doc.embed-new", { types: EDITABLE_TYPES.join(", ") });
     const taken = { ...document, blocks: [...document.blocks, ...blocks] };
     blocks.push(cleanBlock({ ...block, id: block.id ?? newBlockId(taken) } as DocBlock));
   }
@@ -237,6 +264,7 @@ export function proposeInsert(
 
 export function proposeEdit(document: EditorDocument, id: string, block: DocBlock, options: ProposeOptions) {
   const before = findBlock(document, id);
+  if (before.type === "embed") throw new BookiError("doc.embed-fixed", { id: before.id });
   const next = cleanBlock({ ...block, id: before.id });
   if (sameBlock(before, next)) throw new BookiError("doc.no-change", { id: before.id });
   return propose(document, { op: "edit", blockId: before.id, block: next, before }, options);
@@ -272,8 +300,10 @@ const bump = (document: EditorDocument, blocks: DocBlock[], proposals: DocPropos
 export function acceptProposal(document: EditorDocument, id: string): EditorDocument {
   const proposal = findProposal(document, id);
   const rest = document.proposals.filter((item) => item.id !== proposal.id);
+  const origin = { by: proposal.by, proposal: proposal.id };
   if (proposal.op === "insert") {
-    return bump(document, insertAfter(document.blocks, proposal.blocks ?? [], proposal.after ?? null), rest);
+    const added = (proposal.blocks ?? []).map((block) => ({ ...block, origin }));
+    return bump(document, insertAfter(document.blocks, added, proposal.after ?? null), rest);
   }
   const current = document.blocks.find((item) => item.id === proposal.blockId);
   if (!current) throw new BookiError("doc.proposal-gone", { id: proposal.id, block: proposal.blockId });
@@ -283,7 +313,7 @@ export function acceptProposal(document: EditorDocument, id: string): EditorDocu
   if (proposal.op === "edit") {
     return bump(
       document,
-      document.blocks.map((item) => (item.id === proposal.blockId ? proposal.block! : item)),
+      document.blocks.map((item) => (item.id === proposal.blockId ? { ...proposal.block!, origin } : item)),
       rest,
     );
   }
@@ -483,4 +513,265 @@ export function toTiptap(blocks: DocBlock[], options: { idAttr?: string } = {}):
     }
   }
   return { type: "doc", content };
+}
+
+// ── HTML ──────────────────────────────────────────────────────────────────
+// For an app that stores pages as HTML (a TipTap or ProseMirror editor's
+// getHTML()). Top-level elements become blocks; ids come from `idAttr`; every
+// other attribute is kept in `attrs` and written back. An element the editor
+// cannot edit (a table, a figure, a data node, a paragraph holding one) becomes
+// an `embed` that keeps its markup exactly. Bold, italics, code, struck text and
+// links are read as inline markdown (**bold**, *italic*, `code`, ~~struck~~,
+// [text](https://…)), so a person or an agent edits them as text and `toHtml`
+// writes them back as markup. "flatten" drops them; "embed" keeps the block as
+// it came instead.
+
+export type HtmlOptions = {
+  /** The attribute that holds a block's id. Default "data-block-id". */
+  idAttr?: string;
+  /** A mention in the app's markup, e.g. an attachment chip. Return null for anything else. */
+  mentionFrom?: (element: Element) => BlockRef | null;
+  /** How to write a mention back. Default `<span data-mention data-kind data-id>@Label</span>`. */
+  mentionHtml?: (ref: BlockRef) => string;
+  /** Formatting inside a block: inline markdown (default), dropped ("flatten"), or the block kept as an embed. */
+  formatted?: "markdown" | "flatten" | "embed";
+  /** An HTML parser, where there is no `DOMParser` (on a server: pass one from linkedom or jsdom). */
+  parse?: (html: string) => Document;
+};
+
+const MARKS: Record<string, string> = { B: "**", STRONG: "**", I: "*", EM: "*", CODE: "`", S: "~~" };
+const safeHref = (href: string) => /^(https?:|mailto:|\/|#)/i.test(href.trim());
+
+/** Inline markdown in already escaped text, as markup. A link that is not http(s), mailto or relative stays text. */
+function marksToHtml(escaped: string): string {
+  return escaped
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (all, text: string, href: string) =>
+      safeHref(href) ? `<a href="${href}">${text}</a>` : all,
+    )
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?!\w)/g, "$1<em>$2</em>")
+    .replace(/~~([^~]+)~~/g, "<s>$1</s>");
+}
+
+const INLINE = new Set(["B", "STRONG", "I", "EM", "U", "S", "A", "CODE", "MARK", "SPAN", "SUB", "SUP"]);
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/** An element's words, with a space between cells and lines. */
+function wordsOf(element: Element): string {
+  const words: string[] = [];
+  const walk = (node: Node) => {
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType === 3) {
+        const text = (child.textContent ?? "").trim();
+        if (text) words.push(text);
+      } else if (child.nodeType === 1) walk(child);
+    }
+  };
+  walk(element);
+  return words.join(" ").replace(/\s+/g, " ");
+}
+
+const defaultMentionFrom = (element: Element): BlockRef | null => {
+  if (!element.hasAttribute("data-mention")) return null;
+  const kind = element.getAttribute("data-kind") ?? "page";
+  return {
+    kind: (MENTION_KINDS.includes(kind as MentionKind) ? kind : "page") as MentionKind,
+    id: element.getAttribute("data-id") ?? "",
+    label: (element.textContent ?? "").replace(/^@/, ""),
+  };
+};
+
+const defaultMentionHtml = (ref: BlockRef) =>
+  `<span data-mention="" data-kind="${escapeHtml(ref.kind)}" data-id="${escapeHtml(ref.id)}">@${escapeHtml(ref.label)}</span>`;
+
+/** Blocks from HTML. Throws `doc.no-parser` where there is no DOMParser and no `parse`. */
+export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
+  const idAttr = options.idAttr ?? "data-block-id";
+  const mentionFrom = options.mentionFrom ?? defaultMentionFrom;
+  const parse =
+    options.parse ??
+    (typeof DOMParser !== "undefined"
+      ? (text: string) => new DOMParser().parseFromString(text, "text/html")
+      : undefined);
+  if (!parse) throw new BookiError("doc.no-parser", {});
+  const body = parse(`<body>${html ?? ""}</body>`).body;
+  const blocks: DocBlock[] = [];
+  const taken: { id: string }[] = [];
+  const idFor = (raw: string | null) => {
+    const id = raw && !taken.some((item) => item.id === raw) ? raw : nextId("b", taken);
+    taken.push({ id });
+    return id;
+  };
+  const attrsOf = (element: Element) => {
+    const out: Record<string, string> = {};
+    for (const attr of Array.from(element.attributes)) if (attr.name !== idAttr) out[attr.name] = attr.value;
+    return Object.keys(out).length ? out : undefined;
+  };
+  // The text of an inline run, or null when it holds something only an embed keeps.
+  const read = (node: Element): { text: string; refs: BlockRef[] } | null => {
+    let text = "";
+    const refs: BlockRef[] = [];
+    let plain = true;
+    const walk = (current: Node): boolean => {
+      for (const child of Array.from(current.childNodes)) {
+        if (child.nodeType === 3) {
+          text += child.textContent ?? "";
+          continue;
+        }
+        if (child.nodeType !== 1) continue;
+        const element = child as Element;
+        const ref = mentionFrom(element);
+        if (ref) {
+          refs.push(ref);
+          text += `@${ref.label}`;
+          continue;
+        }
+        if (element.tagName === "BR") {
+          text += "\n";
+          continue;
+        }
+        if (element.tagName === "P" && text) text += "\n";
+        if (element.tagName !== "P" && !INLINE.has(element.tagName)) return false;
+        if (element.tagName === "SPAN" && Array.from(element.attributes).some((attr) => attr.name.startsWith("data-")))
+          return false;
+        if (element.tagName !== "P" && element.tagName !== "SPAN") plain = false;
+        const marked = options.formatted !== "flatten" && options.formatted !== "embed";
+        const mark = marked ? MARKS[element.tagName] : undefined;
+        const href = marked && element.tagName === "A" ? element.getAttribute("href") : null;
+        if (mark) text += mark;
+        if (href && safeHref(href)) text += "[";
+        if (!walk(element)) return false;
+        if (href && safeHref(href)) text += `](${href})`;
+        if (mark) text += mark;
+      }
+      return true;
+    };
+    if (!walk(node)) return null;
+    if (!plain && options.formatted === "embed") return null;
+    return { text, refs };
+  };
+  const embed = (element: Element) =>
+    blocks.push({
+      id: idFor(element.getAttribute(idAttr)),
+      type: "embed",
+      text: wordsOf(element),
+      raw: element.outerHTML,
+    });
+  const push = (element: Element, type: BlockType, extra: Partial<DocBlock> = {}, from: Element = element) => {
+    const content = read(from);
+    if (!content) return embed(element);
+    const attrs = attrsOf(element);
+    blocks.push(
+      cleanBlock({
+        id: idFor(element.getAttribute(idAttr)),
+        type,
+        text: content.text,
+        ...(content.refs.length ? { refs: content.refs } : {}),
+        ...(attrs ? { attrs } : {}),
+        ...extra,
+      }),
+    );
+  };
+  for (const element of Array.from(body.children)) {
+    const tag = element.tagName;
+    if (tag === "P") push(element, "paragraph");
+    else if (/^H[1-6]$/.test(tag)) push(element, "heading", { level: Math.min(3, Number(tag[1])) as 1 | 2 | 3 });
+    else if (tag === "BLOCKQUOTE") push(element, "quote");
+    else if (tag === "HR") blocks.push({ id: idFor(element.getAttribute(idAttr)), type: "divider", text: "" });
+    else if (tag === "UL" || tag === "OL") {
+      const items = Array.from(element.children);
+      const task = element.getAttribute("data-type") === "taskList";
+      // A list item that nests another list, or holds more than text, keeps the whole list as it is.
+      if (items.some((item) => item.tagName !== "LI" || item.querySelector("ul, ol") || !read(item))) {
+        embed(element);
+        continue;
+      }
+      items.forEach((item, n) => {
+        const attrs = n === 0 ? attrsOf(element) : undefined;
+        const content = read(item)!;
+        blocks.push(
+          cleanBlock({
+            id: idFor(item.getAttribute(idAttr) ?? (n === 0 ? element.getAttribute(idAttr) : null)),
+            type: task ? "todo" : tag === "UL" ? "bullet" : "numbered",
+            text: content.text,
+            ...(task ? { checked: item.getAttribute("data-checked") === "true" } : {}),
+            ...(content.refs.length ? { refs: content.refs } : {}),
+            ...(attrs ? { attrs } : {}),
+          }),
+        );
+      });
+    } else embed(element);
+  }
+  return blocks;
+}
+
+/** HTML from blocks: what `fromHtml` reads back. Embeds are written exactly as they came. */
+export function toHtml(blocks: DocBlock[], options: HtmlOptions = {}): string {
+  const idAttr = options.idAttr ?? "data-block-id";
+  const mentionHtml = options.mentionHtml ?? defaultMentionHtml;
+  const attrs = (block: DocBlock, extra: Record<string, string> = {}) =>
+    Object.entries({ ...block.attrs, [idAttr]: block.id, ...extra })
+      .map(([name, value]) => ` ${name}="${escapeHtml(value)}"`)
+      .join("");
+  const write = (text: string) => (options.formatted === "flatten" ? escapeHtml(text) : marksToHtml(escapeHtml(text)));
+  const inline = (block: DocBlock) => {
+    const refs = block.refs ?? [];
+    let out = "";
+    let rest = block.text;
+    while (rest) {
+      const hit = refs
+        .map((ref) => ({ ref, at: rest.indexOf(`@${ref.label}`) }))
+        .filter((item) => item.at >= 0)
+        .sort((a, b) => a.at - b.at)[0];
+      if (!hit) {
+        out += write(rest);
+        break;
+      }
+      out += write(rest.slice(0, hit.at)) + mentionHtml(hit.ref);
+      rest = rest.slice(hit.at + hit.ref.label.length + 1);
+    }
+    return out.replace(/\n/g, "<br>");
+  };
+  let html = "";
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]!;
+    const list = { bullet: "ul", numbered: "ol", todo: "ul" }[block.type as string];
+    if (list) {
+      const run: DocBlock[] = [block];
+      while (blocks[i + 1]?.type === block.type) run.push(blocks[++i]!);
+      const task = block.type === "todo";
+      const items = run
+        .map(
+          (item) =>
+            `<li${task ? ` data-type="taskItem" data-checked="${item.checked ? "true" : "false"}"` : ""}><p>${inline(item)}</p></li>`,
+        )
+        .join("");
+      html += `<${list}${attrs(block, task ? { "data-type": "taskList" } : {})}>${items}</${list}>`;
+      continue;
+    }
+    switch (block.type) {
+      case "heading":
+        html += `<h${block.level ?? 2}${attrs(block)}>${inline(block)}</h${block.level ?? 2}>`;
+        break;
+      case "quote":
+        html += `<blockquote${attrs(block)}><p>${inline(block)}</p></blockquote>`;
+        break;
+      case "callout":
+        html += `<aside${attrs(block, { "data-callout": "" })}><p>${inline(block)}</p></aside>`;
+        break;
+      case "divider":
+        html += `<hr${attrs(block)}>`;
+        break;
+      case "embed":
+        html += block.raw ?? "";
+        break;
+      default:
+        html += `<p${attrs(block)}>${inline(block)}</p>`;
+    }
+  }
+  return html;
 }

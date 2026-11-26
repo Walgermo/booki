@@ -137,6 +137,19 @@ describe("DocumentEditor", () => {
     expect(entry().proposals).toEqual([]);
   });
 
+  it("lets the app store proposals: onProposalsChange out, proposals back in", async () => {
+    const stored: unknown[][] = [];
+    const { act, entry } = editor({ onProposalsChange: (list) => stored.push(list) });
+    await act("removeBlock", ["b2", { reason: "Duplicate" }]);
+    expect(stored.at(-1)).toMatchObject([{ id: "p1", op: "remove", blockId: "b2", reason: "Duplicate" }]);
+    cleanup();
+    // A new page load: the stored proposal comes back and still waits for a person.
+    const again = editor({ proposals: stored.at(-1) as never });
+    expect(again.entry().proposals).toMatchObject([{ id: "p1", op: "remove" }]);
+    expect(document.querySelector('[data-slot="document-editor-proposal"]')).not.toBeNull();
+    void entry;
+  });
+
   it("refuses proposals on a read-only page", async () => {
     const { act } = editor({ readOnly: true });
     const result = await act("insertBlock", [{ after: null, text: "x" }]);

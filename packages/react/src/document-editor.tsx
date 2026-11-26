@@ -73,6 +73,7 @@ const COPY = {
       quote: "Quote",
       callout: "Callout",
       divider: "Divider",
+      embed: "Embedded content",
     } satisfies Record<BlockType, string>,
     kind: { file: "File", evidence: "Evidence", person: "Person", page: "Page" } satisfies Record<
       Mention["kind"],
@@ -120,6 +121,7 @@ const COPY = {
       quote: "Sitat",
       callout: "Merknad",
       divider: "Skillelinje",
+      embed: "Innebygd innhold",
     } satisfies Record<BlockType, string>,
     kind: { file: "Fil", evidence: "Bilag", person: "Person", page: "Side" } satisfies Record<Mention["kind"], string>,
     commands: {
@@ -142,6 +144,10 @@ export type DocumentEditorProps = {
   document?: EditorDocument;
   defaultDocument?: EditorDocument;
   onDocumentChange?: (document: EditorDocument, details: BookiChangeDetails) => void;
+  /** The waiting proposals, when the app stores them (so they outlive the page). Pass back what `onProposalsChange` gave. */
+  proposals?: DocProposal[];
+  defaultProposals?: DocProposal[];
+  onProposalsChange?: (proposals: DocProposal[], details: { reason: string }) => void;
   /** The "/" commands. Default: the block types in the reader's language. Add yours with `[...defaultCommands, …]`. */
   commands?: SlashCommand[];
   /** What "@" can mention: files, evidence, people and pages from the app. */
@@ -159,6 +165,8 @@ export type DocumentEditorProps = {
   onCommand?: (id: string, details: { blockId: string }) => void;
   /** Who an actor id is, for the proposal line. */
   nameOf?: (actor: string) => ReactNode;
+  /** Draw an embed (the app's table, figure or data node) read-only. Default: its words in a quiet box. */
+  renderEmbed?: (block: DocBlock) => ReactNode;
   /** Draw a mention in a block's chips, e.g. as a link to the file. */
   renderMention?: (ref: BlockRef) => ReactNode;
   className?: string;
@@ -217,6 +225,9 @@ function DocumentEditor({
   document,
   defaultDocument,
   onDocumentChange,
+  proposals,
+  defaultProposals,
+  onProposalsChange,
   commands,
   mentions,
   actor,
@@ -227,6 +238,7 @@ function DocumentEditor({
   onCommand,
   nameOf = (id) => (id.startsWith("agent") ? null : id),
   renderMention,
+  renderEmbed,
   className,
   "aria-label": ariaLabel,
 }: DocumentEditorProps) {
@@ -248,6 +260,9 @@ function DocumentEditor({
       document={document}
       defaultDocument={defaultDocument}
       onDocumentChange={onDocumentChange}
+      proposals={proposals}
+      defaultProposals={defaultProposals}
+      onProposalsChange={onProposalsChange}
       commands={commands ?? defaults}
       mentions={mentions}
       actor={access.actor}
@@ -333,6 +348,7 @@ function DocumentEditor({
                       data-type={block.type}
                       data-level={block.level}
                       data-proposal={proposal?.op}
+                      data-agent={block.origin ? "" : undefined}
                     >
                       {block.type === "bullet" ? <span data-slot="document-editor-marker" aria-hidden="true" /> : null}
                       {block.type === "numbered" ? (
@@ -348,6 +364,10 @@ function DocumentEditor({
                       ) : null}
                       {block.type === "divider" ? (
                         <hr data-slot="document-editor-divider" />
+                      ) : block.type === "embed" ? (
+                        <div data-slot="document-editor-embed" aria-label={label}>
+                          {renderEmbed ? renderEmbed(block) : block.text || copy.type.embed}
+                        </div>
                       ) : (
                         <DocumentEditorBlock value={block.id} aria-label={label} placeholder={copy.placeholder} />
                       )}

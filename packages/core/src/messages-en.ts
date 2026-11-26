@@ -654,6 +654,10 @@ export const EN = {
   "doc.nothing-to-insert": "Nothing to insert: pass block, or blocks for several.",
   "doc.read-only":
     "The page is read-only now (signed or locked). Nothing can be proposed until a person opens it again.",
+  "doc.embed-fixed":
+    'Block "{id}" is the app\'s own content (a table or a data field) and is changed where it comes from. Move or remove it, or propose a block next to it.',
+  "doc.embed-new": "An agent cannot create an embed. Types: {types}.",
+  "doc.no-parser": "Reading HTML needs a DOMParser. On a server, pass parse from linkedom or jsdom.",
   "doc.no-block": 'No block "{id}" on the page. Blocks: {ids}.',
   "doc.no-proposal": 'No proposal "{id}" waiting. Proposals: {ids}.',
   "doc.no-mention": 'No mention "{id}" in the list the app gave. Mentions: {ids}.',

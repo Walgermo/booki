@@ -108,6 +108,24 @@
   font-size: 1.125rem;
 }
 
+/* A block an agent's accepted proposal wrote keeps a signal edge until a person changes it. */
+[data-slot="document-editor-row"][data-agent] {
+  border-left-color: var(--bk-signal);
+}
+
+/* The app's own content (a table, a data field): shown, changed where it comes from. */
+[data-slot="document-editor-embed"] {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0.25rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px dashed var(--bk-border-strong);
+  border-radius: var(--bk-radius-sm);
+  color: var(--bk-muted-fg);
+  font-size: 0.875rem;
+  overflow-x: auto;
+}
+
 [data-slot="document-editor-row"][data-type="quote"] {
   border-left-color: var(--bk-border-strong);
   color: var(--bk-muted-fg);

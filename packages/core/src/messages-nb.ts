@@ -697,6 +697,10 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "doc.nothing-to-insert": "Ingenting å sette inn: send block, eller blocks for flere.",
   "doc.read-only":
     "Siden er skrivebeskyttet nå (signert eller låst). Ingenting kan foreslås før en person åpner den igjen.",
+  "doc.embed-fixed":
+    'Blokk "{id}" er appens eget innhold (en tabell eller et datafelt) og endres der det kommer fra. Flytt eller fjern den, eller foreslå en blokk ved siden av.',
+  "doc.embed-new": "En agent kan ikke lage en innebygd blokk. Typer: {types}.",
+  "doc.no-parser": "Å lese HTML trenger en DOMParser. På en server: send parse fra linkedom eller jsdom.",
   "doc.no-block": 'Ingen blokk "{id}" på siden. Blokker: {ids}.',
   "doc.no-proposal": 'Ingen forslag "{id}" venter. Forslag: {ids}.',
   "doc.no-mention": 'Ingen omtale "{id}" i listen appen ga. Omtaler: {ids}.',
