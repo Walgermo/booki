@@ -15,4 +15,6 @@ export const DocumentEditorElements: Record<string, CustomElementConstructor | u
   accept: { tag: "booki-document-editor-accept", target: wrappedButton, display: "contents" },
   reject: { tag: "booki-document-editor-reject", target: wrappedButton, display: "contents" },
   add: { tag: "booki-document-editor-add", target: wrappedButton, display: "contents" },
+  undo: { tag: "booki-document-editor-undo", target: wrappedButton, display: "contents" },
+  redo: { tag: "booki-document-editor-redo", target: wrappedButton, display: "contents" },
 });

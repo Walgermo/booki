@@ -612,7 +612,7 @@
       "proposals",
       "readOnly"
     ],
-    "parts": ["accept", "add", "block", "check", "menu", "option", "reject", "root"],
+    "parts": ["accept", "add", "block", "check", "menu", "option", "redo", "reject", "root", "undo"],
     "dataSlots": [
       "document-editor",
       "document-editor-agent",
@@ -629,6 +629,7 @@
       "document-editor-ghost",
       "document-editor-ghosts",
       "document-editor-group",
+      "document-editor-history",
       "document-editor-marker",
       "document-editor-mention",
       "document-editor-option-hint",

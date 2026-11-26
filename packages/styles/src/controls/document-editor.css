@@ -318,6 +318,7 @@
   color: var(--bk-muted-fg);
 }
 
+[data-slot="document-editor-history"],
 [data-slot="document-editor-decide"] {
   display: flex;
   flex-wrap: wrap;

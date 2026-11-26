@@ -24,6 +24,7 @@ import {
 import { BookiError } from "@booki-aui/core/msg";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
+import { DocumentEditHistory, type HistoryAction } from "./document-editor-history.js";
 import { asEvent } from "./as-event.js";
 import { checkFields, recordOf, textOf } from "./fields.js";
 import { personOnly } from "./person-only.js";
@@ -275,6 +276,8 @@ export const documentEditor = definePrimitive({
     return {
       document,
       refusal: "",
+      canUndo: false,
+      canRedo: false,
       menu: null as Menu | null,
       items: [] as MenuItem[],
       insertFormat: INSERT_FORMAT,
@@ -294,6 +297,10 @@ export const documentEditor = definePrimitive({
     const now = () => new Date().toISOString();
     const doc = () => context.store.get().document;
     const agent = () => `agent:${context.options().agentId || "agent"}`;
+    const history = new DocumentEditHistory();
+    let owner = context.options().actor;
+    let controlledDocument = context.options().document;
+    const publishHistory = () => context.store.set(history.availability);
     // Where the person was when an edit began, so the audit row says what the text was.
     const editing = new Map<string, string>();
 
@@ -302,6 +309,16 @@ export const documentEditor = definePrimitive({
     };
     // Proposals the app controls without controlling the blocks: take each new list as it arrives.
     context.onOptions((options) => {
+      if (owner !== options.actor) {
+        history.reset();
+        editing.clear();
+        owner = options.actor;
+      }
+      if (options.document !== controlledDocument) {
+        controlledDocument = options.document;
+        if (controlledDocument) history.sync(controlledDocument);
+      }
+      publishHistory();
       if (options.proposals === undefined || options.document !== undefined) return;
       const current = context.store.get().document;
       if (current.proposals === options.proposals) return;
@@ -406,10 +423,13 @@ export const documentEditor = definePrimitive({
     };
 
     // ── A person's direct edits ──
-    const setBlocks = (blocks: DocBlock[], reason: string, event?: Event, bump = true) => {
+    const setBlocks = (blocks: DocBlock[], reason: string, event?: Event, bump = true, typedBlock?: string) => {
       const current = doc();
       const next = { ...current, version: current.version + (bump ? 1 : 0), blocks };
-      return commit(next, reason, event) ? next : null;
+      if (!commit(next, reason, event)) return null;
+      history.record(current, next, typedBlock);
+      publishHistory();
+      return next;
     };
     const replace = (block: DocBlock) => doc().blocks.map((item) => (item.id === block.id ? block : item));
     const closeMenu = () => context.store.set({ menu: null, items: [] });
@@ -466,13 +486,15 @@ export const documentEditor = definePrimitive({
           type: found.type,
           ...(found.level ? { level: found.level } : {}),
         });
-        const next = setBlocks(replace(turned), "turn-into", event);
-        if (next)
+        const blocks = replace(turned);
+        const added = found.type === "divider" ? newBlockId(doc()) : undefined;
+        if (added) blocks.splice(blocks.indexOf(turned) + 1, 0, { id: added, type: "paragraph", text: "" });
+        const next = setBlocks(blocks, "turn-into", event);
+        if (next) {
           audit({ action: "turn-into", actor, blockId: block.id, detail: `${block.type} → ${found.type}` }, next);
-        if (found.type === "divider") {
-          const added = insertNew(block.id, { type: "paragraph", text: "" }, event);
-          focusBlock(event, added, 0);
-        } else focusBlock(event, block.id, menu.start);
+          if (added) audit({ action: "insert", actor, blockId: added }, next);
+          focusBlock(event, added ?? block.id, added ? 0 : menu.start);
+        }
         return Boolean(next);
       }
       if (found.blocks?.length) {
@@ -539,11 +561,10 @@ export const documentEditor = definePrimitive({
         deferBlurDismissal = undefined;
       };
     };
-    const left = (id: string, nextFocus?: EventTarget | null) => {
-      if (nextFocus && nextFocus === context.element("menu")) return;
+    const finishTextEdit = (id: string, document: EditorDocument) => {
       const before = editing.get(id);
       editing.delete(id);
-      const block = doc().blocks.find((item) => item.id === id);
+      const block = document.blocks.find((item) => item.id === id);
       if (before !== undefined && block && block.text !== before) {
         audit(
           {
@@ -552,9 +573,14 @@ export const documentEditor = definePrimitive({
             blockId: id,
             detail: `${id}: "${short(before)}" → "${short(block.text)}"`,
           },
-          doc(),
+          document,
         );
       }
+    };
+    const left = (id: string, nextFocus?: EventTarget | null) => {
+      if (nextFocus && nextFocus === context.element("menu")) return;
+      history.endTyping();
+      finishTextEdit(id, doc());
       if (context.store.get().menu?.blockId === id && !deferBlurDismissal?.()) closeMenu();
     };
     const moveOption = (menu: Menu, index: number) => {
@@ -565,6 +591,36 @@ export const documentEditor = definePrimitive({
     };
 
     return {
+      restore: (action: HistoryAction, event?: Event) =>
+        shown(() => {
+          writable();
+          const actor = person("edit");
+          const current = doc();
+          history.sync(current);
+          const blocks = history.target(action);
+          if (!blocks) {
+            publishHistory();
+            return false;
+          }
+          const next = { ...current, blocks, version: current.version + 1 };
+          if (!commit(next, event?.type === "click" ? `${action}-press` : action, event)) return false;
+          history.restored(action, next);
+          publishHistory();
+          for (const id of editing.keys()) finishTextEdit(id, current);
+          closeMenu();
+          audit({ action, actor }, next);
+          const target = event?.target as HTMLElement | null;
+          if (target && (target.tagName === "BUTTON" || !blocks.some((b) => b.id === target.dataset.block))) {
+            const i = current.blocks.findIndex((block, index) => block !== blocks[index]);
+            const block = blocks[Math.min(Math.max(0, i), blocks.length - 1)];
+            if (typeof requestAnimationFrame !== "undefined") {
+              requestAnimationFrame(() =>
+                ((block && context.element("block", block.id)) || context.element("add"))?.focus(),
+              );
+            }
+          }
+          return true;
+        }),
       // ── Agent: read ──
       /** Agent: blocks whose text, type or mentions match the words, e.g. findBlocks("revenue cut-off"). */
       findBlocks: (query: string) =>
@@ -670,7 +726,9 @@ export const documentEditor = definePrimitive({
           const proposal = findProposal(doc(), id);
           const next = acceptProposal(doc(), proposal.id);
           const ok = commit(next, "accept", event);
-          if (ok)
+          if (ok) {
+            history.reset();
+            publishHistory();
             audit(
               {
                 action: "accept",
@@ -682,6 +740,7 @@ export const documentEditor = definePrimitive({
               },
               next,
             );
+          }
           return ok;
         }),
       /** Person only: the proposal is dropped; the page stays as it is. */
@@ -729,7 +788,7 @@ export const documentEditor = definePrimitive({
           const next = hit
             ? cleanBlock({ ...own, ...hit, text: "" } as DocBlock)
             : cleanBlock({ ...own, text: String(text) });
-          setBlocks(replace(next), hit ? "turn-into" : "edit-text", asEvent(event), Boolean(hit));
+          setBlocks(replace(next), hit ? "turn-into" : "edit-text", asEvent(event), Boolean(hit), hit ? undefined : id);
           const trigger = hit ? null : triggerAt(String(text), Number(caret));
           if (!trigger) return closeMenu();
           const menu: Menu = { ...trigger, blockId: block.id, active: 0 };
@@ -780,9 +839,14 @@ export const documentEditor = definePrimitive({
             const head = block.text.slice(0, caret);
             const tail = block.text.slice(el.selectionEnd ?? caret);
             const type: BlockType = LIST.includes(block.type) ? block.type : "paragraph";
-            setBlocks(replace(cleanBlock({ ...block, text: head })), "edit-text", event, false);
-            const added = insertNew(id, { type, text: tail }, event);
-            focusBlock(event, added, 0);
+            const added = newBlockId(doc());
+            const split = [...blocks];
+            split.splice(index, 1, cleanBlock({ ...block, text: head }), cleanBlock({ id: added, type, text: tail }));
+            const next = setBlocks(split, "insert", event);
+            if (next) {
+              audit({ action: "insert", actor, blockId: added }, next);
+              focusBlock(event, added, 0);
+            }
             return true;
           }
           if (event.key === "Backspace" && collapsed && caret === 0) {
@@ -949,6 +1013,16 @@ export const documentEditor = definePrimitive({
         };
       },
       on: {
+        beforeinput: (event, { api }) => {
+          const kind = (event as InputEvent).inputType;
+          if (kind !== "historyUndo" && kind !== "historyRedo") return;
+          event.preventDefault();
+          try {
+            api.restore(kind === "historyUndo" ? "undo" : "redo", event);
+          } catch {
+            /* shown in the control */
+          }
+        },
         input: (event, { api, key }) => {
           const el = event.target as HTMLTextAreaElement;
           try {
@@ -958,6 +1032,19 @@ export const documentEditor = definePrimitive({
           }
         },
         keydown: (event, { api, key }) => {
+          const k = event as KeyboardEvent;
+          if (!k.isComposing && !k.altKey && (k.metaKey || k.ctrlKey)) {
+            const keyName = k.key.toLowerCase();
+            if (keyName === "z" || (keyName === "y" && k.ctrlKey && !k.shiftKey && !k.metaKey)) {
+              event.preventDefault();
+              try {
+                api.restore(keyName === "y" || k.shiftKey ? "redo" : "undo", event);
+              } catch {
+                /* shown in the control */
+              }
+              return;
+            }
+          }
           try {
             if (api.key(String(key), event as KeyboardEvent)) event.preventDefault();
           } catch {
@@ -1069,6 +1156,36 @@ export const documentEditor = definePrimitive({
       press: ({ api, key }, event) => {
         try {
           api.reject(recordOf(key), event);
+        } catch {
+          /* shown in the control */
+        }
+      },
+    }),
+    undo: slot({
+      attrs: (state) => ({
+        type: "button",
+        disabled: !state.canUndo || state.locked ? "" : undefined,
+        "aria-keyshortcuts": "Control+Z Meta+Z",
+        "data-variant": "secondary",
+      }),
+      press: ({ api }, event) => {
+        try {
+          api.restore("undo", event);
+        } catch {
+          /* shown in the control */
+        }
+      },
+    }),
+    redo: slot({
+      attrs: (state) => ({
+        type: "button",
+        disabled: !state.canRedo || state.locked ? "" : undefined,
+        "aria-keyshortcuts": "Control+Shift+Z Meta+Shift+Z Control+Y",
+        "data-variant": "secondary",
+      }),
+      press: ({ api }, event) => {
+        try {
+          api.restore("redo", event);
         } catch {
           /* shown in the control */
         }
