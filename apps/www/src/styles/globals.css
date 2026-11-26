@@ -2418,10 +2418,24 @@ html[data-kpi-still] {
   font-weight: 500;
 }
 
+/* Idle is plain status, not a control: no box, a hollow dot and muted text. */
 .site-signal[data-state="idle"] {
+  padding-inline: 0.25rem;
   background: transparent;
+  color: var(--bk-muted-fg);
+  font-weight: 400;
+}
+
+.site-machine .site-signal[data-state="idle"] {
   color: var(--bk-ink-muted);
-  box-shadow: inset 0 0 0 1px var(--bk-ink-border);
+}
+
+.site-signal[data-state="idle"]::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.25px currentColor;
 }
 
 /* While the agent works, a cursor block blinks after the word. */
