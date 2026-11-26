@@ -14,6 +14,7 @@ import { BookiError } from "@booki-aui/core/msg";
 import { parseToMinor } from "@booki-aui/core/money";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
+import { personOnly } from "./person-only.js";
 
 export type Options = {
   invoice?: Invoice;
@@ -409,7 +410,7 @@ export const invoiceEditor = definePrimitive({
         },
       }),
       finalize: slot({
-        attrs: () => ({ type: "button" }),
+        attrs: () => ({ type: "button", "data-person-only": personOnly("Finalizing an invoice needs a person") }),
         press: ({ api }, event) => {
           try {
             api.finalize(event);

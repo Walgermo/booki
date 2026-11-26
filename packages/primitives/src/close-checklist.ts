@@ -8,6 +8,7 @@ import {
 } from "@booki-aui/core/close";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
+import { personOnly } from "./person-only.js";
 
 export type Options = {
   tasks?: CloseTask[];
@@ -114,7 +115,7 @@ export const closeChecklist = definePrimitive({
     }),
     signOff: slot<{ value: string }>({
       props: { value: "string" },
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Signing off needs a person") }),
       press: ({ api, key }, event) => {
         try {
           api.signOff(String(key), event);

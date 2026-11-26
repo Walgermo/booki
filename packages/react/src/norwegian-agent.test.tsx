@@ -1,6 +1,6 @@
 import { cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { AgentCursor, createAgentCursor } from "./agent-cursor.js";
+import { AgentCursor, createAgentCursor, narrateNorwegian } from "./agent-cursor.js";
 import { AmountField } from "./amount-field.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
@@ -32,6 +32,28 @@ describe("an agent under a Norwegian profile", () => {
       );
       cleanup();
     }
+  });
+
+  it("says an amount in the field's own currency: yen without decimals, dinars with three", async () => {
+    for (const [currency, said] of [
+      ["JPY", /setter beløp 125\s000 ·/],
+      ["KWD", /setter beløp 125,000 ·/],
+    ] as const) {
+      const cursor = createAgentCursor({ travel: 0, press: 0, linger: 10_000 });
+      const agent = createBookiAgent({ agentId: "test", allow: cursor.wrap(() => true) });
+      render(
+        <BookiLocaleProvider defaultCountry="NO">
+          <AmountField aria-label="Amount" currency={currency} />
+          <AgentCursor cursor={cursor} />
+        </BookiLocaleProvider>,
+      );
+      await agent.act({ steps: [{ ref: "Amount", action: "setMinor", args: [125000] }] });
+      await waitFor(() =>
+        expect(document.querySelector('[data-slot="agent-cursor-action"]')?.textContent).toMatch(said),
+      );
+      cleanup();
+    }
+    expect(narrateNorwegian({ step: { action: "setMinor", args: [125000] } } as never)).toBe("setter beløp 125000");
   });
 
   it("refuses in Norwegian with language nb, and in English by default", async () => {

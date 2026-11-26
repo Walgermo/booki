@@ -207,3 +207,30 @@ describe("BankReconciliation for a person", () => {
     expect(document.querySelector('[data-slot="bank-reconciliation"]')?.getAttribute("data-reconciled")).toBe("true");
   });
 });
+
+describe("BankReconciliation in a layout of the app's own", () => {
+  it("gives the Root's render the references, and the agent only their tags", async () => {
+    const { BankReconciliationRoot } = await import("./bank-reconciliation.js");
+    const agent = createBookiAgent({ agentId: "test" });
+    const withRefs = bank.map((line, at) => ({ ...line, reference: `1234567890${at}` }));
+    render(
+      <BankReconciliationRoot bankLines={withRefs} openPosts={posts} aria-label="Own layout">
+        {(state: { unmatchedBankLines: BankLine[] }) => (
+          <ul>
+            {state.unmatchedBankLines.map((line) => (
+              <li key={line.id} data-testid="ref">
+                {line.reference}
+              </li>
+            ))}
+          </ul>
+        )}
+      </BankReconciliationRoot>,
+    );
+    expect([...document.querySelectorAll('[data-testid="ref"]')].map((li) => li.textContent)).toEqual([
+      "12345678900",
+      "12345678901",
+    ]);
+    const entry = agent.snapshot().find((c) => c.component === "bank-reconciliation") as unknown as Entry;
+    expect(JSON.stringify(entry.unmatchedBankLines)).not.toContain("1234567890");
+  });
+});

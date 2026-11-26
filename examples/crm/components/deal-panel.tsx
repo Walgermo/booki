@@ -93,6 +93,8 @@ export function DealPanel({
 /** A person's form for the deal's value: how much, in what currency, how sure, and from where. */
 function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) => void }) {
   const [draft, setDraft] = useState(deal);
+  // Undo starts the amount field over: text it refused is not the deal's, and it would block the next save.
+  const [round, setRound] = useState(0);
   const changed = JSON.stringify(draft) !== JSON.stringify(deal);
   return (
     <form
@@ -106,6 +108,7 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
       <div className="grid gap-1">
         <label htmlFor="deal-amount">Beløp</label>
         <AmountField
+          key={round}
           id="deal-amount"
           aria-label="Beløp"
           currency={draft.currency}
@@ -140,7 +143,15 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
         <button type="submit" disabled={!changed}>
           Lagre verdien
         </button>
-        <button type="button" data-variant="secondary" disabled={!changed} onClick={() => setDraft(deal)}>
+        <button
+          type="button"
+          data-variant="secondary"
+          disabled={!changed}
+          onClick={() => {
+            setDraft(deal);
+            setRound((count) => count + 1);
+          }}
+        >
           Angre
         </button>
       </div>

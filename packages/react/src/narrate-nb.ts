@@ -57,8 +57,9 @@ const VERBS_NB: [RegExp, string][] = [
 
 /**
  * The agent cursor's label in Norwegian: a verb for the action and its first
- * plain argument. An amount (`setMinor`) is shown as a person writes it,
- * "setter beløp 1 250,00", not in minor units. `AgentCursor` uses it by itself under a Norwegian profile;
+ * plain argument. An amount (`setMinor`) is shown as a person writes it, in the
+ * field's own currency, "setter beløp 1 250,00" (or "125 000" for yen), not in
+ * minor units; when the field's currency is not known, the minor units as given. `AgentCursor` uses it by itself under a Norwegian profile;
  * pass it as `narrate` to choose it yourself.
  */
 export function narrateNorwegian(state: AgentCursorState): string {
@@ -66,8 +67,8 @@ export function narrateNorwegian(state: AgentCursorState): string {
   if (!step) return state.action;
   const verb = VERBS_NB.find(([pattern]) => pattern.test(step.action))?.[1] ?? state.action;
   const first = step.args[0];
-  if (step.action === "setMinor" && typeof first === "number" && Number.isSafeInteger(first)) {
-    return `${verb} ${formatMoney(first, { currency: "NOK", locale: "nb-NO", withCurrency: false })}`;
+  if (step.action === "setMinor" && typeof first === "number" && Number.isSafeInteger(first) && step.currency) {
+    return `${verb} ${formatMoney(first, { currency: step.currency, locale: "nb-NO", withCurrency: false })}`;
   }
   const arg = typeof first === "string" || typeof first === "number" ? ` ${String(first).slice(0, 24)}` : "";
   return `${verb}${arg}`;

@@ -167,8 +167,8 @@ export const amountField = definePrimitive({
       if (ok) {
         if (context.options().value !== undefined) {
           // Controlled: the owner passes `value` back through sync; until it
-          // does, keep `minor` on the held value.
-          context.store.set({ minor: value });
+          // does, keep `minor` and `empty` on what it holds.
+          context.store.set({ minor: value, empty });
         } else {
           context.store.set({ value: next });
         }
@@ -215,10 +215,15 @@ export const amountField = definePrimitive({
       }
       // The app hears the change first and may cancel it, as for an amount.
       if (dispatch(context, "onValueChange", null, { reason, event })) return false;
-      const ok = change("empty", true, { reason, event });
+      const held = context.store.get().value;
+      // Reported on `minor` too, so history and staging can put the amount back through `setMinor`.
+      const ok = change("minor", null, { reason, event });
       if (!ok) return false;
+      change("empty", true, { reason, event });
       context.options().onEmpty?.({ reason });
       if (context.options().value === undefined) context.store.set({ value: null, minor: null });
+      // Controlled: the owner passes `value={null}` back through sync; until it does, the field holds its amount.
+      else context.store.set({ minor: held, empty: false });
       context.store.set({ draft: "", draftRefusal: null });
       return true;
     }
@@ -301,6 +306,8 @@ export const amountField = definePrimitive({
     root: slot({
       attrs: (state) => ({
         "data-slot": "amount-field",
+        // What `minor` counts the smallest unit of, for whatever narrates an agent's step on it.
+        "data-currency": state.currency,
         "data-disabled": state.disabled ? "" : undefined,
         "data-readonly": state.readOnly ? "" : undefined,
       }),

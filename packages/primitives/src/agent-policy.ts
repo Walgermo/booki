@@ -64,6 +64,40 @@ export function markRefused(step: { ref: string; label?: string; action: string 
   if (refusedSteps.length > 50) refusedSteps.shift();
 }
 
+/**
+ * Rows a bridge refused but did not write, by the `act` result they belong to:
+ * the bridge had no `audit` of its own, so `actAndRecord` writes them with its own.
+ */
+const unrecorded = new WeakMap<object, Pick<AgentDecisionRow, "action" | "target" | "detail">>();
+
+/**
+ * Notes a refusal on an `act` result for `actAndRecord` to write, when the
+ * bridge that refused it has no `audit` of its own.
+ */
+export function noteUnrecorded(result: object, row: Pick<AgentDecisionRow, "action" | "target" | "detail">): void {
+  unrecorded.set(result, row);
+}
+
+/** A name's words as the bridge matches them: whole words, regardless of case and accents. */
+const wordsOf = (text: unknown): string[] =>
+  String(text ?? "")
+    .split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean);
+let collator: Intl.Collator | undefined;
+const sameWord = (a: string, b: string): boolean =>
+  (collator ??= new Intl.Collator(undefined, { sensitivity: "base", usage: "search" })).compare(a, b) === 0;
+
+/** Whether a step's `ref` names a control by this label, the way the bridge resolves it. */
+function namesLabel(ref: unknown, label: string | undefined): boolean {
+  if (!label) return false;
+  const wanted = wordsOf(ref);
+  const words = wordsOf(label);
+  for (let start = 0; wanted.length > 0 && start + wanted.length <= words.length; start++) {
+    if (wanted.every((word, index) => sameWord(words[start + index]!, word))) return true;
+  }
+  return false;
+}
+
 /** True when a decision lets the step run. */
 export const isAllowed = (decision: AgentDecision): boolean =>
   typeof decision === "object" && decision !== null ? decision.allow === true : decision === true;
@@ -80,7 +114,8 @@ export function bookiAllow(
   const { allow, audit, agentId = "bridge", ruleVersion } = options;
   if (!allow && !audit) return undefined;
   const record = (step: AskedStep, action: string, by?: string) => {
-    if (action !== "agent.confirmed") {
+    // Noted only when a row was written: without `audit` here, `actAndRecord`'s own row is the only one.
+    if (audit && action !== "agent.confirmed") {
       refusedSteps.push({ seq: ++sequence, ref: step.ref, label: step.label, action: step.action });
       if (refusedSteps.length > 50) refusedSteps.shift();
     }
@@ -171,12 +206,22 @@ export async function actAndRecord<A extends Actable>(
     const step = Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
     // A check that did not hold changed nothing and was not refused: the agent reads why, the audit trail stays about changes.
     if (step?.action === "expect") return result;
+    // A refusal the bridge made but had no audit of its own to write: written here, once.
+    const pending = unrecorded.get(result as object);
+    if (pending) {
+      options.audit({
+        actor: `agent:${options.agentId ?? "bridge"}`,
+        ...pending,
+        ...(options.ruleVersion ? { ruleVersion: options.ruleVersion } : {}),
+      });
+      return result;
+    }
     // `allow` refused it, and `bookiAllow` has already recorded that: one row per decision.
     const already = refusedSteps.some(
       (refused) =>
         refused.seq > from &&
         refused.action === step?.action &&
-        (refused.ref === step?.ref || refused.label === step?.ref),
+        (refused.ref === step?.ref || namesLabel(step?.ref, refused.label)),
     );
     if (already) return result;
     // The control's name, as a person reads it, rather than its ref.

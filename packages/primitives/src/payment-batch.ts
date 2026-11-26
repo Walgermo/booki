@@ -9,6 +9,7 @@ import {
   type PaymentBatch as Batch,
   type PaymentItem,
 } from "@booki-aui/core/payment-batch";
+import { isValidKid } from "@booki-aui/core/kid";
 import { BookiError } from "@booki-aui/core/msg";
 import { normalizeQuery, tableView, type TableColumn, type TableQuery } from "@booki-aui/core/table";
 import { createChange, definePrimitive } from "@ui-sdk/core";
@@ -16,6 +17,7 @@ import { refuseDenied } from "./access.js";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";
 import { QUERY_FORMAT, commitSecret } from "./fields.js";
 import { referenceIsSecret, type RefKind } from "./payment-reference-input.js";
+import { personOnly } from "./person-only.js";
 
 export type Options = QueryOptions & {
   batch?: Batch;
@@ -68,8 +70,20 @@ export const paymentColumns: TableColumn<PaymentItem>[] = [
 export const hidesReferences = (options: Pick<Options, "referenceKind" | "secretReference">) =>
   referenceIsSecret(options.referenceKind, options.secretReference);
 
+/**
+ * A reference that is a KID, whatever the batch says its references are: digits
+ * with a valid mod-10 or mod-11 check digit. A batch shown under a profile whose
+ * references are memos can still carry KIDs, and a KID is secret.
+ */
+export const looksLikeKid = (reference: string): boolean =>
+  /^[\d\s]+-?$/.test(reference) && (isValidKid(reference, 10) || isValidKid(reference, 11));
+
+/** Whether an agent reads this reference as "[redacted]". */
+const hideReference = (reference: unknown, hidden: boolean): boolean =>
+  typeof reference === "string" && reference !== "" && (hidden || looksLikeKid(reference));
+
 const shownReference = <T extends { reference?: string }>(item: T, hidden: boolean): T =>
-  hidden && item.reference ? { ...item, reference: "[redacted]" } : item;
+  hideReference(item.reference, hidden) ? { ...item, reference: "[redacted]" } : item;
 
 export const wholeAbove = (value: number | undefined, fallback: number) =>
   Number.isSafeInteger(value) && (value as number) > 0 ? (value as number) : fallback;
@@ -88,7 +102,7 @@ export function deriveList(batch: Batch, query: TableQuery, hidden = true) {
     rows: shown.rows.map((item) => {
       const record: Record<string, unknown> = { id: item.id };
       for (const column of paymentColumns) record[column.id] = column.value(item) ?? null;
-      if (hidden && record.reference) record.reference = "[redacted]";
+      if (hideReference(record.reference, hidden)) record.reference = "[redacted]";
       return record;
     }),
     view: { total: shown.total, matching: shown.matching, page: shown.page, pageCount: shown.pageCount } as TablePaging,
@@ -176,7 +190,14 @@ export const paymentBatch = definePrimitive({
     context.onOptions((options) => {
       const state = context.store.get();
       const query = options.query ?? state.query;
-      context.store.set({ query, ...deriveList(options.batch ?? state.batch, query, hidesReferences(options)) });
+      const batch = options.batch ?? state.batch;
+      const hidden = hidesReferences(options);
+      // `payments` as well as the page: turning on `secretReference` hides both.
+      context.store.set({
+        query,
+        payments: derive(batch, options.requiredApprovals ?? 2, hidden).payments,
+        ...deriveList(batch, query, hidden),
+      });
     });
     const commit = (next: Batch, reason: string, event?: Event) => {
       // The bridge hears the batch without account numbers; the owner hears all of it.
@@ -353,7 +374,7 @@ export const paymentBatch = definePrimitive({
       },
     }),
     approve: slot({
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Approving a payment batch needs a person") }),
       press: ({ api }, event) => {
         try {
           api.approve(event);
@@ -363,7 +384,7 @@ export const paymentBatch = definePrimitive({
       },
     }),
     release: slot({
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Releasing payments needs a person") }),
       press: ({ api }, event) => {
         try {
           api.release(event);

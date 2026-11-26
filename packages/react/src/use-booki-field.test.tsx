@@ -1,8 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { mount } from "@ui-sdk/core/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createBookiAgent, useBookiField } from "./index.js";
+import { BookiLocaleProvider, createBookiAgent, useBookiField, type BookiFieldDateArgs } from "./index.js";
+import { preloadNorwegian } from "./say.js";
+import { bookiFieldAccount } from "./use-booki-field-account.js";
 import { bookiFieldAmount } from "./use-booki-field-amount.js";
 import { bookiFieldCode } from "./use-booki-field-code.js";
 import { bookiFieldDate } from "./use-booki-field-date.js";
@@ -308,6 +310,27 @@ describe("a code field with values only a person may choose", () => {
     expect(heard.mock.calls[0]![1].source).not.toBe("agent");
   });
 
+  it("refuses an agent's step that passes an event of its own, and the product never hears it", async () => {
+    const heard = vi.fn();
+    const agent = createBookiAgent({ agentId: "test" });
+    render(<Stage onValueChange={heard} />);
+    const result = (await agent.act({
+      steps: [{ ref: "Steg", action: "setCode", args: ["won", new Event("change")] }],
+    })) as { ok: boolean; error?: { message: string } };
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toMatch(/person's choice/);
+    expect(heard).not.toHaveBeenCalled();
+  });
+
+  it("hands out a list a snapshot's reader cannot change", async () => {
+    const agent = createBookiAgent({ agentId: "test" });
+    render(<Stage />);
+    const entry = agent.snapshot().find((c) => c.component === "field-code") as unknown as { personOnly: string[] };
+    expect(() => entry.personOnly.splice(0)).toThrow();
+    const result = (await agent.act({ steps: [{ ref: "Steg", action: "setCode", args: ["won"] }] })) as { ok: boolean };
+    expect(result.ok).toBe(false);
+  });
+
   it("refuses it framework-free too, when no event comes with the call", () => {
     const view = mount(bookiFieldCode as never, { options: stages, personOnly: ["won"] } as never, "<root></root>");
     const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
@@ -468,7 +491,12 @@ describe("the account kind", () => {
 
   it("a person types digit by digit; the number is checked on blur and a refusal shows next to the field", () => {
     const onValueChange = vi.fn();
-    render(<Account allowEmpty onValueChange={onValueChange} />);
+    // An English screen: the refusal is shown in the screen's language.
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <Account allowEmpty onValueChange={onValueChange} />
+      </BookiLocaleProvider>,
+    );
     const input = screen.getByLabelText("Konto-felt") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "" } });
     for (const typed of ["1", "19", "192"]) {
@@ -505,5 +533,91 @@ describe("the account kind", () => {
     unmount();
     render(<Account />);
     expect((await run(agent, [""])).ok).toBe(false);
+  });
+
+  it("an empty chart is a closed chart: no number is allowed", () => {
+    const onValueChange = vi.fn();
+    const view = mount(bookiFieldAccount as never, { chart: [], onValueChange } as never, "<root></root>");
+    const api = view.api as unknown as Record<string, (...args: unknown[]) => unknown>;
+    try {
+      expect(() => api.setAccount!("1920")).toThrow(/No account "1920" in the chart/);
+      expect(onValueChange).not.toHaveBeenCalled();
+    } finally {
+      view.unmount();
+    }
+    const open = mount(bookiFieldAccount as never, { onValueChange } as never, "<root></root>");
+    try {
+      expect((open.api as unknown as Record<string, (...args: unknown[]) => unknown>).setAccount!("1920")).toBe(true);
+    } finally {
+      open.unmount();
+    }
+  });
+});
+
+describe("a person's edit to a wrapped field", () => {
+  function Due({ disabled, readOnly, allowEmpty, onValueChange }: Partial<BookiFieldDateArgs>) {
+    const [date, setDate] = useState("2026-01-01");
+    return useBookiField(
+      {
+        kind: "date",
+        value: date,
+        label: "Forfall",
+        disabled,
+        readOnly,
+        allowEmpty,
+        onValueChange: (next, details) => {
+          setDate(next);
+          onValueChange?.(next, details);
+        },
+      },
+      ({ value, change, refusal }) => (
+        <div>
+          <input aria-label="Forfallsdato" value={value} onChange={(e) => change(e.target.value, e.nativeEvent)} />
+          {refusal ? <p role="alert">{refusal}</p> : null}
+        </div>
+      ),
+    );
+  }
+
+  it("is ignored while the field is disabled or read-only", () => {
+    const heard = vi.fn();
+    const { unmount } = render(<Due disabled onValueChange={heard} />);
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "2026-02-02" } });
+    unmount();
+    render(<Due readOnly onValueChange={heard} />);
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "2026-02-02" } });
+    expect(heard).not.toHaveBeenCalled();
+    expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("2026-01-01");
+  });
+
+  it("clears an optional date, by a person or an agent; a required one keeps it", async () => {
+    const agent = createBookiAgent();
+    const { unmount } = render(<Due allowEmpty />);
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "" } });
+    expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("");
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "2026-03-03" } });
+    expect(
+      ((await agent.act({ steps: [{ ref: "Forfall", action: "setDate", args: [null] }] })) as { ok: boolean }).ok,
+    ).toBe(true);
+    expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("");
+    unmount();
+    render(<Due />);
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "" } });
+    expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("2026-01-01");
+    expect(screen.getByRole("alert").textContent).toMatch(/YYYY-MM-DD/);
+  });
+
+  it("is refused in the screen's language, while the agent reads English", async () => {
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <Due />
+      </BookiLocaleProvider>,
+    );
+    await preloadNorwegian();
+    fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "2026-02-30" } });
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toMatch(/^Ugyldig dato "2026-02-30"/));
+    const agent = createBookiAgent();
+    const entry = agent.snapshot().find((c) => c.component === "field-date") as unknown as { refusal: string };
+    expect(entry.refusal).toMatch(/^Invalid date/);
   });
 });

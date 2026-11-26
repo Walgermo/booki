@@ -82,7 +82,7 @@ function TaxCodeSelect({
               </TaxCodeSelectOption>
             ))}
           </TaxCodeSelectList>
-          <TaxCodeSelectControl tabIndex={-1}>
+          <TaxCodeSelectControl tabIndex={-1} aria-required={required || undefined} {...field}>
             {state.value === "" ? <option value="">–</option> : null}
             {codes.map((code) => (
               <option key={code.code} value={code.code}>

@@ -40,6 +40,8 @@ export type BookiFieldAccountState = {
   /** The same account number, under the key `expect` compares. */
   value: string;
   chart: BookiFieldAccountEntry[];
+  /** A chart was given (even an empty one): only its accounts are allowed. */
+  closed: boolean;
   /** The chart entries the snapshot shows: all of a short chart, none of a long one. */
   items: BookiFieldCodeItem[];
   itemsHint: string;
@@ -81,6 +83,7 @@ export const bookiFieldAccount = definePrimitive({
       account: options.value ?? "",
       value: options.value ?? "",
       chart,
+      closed: options.chart !== undefined,
       items: shownItems(toItems(chart)),
       itemsHint: itemsHint(toItems(chart)),
       minLength: options.minLength ?? DEFAULT_MIN,
@@ -103,6 +106,7 @@ export const bookiFieldAccount = definePrimitive({
     if (options.maxLength !== undefined) next.maxLength = options.maxLength;
     if (options.chart !== undefined) {
       next.chart = options.chart;
+      next.closed = true;
       next.items = shownItems(toItems(options.chart));
       next.itemsHint = itemsHint(toItems(options.chart));
     }
@@ -131,7 +135,7 @@ export const bookiFieldAccount = definePrimitive({
        * With `allowEmpty`, "" or null clears it.
        */
       setAccount: (raw: unknown, event?: Event): boolean => {
-        const { chart, minLength, maxLength, allowEmpty } = context.store.get();
+        const { chart, closed, minLength, maxLength, allowEmpty } = context.store.get();
         if (allowEmpty && (raw === null || raw === undefined || (typeof raw === "string" && raw.trim() === ""))) {
           return commit("", "clear", event);
         }
@@ -142,15 +146,19 @@ export const bookiFieldAccount = definePrimitive({
         }
         const text = String(raw).replace(/\s+/g, "");
         if (text === "") {
-          if (chart.length > 0) throw new BookiError("field.account-empty-chart", { count: chart.length });
+          if (closed) throw new BookiError("field.account-empty-chart", { count: chart.length });
           throw new BookiError("field.account-empty", { min: minLength, max: maxLength });
         }
         if (!/^\d+$/.test(text)) throw new BookiError("field.account-not-digits", { value: String(raw).slice(0, 80) });
-        if (chart.length > 0) {
+        // A chart given, even an empty one, is closed: only its accounts are allowed.
+        if (closed) {
           const entry = chart.find((candidate) => candidate.number === text);
           if (!entry) {
             if (chart.length <= LISTED_WHOLE) {
-              throw new BookiError("field.unknown-account", { value: text, items: chart.map(named).join(", ") });
+              throw new BookiError("field.unknown-account", {
+                value: text,
+                items: chart.map(named).join(", ") || "(none)",
+              });
             }
             const near = closest(chart, text, (candidate) => `${candidate.number} ${candidate.name}`, 8);
             throw new BookiError("field.unknown-account-more", {

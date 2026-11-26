@@ -73,7 +73,7 @@ function CurrencySelect({
               </CurrencySelectOption>
             ))}
           </CurrencySelectList>
-          <CurrencySelectControl tabIndex={-1}>
+          <CurrencySelectControl tabIndex={-1} aria-required={required || undefined} {...field}>
             {currencies.map((code) => (
               <option key={code} value={code}>
                 {code}

@@ -618,7 +618,7 @@
   },
   "field-date": {
     "actions": ["setDate"],
-    "options": ["disabled", "group", "onValueChange", "readOnly", "value"],
+    "options": ["allowEmpty", "disabled", "group", "onValueChange", "readOnly", "value"],
     "parts": ["label", "root"],
     "dataSlots": ["field-date"]
   },
