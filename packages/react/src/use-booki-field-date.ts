@@ -15,6 +15,8 @@ import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
 
 export type BookiFieldDateOptions = {
   value?: string;
+  /** The field may hold no date: `setDate("")` or `setDate(null)` clears it. */
+  allowEmpty?: boolean;
   /** `false`: the root takes no `role="group"`, for a field that has its own labelled group. */
   group?: boolean;
   disabled?: boolean;
@@ -27,6 +29,7 @@ export type BookiFieldDateState = {
   /** The same date, under the key `expect` compares. */
   value: string;
   refusal: string | null;
+  allowEmpty: boolean;
   /** The root is a `role="group"`; false when the product's field has its own. */
   group: boolean;
   disabled: boolean;
@@ -43,6 +46,7 @@ export const bookiFieldDate = definePrimitive({
   name: "field-date",
   options: {
     value: "string",
+    allowEmpty: "boolean",
     group: "boolean",
     ...lockOptions,
     onValueChange: "callback",
@@ -52,12 +56,14 @@ export const bookiFieldDate = definePrimitive({
     date: options.value ?? "",
     value: options.value ?? "",
     refusal: null,
+    allowEmpty: options.allowEmpty ?? false,
     group: options.group ?? true,
     ...lockState(options),
   }),
   sync: (options: BookiFieldDateOptions): Partial<BookiFieldDateState> => {
     const next: Partial<BookiFieldDateState> = { ...lockState(options) };
     if (options.group !== undefined) next.group = options.group;
+    if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
     if (options.value !== undefined) {
       next.date = options.value;
       next.value = options.value;
@@ -81,8 +87,12 @@ export const bookiFieldDate = definePrimitive({
     }
 
     return {
-      /** Agent and product path: an ISO date that exists. Throws a sentence that says the format. */
-      setDate: (value: string, event?: Event): boolean => {
+      /**
+       * Agent and product path: an ISO date that exists. Throws a sentence that says the format.
+       * With `allowEmpty`, "" or null clears it.
+       */
+      setDate: (value: string | null, event?: Event): boolean => {
+        if (context.store.get().allowEmpty && (value === null || value === "")) return commit("", "clear", event);
         if (!isIsoDate(value)) throw new BookiError("date.invalid", { value: String(value).slice(0, 80) });
         return commit(value, "set-date", event);
       },

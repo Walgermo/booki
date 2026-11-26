@@ -45,8 +45,8 @@ export type BookiFieldCodeState = {
   items: BookiFieldCodeItem[];
   itemsHint: string;
   allowEmpty: boolean;
-  /** The values only a person may choose. */
-  personOnly: string[];
+  /** The values only a person may choose. A frozen copy: what the snapshot hands out cannot change it. */
+  personOnly: readonly string[];
   refusal: string | null;
   /** The root is a `role="group"`; false when the product's field has its own. */
   group: boolean;
@@ -94,6 +94,22 @@ function refuseUnknown(items: BookiFieldCodeItem[], raw: unknown): never {
   });
 }
 
+/** A copy of the list nobody can change, so a snapshot's reader cannot widen what an agent may choose. */
+const frozen = (values: string[] | undefined): readonly string[] =>
+  Object.freeze([...(Array.isArray(values) ? values : [])].map(String));
+
+/**
+ * Who a change comes from, as ui-sdk tells it: `"agent"` while the bridge runs
+ * an action, whatever arguments it was given. Read through `dispatch`, which
+ * resolves it the same way for a change callback.
+ */
+function sourceOf(reason: string, event: Event): string | undefined {
+  let source: string | undefined;
+  const probe = { options: () => ({ onProbe: (_value: unknown, details: { source?: string }) => (source = details.source) }) };
+  dispatch(probe as never, "onProbe", null, { reason, event });
+  return source;
+}
+
 export const bookiFieldCode = definePrimitive({
   name: "field-code",
   options: {
@@ -115,7 +131,7 @@ export const bookiFieldCode = definePrimitive({
       items: shownItems(all),
       itemsHint: itemsHint(all),
       allowEmpty: options.allowEmpty ?? false,
-      personOnly: options.personOnly ?? [],
+      personOnly: frozen(options.personOnly),
       refusal: null,
       group: options.group ?? true,
       ...lockState(options),
@@ -125,7 +141,7 @@ export const bookiFieldCode = definePrimitive({
     const next: Partial<BookiFieldCodeState> = { ...lockState(options) };
     if (options.group !== undefined) next.group = options.group;
     if (options.allowEmpty !== undefined) next.allowEmpty = options.allowEmpty;
-    if (options.personOnly !== undefined) next.personOnly = options.personOnly;
+    if (options.personOnly !== undefined) next.personOnly = frozen(options.personOnly);
     if (options.value !== undefined) {
       next.code = options.value;
       next.value = options.value;
@@ -164,8 +180,8 @@ export const bookiFieldCode = definePrimitive({
         if (allowEmpty && (code === null || code === "")) return commit("", "clear", event);
         const option = optionFor(options, code);
         if (!option) refuseUnknown(options, code);
-        // An agent's call carries no DOM event; a person's change does.
-        const fromPerson = typeof Event !== "undefined" && event instanceof Event;
+        // A person's change carries its DOM event; an agent's call runs as the agent, whatever it passes.
+        const fromPerson = typeof Event !== "undefined" && event instanceof Event && sourceOf("set-code", event) !== "agent";
         if (!fromPerson && context.store.get().personOnly.includes(option.value)) {
           throw new BookiError("field.person-only-code", { item: named(option) });
         }

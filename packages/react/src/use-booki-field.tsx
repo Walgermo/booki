@@ -7,6 +7,7 @@ import { bookiFieldAccount, type BookiFieldAccountEntry } from "./use-booki-fiel
 import { bookiFieldAmount } from "./use-booki-field-amount.js";
 import { bookiFieldCode, type BookiFieldCodeItem } from "./use-booki-field-code.js";
 import { bookiFieldDate } from "./use-booki-field-date.js";
+import { useSay } from "./say.js";
 
 export { bookiFieldAccount, bookiFieldAmount, bookiFieldCode, bookiFieldDate };
 export type { BookiFieldAccountEntry };
@@ -95,6 +96,8 @@ export type BookiFieldDateArgs = BookiFieldCommon & {
   kind: "date";
   /** ISO `YYYY-MM-DD`, or `""` for none. */
   value: string;
+  /** The field may hold no date: `setDate("")` or `setDate(null)` clears it to `""`. */
+  allowEmpty?: boolean;
   onValueChange?: (date: string, details: FieldDetails) => void;
   label: string;
   disabled?: boolean;
@@ -124,9 +127,9 @@ export type BookiFieldArgs = BookiFieldAmountArgs | BookiFieldCodeArgs | BookiFi
 export type BookiFieldRender<T> = {
   /** The value the field holds. */
   value: T;
-  /** A person's change: returns false, and sets `refusal`, when it is not allowed. */
+  /** A person's change: returns false, and sets `refusal`, when it is not allowed. A disabled or read-only field takes none. */
   change: (next: T, event?: Event) => boolean;
-  /** The sentence for why the last change was refused, or null. Show it next to the field. */
+  /** The sentence for why the last change was refused, in the screen's language, or null. Show it next to the field. */
   refusal: string | null;
 };
 
@@ -178,8 +181,12 @@ export function useBookiField(options: BookiFieldArgs, render: (field: never) =>
     typeof bookiFieldAmount
   > & { api: Api };
   const api = handle.api;
+  // A refusal is kept in English, which is what an agent reads; the person reads it in the screen's language.
+  const say = useSay();
 
   const change = (next: unknown, event?: Event): boolean => {
+    // Locked: the person's edit is ignored, as the agent's is.
+    if (options.disabled || options.readOnly) return false;
     const write =
       options.kind === "amount"
         ? api.setMinor
@@ -225,7 +232,7 @@ export function useBookiField(options: BookiFieldArgs, render: (field: never) =>
                     ? shown.account
                     : shown.date,
             change,
-            refusal: shown.refusal,
+            refusal: shown.refusal === null ? null : say(shown.refusal),
           } as never)}
         </>
       );
