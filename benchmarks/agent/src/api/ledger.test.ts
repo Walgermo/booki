@@ -157,6 +157,17 @@ describe("postVoucher", () => {
     assert.throws(() => api.postVoucher({ date: "31.10.2026", lines: voucherLines(1_550_000) }), ApiError);
   });
 
+  it("refuses a month or day out of range with an ApiError, not a RangeError", () => {
+    const api = new BookkeepingApi();
+    for (const date of ["2026-13-01", "2026-10-32", "2026-00-10"]) {
+      assert.throws(
+        () => api.postVoucher({ date, lines: voucherLines(1_550_000) }),
+        (error: unknown) => error instanceof ApiError && error.message.includes(`got "${date}"`),
+      );
+      assert.throws(() => api.registerSupplierInvoice({ ...supplierInvoice, invoiceDate: date }), ApiError);
+    }
+  });
+
   it("refuses an unknown field and lists the valid ones", () => {
     const api = new BookkeepingApi();
     assert.throws(
@@ -239,6 +250,18 @@ describe("registerSupplierInvoice", () => {
     assert.equal(api.state().supplierInvoices.length, 1);
   });
 
+  it("refuses the same invoice number with spaces around it, and stores it trimmed", () => {
+    const api = new BookkeepingApi();
+    assert.equal(api.registerSupplierInvoice({ ...supplierInvoice, invoiceNumber: " 8841 " }).invoiceNumber, "8841");
+    assert.throws(
+      () => api.registerSupplierInvoice(supplierInvoice),
+      (error: unknown) =>
+        error instanceof ApiError &&
+        error.message === "Supplier invoice 8841 from 20001 is already registered as si-1.",
+    );
+    assert.equal(api.state().supplierInvoices.length, 1);
+  });
+
   it("refuses a due date before the invoice date", () => {
     const api = new BookkeepingApi();
     assert.throws(() => api.registerSupplierInvoice({ ...supplierInvoice, dueDate: "2026-10-01" }), ApiError);
@@ -281,6 +304,17 @@ describe("createSalesInvoice", () => {
     assert.equal(invoice.lines[1]!.netMinor, 238_000);
     assert.equal(invoice.netMinor, 2_050_500);
     assert.equal(invoice.vatMinor, 512_625);
+  });
+
+  it("rounds the VAT once per rate, as the screen's invoice totals do", () => {
+    const api = new BookkeepingApi();
+    const line = { description: "Timer", quantityMilli: 1_000, unitPriceMinor: 10_002, vatCode: "MVA25" };
+    const invoice = api.createSalesInvoice({ customer: "10001", lines: [line, line] });
+    // Each line alone is 25,005 øre of VAT, rounded to 2501; the two together are exactly 5001.
+    assert.equal(invoice.lines[0]!.vatMinor, 2_501);
+    assert.equal(invoice.netMinor, 20_004);
+    assert.equal(invoice.vatMinor, 5_001);
+    assert.equal(invoice.grossMinor, 25_005);
   });
 
   it("refuses an unknown customer and lists the valid ones", () => {
