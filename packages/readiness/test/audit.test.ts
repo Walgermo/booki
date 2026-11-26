@@ -133,16 +133,21 @@ describe("readiness checks on fixture pages", () => {
 
   it("finds buttons named by an icon font or not at all", async () => {
     const report = await run("buttons");
-    expect(tally(report)).toEqual({ "button-icon-name": 3, "button-unnamed": 1, "icon-size": 1 });
+    expect(tally(report)).toEqual({ "button-icon-name": 3, "button-unnamed": 2, "icon-size": 1 });
     const names = report.findings.filter((f) => f.rule === "button-icon-name").map((f) => f.element?.name);
     expect(names).toEqual(["close", "content_copy", "tune"]);
   });
 
-  it("calls a nameless icon-only button that, and points to IconButton", async () => {
+  it("calls a nameless icon-only button that, an aria-hidden icon-font glyph included, and points to IconButton", async () => {
     const report = await run("buttons");
-    const unnamed = report.findings.find((f) => f.rule === "button-unnamed");
-    expect(unnamed?.message).toBe("An icon-only button with no name.");
-    expect(unnamed?.booki).toMatch(/^IconButton from @booki-aui\/react/);
+    const unnamed = report.findings.filter((f) => f.rule === "button-unnamed");
+    expect(unnamed.map((f) => f.message)).toEqual([
+      "An icon-only button with no name.",
+      "An icon-only button with no name.",
+    ]);
+    for (const f of unnamed) expect(f.booki).toMatch(/^IconButton from @booki-aui\/react/);
+    const { toConsole } = await import("../src/report.js");
+    expect(toConsole(report)).toContain("IconButton from @booki-aui/react");
   });
 
   it("finds a Booki icon shown at a size it is not drawn for, and passes one at 16 px", async () => {

@@ -46,8 +46,10 @@ export function toConsole(report: Report): string {
     out.push(
       `${sevMark(rule.severity)} ${bold(rule.title)} ${dim(`(${rule.contract}) −${d.points}`)}  ×${list.length}`,
     );
-    for (const f of list.slice(0, 6))
+    for (const f of list.slice(0, 6)) {
       out.push(`    ${f.message}${f.element?.selector ? dim(`  ${f.element.selector}`) : ""}`);
+      if (f.booki && f.booki !== rule.booki) out.push(`      ${dim("Booki:")} ${f.booki}`);
+    }
     if (list.length > 6) out.push(dim(`    … and ${list.length - 6} more`));
     out.push(`    ${dim("Fix:")} ${rule.fix}`);
     if (rule.booki) out.push(`    ${dim("Booki:")} ${rule.booki}`);

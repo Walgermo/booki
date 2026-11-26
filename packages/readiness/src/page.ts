@@ -177,6 +177,29 @@ export function describeElement(element: Element): ElementInfo {
     });
   };
 
+  // Text a person reads as a label: without aria-hidden parts and icon-font glyphs,
+  // whose ligature ("close") is in the DOM but draws an icon.
+  const glyph = (el: Element): boolean => {
+    const family = getComputedStyle(el).fontFamily;
+    const classes = typeof el.className === "string" ? el.className : "";
+    return (
+      iconPattern.test(family) ||
+      /(^|\s)(material-(icons|symbols)[\w-]*|icon[\w-]*|[\w-]+-icon|fa|fa-[\w-]+|glyphicon[\w-]*)(\s|$)/i.test(classes)
+    );
+  };
+  const labelText = (el: Element): string => {
+    let text = "";
+    for (const node of el.childNodes) {
+      if (node.nodeType === 3) text += node.textContent ?? "";
+      else if (node.nodeType === 1) {
+        const child = node as Element;
+        if (child.getAttribute("aria-hidden") === "true" || glyph(child)) continue;
+        text += labelText(child);
+      }
+    }
+    return text;
+  };
+
   const html = (el: Element) => {
     const copy = el.cloneNode(true) as Element;
     const text = copy.outerHTML.replace(/\s+/g, " ");
@@ -211,7 +234,7 @@ export function describeElement(element: Element): ElementInfo {
     confirm: confirmHost ? confirmHost.getAttribute("data-agent-confirm") || "(marked)" : null,
     secret: element.closest("[data-agent-secret]") !== null,
     iconFont: usesIconFont(element),
-    iconOnly: !clean(element.textContent) && (element.querySelector("svg, img") !== null || usesIconFont(element)),
+    iconOnly: !clean(labelText(element)) && (element.querySelector("svg, img") !== null || usesIconFont(element)),
     disabled: (element as HTMLButtonElement).disabled === true || element.getAttribute("aria-disabled") === "true",
     hidden: hiddenFromPeople(element),
   };
