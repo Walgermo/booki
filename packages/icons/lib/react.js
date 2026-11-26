@@ -130,7 +130,7 @@ export function BadgeCheckIcon(props) {
 export function BankIcon(props) {
   return render(
     "bank",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z"/></g><path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z"/><path d="M6.75 12.75v4"/><path d="M12 12.75v4"/><path d="M17.25 12.75v4"/><path d="M2.75 20.25h18.5"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z"/></g><path d="M2.75 9.25L11.489 4.054A1 1 0 0 1 12.511 4.054L21.25 9.25Z"/><path d="M6.75 12.75v7.5"/><path d="M12 12.75v7.5"/><path d="M17.25 12.75v7.5"/><path d="M2.75 20.25h18.5"/>',
     props,
   );
 }
@@ -139,7 +139,7 @@ export function BankIcon(props) {
 export function BanknoteIcon(props) {
   return render(
     "banknote",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><circle cx="12" cy="12" r="2"/><path d="M6.5 12h.01"/><path d="M17.5 12h.01"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><circle cx="12" cy="12" r="2"/><path d="M6.25 12h.25"/><path d="M17.5 12h.25"/>',
     props,
   );
 }
@@ -292,7 +292,7 @@ export function ChartBarStackedIcon(props) {
 export function ChartForecastIcon(props) {
   return render(
     "chart-forecast",
-    '<path d="M2.25 20.25h19.5"/><path d="M3.75 15.75L7.043 12.457A1 1 0 0 1 8.457 12.457L10.543 14.543A1 1 0 0 0 11.957 14.543L12.25 14.25"/><path d="M14.75 11.75l1.5-1.5"/><path d="M18.75 7.75l1.5-1.5"/>',
+    '<path d="M2.25 20.25h19.5"/><path d="M3.75 15.75L6.793 12.707A1 1 0 0 1 8.207 12.707L10.25 14.75"/><path d="M13.75 12.25l2.5-2.5"/><path d="M19.25 6.75l2.5-2.5"/>',
     props,
   );
 }
@@ -328,7 +328,7 @@ export function ChartPieIcon(props) {
 export function ChartWaterfallIcon(props) {
   return render(
     "chart-waterfall",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.25 20.25V14.75A1 1 0 0 1 4.25 13.75H5.75A1 1 0 0 1 6.75 14.75V20.25Z"/><path d="M11.25 4.75L12.75 4.75A1 1 0 0 1 13.75 5.75L13.75 12.75A1 1 0 0 1 12.75 13.75L11.25 13.75A1 1 0 0 1 10.25 12.75L10.25 5.75A1 1 0 0 1 11.25 4.75Z"/><path d="M18.25 4.75L19.75 4.75A1 1 0 0 1 20.75 5.75L20.75 10.25A1 1 0 0 1 19.75 11.25L18.25 11.25A1 1 0 0 1 17.25 10.25L17.25 5.75A1 1 0 0 1 18.25 4.75Z"/></g><path d="M2.25 20.25h19.5"/><path d="M3.25 20.25V14.75A1 1 0 0 1 4.25 13.75H5.75A1 1 0 0 1 6.75 14.75V20.25"/><path d="M11.25 4.75L12.75 4.75A1 1 0 0 1 13.75 5.75L13.75 12.75A1 1 0 0 1 12.75 13.75L11.25 13.75A1 1 0 0 1 10.25 12.75L10.25 5.75A1 1 0 0 1 11.25 4.75Z"/><path d="M18.25 4.75L19.75 4.75A1 1 0 0 1 20.75 5.75L20.75 10.25A1 1 0 0 1 19.75 11.25L18.25 11.25A1 1 0 0 1 17.25 10.25L17.25 5.75A1 1 0 0 1 18.25 4.75Z"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.25 20.25v-5a1 1 0 0 1 1-1h2.5v6Z"/><path d="M10.25 14.25v-7a1 1 0 0 1 1-1h2.5v7a1 1 0 0 1-1 1Z"/><path d="M17.25 6.25h2.5a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1Z"/></g><path d="M2.25 20.25h19.5"/><path d="M3.25 20.25v-5a1 1 0 0 1 1-1h2.5v6"/><path d="M6.75 14.25h3.5"/><path d="M10.25 14.25v-7a1 1 0 0 1 1-1h2.5v7a1 1 0 0 1-1 1Z"/><path d="M13.75 6.25h3.5"/><path d="M17.25 6.25h2.5a1 1 0 0 1 1 1v3.5a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1Z"/>',
     props,
   );
 }
@@ -897,7 +897,7 @@ export function ReceiptIcon(props) {
 export function ReceiptMinusIcon(props) {
   return render(
     "receipt-minus",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/></g><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/><path d="M8.5 11.25h7"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M19 12.75V4.25A1.5 1.5 0 0 0 17.5 2.75H6.5A1.5 1.5 0 0 0 5 4.25V21.25L6.75 19.5L8.5 21.25L10.25 19.5V12.75Z"/></g><path d="M19 12.75V4.25A1.5 1.5 0 0 0 17.5 2.75H6.5A1.5 1.5 0 0 0 5 4.25V21.25L6.75 19.5L8.5 21.25L10.25 19.5"/><path d="M13.75 17.25h7.5"/><path d="M8.5 9.25h7"/>',
     props,
   );
 }
@@ -924,7 +924,7 @@ export function RepeatIcon(props) {
 export function RiskMatrixIcon(props) {
   return render(
     "risk-matrix",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 9.25V3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V9.25Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M9.25 3.75v16.5"/><path d="M14.75 3.75v16.5"/><path d="M3.75 9.25h16.5"/><path d="M3.75 14.75h16.5"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="13.75" y="2.75" width="7.5" height="7.5" rx="1"/></g><rect x="2.75" y="2.75" width="7.5" height="7.5" rx="1"/><rect x="13.75" y="2.75" width="7.5" height="7.5" rx="1"/><rect x="2.75" y="13.75" width="7.5" height="7.5" rx="1"/><rect x="13.75" y="13.75" width="7.5" height="7.5" rx="1"/><path d="M17.25 6.5h.5"/>',
     props,
   );
 }
@@ -1032,7 +1032,7 @@ export function SpinnerIcon(props) {
 export function StackIcon(props) {
   return render(
     "stack",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 9.75L19.75 9.75A1.5 1.5 0 0 1 21.25 11.25L21.25 19.25A1.5 1.5 0 0 1 19.75 20.75L4.25 20.75A1.5 1.5 0 0 1 2.75 19.25L2.75 11.25A1.5 1.5 0 0 1 4.25 9.75Z"/><path d="M4.25 9.75V7.75A1.5 1.5 0 0 1 5.75 6.25H18.25A1.5 1.5 0 0 1 19.75 7.75V9.75Z"/><path d="M5.75 6.25V4.25A1.5 1.5 0 0 1 7.25 2.75H16.75A1.5 1.5 0 0 1 18.25 4.25V6.25Z"/></g><path d="M12 9.75L19.75 9.75A1.5 1.5 0 0 1 21.25 11.25L21.25 19.25A1.5 1.5 0 0 1 19.75 20.75L4.25 20.75A1.5 1.5 0 0 1 2.75 19.25L2.75 11.25A1.5 1.5 0 0 1 4.25 9.75Z"/><path d="M4.25 9.75V7.75A1.5 1.5 0 0 1 5.75 6.25H18.25A1.5 1.5 0 0 1 19.75 7.75V9.75"/><path d="M5.75 6.25V4.25A1.5 1.5 0 0 1 7.25 2.75H16.75A1.5 1.5 0 0 1 18.25 4.25V6.25"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="2.75" y="4.75" width="18.5" height="8.5" rx="1.5"/></g><rect x="2.75" y="4.75" width="18.5" height="8.5" rx="1.5"/><path d="M4.25 16.75h15.5"/><path d="M5.75 20.25h12.5"/><path d="M10.75 9h2.5"/>',
     props,
   );
 }
@@ -1057,11 +1057,7 @@ export function StickyNoteIcon(props) {
 
 /** The `stop` icon. */
 export function StopIcon(props) {
-  return render(
-    "stop",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M9.75 8.75h4.5A1 1 0 0 1 15.25 9.75v4.5A1 1 0 0 1 14.25 15.25h-4.5A1 1 0 0 1 8.75 14.25v-4.5A1 1 0 0 1 9.75 8.75Z"/>',
-    props,
-  );
+  return render("stop", '<g fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1.5"/></g>', props);
 }
 
 /** The `stopwatch` icon. */
