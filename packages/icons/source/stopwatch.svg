@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="stage-duration duration">
+  <circle cx="12" cy="13.75" r="7.5"/>
+  <circle cx="12" cy="13.75" r="7.5" data-role="silhouette"/>
+  <path d="M9.75 2.75h4.5"/>
+  <path d="M12 2.75v3.5"/>
+  <path d="M12 13.75l2.75-2.75" data-role="detail"/>
+</svg>

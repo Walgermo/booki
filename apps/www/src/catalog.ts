@@ -34,6 +34,13 @@ export const catalog: CatalogItem[] = [
     install: "",
   },
   {
+    name: "icons",
+    title: "Icons",
+    description: "Duotone icons for accounting UI: search them, copy the import, use them in React or any framework.",
+    group: "Getting started",
+    install: "",
+  },
+  {
     name: "demo",
     title: "Demo",
     description: "A working sales-invoice screen an agent can operate, with the human gates in place.",

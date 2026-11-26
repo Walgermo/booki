@@ -1,4 +1,5 @@
 import { BookiLogo } from "@/components/booki-logo";
+import { Icon } from "@booki-aui/icons/react";
 import { BookiLocaleProvider } from "@booki-aui/react";
 import type { CountryCode } from "@booki-aui/core/locale";
 import { useState } from "react";
@@ -9,9 +10,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useLang } from "@/lib/lang";
 
 import { catalog } from "../catalog";
-import { catalogText, groupName } from "../catalog-nb";
-
-const groups = ["Getting started", "Core", "React"] as const;
+import { catalogText } from "../catalog-nb";
+import { NAV_SECTIONS, PAGE_ICON, plainName } from "../docs-nav";
 const REPO_URL = "https://github.com/Walgermo/booki";
 
 // These three pages live outside /docs; the /docs/* paths remain only as redirects for old links.
@@ -25,28 +25,29 @@ function docPath(name: string): string {
 function NavGroups() {
   const { lang } = useLang();
   return (
-    <>
-      {groups.map((group) => (
-        <div key={group} className="mb-6 last:mb-0">
-          <p className="site-kicker mb-2 lg:pl-3">{groupName(group, lang)}</p>
-          <ul className="m-0 flex list-none flex-wrap gap-x-5 p-0 lg:block">
-            {catalog
-              .filter((item) => item.group === group)
-              .map((item) => (
-                <li key={item.name}>
-                  <NavLink
-                    to={docPath(item.name)}
-                    end={item.name === "introduction"}
-                    className="site-nav-link site-docnav-link lg:min-h-9"
-                  >
-                    {catalogText(item, lang).title}
+    <div className="site-docnav">
+      {NAV_SECTIONS.map((section) => (
+        <section key={section.id} className="site-docnav__section" aria-labelledby={`docnav-${section.id}`}>
+          <h2 id={`docnav-${section.id}`} className="site-kicker site-docnav__heading">
+            {lang === "nb" ? section.nb : section.en}
+          </h2>
+          <ul className="site-docnav__list">
+            {section.pages.map((name) => {
+              const item = catalog.find((entry) => entry.name === name);
+              if (!item) return null;
+              return (
+                <li key={name}>
+                  <NavLink to={docPath(name)} end={name === "introduction"} className="site-nav-link site-docnav-link">
+                    {PAGE_ICON[name] ? <Icon name={PAGE_ICON[name]} className="site-docnav-icon" /> : null}
+                    <span>{plainName(name, lang) ?? catalogText(item, lang).title}</span>
                   </NavLink>
                 </li>
-              ))}
+              );
+            })}
           </ul>
-        </div>
+        </section>
       ))}
-    </>
+    </div>
   );
 }
 

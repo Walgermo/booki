@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="organization-number company organisation">
+  <path d="M12 2.75L16.75 2.75A1.5 1.5 0 0 1 18.25 4.25L18.25 19.75A1.5 1.5 0 0 1 16.75 21.25L7.25 21.25A1.5 1.5 0 0 1 5.75 19.75L5.75 4.25A1.5 1.5 0 0 1 7.25 2.75Z"/>
+  <path d="M12 2.75L16.75 2.75A1.5 1.5 0 0 1 18.25 4.25L18.25 19.75A1.5 1.5 0 0 1 16.75 21.25L7.25 21.25A1.5 1.5 0 0 1 5.75 19.75L5.75 4.25A1.5 1.5 0 0 1 7.25 2.75Z" data-role="silhouette"/>
+  <path d="M9.25 7.25h0" data-role="detail"/>
+  <path d="M14.75 7.25h0" data-role="detail"/>
+  <path d="M9.25 11.75h0" data-role="detail"/>
+  <path d="M14.75 11.75h0" data-role="detail"/>
+  <path d="M10.25 21.25L10.25 18.25A1 1 0 0 1 11.25 17.25L12.75 17.25A1 1 0 0 1 13.75 18.25L13.75 21.25" data-role="detail"/>
+</svg>

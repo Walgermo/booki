@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="expense expense-claim" data-waive-radius="the clasp is a half-round strap; its radius is half the strap height, not a corner">
+  <path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z"/>
+  <path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z" data-role="silhouette"/>
+  <path d="M21.25 9.75H17.25A2.25 2.25 0 0 0 17.25 14.25H21.25" data-role="detail"/>
+</svg>

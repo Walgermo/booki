@@ -17,6 +17,7 @@ const ClosePage = page(() => import("./pages/close"), "ClosePage");
 const ErpTeamsPage = page(() => import("./pages/erp-teams"), "ErpTeamsPage");
 const FeaturesPage = page(() => import("./pages/features"), "FeaturesPage");
 const ExamplesPage = page(() => import("./pages/examples"), "ExamplesPage");
+const IconsPage = page(() => import("./pages/icons"), "IconsPage");
 const ComponentDocPage = page(() => import("./pages/component-doc"), "ComponentDocPage");
 const ErpPage = page(() => import("./pages/erp"), "ErpPage");
 const InstallationPage = page(() => import("./pages/installation"), "InstallationPage");
@@ -95,6 +96,7 @@ export function App() {
           <Route index element={<IntroductionPage />} />
           <Route path="installation" element={<InstallationPage />} />
           <Route path="examples" element={<ExamplesPage />} />
+          <Route path="icons" element={<IconsPage />} />
           <Route path="demo" element={<Navigate to="/demo" replace />} />
           <Route path="month-end" element={<Navigate to="/close" replace />} />
           <Route path="erp-teams" element={<Navigate to="/erp-teams" replace />} />

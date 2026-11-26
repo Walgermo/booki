@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="demo" data-waive-angle="a play triangle is equilateral-ish by convention; a 45-degree one reads as an arrowhead">
+  <path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/>
+  <path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z" data-role="silhouette"/>
+  <path d="M3.75 7.25h16.5" data-role="detail"/>
+  <path d="M9.75 13.75L9.75 15.576A1 1 0 0 0 11.224 16.456L14.615 14.63A1 1 0 0 0 14.615 12.87L11.224 11.044A1 1 0 0 0 9.75 11.924Z" data-role="detail"/>
+</svg>

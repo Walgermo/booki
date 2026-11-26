@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="filter filters adjust" data-waive-detail-budget="three rows, each a line split by its knob; fewer rows reads as a toggle switch">
+  <path d="M3.75 5.25h9M17.5 5.25h2.75"/>
+  <circle cx="15.25" cy="5.25" r="2.25"/>
+  <circle cx="15.25" cy="5.25" r="2.25" data-role="silhouette"/>
+  <path d="M3.75 12h2.75M11 12h9.25"/>
+  <circle cx="8.75" cy="12" r="2.25"/>
+  <circle cx="8.75" cy="12" r="2.25" data-role="silhouette"/>
+  <path d="M3.75 18.75h7.75M16 18.75h4.25"/>
+  <circle cx="13.75" cy="18.75" r="2.25"/>
+  <circle cx="13.75" cy="18.75" r="2.25" data-role="silhouette"/>
+</svg>

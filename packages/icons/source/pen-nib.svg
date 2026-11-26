@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="document-signoff signoff sign" data-waive-gap="a nib is split to its tip; the slit meeting the point is what reads as a nib rather than a shield">
+  <path d="M12 3.25H15.25A1.5 1.5 0 0 1 16.75 4.75V8.25A18.822 18.822 0 0 1 12 20.75A18.822 18.822 0 0 1 7.25 8.25V4.75A1.5 1.5 0 0 1 8.75 3.25Z"/>
+  <path d="M12 3.25H15.25A1.5 1.5 0 0 1 16.75 4.75V8.25A18.822 18.822 0 0 1 12 20.75A18.822 18.822 0 0 1 7.25 8.25V4.75A1.5 1.5 0 0 1 8.75 3.25Z" data-role="silhouette"/>
+  <circle cx="12" cy="9.75" r="1" data-role="detail"/>
+  <path d="M12 10.75V20.75" data-role="detail"/>
+</svg>

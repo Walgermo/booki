@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="memory context knowledge data" data-waive-heavy="a cylinder needs its top rim and two bands to read as a database; drawn narrower to offset the ink">
+  <path d="M4.5 4.75V19.75A7.5 2.25 0 0 0 19.5 19.75V4.75"/>
+  <ellipse cx="12" cy="4.75" rx="7.5" ry="2.25"/>
+  <path d="M4.5 4.75A7.5 2.25 0 0 1 19.5 4.75V19.75A7.5 2.25 0 0 1 4.5 19.75Z" data-role="silhouette"/>
+  <path d="M4.5 9.75A7.5 2.25 0 0 0 19.5 9.75" data-role="detail"/>
+  <path d="M4.5 14.75A7.5 2.25 0 0 0 19.5 14.75" data-role="detail"/>
+</svg>

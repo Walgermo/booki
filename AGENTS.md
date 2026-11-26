@@ -67,6 +67,7 @@ The look is "Paper and Ink" in `DESIGN.md`: paper for people, ink for machine ou
 - `packages/core` — Money, locale, validators, voucher helpers
 - `packages/react` — Unstyled agent-ready React primitives
 - `packages/styles` — Optional default look (CSS variables + `data-slot`)
+- `packages/icons` — Duotone icons (SVG, markup strings, React `<Icon />`). Style in `icons.yaml`; draw with the draw-icons skill, then `build` and `pnpm --filter @booki-aui/icons generate`. Private until its first npm publish
 - `apps/www` — Docs + live demos
 
 ERP adapters are out of scope — apps integrate ERPs themselves.

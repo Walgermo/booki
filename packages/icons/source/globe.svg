@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="iban international" data-waive-gap="meridians always meet at the poles; that convergence is what makes it a globe" data-waive-heavy="meridian plus equator is the minimum that reads as a globe; ink sits in the light tint, not extra parts">
+  <circle cx="12" cy="12" r="9.25"/>
+  <circle cx="12" cy="12" r="9.25" data-role="silhouette"/>
+  <path d="M12 2.75a13 13 0 0 0 0 18.5 13 13 0 0 0 0-18.5" data-role="detail"/>
+  <path d="M2.75 12h18.5" data-role="detail"/>
+</svg>

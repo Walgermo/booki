@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="country country-toggle">
+  <path d="M5.25 4.25L17.75 4.25A1.5 1.5 0 0 1 19.25 5.75L19.25 12.25A1.5 1.5 0 0 1 17.75 13.75L5.25 13.75"/>
+  <path d="M5.25 4.25L17.75 4.25A1.5 1.5 0 0 1 19.25 5.75L19.25 12.25A1.5 1.5 0 0 1 17.75 13.75L5.25 13.75Z" data-role="silhouette"/>
+  <path d="M5.25 2.75V21.25"/>
+</svg>
