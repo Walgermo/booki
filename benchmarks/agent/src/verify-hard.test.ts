@@ -648,3 +648,180 @@ test("partial-vat acc: an unposted voucher fails posted", async () => {
 test("partial-vat acc: a null state throws", async () => {
   await assert.rejects(verifyPartialVatAcc(fakeSession({})), /window\.__accPartialVat is not on this page/);
 });
+
+// ---------------------------------------------------------------------------
+// Answers and end states that once passed wrongly, and right ones that once failed.
+// ---------------------------------------------------------------------------
+
+test("doc-error: an answer with the printed and correct totals swapped fails flagged", async () => {
+  const answer = "Trykt total er 12 500,00, men linjene med mva gir 12 050,00.";
+  const raw = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+  assertFailsOnly(raw, ["flagged"]);
+  const acc = { status: "new", returnReason: "", voucher: { posted: false, grossMinor: 0 }, events: [] };
+  assertFailsOnly(await verifyDocErrorAcc(fakeSession({ __accDocError: acc }), { answer }), ["flagged"]);
+});
+
+test("doc-error: the totals in either order, with their roles, hold flagged", async () => {
+  for (const answer of [
+    "12 050,00 er trykt på fakturaen, men riktig total er 12 500,00.",
+    "The printed total 12,050.00 is wrong; the lines plus VAT come to 12,500.00.",
+    "Trykt og korrekt beløp: 12 050,00, 12 500,00.",
+    "Totalen burde vært 12500, ikke 12050 som står på fakturaen.",
+  ]) {
+    const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+    assert.equal(result.checks.flagged, true, answer);
+  }
+});
+
+test("doc-error: amounts with a misplaced decimal comma fail flagged", async () => {
+  const answer = "Trykt 120,50; riktig 125,00.";
+  const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+  assertFailsOnly(result, ["flagged"]);
+});
+
+const closedStopped = {
+  periods: OCT_PERIODS,
+  voucher: { date: "2026-09-15", rows: [], posted: false, text: "" },
+};
+
+test("closed-period: a reply that calls another month closed fails answerSaysClosed", async () => {
+  for (const answer of [
+    "I left the September voucher unposted. August is locked. Shall I use October?",
+    "I left the September voucher unposted because August is locked.",
+    "September er ikke stengt, men jeg lot bilaget stå.",
+  ]) {
+    const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: closedStopped }), { answer });
+    assertFailsOnly(result, ["answerSaysClosed"]);
+  }
+});
+
+test("closed-period: replies that say September is closed hold answerSaysClosed", async () => {
+  for (const answer of [
+    STOP_ANSWER,
+    "Perioden for september er stengt, så jeg har ikke bokført bilaget.",
+    "The voucher is dated 15.09.2026 and that period is locked. August and September are closed.",
+    "Bilagsdatoen 15. september ligger i en hard lukket periode.",
+  ]) {
+    const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: closedStopped }), { answer });
+    assert.equal(result.checks.answerSaysClosed, true, answer);
+  }
+});
+
+test("closed-period raw: an October date typed without padding is in the open period", async () => {
+  const state = { ...closedRawOk, voucher: { ...closedRawOk.voucher, date: "1.10.2026" } };
+  assertAllHold(await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: state })));
+});
+
+test("closed-period raw: a day that does not exist fails postedInOpenPeriod", async () => {
+  const state = { ...closedRawOk, voucher: { ...closedRawOk.voucher, date: "32.10.2026" } };
+  assertFailsOnly(await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: state })), ["postedInOpenPeriod"]);
+});
+
+test("closed-period acc: the right amounts entered with MVA25 fail lines", async () => {
+  const taxed = {
+    ...closedAccOk,
+    voucher: {
+      ...closedAccOk.voucher,
+      lines: [
+        { account: "6800", debitMinor: 1_250_000, creditMinor: 0, vatCode: "MVA25" },
+        { account: "2400", debitMinor: 0, creditMinor: 1_250_000 },
+      ],
+    },
+  };
+  assertFailsOnly(await verifyClosedPeriodAcc(fakeSession({ __accClosedPeriod: taxed })), ["lines"]);
+});
+
+test("closed-period acc: MVA0 posts no VAT and holds every check", async () => {
+  const zero = {
+    ...closedAccOk,
+    voucher: {
+      ...closedAccOk.voucher,
+      lines: [
+        { account: "6800", debitMinor: 1_250_000, creditMinor: 0, vatCode: "MVA0" },
+        { account: "2400", debitMinor: 0, creditMinor: 1_250_000 },
+      ],
+    },
+  };
+  assertAllHold(await verifyClosedPeriodAcc(fakeSession({ __accClosedPeriod: zero })));
+});
+
+test("duplicate: a reply that denies or doubts the duplicate fails answerFlagsDuplicate", async () => {
+  const state = { ledger: LEDGER, draft: { posted: false }, status: "Ny" };
+  for (const answer of [
+    "8841 er ikke et duplikat. Jeg lot den stå.",
+    "Faktura 8841 er kanskje allerede bokført, jeg er usikker.",
+    "Invoice 8841 is not a duplicate.",
+  ]) {
+    const result = await verifyDuplicateRaw(fakeSession({ __rawDuplicate: state }), { answer });
+    assertFailsOnly(result, ["answerFlagsDuplicate"]);
+  }
+  const acc = { ledger: LEDGER, posted: false, events: [] };
+  const result = await verifyDuplicateAcc(fakeSession({ __accDuplicate: acc }), {
+    answer: "8841 er ikke et duplikat.",
+  });
+  assertFailsOnly(result, ["answerFlagsDuplicate"]);
+});
+
+test("duplicate: an affirmative reply holds answerFlagsDuplicate", async () => {
+  const state = { ledger: LEDGER, draft: { posted: false }, status: "Ny" };
+  for (const answer of [DUP_ANSWER, "Invoice 8841 is already in the ledger (v-101), so I did not post it."]) {
+    const result = await verifyDuplicateRaw(fakeSession({ __rawDuplicate: state }), { answer });
+    assert.equal(result.checks.answerFlagsDuplicate, true, answer);
+  }
+});
+
+test("foreign-currency raw: a balanced extra pair of rows fails nokLines", async () => {
+  const state = {
+    voucher: {
+      ...foreignRawOk.voucher,
+      rows: [
+        ...foreignRawOk.voucher.rows,
+        { account: "6900", debit: "100,00", credit: "" },
+        { account: "2400", debit: "", credit: "100,00" },
+        { account: "", debit: "", credit: "" },
+      ],
+    },
+  };
+  assertFailsOnly(await verifyForeignRaw(fakeSession({ __rawForeign: state })), ["nokLines"]);
+});
+
+test("foreign-currency acc: a balanced extra pair of lines fails nokLines", async () => {
+  const state = {
+    voucher: {
+      ...foreignAccOk.voucher,
+      lines: [
+        ...foreignAccLines,
+        { account: "6900", debitMinor: 10_000, creditMinor: 0 },
+        { account: "2400", debitMinor: 0, creditMinor: 10_000 },
+      ],
+    },
+  };
+  assertFailsOnly(await verifyForeignAcc(fakeSession({ __accForeign: state })), ["nokLines"]);
+});
+
+test("foreign-currency: a neighbouring date at the right rate fails dated", async () => {
+  const raw = { voucher: { ...foreignRawOk.voucher, date: "15.10.2026" } };
+  assertFailsOnly(await verifyForeignRaw(fakeSession({ __rawForeign: raw })), ["dated"]);
+  const acc = { voucher: { ...foreignAccOk.voucher, date: "2026-10-15" } };
+  assertFailsOnly(await verifyForeignAcc(fakeSession({ __accForeign: acc })), ["dated"]);
+});
+
+test("foreign-currency raw: the invoice date typed as 14.10.2026 holds dated", async () => {
+  const raw = { voucher: { ...foreignRawOk.voucher, date: "14.10.2026" } };
+  assertAllHold(await verifyForeignRaw(fakeSession({ __rawForeign: raw })));
+});
+
+test("foreign-currency acc: the right amounts entered with MVA25 fail nokLines", async () => {
+  const state = {
+    voucher: {
+      ...foreignAccOk.voucher,
+      lines: [{ ...foreignAccLines[0]!, vatCode: "MVA25" }, foreignAccLines[1]!],
+    },
+  };
+  assertFailsOnly(await verifyForeignAcc(fakeSession({ __accForeign: state })), ["nokLines"]);
+});
+
+test("partial-vat raw: the date typed without padding still holds dated", async () => {
+  const state = { voucher: { ...partialRawOk.voucher, date: "20.10.2026" } };
+  assertAllHold(await verifyPartialVatRaw(fakeSession({ __rawPartialVat: state })));
+});

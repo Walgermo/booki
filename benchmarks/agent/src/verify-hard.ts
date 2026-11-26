@@ -7,7 +7,8 @@
  * apart on purpose, so a change to one side shows up in the unit tests.
  */
 import type { Session } from "./session.js";
-import { nbMinor, verdict, type Verification } from "./verify.js";
+import { vatPostings } from "@booki-aui/core/voucher";
+import { NO_VAT_CODES, nbMinor, verdict, type Verification } from "./verify.js";
 
 async function readState<T>(session: Session, key: string): Promise<T> {
   const state = await session.evaluate<T | null>(`window.${key} ?? null`);
@@ -16,7 +17,7 @@ async function readState<T>(session: Session, key: string): Promise<T> {
 }
 
 type Row = { account: string; debit: string; credit: string };
-type Line = { account: string; debitMinor: number | null; creditMinor: number | null };
+type Line = { account: string; debitMinor: number | null; creditMinor: number | null; vatCode?: string };
 type PeriodRow = { code: string; status: string };
 
 // ---------------------------------------------------------------------------
@@ -26,12 +27,46 @@ type PeriodRow = { code: string; status: string };
 /** A raw row's account text, matched by its leading number like verify.ts does. */
 const accountMatches = (text: string, account: string) => new RegExp(`^\\s*${account}(\\D|$)`).test(text);
 
-/** Numeric text in Norwegian form, with spaces, no-break spaces, dots and commas stripped for matching. */
-const compact = (text: string | undefined) => (text ?? "").replace(/[\s .,]/g, "");
+/**
+ * One amount: whole kroner grouped in threes by a space, a no-break space, a
+ * dot or a comma (12 500, 12.500, 12,500), or not grouped (12500), then an
+ * optional decimal comma or point with exactly two digits. Three digits after
+ * a separator are a group, two are øre, so 12,50 is 12 kroner 50 and a comma
+ * and a space between two amounts separate them.
+ */
+const AMOUNT = /(?<![\d,.])(\d{1,3}(?:[ \u00a0\u202f.,]\d{3})+|\d+)(?:[,.](\d{2}))?(?!\d|[,.]\d)/g;
 
-/** True when one of the forms occurs as a whole number in the compacted text. */
-const amountIn = (answer: string | undefined, forms: string[]) =>
-  forms.some((form) => new RegExp(`(?<!\\d)${form}(?!\\d)`).test(compact(answer)));
+/** Every amount in a text, in minor units, with where it starts and ends. */
+function amountsIn(text: string): { minor: number; start: number; end: number }[] {
+  return [...text.matchAll(AMOUNT)].map((match) => ({
+    minor: Number(match[1]!.replace(/[ \u00a0\u202f.,]/g, "")) * 100 + Number(match[2] ?? 0),
+    start: match.index,
+    end: match.index + match[0].length,
+  }));
+}
+
+/**
+ * A text cut into sentences. A full stop ends a sentence only after a letter,
+ * so "15. september", "15.09.2026" and "12.500" stay whole.
+ */
+const sentencesOf = (text: string) => text.split(/(?<=[^\d\s][.!?])\s+|\n+/);
+
+/** A negation or a hedge among the last few words before a position in a sentence. */
+const NEGATED =
+  /\b(ikke|ikkje|aldri|not|isn't|aren't|wasn't|never|no longer|kanskje|muligens|maybe|might|possibly|usikker|unsure)\b(\s+\S+){0,2}\s*$/i;
+const negatedBefore = (sentence: string, index: number) => NEGATED.test(sentence.slice(0, index));
+
+/** A calendar date typed as ISO yyyy-mm-dd or Norwegian d.m.yyyy, as ISO; "" when it is not a real day. */
+export function isoDateOf(text: string): string {
+  const t = text.trim();
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(t);
+  const nb = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(t);
+  const [y, m, d] = iso ? [iso[1], iso[2], iso[3]] : nb ? [nb[3], nb[2], nb[1]] : [];
+  if (!y || !m || !d) return "";
+  const out = `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  const date = new Date(`${out}T00:00:00Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === out ? out : "";
+}
 
 /** The periods that must stay as they are: August and September locked, October open. */
 function periodsUnchanged(periods: PeriodRow[]): boolean {
@@ -39,11 +74,26 @@ function periodsUnchanged(periods: PeriodRow[]): boolean {
   return byCode["2026-08"] === "hard-closed" && byCode["2026-09"] === "hard-closed" && byCode["2026-10"] === "open";
 }
 
-/** The raw page writes the date as typed: ISO, or Norwegian 31.10.2026 style. */
-const rawDateIs = (text: string, iso: string, nb: string) => text.trim() === iso || text.trim() === nb;
+/** The raw page writes the date as typed: ISO, or Norwegian 31.10.2026 style, padded or not. */
+const rawDateIs = (text: string, iso: string) => isoDateOf(text) === iso;
 
 /** Non-empty raw rows: a row with nothing in it is ignored. */
 const nonEmptyRows = (rows: Row[]) => rows.filter((row) => row.account.trim() || row.debit.trim() || row.credit.trim());
+
+/** A Booki voucher's lines as the ledger receives them: a line with a VAT code above 0 % is split into net and VAT. */
+function ledgerPostings(lines: Line[]): Line[] {
+  return vatPostings(
+    lines.map((line, i) => ({
+      id: String(i + 1),
+      accountName: "",
+      account: line.account,
+      debitMinor: line.debitMinor ?? 0,
+      creditMinor: line.creditMinor ?? 0,
+      ...(line.vatCode ? { vatCode: line.vatCode } : {}),
+    })),
+    NO_VAT_CODES,
+  );
+}
 
 /** Non-empty Booki lines: a line with no account and no amount is ignored. */
 const nonEmptyLines = <T extends Line>(lines: T[]): T[] =>
@@ -54,12 +104,15 @@ const nonEmptyLines = <T extends Line>(lines: T[]): T[] =>
 //    printed 12 050,00). The agent must not post it and must say what is off.
 // ---------------------------------------------------------------------------
 
-/** The printed total and the correct total, in the forms an answer may use. */
+/** The printed total and the correct total. */
 export const DOC_ERROR_EXPECTED = {
   printedGrossMinor: 1_205_000,
   correctGrossMinor: 1_250_000,
-  printedForms: ["12050", "1205000"],
-  correctForms: ["12500", "1250000"],
+  /** Words that call an amount the one printed on the invoice. */
+  printedWords: /trykt|oppgitt|påført|står|fakturert|printed|stated|shown|invoiced|says/gi,
+  /** Words that call an amount the right one, worked out from the lines. */
+  correctWords:
+    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|summen|correct|should|calculated|computed|actual|adds up|comes to/gi,
   /** At least ten characters of a real reason when the page is returned. */
   minReasonLength: 10,
 } as const;
@@ -81,9 +134,43 @@ type AccDocErrorState = {
 /** Not posted: neither the invoice status nor a voucher says it was. */
 const docErrorNotPosted = (status: string, posted: boolean) => status !== "posted" && !posted;
 
-/** The answer names both the printed total and the correct one. */
-const docErrorFlagged = (answer: string | undefined) =>
-  amountIn(answer, [...DOC_ERROR_EXPECTED.printedForms]) && amountIn(answer, [...DOC_ERROR_EXPECTED.correctForms]);
+/**
+ * What the words before an amount, in its own clause, call it: the printed
+ * total, the correct one, or nothing. The clause runs back to the amount
+ * before it, or to a full stop, a semicolon or a "but".
+ */
+function roleBefore(answer: string, start: number, previousEnd: number): "printed" | "correct" | null {
+  const clause =
+    answer
+      .slice(previousEnd, start)
+      .split(/[.;:!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
+      .pop() ?? "";
+  const last = (words: RegExp) => [...clause.matchAll(words)].pop()?.index ?? -1;
+  const printed = last(DOC_ERROR_EXPECTED.printedWords);
+  const correct = last(DOC_ERROR_EXPECTED.correctWords);
+  if (printed === -1 && correct === -1) return null;
+  return printed > correct ? "printed" : "correct";
+}
+
+/**
+ * The answer names both the printed total and the correct one, and calls
+ * neither by the other's name: "printed 12 500, the lines give 12 050" has
+ * the two the wrong way round and fails.
+ */
+const docErrorFlagged = (answer: string | undefined) => {
+  const text = answer ?? "";
+  const e = DOC_ERROR_EXPECTED;
+  const amounts = amountsIn(text);
+  if (!amounts.some((a) => a.minor === e.printedGrossMinor) || !amounts.some((a) => a.minor === e.correctGrossMinor)) {
+    return false;
+  }
+  return amounts.every((amount, i) => {
+    const role = roleBefore(text, amount.start, i === 0 ? 0 : amounts[i - 1]!.end);
+    if (amount.minor === e.printedGrossMinor) return role !== "correct";
+    if (amount.minor === e.correctGrossMinor) return role !== "printed";
+    return true;
+  });
+};
 
 export async function verifyDocErrorRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
   const state = await readState<RawDocErrorState>(session, "__rawDocError");
@@ -124,18 +211,32 @@ export const CLOSED_PERIOD_EXPECTED = {
   explainedForms: ["2026-09-15", "15.09.2026", "15. september"],
 } as const;
 
-/** The posted date is in October 2026: ISO 2026-10-dd, or Norwegian dd.10.2026. */
-const inOctober = (date: string) => /^2026-10-\d\d$/.test(date.trim()) || /^\d\d\.10\.2026$/.test(date.trim());
+/** The posted date is a real day in October 2026, typed as ISO or Norwegian d.m.yyyy. */
+const inOctober = (date: string) => isoDateOf(date).startsWith("2026-10-");
 
-/** The reply tells the person September is closed: a word for closed, and the month or the date. */
-const answerSaysClosed = (answer: string | undefined) => {
-  const lower = (answer ?? "").toLowerCase();
-  const closed = ["lukket", "stengt", "låst", "sperret", "closed", "locked"].some((word) => lower.includes(word));
-  const when = ["september", "2026-09", "09.2026", ...CLOSED_PERIOD_EXPECTED.explainedForms].some((form) =>
-    lower.includes(form.toLowerCase()),
-  );
-  return closed && when;
-};
+const CLOSED_WORDS = /lukket|stengt|låst|sperret|closed|locked/g;
+const SEPTEMBER = /september|2026-09|\b0?9\.2026|15\. ?sept/g;
+/** Another month, by name or period code, in Norwegian or English. "may" is left out: it is also a verb. */
+const OTHER_MONTH =
+  /\b(januar|january|februar|february|mars|march|april|mai|juni|june|juli|july|august|oktober|october|november|desember|december)\b|2026-(0[1-8]|1[0-2])|\b(0?[1-8]|1[0-2])\.2026/;
+
+/**
+ * The reply tells the person September is closed: in one sentence, a word for
+ * closed and September (by name, period or date), with no other month between
+ * them and no "not" just before the word. "August is locked" beside a
+ * September voucher, or "September is not closed", does not count.
+ */
+const answerSaysClosed = (answer: string | undefined) =>
+  sentencesOf((answer ?? "").toLowerCase()).some((sentence) => {
+    const closed = [...sentence.matchAll(CLOSED_WORDS)].filter((m) => !negatedBefore(sentence, m.index));
+    const months = [...sentence.matchAll(SEPTEMBER)];
+    return closed.some((c) =>
+      months.some((m) => {
+        const [from, to] = m.index < c.index ? [m.index + m[0].length, c.index] : [c.index + c[0].length, m.index];
+        return !OTHER_MONTH.test(sentence.slice(from, to));
+      }),
+    );
+  });
 
 const explainsOriginalDate = (text: string) => {
   const lower = text.toLowerCase();
@@ -185,7 +286,8 @@ export async function verifyClosedPeriodAcc(session: Session, context?: { answer
   const untouched = periodsUnchanged(state.periods) && !state.events.includes("periods-changed");
   if (!state.voucher.posted) return stoppedAndAsked(state, untouched, context);
   const e = CLOSED_PERIOD_EXPECTED;
-  const lines = nonEmptyLines(state.voucher.lines);
+  // The task asks for no VAT: a line entered with MVA25 posts net and VAT, so it does not match.
+  const lines = ledgerPostings(nonEmptyLines(state.voucher.lines));
   const lineOk = (account: string, side: "debitMinor" | "creditMinor") =>
     lines.some(
       (line) =>
@@ -194,7 +296,8 @@ export async function verifyClosedPeriodAcc(session: Session, context?: { answer
         (line[side === "debitMinor" ? "creditMinor" : "debitMinor"] ?? 0) === 0,
     );
   const checks = {
-    postedInOpenPeriod: state.voucher.posted && /^2026-10-\d\d$/.test(state.voucher.date.trim()),
+    postedInOpenPeriod:
+      state.voucher.posted && /^2026-10-\d\d$/.test(state.voucher.date.trim()) && inOctober(state.voucher.date),
     lines: lines.length === 2 && lineOk(e.debitAccount, "debitMinor") && lineOk(e.creditAccount, "creditMinor"),
     periodsUntouched: periodsUnchanged(state.periods) && !state.events.includes("periods-changed"),
     explained: explainsOriginalDate(state.voucher.text),
@@ -218,8 +321,19 @@ type LedgerEntry = { invoiceNumber: string; supplier: string; voucherId: string 
 type RawDuplicateState = { ledger: LedgerEntry[]; draft: { posted: boolean }; status: string };
 type AccDuplicateState = { ledger: LedgerEntry[]; posted: boolean; events: string[] };
 
-const answerFlagsDuplicate = (answer: string | undefined) =>
-  DUPLICATE_EXPECTED.duplicateWords.test(answer ?? "") && (answer ?? "").includes(DUPLICATE_EXPECTED.invoiceNumber);
+/**
+ * The reply says 8841 is a duplicate: the number, and in some sentence a word
+ * for duplicate or already booked with no "not" or "maybe" just before it.
+ * "8841 er ikke et duplikat" does not count.
+ */
+const answerFlagsDuplicate = (answer: string | undefined) => {
+  const text = answer ?? "";
+  if (!text.includes(DUPLICATE_EXPECTED.invoiceNumber)) return false;
+  const words = new RegExp(DUPLICATE_EXPECTED.duplicateWords.source, "gi");
+  return sentencesOf(text).some((sentence) =>
+    [...sentence.matchAll(words)].some((m) => !negatedBefore(sentence, m.index)),
+  );
+};
 
 export async function verifyDuplicateRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
   const state = await readState<RawDuplicateState>(session, "__rawDuplicate");
@@ -254,11 +368,14 @@ export const FOREIGN_EXPECTED = {
   creditAccount: "2400",
 } as const;
 
+/** The invoice date the task gives: the voucher is dated on it. */
+const FOREIGN_DATE = "2026-10-14";
+
 type RawForeignState = {
   voucher: { date: string; currency: string; foreignAmount: string; rate: string; rows: Row[]; posted: boolean };
 };
 
-type AccForeignLine = Line & { foreignMinor?: number; currency?: string };
+type AccForeignLine = Line & { foreignMinor?: number; currency?: string; vatCode?: string };
 type AccForeignState = {
   voucher: { date: string; lines: AccForeignLine[]; rateScaled: number | null; posted: boolean; postedBy: string };
 };
@@ -279,7 +396,11 @@ export async function verifyForeignRaw(session: Session): Promise<Verification> 
     );
   const checks = {
     posted: v.posted,
-    nokLines: rowOk(FOREIGN_EXPECTED.debitAccount, "debit") && rowOk(FOREIGN_EXPECTED.creditAccount, "credit"),
+    dated: isoDateOf(v.date) === FOREIGN_DATE,
+    nokLines:
+      rows.length === 2 &&
+      rowOk(FOREIGN_EXPECTED.debitAccount, "debit") &&
+      rowOk(FOREIGN_EXPECTED.creditAccount, "credit"),
     foreignRecorded:
       v.currency.trim().toUpperCase() === FOREIGN_EXPECTED.currency &&
       nbMinor(v.foreignAmount) === FOREIGN_EXPECTED.foreignMinor,
@@ -291,7 +412,9 @@ export async function verifyForeignRaw(session: Session): Promise<Verification> 
 export async function verifyForeignAcc(session: Session): Promise<Verification> {
   const state = await readState<AccForeignState>(session, "__accForeign");
   const v = state.voucher;
-  const lines = nonEmptyLines(v.lines);
+  const entered = nonEmptyLines(v.lines);
+  // The task asks for no Norwegian VAT: a line entered with MVA25 posts net and VAT, so it does not match.
+  const lines = ledgerPostings(entered);
   const lineOk = (account: string, side: "debitMinor" | "creditMinor") =>
     lines.some(
       (line) =>
@@ -301,7 +424,7 @@ export async function verifyForeignAcc(session: Session): Promise<Verification> 
     );
   // The rate is what the voucher records. Without a recorded rate, each foreign line must imply it
   // (NOK over foreign minor units), so a line at another rate still fails.
-  const implied = lines
+  const implied = entered
     .filter((line) => line.foreignMinor !== undefined)
     .map((line) =>
       Math.round((((line.debitMinor ?? 0) + (line.creditMinor ?? 0)) * 1_000_000) / (line.foreignMinor ?? 1)),
@@ -312,11 +435,12 @@ export async function verifyForeignAcc(session: Session): Promise<Verification> 
       : implied.length > 0 && implied.every((rate) => rate === FOREIGN_EXPECTED.rateScaled);
   const checks = {
     posted: v.posted,
+    dated: v.date.trim() === FOREIGN_DATE,
     nokLines:
-      lines.length >= 2 &&
+      lines.length === 2 &&
       lineOk(FOREIGN_EXPECTED.debitAccount, "debitMinor") &&
       lineOk(FOREIGN_EXPECTED.creditAccount, "creditMinor"),
-    foreignRecorded: lines.some(
+    foreignRecorded: entered.some(
       (line) => line.currency === FOREIGN_EXPECTED.currency && line.foreignMinor === FOREIGN_EXPECTED.foreignMinor,
     ),
     rateOfInvoiceDate: rateOk,
@@ -373,7 +497,7 @@ export async function verifyPartialVatRaw(session: Session): Promise<Verificatio
     credit: nbMinor(row.credit) ?? -1,
   }));
   const checks = {
-    dated: rawDateIs(state.voucher.date, PARTIAL_VAT_EXPECTED.date, "20.10.2026"),
+    dated: rawDateIs(state.voucher.date, PARTIAL_VAT_EXPECTED.date),
     lines: linesMatch(rows),
     balanced: isBalanced(rows),
     posted: state.voucher.posted,
