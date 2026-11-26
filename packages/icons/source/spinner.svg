@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="loading busy progress working" data-waive-small="the faint ring tint fills the circle keyline; only the arc is stroked, so it reads whole while it rotates">
+  <path d="M12 2.75A9.25 9.25 0 0 1 21.25 12"/>
+  <path d="M12 2A10 10 0 1 1 12 22A10 10 0 1 1 12 2ZM12 3.5A8.5 8.5 0 1 0 12 20.5A8.5 8.5 0 1 0 12 3.5Z" data-role="silhouette"/>
+</svg>

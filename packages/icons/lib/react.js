@@ -40,6 +40,51 @@ export function AgentCursorIcon(props) {
   );
 }
 
+/** The `agent-done` icon. */
+export function AgentDoneIcon(props) {
+  return render(
+    "agent-done",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M15.75 19.25l2 2 4.5-4.5"/>',
+    props,
+  );
+}
+
+/** The `agent-idle` icon. */
+export function AgentIdleIcon(props) {
+  return render(
+    "agent-idle",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/>',
+    props,
+  );
+}
+
+/** The `agent-refused` icon. */
+export function AgentRefusedIcon(props) {
+  return render(
+    "agent-refused",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/><path d="M16.75 16.75l4.5 4.5"/>',
+    props,
+  );
+}
+
+/** The `agent-waiting` icon. */
+export function AgentWaitingIcon(props) {
+  return render(
+    "agent-waiting",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M17.25 15.75v6.5"/><path d="M20.75 15.75v6.5"/>',
+    props,
+  );
+}
+
+/** The `agent-working` icon. */
+export function AgentWorkingIcon(props) {
+  return render(
+    "agent-working",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M19 15.75A3.25 3.25 0 1 1 15.75 19"/>',
+    props,
+  );
+}
+
 /** The `archive` icon. */
 export function ArchiveIcon(props) {
   return render(
@@ -681,6 +726,15 @@ export function ListRowsIcon(props) {
   );
 }
 
+/** The `loader-dots` icon. */
+export function LoaderDotsIcon(props) {
+  return render(
+    "loader-dots",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.25"/><circle cx="19" cy="12" r="0.75"/></g><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.25"/><circle cx="19" cy="12" r="0.75"/>',
+    props,
+  );
+}
+
 /** The `lock` icon. */
 export function LockIcon(props) {
   return render(
@@ -965,6 +1019,15 @@ export function SpeechBubbleIcon(props) {
   );
 }
 
+/** The `spinner` icon. */
+export function SpinnerIcon(props) {
+  return render(
+    "spinner",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 2A10 10 0 1 1 12 22A10 10 0 1 1 12 2ZM12 3.5A8.5 8.5 0 1 0 12 20.5A8.5 8.5 0 1 0 12 3.5Z"/></g><path d="M12 2.75A9.25 9.25 0 0 1 21.25 12"/>',
+    props,
+  );
+}
+
 /** The `stack` icon. */
 export function StackIcon(props) {
   return render(
@@ -988,6 +1051,15 @@ export function StickyNoteIcon(props) {
   return render(
     "sticky-note",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M14.75 20.25v-4a1.5 1.5 0 0 1 1.5-1.5h4"/><path d="M8.25 8.25h7.5"/><path d="M8.25 12.25h4.5"/>',
+    props,
+  );
+}
+
+/** The `stop` icon. */
+export function StopIcon(props) {
+  return render(
+    "stop",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M9.75 8.75h4.5A1 1 0 0 1 15.25 9.75v4.5A1 1 0 0 1 14.25 15.25h-4.5A1 1 0 0 1 8.75 14.25v-4.5A1 1 0 0 1 9.75 8.75Z"/>',
     props,
   );
 }

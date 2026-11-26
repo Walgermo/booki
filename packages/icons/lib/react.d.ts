@@ -16,6 +16,16 @@ export type IconProps = Omit<SVGProps<SVGSVGElement>, "children" | "dangerouslyS
 export declare function Icon(props: IconProps & { name: IconName }): JSX.Element | null;
 /** The `agent-cursor` icon. */
 export declare function AgentCursorIcon(props: IconProps): JSX.Element;
+/** The `agent-done` icon. */
+export declare function AgentDoneIcon(props: IconProps): JSX.Element;
+/** The `agent-idle` icon. */
+export declare function AgentIdleIcon(props: IconProps): JSX.Element;
+/** The `agent-refused` icon. */
+export declare function AgentRefusedIcon(props: IconProps): JSX.Element;
+/** The `agent-waiting` icon. */
+export declare function AgentWaitingIcon(props: IconProps): JSX.Element;
+/** The `agent-working` icon. */
+export declare function AgentWorkingIcon(props: IconProps): JSX.Element;
 /** The `archive` icon. */
 export declare function ArchiveIcon(props: IconProps): JSX.Element;
 /** The `arrow-right` icon. */
@@ -162,6 +172,8 @@ export declare function LinkIcon(props: IconProps): JSX.Element;
 export declare function ListChecksIcon(props: IconProps): JSX.Element;
 /** The `list-rows` icon. */
 export declare function ListRowsIcon(props: IconProps): JSX.Element;
+/** The `loader-dots` icon. */
+export declare function LoaderDotsIcon(props: IconProps): JSX.Element;
 /** The `lock` icon. */
 export declare function LockIcon(props: IconProps): JSX.Element;
 /** The `lock-open` icon. */
@@ -226,12 +238,16 @@ export declare function SlidersIcon(props: IconProps): JSX.Element;
 export declare function SparklesIcon(props: IconProps): JSX.Element;
 /** The `speech-bubble` icon. */
 export declare function SpeechBubbleIcon(props: IconProps): JSX.Element;
+/** The `spinner` icon. */
+export declare function SpinnerIcon(props: IconProps): JSX.Element;
 /** The `stack` icon. */
 export declare function StackIcon(props: IconProps): JSX.Element;
 /** The `stamp` icon. */
 export declare function StampIcon(props: IconProps): JSX.Element;
 /** The `sticky-note` icon. */
 export declare function StickyNoteIcon(props: IconProps): JSX.Element;
+/** The `stop` icon. */
+export declare function StopIcon(props: IconProps): JSX.Element;
 /** The `stopwatch` icon. */
 export declare function StopwatchIcon(props: IconProps): JSX.Element;
 /** The `store` icon. */

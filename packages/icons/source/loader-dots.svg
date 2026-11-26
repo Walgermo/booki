@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="loading typing thinking pending">
+  <circle cx="5" cy="12" r="1.75"/>
+  <circle cx="5" cy="12" r="1.75" data-role="silhouette"/>
+  <circle cx="12" cy="12" r="1.25"/>
+  <circle cx="12" cy="12" r="1.25" data-role="silhouette"/>
+  <circle cx="19" cy="12" r="0.75"/>
+  <circle cx="19" cy="12" r="0.75" data-role="silhouette"/>
+</svg>

@@ -21,6 +21,21 @@
     ]
   },
   {
+    "id": "agent",
+    "en": "Agent status",
+    "nb": "Agentstatus",
+    "icons": [
+      "agent-idle",
+      "agent-working",
+      "agent-waiting",
+      "agent-done",
+      "agent-refused",
+      "spinner",
+      "loader-dots",
+      "stop"
+    ]
+  },
+  {
     "id": "documents",
     "en": "Documents and vouchers",
     "nb": "Dokumenter og bilag",

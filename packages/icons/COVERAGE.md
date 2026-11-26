@@ -2,7 +2,7 @@
 
 # What the icons cover
 
-124 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
+132 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
 Booki (its `data-aliases`), and what the search on booki.dev/docs/icons finds it by. Missing a use
 case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 
@@ -24,6 +24,19 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `database` | memory, context, knowledge, data |
 | `key` | api key, secret, credential |
 | `plug` | connector, integration, mcp |
+
+## Agent status
+
+| Icon | Stands for |
+| --- | --- |
+| `agent-idle` | agent status, idle, agent idle |
+| `agent-working` | agent status, working, running, busy |
+| `agent-waiting` | agent status, waiting, needs person, paused, hold |
+| `agent-done` | agent status, done, finished, complete |
+| `agent-refused` | agent status, refused, blocked, denied |
+| `spinner` | loading, busy, progress, working |
+| `loader-dots` | loading, typing, thinking, pending |
+| `stop` | stop, cancel, halt, stop run |
 
 ## Documents and vouchers
 
