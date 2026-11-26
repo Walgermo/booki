@@ -72,6 +72,15 @@ Your editor can run both on save: the Biome and oxc extensions read
 generators and are not formatted or linted. CI also builds the
 docs site and checks that the generated packages are current.
 
+Every pull request also gets a [React Doctor](https://github.com/millionco/react-doctor)
+report on the React code it changes (`.github/workflows/react-doctor.yml`). It is
+not a gate yet: read the job summary and fix what it finds in your change. To run it
+locally on your branch:
+
+```bash
+npx react-doctor@0.9.23 . --yes --no-telemetry --scope changed --base origin/main
+```
+
 To see test coverage, run:
 
 ```bash
