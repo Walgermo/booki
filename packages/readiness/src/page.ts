@@ -17,6 +17,8 @@ export type ElementInfo = {
   secret: boolean;
   /** The element or a descendant uses an icon font, by family or class. */
   iconFont: boolean;
+  /** The element shows only an icon (an svg, img or icon font) and no text of its own. */
+  iconOnly: boolean;
   disabled: boolean;
   /**
    * Out of reach of a person and an agent: aria-hidden or inert on it or an
@@ -209,6 +211,7 @@ export function describeElement(element: Element): ElementInfo {
     confirm: confirmHost ? confirmHost.getAttribute("data-agent-confirm") || "(marked)" : null,
     secret: element.closest("[data-agent-secret]") !== null,
     iconFont: usesIconFont(element),
+    iconOnly: !clean(element.textContent) && (element.querySelector("svg, img") !== null || usesIconFont(element)),
     disabled: (element as HTMLButtonElement).disabled === true || element.getAttribute("aria-disabled") === "true",
     hidden: hiddenFromPeople(element),
   };
@@ -451,6 +454,20 @@ export function bridgeCoverage(element: Element, entries: Array<{ component: str
  * gives no control role: a table cell with tabindex that opens an editor, a
  * div that acts as a button. Returns indices into `[tabindex]`.
  */
+/** Booki icons (svg[data-icon], from @booki-aui/icons) shown at a size they are not drawn for. */
+export function findOffSizeIcons(): Array<{ name: string; size: number; html: string }> {
+  const drawn = [16, 20];
+  const out: Array<{ name: string; size: number; html: string }> = [];
+  for (const svg of document.querySelectorAll("svg[data-icon]")) {
+    const box = svg.getBoundingClientRect();
+    if (box.width <= 1 || box.height <= 1) continue;
+    const size = Math.round(box.width * 10) / 10;
+    if (drawn.includes(size)) continue;
+    out.push({ name: svg.getAttribute("data-icon") ?? "", size, html: svg.outerHTML.slice(0, 160) });
+  }
+  return out;
+}
+
 export function findFocusableNonControls(): Array<{ index: number; tag: string; text: string }> {
   const native =
     "a[href], button, input, select, textarea, summary, details, iframe, audio, video, [contenteditable=''], [contenteditable=true]";

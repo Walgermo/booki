@@ -179,6 +179,7 @@ Form props: AmountField, the selects, the bank / reference / organization / IBAN
 | PaymentConfirm | Typed APPROVE + confirm |
 | ScaPrompt | BankID/Passkey mock + confirm |
 | ExceptionBanner | Escalation; Review/Dismiss are confirm-gated |
+| IconButton | An icon named by its words: `label` is required ("Delete line 2"), the agent presses it by that label, the icon is hidden. `icon={<TrashIcon />}` from `@booki-aui/icons/react` (optional package) or your own; `showLabel` adds visible text |
 | CountryToggle | Switches BookiLocale (not in snapshot kinds) |
 | createBookiAgent | Bridge: `allow` may answer `{ allow, by }`, `audit(row)` gets refused and confirmed steps; person-only steps never pass. + `attachAudit` + `proposeChanges` + `createBookiHistory` |
 

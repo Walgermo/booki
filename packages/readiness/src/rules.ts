@@ -15,6 +15,7 @@ export type RuleId =
   | "focusable-without-role"
   | "button-unnamed"
   | "button-icon-name"
+  | "icon-size"
   | "chart-pixels-only"
   | "irreversible-ungated"
   | "secret-visible"
@@ -146,6 +147,17 @@ export const RULES: Record<RuleId, Rule> = {
     fix: 'Hide the icon from assistive technology (aria-hidden="true" on the glyph) and name the button by what it does (aria-label="Delete line 2").',
     points: 2,
     cap: 10,
+  },
+  "icon-size": {
+    id: "icon-size",
+    title: "Icon at a size it is not drawn for",
+    contract: "§3.1 (presentation)",
+    severity: "minor",
+    why: "Booki's icons are drawn for 16 and 20 px. In between, their lines fall between pixels and blur, so a status icon beside a figure reads as a smudge. It does not change what an agent reads, which is why it costs little.",
+    fix: "Show the icon at size={16} or size={20}, and let the button or row around it take the space.",
+    booki: "size={16 | 20} on any @booki-aui/icons component",
+    points: 1,
+    cap: 3,
   },
   "chart-pixels-only": {
     id: "chart-pixels-only",

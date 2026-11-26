@@ -56,6 +56,7 @@ export default defineConfig({
     "src/sca-prompt.tsx",
     "src/approval-gate.tsx",
     "src/exception-banner.tsx",
+    "src/icon-button.tsx",
     "src/audit-trail.tsx",
     "src/country-toggle.tsx",
     "src/access.tsx",

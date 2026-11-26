@@ -133,6 +133,10 @@
       "types": "./dist/exception-banner.d.ts",
       "default": "./dist/exception-banner.js"
     },
+    "./icon-button": {
+      "types": "./dist/icon-button.d.ts",
+      "default": "./dist/icon-button.js"
+    },
     "./audit-trail": {
       "types": "./dist/audit-trail.d.ts",
       "default": "./dist/audit-trail.js"

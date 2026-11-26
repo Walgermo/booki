@@ -9,6 +9,7 @@ import {
   bridgeCoverage,
   describeElement,
   findCharts,
+  findOffSizeIcons,
   findFocusableNonControls,
   INIT_SCRIPT,
   inPage,
@@ -157,6 +158,7 @@ const DESCRIBE = inPage(describeElement);
 const READ_BRIDGE = inPage(readBridge);
 const FIND_FOCUSABLE = inPage(findFocusableNonControls);
 const FIND_CHARTS = inPage(findCharts);
+const FIND_OFF_SIZE_ICONS = inPage(findOffSizeIcons);
 const ONLY_IN_SECRETS = inPage(onlyInSecrets);
 const BRIDGE_COVERAGE = inPage(bridgeCoverage);
 
@@ -456,7 +458,12 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
     const name = node.name.trim();
     if (node.role === "button" && !name) {
       const info = await describe(page, node);
-      findings.push({ rule: "button-unnamed", message: "A button with no name.", element: element(node, info) });
+      findings.push({
+        rule: "button-unnamed",
+        message: info?.iconOnly ? "An icon-only button with no name." : "A button with no name.",
+        element: element(node, info),
+        booki: info?.iconOnly ? 'IconButton from @booki-aui/react: label is required ("Delete line 2")' : undefined,
+      });
       continue;
     }
     if (node.role !== "link") {
@@ -483,6 +490,15 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
         });
       }
     }
+  }
+
+  // Booki icons at a size they are not drawn for.
+  for (const icon of await page.evaluate(FIND_OFF_SIZE_ICONS)) {
+    findings.push({
+      rule: "icon-size",
+      message: `The "${icon.name}" icon is shown at ${icon.size} px; it is drawn for 16 and 20.`,
+      element: { role: "img", name: icon.name, html: icon.html },
+    });
   }
 
   // Charts.
