@@ -242,6 +242,8 @@ export declare function TableIcon(props: IconProps): JSX.Element;
 export declare function TagIcon(props: IconProps): JSX.Element;
 /** The `target` icon. */
 export declare function TargetIcon(props: IconProps): JSX.Element;
+/** The `terminal` icon. */
+export declare function TerminalIcon(props: IconProps): JSX.Element;
 /** The `timeline` icon. */
 export declare function TimelineIcon(props: IconProps): JSX.Element;
 /** The `token` icon. */
