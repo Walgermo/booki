@@ -194,6 +194,34 @@ const NB: Record<string, { title?: string; description: string }> = {
   "sca-prompt": { description: "Simulert sterk autentisering med BankID (NO) eller passkey (US)." },
   "audit-trail": { description: "Hvem endret hva, også når det var en agent." },
   "country-toggle": { description: "Bytt BookiLocale mellom Norge og USA." },
+  "icon-button": {
+    description:
+      "En knapp som viser et ikon og har navn etter hva den gjør. Etiketten er navnet og verktøytipset, så agenten trykker på den med de ordene.",
+  },
+  "text-link": {
+    description: "En lenke i Bookis utseende, med valgfritt ikon. Navigasjon, ikke en agenthandling.",
+  },
+  card: {
+    description:
+      "En papirflate for én arbeidsoppgave: en tittel som gir den navn, handlinger ved tittelen, innholdet og en bunnlinje.",
+  },
+  field: {
+    description:
+      "En etikett, én kontroll, et hint og en feilmelding, koblet sammen. Et vanlig tekstfelt inni blir et agenten fyller ut etter etiketten.",
+  },
+  toolbar: {
+    description:
+      "En rad med handlinger med ett tabulatorstopp og piltaster mellom dem. Agenten leser den som én navngitt liste med knapper.",
+  },
+  "agent-cursor": {
+    description: "Agentens synlige peker: før hvert steg glir den til kontrollen, markerer den og trykker.",
+  },
+  "agent-presence": {
+    description: "En liten merkelapp på kontrollen agenten endrer, lest opp for skjermlesere.",
+  },
+  "agent-proposal": {
+    description: "Agentens forslag vist i de ekte kontrollene, med Behold og Angre for personen.",
+  },
 };
 
 const GROUP_NB: Record<CatalogItem["group"], string> = {

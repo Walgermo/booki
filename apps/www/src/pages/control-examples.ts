@@ -98,6 +98,102 @@ export function AgentReceipts() {
     "An agent presses Save draft by its words. A press on Send payment waits for a person. type defaults to button, so neither submits a form by accident.",
     "En agent trykker Lagre utkast etter ordene. Et trykk på Send betaling venter på en person. type er button som standard, så ingen av dem sender et skjema ved et uhell.",
   ),
+  "icon-button": jsx(
+    `import { IconButton } from "@booki-aui/react"
+import { TrashIcon } from "@booki-aui/icons/react"
+
+<IconButton
+  label="Delete line 2"
+  icon={<TrashIcon />}
+  data-agent-confirm="Deleting a line needs a person"
+  onClick={deleteLine}
+/>`,
+    'The button is named "Delete line 2" for people and the agent. The agent presses it by that name, and the confirm mark sends the press to a person.',
+    "Knappen heter «Delete line 2» for folk og agenten. Agenten trykker på den med det navnet, og bekreftelsesmerket sender trykket til en person.",
+  ),
+  "text-link": jsx(
+    `import { TextLink } from "@booki-aui/react"
+
+<TextLink href="/docs/close" icon="docs">Month-end guide</TextLink>
+
+// Your router's link, with the same look:
+<TextLink asChild><Link to="/docs/close">Month-end guide</Link></TextLink>`,
+    "A link is navigation, so the agent's snapshot does not list it. The underline firms up on hover.",
+    "En lenke er navigasjon, så agentens øyeblikksbilde viser den ikke. Understreken blir tydeligere ved hover.",
+  ),
+  card: jsx(
+    `import { Card, IconButton } from "@booki-aui/react"
+import { RefreshIcon } from "@booki-aui/icons/react"
+
+<Card
+  title="Open supplier invoices"
+  description="Due within 14 days"
+  actions={<IconButton label="Refresh invoices" icon={<RefreshIcon />} />}
+  footer={<span>Total 48,125.00</span>}
+>
+  <InvoiceList />
+</Card>`,
+    'The card is a region named "Open supplier invoices". It has no agent actions; the buttons in it are on the bridge as they are anywhere.',
+    "Kortet er et område med navnet «Open supplier invoices». Det har ingen agenthandlinger; knappene i det er på broen som ellers.",
+  ),
+  field: jsx(
+    `import { Field } from "@booki-aui/react"
+
+<Field label="Supplier name" help="As on the invoice">
+  <input value={name} onChange={(event) => setName(event.target.value)} />
+</Field>
+
+<Field label="Invoice email" errorText={valid ? undefined : "Enter a whole email address"}>
+  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+</Field>`,
+    'The label names the input and the hint and error describe it. The agent finds an input named "Supplier name" and fills it with setValue.',
+    "Etiketten gir feltet navn, og hintet og feilmeldingen beskriver det. Agenten finner et felt med navnet «Supplier name» og fyller det ut med setValue.",
+  ),
+  toolbar: jsx(
+    `import { IconButton, Toolbar, ToolbarGroup, ToolbarSeparator } from "@booki-aui/react"
+
+<Toolbar label="Invoice actions">
+  <IconButton label="Edit" icon={<PencilIcon />} onClick={edit} />
+  <IconButton label="Print" icon={<PrinterIcon />} onClick={print} />
+  <ToolbarSeparator />
+  <ToolbarGroup label="Send">
+    <IconButton label="Email" icon={<EnvelopeIcon />} showLabel onClick={email} />
+  </ToolbarGroup>
+</Toolbar>`,
+    'One tab stop for the row, arrow keys between the buttons. The agent reads one toolbar named "Invoice actions" with its buttons, and presses one by name.',
+    "Ett tabulatorstopp for raden, piltaster mellom knappene. Agenten leser én verktøylinje med navnet «Invoice actions» og knappene i den, og trykker på én etter navn.",
+  ),
+  "agent-cursor": jsx(
+    `import { AgentCursor, createAgentCursor, createBookiAgent } from "@booki-aui/react"
+
+const cursor = createAgentCursor()
+export const agent = createBookiAgent({ allow: cursor.wrap(allow) })
+
+// Once, in the app shell:
+<AgentCursor cursor={cursor} />`,
+    "Before each step the pointer glides to the control, rings it and presses; then your allow decides. It follows reduced motion.",
+    "Før hvert steg glir pekeren til kontrollen, markerer den og trykker; så avgjør allow. Den følger redusert bevegelse.",
+  ),
+  "agent-presence": jsx(
+    `import { AgentPresence } from "@booki-aui/react"
+import { agent } from "./agent"
+
+// Once, in the app shell:
+<AgentPresence agent={agent} label="Agent" />`,
+    "While the agent changes a control, a lime marker sits on it and a screen reader hears which control it is.",
+    "Mens agenten endrer en kontroll, legger en lime merkelapp seg på den, og en skjermleser hører hvilken kontroll det er.",
+  ),
+  "agent-proposal": jsx(
+    `import { AgentProposal, useAgentProposal } from "@booki-aui/react"
+import { agent } from "./agent"
+
+const proposal = useAgentProposal(agent)
+await proposal.propose([{ ref: "Invoice amount", key: "minor", value: 985000 }])
+
+<AgentProposal applied={proposal.applied} onKeep={proposal.keep} onRevert={proposal.revert} />`,
+    "The new amount shows on the field as a proposal. Keep and Revert are marked for a person, so the agent cannot accept its own suggestion.",
+    "Det nye beløpet vises i feltet som et forslag. Behold og Angre er merket for en person, så agenten kan ikke godta sitt eget forslag.",
+  ),
 };
 
 const results: Record<string, Said> = {

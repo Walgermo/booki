@@ -1,0 +1,24 @@
+/* ── Field: label, control, help, error (Field) ──────────────────────── */
+
+/* The grid, and the help and error under the control, come from the
+   [data-slot="field"] base rules; data-booki on the root gives the label, the
+   control and the text under it Booki's base look. This adds the rest. */
+:where([data-slot="field"][data-booki-field]) {
+  min-width: 0;
+  font-family: var(--bk-font);
+}
+
+/* Only the words are the label's hit area, not the whole row. */
+:where([data-slot="field"][data-booki-field]) > [data-slot="field-label"] {
+  justify-self: start;
+}
+
+:where([data-slot="field"][data-booki-field]) textarea {
+  min-height: calc(var(--bk-control-h) * 2);
+  line-height: 1.45;
+  resize: vertical;
+}
+
+:where([data-slot="field"][data-booki-field])[data-disabled] > [data-slot="field-label"] {
+  color: var(--bk-muted-fg);
+}
