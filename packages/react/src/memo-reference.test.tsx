@@ -111,6 +111,40 @@ describe("PaymentBatch", () => {
     expect(JSON.stringify(shown)).not.toContain("2345676");
   });
 
+  it("hides a KID under a profile whose references are memos, and still shows a memo beside it", () => {
+    const agent = createBookiAgent({ agentId: "test" });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <PaymentBatch
+          defaultBatch={{ ...batch, items: [...batch.items, { ...batch.items[0]!, id: "p-2", reference: "2345676" }] }}
+          aria-label="Batch"
+        />
+      </BookiLocaleProvider>,
+    );
+    const shown = entry(agent, "payment-batch")!;
+    expect((shown.payments as Record<string, unknown>[]).map((p) => p.reference)).toEqual(["INV-77", "[redacted]"]);
+    expect((shown.rows as Record<string, unknown>[]).map((p) => p.reference)).toEqual(["INV-77", "[redacted]"]);
+    expect(JSON.stringify(shown)).not.toContain("2345676");
+  });
+
+  it("hides the payments too when secretReference is turned on later", () => {
+    const agent = createBookiAgent({ agentId: "test" });
+    const view = render(
+      <BookiLocaleProvider defaultCountry="US">
+        <PaymentBatch defaultBatch={batch} aria-label="Batch" />
+      </BookiLocaleProvider>,
+    );
+    view.rerender(
+      <BookiLocaleProvider defaultCountry="US">
+        <PaymentBatch defaultBatch={batch} secretReference aria-label="Batch" />
+      </BookiLocaleProvider>,
+    );
+    const shown = entry(agent, "payment-batch")!;
+    expect((shown.payments as Record<string, unknown>[])[0]!.reference).toBe("[redacted]");
+    expect((shown.rows as Record<string, unknown>[])[0]!.reference).toBe("[redacted]");
+    expect(JSON.stringify(shown)).not.toContain("INV-77");
+  });
+
   it("hides references when no kind is given, and shows a memo when told", () => {
     const kid = mount(paymentBatch, { defaultBatch: batch }, "<root></root>");
     const memo = mount(paymentBatch, { defaultBatch: batch, referenceKind: "memo" }, "<root></root>");
