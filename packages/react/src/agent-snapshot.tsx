@@ -26,6 +26,12 @@ export type AgentSnapshotProps = {
   heading?: ReactNode;
   /** What it says when no control in scope is in the snapshot. */
   emptyLabel?: string;
+  /**
+   * With a `scope`, also show an open dialog (`role="dialog"` or `"alertdialog"`). A dialog
+   * renders in a portal outside the scope, so a confirm step the scoped controls raise
+   * would otherwise be missing. Default `false`.
+   */
+  dialogs?: boolean;
   className?: string;
 };
 
@@ -48,7 +54,7 @@ const order = (entry: AgentSnapshotEntry) => Number(entry.ref.replace(/\D/g, "")
  * `scope` is `undefined` for the whole page. A scope given but not on the page
  * (its ref empty, or its element detached) shows nothing, never the whole page.
  */
-function read(agent: AgentBridge, scope: HTMLElement | null | undefined, own: HTMLElement | null) {
+function read(agent: AgentBridge, scope: HTMLElement | null | undefined, own: HTMLElement | null, dialogs = false) {
   if (scope === null || (scope && !scope.isConnected)) return [];
   let entries: AgentSnapshotEntry[];
   try {
@@ -62,7 +68,8 @@ function read(agent: AgentBridge, scope: HTMLElement | null | undefined, own: HT
       const element = elementOf(entry.ref);
       if (!element) return false;
       if (own?.contains(element)) return false;
-      return scope ? scope.contains(element) : true;
+      if (!scope) return true;
+      return scope.contains(element) || (dialogs && element.closest('[role="dialog"], [role="alertdialog"]') !== null);
     })
     .sort((a, b) => order(a) - order(b));
 }
@@ -80,6 +87,7 @@ export function AgentSnapshot({
   maxHeight = "24rem",
   heading,
   emptyLabel,
+  dialogs = false,
   className,
 }: AgentSnapshotProps) {
   const say = useSay();
@@ -89,7 +97,7 @@ export function AgentSnapshot({
   useEffect(() => {
     let last = "";
     const update = () => {
-      const next = read(agent, scope ? scope.current : undefined, root.current);
+      const next = read(agent, scope ? scope.current : undefined, root.current, dialogs);
       const key = JSON.stringify(next);
       if (key === last) return;
       last = key;
@@ -139,7 +147,7 @@ export function AgentSnapshot({
       unsubscribe();
       observer?.disconnect();
     };
-  }, [agent, scope]);
+  }, [agent, scope, dialogs]);
 
   const title = heading === undefined ? say(msg("agent-snapshot.heading")) : heading;
   const style: CSSProperties = {
