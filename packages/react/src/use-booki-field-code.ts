@@ -105,7 +105,9 @@ const frozen = (values: string[] | undefined): readonly string[] =>
  */
 function sourceOf(reason: string, event: Event): string | undefined {
   let source: string | undefined;
-  const probe = { options: () => ({ onProbe: (_value: unknown, details: { source?: string }) => (source = details.source) }) };
+  const probe = {
+    options: () => ({ onProbe: (_value: unknown, details: { source?: string }) => (source = details.source) }),
+  };
   dispatch(probe as never, "onProbe", null, { reason, event });
   return source;
 }
@@ -181,7 +183,8 @@ export const bookiFieldCode = definePrimitive({
         const option = optionFor(options, code);
         if (!option) refuseUnknown(options, code);
         // A person's change carries its DOM event; an agent's call runs as the agent, whatever it passes.
-        const fromPerson = typeof Event !== "undefined" && event instanceof Event && sourceOf("set-code", event) !== "agent";
+        const fromPerson =
+          typeof Event !== "undefined" && event instanceof Event && sourceOf("set-code", event) !== "agent";
         if (!fromPerson && context.store.get().personOnly.includes(option.value)) {
           throw new BookiError("field.person-only-code", { item: named(option) });
         }

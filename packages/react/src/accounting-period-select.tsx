@@ -87,7 +87,12 @@ function AccountingPeriodSelect({
               </AccountingPeriodOption>
             ))}
           </AccountingPeriodList>
-          <AccountingPeriodControl tabIndex={-1} aria-required={required || undefined} aria-labelledby={labelId} {...field}>
+          <AccountingPeriodControl
+            tabIndex={-1}
+            aria-required={required || undefined}
+            aria-labelledby={labelId}
+            {...field}
+          >
             {state.value === "" ? <option value="">–</option> : null}
             {items.map((item) => (
               <option key={item.value} value={item.value}>

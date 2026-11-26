@@ -23,6 +23,8 @@ describe("the deal's value form", () => {
 
     fireEvent.change(source, { target: { value: "Tilbud 8" } });
     expect(form.checkValidity()).toBe(true);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Lagre verdien" })).not.toHaveProperty("disabled", true));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Lagre verdien" })).not.toHaveProperty("disabled", true),
+    );
   });
 });

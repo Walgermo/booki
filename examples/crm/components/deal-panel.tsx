@@ -143,7 +143,11 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
         <button type="submit" disabled={!changed}>
           Lagre verdien
         </button>
-        <button type="button" data-variant="secondary" disabled={!changed} onClick={() => {
+        <button
+          type="button"
+          data-variant="secondary"
+          disabled={!changed}
+          onClick={() => {
             setDraft(deal);
             setRound((count) => count + 1);
           }}

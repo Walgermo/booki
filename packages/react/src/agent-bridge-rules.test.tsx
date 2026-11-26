@@ -339,8 +339,16 @@ describe("one audit row per refusal, whichever side has the audit", () => {
         <AmountField aria-label="Beløp" />
       </BookiLocaleProvider>,
     );
-    await actAndRecord(agent, { steps: [{ ref: "beløp", action: "setMinor", args: [100] }] }, { audit, agentId: "test" });
-    await actAndRecord(agent, { steps: [{ ref: "BELOP", action: "setMinor", args: [100] }] }, { audit, agentId: "test" });
+    await actAndRecord(
+      agent,
+      { steps: [{ ref: "beløp", action: "setMinor", args: [100] }] },
+      { audit, agentId: "test" },
+    );
+    await actAndRecord(
+      agent,
+      { steps: [{ ref: "BELOP", action: "setMinor", args: [100] }] },
+      { audit, agentId: "test" },
+    );
     expect(rows.map((row) => row.action)).toEqual(["agent.refused", "agent.refused"]);
   });
 });

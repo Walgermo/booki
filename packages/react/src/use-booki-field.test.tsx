@@ -596,9 +596,9 @@ describe("a person's edit to a wrapped field", () => {
     fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "" } });
     expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("");
     fireEvent.change(screen.getByLabelText("Forfallsdato"), { target: { value: "2026-03-03" } });
-    expect(((await agent.act({ steps: [{ ref: "Forfall", action: "setDate", args: [null] }] })) as { ok: boolean }).ok).toBe(
-      true,
-    );
+    expect(
+      ((await agent.act({ steps: [{ ref: "Forfall", action: "setDate", args: [null] }] })) as { ok: boolean }).ok,
+    ).toBe(true);
     expect((screen.getByLabelText("Forfallsdato") as HTMLInputElement).value).toBe("");
     unmount();
     render(<Due />);
