@@ -54,6 +54,7 @@ export function CrmApp({ initial }: { initial: Crm }) {
           setRefusal(answer.ok ? null : answer.message);
           return answer;
         })(),
+        source === "agent" ? "agent" : "person",
       );
     },
     [me],

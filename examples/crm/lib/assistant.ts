@@ -9,7 +9,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { asAgentWork, logDecision, pageAgent } from "./agent";
 import { TOOL_NAMES } from "./chat-tools";
 import { AGENT_ID } from "./people";
-import { settled } from "./writes";
+import { settled, takeRefusals } from "./writes";
 
 type ModelContext = ConstructorParameters<typeof WebMCPTransport>[0]["modelContext"] & {
   registerTool?: unknown;
@@ -62,38 +62,77 @@ type ActOutcome = {
   appeared?: unknown[];
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * True when the bridge would take the whole call as it is: `{ steps }` and
+ * nothing else, and every step `{ ref, action, args? }` with its value where
+ * a `set…` or `expect` needs one. The same rules the bridge checks before it
+ * runs any step; a call that breaks one goes to the bridge whole, so it is
+ * refused in the bridge's own words and nothing is saved.
+ */
+export function wellFormed(input: unknown): input is { steps: unknown[] } {
+  if (!isRecord(input) || !Array.isArray(input.steps) || input.steps.length === 0) return false;
+  if (Object.keys(input).some((key) => key !== "steps")) return false;
+  return input.steps.every((step) => {
+    if (!isRecord(step)) return false;
+    if (Object.keys(step).some((key) => key !== "ref" && key !== "action" && key !== "args")) return false;
+    const { ref, action, args } = step;
+    if (typeof ref !== "string" || !ref.trim() || typeof action !== "string" || !action) return false;
+    if (args !== undefined && !Array.isArray(args)) return false;
+    return !((/^set[A-Z]/.test(action) || action === "expect") && (args as unknown[] | undefined)?.[0] === undefined);
+  });
+}
+
 /**
  * The same bridge, with `act` running a call's steps one at a time and
  * waiting for the server's answer to each before the next. The controls are
  * controlled: a change shows once the server has kept it, so a second step
- * that ran before then would start from the old board and send it back. The
- * scripted tasks wait the same way.
+ * that ran before then would start from the old board and send it back. A
+ * step the bridge took but the server refused (another tab changed the deal)
+ * is that step's failure, and the steps after it do not run. The scripted
+ * tasks wait the same way.
  */
 export function oneStepAtATime(bridge: AgentBridge): AgentBridge {
   const act = async (input: unknown, options?: { signal?: AbortSignal }): Promise<ActOutcome> => {
-    const steps = (input as { steps?: unknown } | null)?.steps;
     const run = (call: unknown) => bridge.act(call as never, options) as unknown as Promise<ActOutcome>;
-    // A call in the wrong shape, or one step: the bridge answers it as it is.
-    if (!Array.isArray(steps) || steps.length < 2) return run(input);
+    // A call in the wrong shape anywhere: the bridge refuses it whole, before any step runs.
+    if (!wellFormed(input)) return run(input);
+    const { steps } = input;
     const done: { step: number }[] = [];
     const appeared: unknown[] = [];
     let last: ActOutcome = { ok: true };
+    // What the bridge says after a failed step in a longer call: which steps stay done, what to send again.
+    const failed = (index: number, message: string, outcome: ActOutcome): ActOutcome => {
+      const rest = steps.length - index - 1;
+      const after = [
+        index > 0 ? msgIn("nb", "bridge.steps-stay-done") : "",
+        rest === 1 ? msgIn("nb", "bridge.send-again-one", { total: 2 }) : "",
+        rest > 1 ? msgIn("nb", "bridge.send-again-many", { rest, total: rest + 1 }) : "",
+      ].filter(Boolean);
+      return {
+        ...outcome,
+        ok: false,
+        error: { step: index, message: [message, ...after].join(" ") },
+        steps: done,
+        appeared,
+      };
+    };
     for (const [index, step] of steps.entries()) {
+      // Only this step's writes count: a refusal left from before is not its answer.
+      takeRefusals("agent");
       last = await run({ steps: [step] });
-      done.push(...(last.steps ?? []).map((entry) => ({ ...entry, step: index })));
-      appeared.push(...(last.appeared ?? []));
       if (!last.ok && last.error) {
-        // What the bridge says after a failed step in a longer call: which steps stay done, what to send again.
-        const rest = steps.length - index - 1;
-        const after = [
-          index > 0 ? msgIn("nb", "bridge.steps-stay-done") : "",
-          rest === 1 ? msgIn("nb", "bridge.send-again-one", { total: 2 }) : "",
-          rest > 1 ? msgIn("nb", "bridge.send-again-many", { rest, total: rest + 1 }) : "",
-        ].filter(Boolean);
-        const message = [last.error.message, ...after].join(" ");
-        return { ...last, error: { step: index, message }, steps: done, appeared };
+        appeared.push(...(last.appeared ?? []));
+        done.push(...(last.steps ?? []).map((entry) => ({ ...entry, step: index })));
+        return failed(index, last.error.message, last);
       }
       await settled();
+      const [refused] = takeRefusals("agent");
+      if (refused) return failed(index, `Serveren sa nei: ${refused}`, last);
+      done.push(...(last.steps ?? []).map((entry) => ({ ...entry, step: index })));
+      appeared.push(...(last.appeared ?? []));
     }
     return { ...last, steps: done, appeared };
   };
