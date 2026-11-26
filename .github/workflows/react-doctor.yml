@@ -1,0 +1,49 @@
+name: React Doctor
+
+# Deterministic checks on the React code a pull request changes: state and effects,
+# performance, architecture, security, accessibility and maintainability. It scans the
+# React projects in the workspace (@booki-aui/react, the docs site and the examples).
+#
+# Non-blocking for now (--blocking none): it reports the issues this pull request adds,
+# in the job log and the run summary, and never fails the check. Make it a gate once the
+# existing findings are cleaned up. Pinned to an exact version so findings don't shift
+# with a new release; telemetry is off.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: react-doctor-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  react-doctor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: New issues in this pull request
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set +e
+          out=$(npx --yes react-doctor@0.9.23 . --yes --no-telemetry --scope changed --base "origin/$BASE_REF" --blocking none --verbose 2>&1)
+          echo "$out"
+          {
+            echo "### React Doctor: new issues in this pull request"
+            echo
+            echo "Non-blocking. Scope: what this pull request changes, compared with \`$BASE_REF\`."
+            echo
+            echo '```'
+            echo "$out" | tail -n 120
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
