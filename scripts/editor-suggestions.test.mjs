@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { chromium } from "playwright-core";
 
-test("a pointer click below an open suggestion list adds a block", async () => {
-  const { outputFiles } = await build({
+let browser;
+let outputFiles;
+before(async () => {
+  ({ outputFiles } = await build({
     stdin: {
       contents: `
         import React from "react";
@@ -26,24 +28,54 @@ test("a pointer click below an open suggestion list adds a block", async () => {
     write: false,
     logLevel: "silent",
     define: { "process.env.NODE_ENV": '"production"' },
-  });
-  const browser = await chromium.launch({ channel: "chrome" });
+  }));
+  browser = await chromium.launch({ channel: "chrome" });
+});
+after(async () => browser?.close());
+
+async function openEditor() {
+  const page = await browser.newPage();
+  await page.setContent("<main></main>");
+  await page.addStyleTag({ content: outputFiles.find((file) => file.path.endsWith(".css")).text });
+  await page.addScriptTag({ content: outputFiles.find((file) => file.path.endsWith(".js")).text });
+  return page;
+}
+
+test("a pointer click below an open suggestion list adds a block", async () => {
+  for (const focusList of [false, true]) {
+    const page = await openEditor();
+    const blocks = page.getByRole("textbox");
+    await blocks.first().fill("/");
+    if (focusList) await blocks.first().press("Alt+ArrowDown");
+    await page.getByRole("listbox").waitFor();
+    await page.getByRole("button", { name: "Add a block" }).click();
+    assert.equal(await blocks.count(), 2);
+    await page.getByRole("listbox").waitFor({ state: "detached" });
+    await page.close();
+  }
+});
+
+test("keyboard undo restores a split, keeps editing focus, and redo recreates both blocks", async () => {
+  const page = await openEditor();
   try {
-    for (const focusList of [false, true]) {
-      const page = await browser.newPage();
-      await page.setContent("<main></main>");
-      await page.addStyleTag({ content: outputFiles.find((file) => file.path.endsWith(".css")).text });
-      await page.addScriptTag({ content: outputFiles.find((file) => file.path.endsWith(".js")).text });
-      const blocks = page.getByRole("textbox");
-      await blocks.first().fill("/");
-      if (focusList) await blocks.first().press("Alt+ArrowDown");
-      await page.getByRole("listbox").waitFor();
-      await page.getByRole("button", { name: "Add a block" }).click();
-      assert.equal(await blocks.count(), 2);
-      await page.getByRole("listbox").waitFor({ state: "detached" });
-      await page.close();
-    }
+    const blocks = page.getByRole("textbox");
+    await blocks.first().fill("Revenue estimate");
+    await blocks.first().evaluate((el) => el.setSelectionRange(7, 7));
+    await blocks.first().press("Enter");
+    await page.waitForFunction(() => document.activeElement?.value === " estimate");
+    await page.keyboard.press("Control+z");
+    await page.waitForFunction(() => document.activeElement?.value === "Revenue estimate");
+    assert.equal(await blocks.count(), 1);
+    await page.getByRole("button", { name: "Redo" }).click();
+    await blocks.nth(1).waitFor();
+    assert.deepEqual(await blocks.evaluateAll((areas) => areas.map((el) => el.value)), ["Revenue", " estimate"]);
+    await page.getByRole("button", { name: "Undo" }).click();
+    await page.waitForFunction(() => document.activeElement?.value === "Revenue estimate");
+    await page.keyboard.press("Control+z");
+    assert.equal(await blocks.first().inputValue(), "");
+    await page.keyboard.type("Other");
+    assert.equal(await page.getByRole("button", { name: "Redo" }).isDisabled(), true);
   } finally {
-    await browser.close();
+    await page.close();
   }
 });

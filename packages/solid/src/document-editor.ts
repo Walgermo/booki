@@ -11,6 +11,8 @@ const parts = {
   accept: "button",
   reject: "button",
   add: "button",
+  undo: "button",
+  redo: "button",
 } as const;
 
 /** DocumentEditor's parts for Solid: the same state, actions and agent bridge as in React. */

@@ -165,7 +165,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   },
   "document-editor": {
     description:
-      "En blokkeditor for arbeidspapirer: «/» åpner kommandoer og «@» nevner filene, bilagene, personene og sidene appen gir den. En agent leser siden som blokker og foreslår å sette inn, endre, flytte og fjerne; hvert forslag venter i agentens farge til en person godtar eller avviser det.",
+      "En blokkeditor for arbeidspapirer: «/» åpner kommandoer og «@» nevner filene, bilagene, personene og sidene appen gir den. Angre og Gjør om gjelder både tekst og blokkendringer. En agent leser siden som blokker og foreslår å sette inn, endre, flytte og fjerne; hvert forslag venter i agentens farge til en person godtar eller avviser det.",
   },
   "data-table": {
     description:

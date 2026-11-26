@@ -93,6 +93,84 @@ describe("DocumentEditor", () => {
     expect((await act("reject", [entry().proposals[0].id])).ok).toBe(false);
   });
 
+  it("groups typing, keeps pending proposals, and audits undo and redo as new changes", async () => {
+    const { act, block, button, audit, changes, entry } = editor();
+    const area = block("b2");
+    const original = area.value;
+    expect(button("Undo")!.disabled).toBe(true);
+    fireEvent.input(area, { target: { value: "First" } });
+    fireEvent.input(area, { target: { value: "First draft" } });
+    await act("removeBlock", ["b1"]);
+    fireEvent.keyDown(area, { key: "z", metaKey: true });
+    expect(area.value).toBe(original);
+    expect(button("Undo")!.disabled).toBe(true);
+    expect(entry().proposals).toHaveLength(1);
+    fireEvent.keyDown(area, { key: "Z", ctrlKey: true, shiftKey: true });
+    expect(area.value).toBe("First draft");
+    expect(audit.slice(-2).map(({ action, actor }) => [action, actor])).toEqual([
+      ["undo", "nina"],
+      ["redo", "nina"],
+    ]);
+    expect(changes.at(-1)!.version).toBe(changes.at(-2)!.version + 1);
+    fireEvent.click(button("Undo")!);
+    fireEvent.input(area, { target: { value: "Different draft" } });
+    expect(button("Redo")!.disabled).toBe(true);
+    expect((await act("restore", ["undo"])).ok).toBe(false);
+  });
+
+  it("undoes a split as one edit and invalidates history when a proposal is accepted", async () => {
+    const { act, block, button, changes } = editor();
+    const area = block("b2");
+    const original = area.value;
+    area.setSelectionRange(5, 5);
+    fireEvent.keyDown(area, { key: "Enter" });
+    expect(block("b3").value).toBe(original.slice(5));
+    fireEvent.click(button("Undo")!);
+    expect(block("b3")).toBeNull();
+    expect(area.value).toBe(original);
+    fireEvent.keyDown(area, { key: "y", ctrlKey: true });
+    expect(changes.at(-1)!.blocks.map((b) => b.text)).toEqual(["Revenue", original.slice(0, 5), original.slice(5)]);
+    await act("editBlock", ["b1", { text: "Reviewed" }]);
+    fireEvent.click(button("Accept")!);
+    expect(block("b1").value).toBe("Reviewed");
+    expect(button("Undo")!.disabled).toBe(true);
+    expect(button("Redo")!.disabled).toBe(true);
+  });
+
+  it("honors controlled document echoes, read-only mode, and external replacements", () => {
+    let next = page();
+    const tree = (readOnly = false) => (
+      <BookiLocaleProvider defaultCountry="US">
+        <DocumentEditor
+          document={next}
+          actor="nina"
+          readOnly={readOnly}
+          onDocumentChange={(doc) => {
+            next = doc;
+          }}
+        />
+      </BookiLocaleProvider>
+    );
+    const { rerender } = render(tree());
+    const area = screen.getByRole("textbox", { name: "Text 2" });
+    fireEvent.input(area, { target: { value: "Revised" } });
+    rerender(tree());
+    const undo = () => screen.getByRole("button", { name: "Undo" }) as HTMLButtonElement;
+    expect(undo().disabled).toBe(false);
+    rerender(tree(true));
+    fireEvent.keyDown(area, { key: "z", ctrlKey: true });
+    expect(next.blocks[1]!.text).toBe("Revised");
+    rerender(tree());
+    fireEvent.click(undo());
+    rerender(tree());
+    expect(next.blocks).toEqual(page().blocks);
+    expect((screen.getByRole("button", { name: "Redo" }) as HTMLButtonElement).disabled).toBe(false);
+    next = page({ id: "external", version: 3 });
+    rerender(tree());
+    expect(undo().disabled).toBe(true);
+    expect((screen.getByRole("button", { name: "Redo" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
   it("a person accepts; the change lands and both steps are audited", async () => {
     const { act, button, block, audit } = editor();
     await act("insertBlock", [{ after: "b1", type: "bullet", text: "Cut-off tested" }]);
@@ -294,6 +372,34 @@ describe("DocumentEditor", () => {
 });
 
 describe("documentEditor (ui-sdk mount)", () => {
+  it("keeps the undo entry when the app cancels a change", () => {
+    const initial = page();
+    let cancel = false;
+    const view = mount(
+      documentEditor,
+      {
+        defaultDocument: initial,
+        actor: "nina",
+        onDocumentChange: (_next, details) => {
+          if (cancel) details.cancel?.();
+        },
+      },
+      "<root></root>",
+    );
+    try {
+      view.api.typed("b2", "Local", 5);
+      cancel = true;
+      expect(view.api.restore("undo")).toBe(false);
+      expect(view.state.canUndo).toBe(true);
+      expect(view.state.document.blocks[1]!.text).toBe("Local");
+      cancel = false;
+      expect(view.api.restore("undo")).toBe(true);
+      expect(view.state.document.blocks).toEqual(initial.blocks);
+    } finally {
+      view.unmount();
+    }
+  });
+
   it("reports a person's accept with its real source", async () => {
     const withProposal = page({
       proposals: [

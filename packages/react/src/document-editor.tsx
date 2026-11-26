@@ -32,6 +32,8 @@ const TAGS = {
   accept: "button",
   reject: "button",
   add: "button",
+  undo: "button",
+  redo: "button",
 } as const;
 // Typed by name, so the declarations refer to the definition instead of spelling it out per part.
 const parts: Parts<typeof documentEditor, typeof TAGS> = createParts(documentEditor, TAGS);
@@ -44,12 +46,17 @@ const DocumentEditorAccept: (typeof parts)["Accept"] = parts.Accept;
 const DocumentEditorReject: (typeof parts)["Reject"] = parts.Reject;
 const DocumentEditorAdd: (typeof parts)["Add"] = parts.Add;
 
+const DocumentEditorUndo: (typeof parts)["Undo"] = parts.Undo;
+const DocumentEditorRedo: (typeof parts)["Redo"] = parts.Redo;
+
 const COPY = {
   EN: {
     label: "Document",
     placeholder: "Type, or press / for commands and @ to mention",
     empty: "Nothing on the page yet.",
     add: "Add a block",
+    undo: "Undo",
+    redo: "Redo",
     agent: "Agent",
     proposes: {
       insert: "proposes new text",
@@ -100,6 +107,8 @@ const COPY = {
     placeholder: "Skriv, eller trykk / for kommandoer og @ for å nevne",
     empty: "Ingenting på siden ennå.",
     add: "Legg til en blokk",
+    undo: "Angre",
+    redo: "Gjør om",
     agent: "Agent",
     proposes: {
       insert: "foreslår ny tekst",
@@ -330,6 +339,12 @@ function DocumentEditor({
         let number = 0;
         return (
           <>
+            {state.locked ? null : (
+              <div data-slot="document-editor-history">
+                <DocumentEditorUndo>{copy.undo}</DocumentEditorUndo>
+                <DocumentEditorRedo>{copy.redo}</DocumentEditorRedo>
+              </div>
+            )}
             {state.proposals.length ? (
               <p data-slot="document-editor-status" role="status">
                 {copy.waiting(state.proposals.length)}
@@ -460,6 +475,8 @@ export {
   DocumentEditorMenu,
   DocumentEditorOption,
   DocumentEditorReject,
+  DocumentEditorUndo,
+  DocumentEditorRedo,
   DocumentEditorRoot,
   documentEditor,
 };
