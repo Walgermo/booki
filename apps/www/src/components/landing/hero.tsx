@@ -33,6 +33,22 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             "UI-komponenter som både mennesker og AI-agenter bruker. Agenten handler ved navn; beslutninger blir hos en person.",
           )}
         </p>
+        <dl className="landing-hero__points">
+          <div>
+            <dt>{t("You add", "Dere legger til")}</dt>
+            <dd>
+              {t("Components for your forms, tables and buttons.", "Komponenter til skjemaer, tabeller og knapper.")}
+            </dd>
+          </div>
+          <div>
+            <dt>{t("The agent", "Agenten")}</dt>
+            <dd>{t("Acts by name, with a visible cursor.", "Handler ved navn, med synlig markør.")}</dd>
+          </div>
+          <div>
+            <dt>{t("People keep", "Mennesker beholder")}</dt>
+            <dd>{t("Approvals and sign-offs.", "Godkjenninger og signering.")}</dd>
+          </div>
+        </dl>
         <div className="mt-6 grid justify-items-center gap-2">
           <PromptButton prompt={AGENT_PROMPT} />
           <p className="m-0 text-sm text-muted-foreground">
