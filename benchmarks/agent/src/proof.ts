@@ -22,11 +22,11 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 
-import { API_TASKS } from "./api-tasks.js";
 import { GATEWAY, gatewayPrices, readVar } from "./gateway.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
+const repoRoot = path.resolve(root, "../..");
 const TASKS = ["voucher", "supplier-invoice", "sales-invoice", "dashboard", "inbox", "reconcile", "close"] as const;
 
 const { values } = parseArgs({
@@ -44,6 +44,19 @@ if (!apiSide && values.side !== "screens") {
   console.error(`--side is screens or api. Got "${values.side}".`);
   process.exit(1);
 }
+
+// The verifiers and the API ledger load @booki-aui/core through its built dist,
+// which a fresh install does not have. Build what is missing or stale before
+// anything imports it; when everything is current this does nothing.
+const built = spawnSync(process.execPath, [path.join(repoRoot, "scripts/ensure-built.mjs")], {
+  cwd: repoRoot,
+  stdio: "inherit",
+});
+if (built.status !== 0) {
+  console.error("Building the workspace packages failed. Run node scripts/ensure-built.mjs from the repository root.");
+  process.exit(1);
+}
+const { API_TASKS } = await import("./api-tasks.js");
 
 const anthropicKey = process.env.ANTHROPIC_API_KEY || readVar(root, "ANTHROPIC_API_KEY");
 const gatewayKey =
