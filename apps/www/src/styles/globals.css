@@ -4750,6 +4750,10 @@ a.site-chip:focus-visible {
   isolation: isolate;
 }
 
+.doc-sheet:has(> [data-slot="document-editor"]) {
+  background-image: none;
+}
+
 /* Only a sheet that holds a wide table scrolls, inside itself, never the page; the rest let
    their popups out. */
 .doc-sheet:has(table) {
