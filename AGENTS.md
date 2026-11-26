@@ -73,6 +73,8 @@ The look is "Paper and Ink" in `DESIGN.md`: paper for people, ink for machine ou
 - `packages/icons` — Duotone icons (SVG, markup strings, React `<Icon />`). Style in `icons.yaml`; draw with the draw-icons skill, add each new icon to `packages/icons/categories.json`, then `pnpm icons`.
 - `apps/www` — Docs + live demos
 
+Use generic workflow terms and original artwork when reviewing icon coverage against a pilot product. Keep the pilot's identity and data private across Booki code, package metadata, UI, docs, examples, generated artifacts, branches, commits and pull requests.
+
 ERP adapters are out of scope — apps integrate ERPs themselves.
 
 ## Accounting UX rules

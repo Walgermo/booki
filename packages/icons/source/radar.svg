@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="ongoing-monitoring continuous-monitoring customer-monitoring watchlist-monitoring overvåking løpende-oppfølging">
+  <circle cx="12" cy="12" r="9.25"/>
+  <path d="M12 12V2.75a9.25 9.25 0 0 1 6.541 2.709Z" data-role="silhouette"/>
+  <path d="M12 12l6.541-6.541"/>
+  <path d="M7.25 11.25h.5" data-role="detail"/>
+  <path d="M14.75 16.75h.5" data-role="detail"/>
+</svg>

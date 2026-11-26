@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="account-mapping ledger-mapping chart-of-accounts-mapping rollup kontomapping kontokobling kontoplanmapping">
+  <rect x="2.75" y="6.25" width="5.5" height="3.5" rx="1"/>
+  <rect x="2.75" y="6.25" width="5.5" height="3.5" rx="1" data-role="silhouette"/>
+  <rect x="2.75" y="14.25" width="5.5" height="3.5" rx="1"/>
+  <rect x="2.75" y="14.25" width="5.5" height="3.5" rx="1" data-role="silhouette"/>
+  <rect x="15.75" y="10" width="5.5" height="4" rx="1"/>
+  <rect x="15.75" y="10" width="5.5" height="4" rx="1" data-role="silhouette"/>
+  <path d="M8.25 8l4 4h3.5"/>
+  <path d="M8.25 16l4-4"/>
+</svg>

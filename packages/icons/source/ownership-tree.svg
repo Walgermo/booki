@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="beneficial-owner ultimate-beneficial-owner ownership-register ownership-structure reell-rettighetshaver reelle-rettighetshavere eierstruktur">
+  <rect x="2.75" y="8.75" width="6.5" height="6.5" rx="1"/>
+  <rect x="2.75" y="8.75" width="6.5" height="6.5" rx="1" data-role="silhouette"/>
+  <circle cx="18" cy="5.75" r="3.25"/>
+  <circle cx="18" cy="5.75" r="3.25" data-role="silhouette"/>
+  <circle cx="18" cy="18.25" r="3.25"/>
+  <circle cx="18" cy="18.25" r="3.25" data-role="silhouette"/>
+  <path d="M9.25 12h3.75"/>
+  <path d="M14.75 5.75h-.25A1.5 1.5 0 0 0 13 7.25v9.5a1.5 1.5 0 0 0 1.5 1.5h.25"/>
+</svg>
