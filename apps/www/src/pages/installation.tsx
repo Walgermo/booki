@@ -155,7 +155,7 @@ export function InstallationPage() {
           "Raskest: kopier prompten inn i kodeagenten deres. Den forklarer Booki, foreslår ett skjermbilde og spør før den endrer noe.",
         )}
       </p>
-      <div className="mb-10 grid justify-items-start gap-2">
+      <div className="mb-10 grid justify-items-center gap-2 lg:justify-items-start">
         <PromptButton prompt={AGENT_PROMPT} />
       </div>
       <p className="mt-0 mb-10 max-w-prose text-muted-foreground text-pretty">

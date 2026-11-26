@@ -2557,7 +2557,8 @@ html[data-kpi-still] {
 .code-panel__body {
   min-width: 0;
   overflow: auto;
-  overscroll-behavior: contain;
+  /* Sideways only: at the end of a long sample the page keeps scrolling. */
+  overscroll-behavior-x: contain;
   padding: 1rem 1.25rem;
   font-family: var(--bk-mono);
   font-size: 0.8125rem;
