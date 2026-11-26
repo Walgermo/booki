@@ -179,7 +179,10 @@ function personOnlyPress(
     const own = (button.textContent ?? "").replace(/\s+/g, " ").trim().toLowerCase();
     const label = (button.getAttribute("aria-label") ?? "").replace(/\s+/g, " ").trim().toLowerCase();
     if (own !== text && label !== text && !label.startsWith(`${text}:`)) continue;
-    const confirm = button.closest("[data-agent-confirm]")?.getAttribute("data-agent-confirm");
+    // `data-person-only` marks a component's own decision button without marking its other actions.
+    const confirm =
+      button.closest("[data-agent-confirm]")?.getAttribute("data-agent-confirm") ??
+      button.closest("[data-person-only]")?.getAttribute("data-person-only");
     if (confirm && isPersonOnly(confirm)) return { confirm, entry };
   }
   return null;

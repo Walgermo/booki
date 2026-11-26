@@ -16,6 +16,7 @@ import { refuseDenied } from "./access.js";
 import { freshQuery, queryMethods, queryOptionKinds, type QueryOptions, type TablePaging } from "./table-query.js";
 import { QUERY_FORMAT, commitSecret } from "./fields.js";
 import { referenceIsSecret, type RefKind } from "./payment-reference-input.js";
+import { personOnly } from "./person-only.js";
 
 export type Options = QueryOptions & {
   batch?: Batch;
@@ -353,7 +354,7 @@ export const paymentBatch = definePrimitive({
       },
     }),
     approve: slot({
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Approving a payment batch needs a person") }),
       press: ({ api }, event) => {
         try {
           api.approve(event);
@@ -363,7 +364,7 @@ export const paymentBatch = definePrimitive({
       },
     }),
     release: slot({
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Releasing payments needs a person") }),
       press: ({ api }, event) => {
         try {
           api.release(event);

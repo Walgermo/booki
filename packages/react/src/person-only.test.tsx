@@ -118,3 +118,52 @@ describe("an empty fixed asset register", () => {
     expect(document.querySelector('[data-slot="fixed-asset-register-table"] tfoot')).toBeNull();
   });
 });
+
+describe("a press on a component's own decision button is refused by name", () => {
+  it("releasing a payment batch and signing off a close task, each with one audit row", async () => {
+    const { PaymentBatch } = await import("./payment-batch.js");
+    const { CloseChecklist } = await import("./close-checklist.js");
+    const rows: { action: string; target: string; detail?: string }[] = [];
+    const agent = createBookiAgent({ agentId: "assistant", audit: (row) => rows.push(row) });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <PaymentBatch
+          actor="kari"
+          defaultBatch={{
+            id: "b-1",
+            status: "draft",
+            debitAccount: "1503 40 12345",
+            valueDate: "2026-02-02",
+            currency: "USD",
+            preparedBy: "nina",
+            approvals: [],
+            items: [{ id: "p1", creditorName: "Office", amountMinor: 100_00, creditorAccount: "8601 11 17947" }],
+          }}
+        />
+        <CloseChecklist
+          actor="kari"
+          defaultTasks={[{ id: "bank", title: "Bank", status: "done", doneBy: "nina", needsSignOff: true }]}
+        />
+      </BookiLocaleProvider>,
+    );
+    const batch = agent.snapshot().find((entry) => entry.component === "payment-batch")!.ref;
+    const checklist = agent.snapshot().find((entry) => entry.component === "close-checklist")!.ref;
+    const release = document.querySelector('[data-person-only="Releasing payments needs a person"]')!.textContent!;
+    const signOff = document.querySelector('[data-person-only="Signing off needs a person"]')!.textContent!;
+
+    const released = (await agent.act({ steps: [{ ref: batch, action: "press", args: [release] }] })) as Result;
+    expect(released.ok).toBe(false);
+    expect(released.error?.message).toMatch(/person's decision.*Releasing payments needs a person/);
+    const signed = (await agent.act({ steps: [{ ref: checklist, action: "press", args: [signOff] }] })) as Result;
+    expect(signed.ok).toBe(false);
+    expect(signed.error?.message).toMatch(/person's decision.*Signing off needs a person/);
+
+    expect(rows.map((row) => [row.action, row.detail])).toEqual([
+      ["agent.person-only", "payment-batch.press: Releasing payments needs a person"],
+      ["agent.person-only", "close-checklist.press: Signing off needs a person"],
+    ]);
+    // The agent's own actions are not marked as a person's decision.
+    const checked = (await agent.act({ steps: [{ ref: checklist, action: "assertReadyToClose" }] })) as Result;
+    expect(checked.error?.message ?? "").not.toMatch(/person's decision|Needs a person/);
+  });
+});

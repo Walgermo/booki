@@ -8,6 +8,7 @@ import {
 } from "@booki-aui/core/approval";
 import { createChange, definePrimitive } from "@ui-sdk/core";
 import { refuseDenied } from "./access.js";
+import { personOnly } from "./person-only.js";
 
 export type Options = {
   chain?: ApprovalLevel[];
@@ -120,7 +121,7 @@ export const approvalChain = definePrimitive({
       }),
     }),
     approve: slot({
-      attrs: () => ({ type: "button" }),
+      attrs: () => ({ type: "button", "data-person-only": personOnly("Approving needs a person") }),
       press: ({ api }, event) => {
         try {
           api.approve(event);
@@ -130,7 +131,11 @@ export const approvalChain = definePrimitive({
       },
     }),
     reject: slot({
-      attrs: () => ({ type: "button", "data-variant": "secondary" }),
+      attrs: () => ({
+        type: "button",
+        "data-variant": "secondary",
+        "data-person-only": personOnly("Rejecting needs a person"),
+      }),
       press: ({ api }, event) => {
         try {
           api.reject(event);
@@ -140,7 +145,11 @@ export const approvalChain = definePrimitive({
       },
     }),
     escalate: slot({
-      attrs: () => ({ type: "button", "data-variant": "secondary" }),
+      attrs: () => ({
+        type: "button",
+        "data-variant": "secondary",
+        "data-person-only": personOnly("Escalating needs a person"),
+      }),
       press: ({ api }, event) => {
         try {
           api.escalate(event);

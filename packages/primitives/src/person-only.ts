@@ -7,7 +7,14 @@
  */
 const sentences = new Set<string>();
 
-/** Register a person-only sentence and return it, for use as the attribute's value. */
+/**
+ * Register a person-only sentence and return it, for use as the attribute's value:
+ * `data-agent-confirm` on a part the agent's own actions never reach (a keyed
+ * row's button), or `data-person-only` on a component's own button, like
+ * release or sign off. `data-agent-confirm` on a component's own button would
+ * mark every agent action of the component; `data-person-only` only names the
+ * decision when an agent presses that button.
+ */
 export function personOnly(sentence: string): string {
   // The bridge reads a confirm sentence trimmed and cut at 200 characters: register it as it will arrive.
   sentences.add(sentence.trim().slice(0, 200));
