@@ -1,5 +1,13 @@
 # @booki/solid
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @booki-aui/core@0.4.3
+  - @booki-aui/primitives@0.4.3
+
 ## 0.4.2
 
 ### Patch Changes
