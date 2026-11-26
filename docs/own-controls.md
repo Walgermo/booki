@@ -284,6 +284,8 @@ design system's input classes into the screen: they stop matching when the desig
 Every ui-sdk part takes `render`, so your own input can render the field and keep the agent wiring:
 
 ```tsx
+"use client"
+
 import { Input } from "@ui-sdk/react/input"
 import { Input as DesignInput } from "@/components/ui/input" // your design system's input
 

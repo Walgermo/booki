@@ -68,6 +68,60 @@ describe("conformance: the reference", () => {
   });
 });
 
+describe("conformance: valid variants", () => {
+  it("accepts approveUnderRule, the canonical rule-bound action, as not person-only", async () => {
+    const { ref, target } = referenceTarget();
+    const bridge = broken(ref, {
+      snapshot: () =>
+        ref.bridge
+          .snapshot()
+          .map((c) => (c.ref === "Approval" ? { ...c, actions: [...c.actions, "approveUnderRule"] } : c)),
+    });
+    const report = await runConformance({ ...target, bridge });
+    expect(statusOf(report, "person-only-not-offered")).toBe("pass");
+  });
+
+  it("does not read an amount in minor units as a bank account", async () => {
+    const ref = createReference();
+    expect(ref.bridge.act({ steps: [{ ref: "Amount", action: "setMinor", args: [Number(SECRET)] }] }).ok).toBe(true);
+    const report = await runConformance({ bridge: ref.bridge });
+    expect(statusOf(report, "snapshot-secrets")).toBe("pass");
+  });
+
+  it("accepts a date control's ISO value beside its formatted text", async () => {
+    const { ref, target } = referenceTarget();
+    const bridge = broken(ref, {
+      snapshot: () => [
+        ...ref.bridge.snapshot(),
+        {
+          ref: "Due",
+          component: "financial-date",
+          label: "Due",
+          actions: [],
+          value: "2026-11-23",
+          formatted: "23.11.2026",
+        },
+        { ref: "Lines", component: "voucher-composer", label: "Lines", actions: [], lines: [{ debitMinor: 1250 }] },
+      ],
+    });
+    const report = await runConformance({ ...target, bridge });
+    expect(statusOf(report, "snapshot-values")).toBe("pass");
+  });
+
+  it("accepts a drive step that records one attributed event per change", async () => {
+    const { ref, target } = referenceTarget();
+    const bridge = broken(ref, {
+      subscribe: (listener) =>
+        ref.bridge.subscribe((event) => {
+          listener(event);
+          if (event.source === "agent") listener({ ...event, ref: "Total" });
+        }),
+    });
+    const report = await runConformance({ ...target, bridge });
+    expect(statusOf(report, "recording-agent")).toBe("pass");
+  });
+});
+
 describe("conformance: broken variants", () => {
   it("fails snapshot-secrets when the snapshot leaks the bank account", async () => {
     const { ref, target } = referenceTarget();
@@ -144,6 +198,36 @@ describe("conformance: broken variants", () => {
     expect(statusOf(report, "server-person-only")).toBe("fail");
     expect(report.checks.find((c) => c.id === "server-person-only")?.message).toContain("payment.release");
     expect(report.conforms).toBe(false);
+  });
+
+  it("fails server-person-only when only roles refuse an agent that holds the granting role", async () => {
+    const { target } = referenceTarget();
+    // Checks that the actor holds `controller`, never what kind of actor it is.
+    const server: ConformanceTarget["server"] = (actor) =>
+      actor === null ? { status: 401 } : actor.roles.includes("controller") ? { status: 200 } : { status: 403 };
+    const report = await runConformance({ ...target, server, serverActor: () => ({ id: "c", roles: ["controller"] }) });
+    expect(statusOf(report, "server-person-only")).toBe("fail");
+    expect(report.conforms).toBe(false);
+    // Without fixtures that grant the permission, a 403 proves nothing: not a pass.
+    const unproven = await runConformance({ ...target, server });
+    expect(statusOf(unproven, "server-person-only")).toBe("skip");
+    expect(unproven.checks.find((c) => c.id === "server-person-only")?.message).toContain("serverActor");
+  });
+
+  it("fails snapshot-values on fractional minor units in a list and a display date as a date control's value", async () => {
+    const { ref, target } = referenceTarget();
+    const bridge = broken(ref, {
+      snapshot: () => [
+        ...ref.bridge.snapshot(),
+        { ref: "Lines", component: "voucher-composer", label: "Lines", actions: [], lines: [{ debitMinor: 12.5 }] },
+        { ref: "Due", component: "financial-date", label: "Due", actions: [], value: "23.11.2026", formatted: "" },
+      ],
+    });
+    const report = await runConformance({ ...target, bridge });
+    expect(statusOf(report, "snapshot-values")).toBe("fail");
+    const message = report.checks.find((c) => c.id === "snapshot-values")?.message ?? "";
+    expect(message).toContain("Lines.lines[0].debitMinor=12.5");
+    expect(message).toContain('Due.value="23.11.2026"');
   });
 
   it("fails only the SHOULD check when an unsigned request gets 200", async () => {

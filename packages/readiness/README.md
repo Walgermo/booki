@@ -151,6 +151,7 @@ The target takes these options, all optional:
 | `closedList` | `{ step, valid }`: a bad value and every valid choice its refusal must name (4.3). |
 | `personOnly` | Steps only a person may take, which the agent must be refused (5.1). |
 | `server` | Your write gate, `(actor, permission) => { status }`, asked for each person-only permission as an agent and once unsigned (5.1, 7.3). |
+| `serverActor` | `(permission) => { id, roles }`: an actor your `server` would otherwise let do that permission. The person-only check asks as an agent with these roles and as a person with them (default roles: `[permission]`). |
 | `normalizeEvent` | Maps your bridge's event to `{ source, actor }` when it is not that shape already (6.1). |
 
 The checks, with the section each enforces:
@@ -159,14 +160,14 @@ The checks, with the section each enforces:
 | --- | --- | --- | --- |
 | `bridge-shape` | 2 | MUST | `snapshot`, `act` and `subscribe` are functions, and `snapshot` returns an array. |
 | `snapshot-named` | 3.1 | MUST | Every component has a `ref`, `component`, `label` and string `actions`; labels are unique. |
-| `snapshot-values` | 3.2 | MUST | Minor-unit values are integers or `null`; dates are `YYYY-MM-DD` or `null`. |
-| `snapshot-secrets` | 3.5 | MUST | The snapshot holds none of the literal `secrets` and no secret pattern (the same finder as the audit). |
+| `snapshot-values` | 3.2 | MUST | Minor-unit values are integers or `null`; dates (and a date control's `value`) are `YYYY-MM-DD` or `null`, at every level, lists included. |
+| `snapshot-secrets` | 3.5 | MUST | The snapshot holds none of the literal `secrets` and no secret pattern (the same finder as the audit; amounts in minor units are not read as account numbers). |
 | `act-never-throws` | 4.5 | MUST | `act()` refuses an unknown ref and an unknown action with `ok: false` and a message, without throwing. |
 | `amount-minor-only` | 4.2 | MUST | `setMinor` refuses fractions and formatted text. |
 | `closed-list` | 4.3 | MUST | A bad value for a closed list is refused, and the refusal names every valid choice. |
-| `person-only-not-offered` | 5.1 | MUST | No action named as a person's decision (approve, sign off, …) is offered, and `personOnly` steps are refused. |
-| `recording-agent` | 6.1 | MUST | The `drive` step records exactly one event whose actor starts with `agent:`. |
-| `server-person-only` | 5.1 | MUST | The `server` refuses an agent for every person-only permission. |
+| `person-only-not-offered` | 5.1 | MUST | No action named as a person's decision (approve, sign off, …) is offered, and `personOnly` steps are refused. `approveUnderRule`, which runs only under a company rule, is not one. |
+| `recording-agent` | 6.1 | MUST | The `drive` step records at least one agent event (one per change), and every one has an actor that starts with `agent:`. |
+| `server-person-only` | 5.1 | MUST | The `server` refuses an agent holding the granting roles (`serverActor`) for every person-only permission, and lets a person with the same roles through. A permission whose person is refused too is listed as not verified; when none can be verified, the check skips. |
 | `refusal-names-valid` | 12.2 | MUST | A refusal for an unknown ref names the controls that exist, and a refusal for an unknown action names the valid actions. |
 | `server-unsigned` | 7.3 | SHOULD | An unsigned request to the `server` gets 401. |
 
@@ -248,7 +249,9 @@ no controls and the page has no fields or charts for the other checks to judge.
 A page without a bridge but with fields is still scored (and gets
 `bridge-missing`). A bridge with no controls on a page that has fields of its
 own is scored too: each field is reported as `field-not-on-bridge`, so it is
-not a pass. When nothing is there to judge, the tool prints `no score` instead of a figure, the HTML report says the same,
+not a pass. So is a page with no fields or charts where a check still found
+something (a focusable cell, an ungated posting button), or that registers
+WebMCP tools of its own. When nothing is there to judge, the tool prints `no score` instead of a figure, the HTML report says the same,
 and the JSON report has `measured: false`, `grade: "not measured"` and a
 `notMeasured` text. `score` stays in the JSON so its shape does not change,
 but it is not a pass. With `--fail-under`, an unmeasured page exits with code 1.

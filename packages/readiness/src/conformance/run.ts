@@ -20,6 +20,12 @@ export type ConformanceTarget = {
   personOnly?: ActStep[];
   /** Your server's write gate; asked for every permission in section 5.1 as an agent. */
   server?: (actor: ServerActor | null, permission: string) => ServerAnswer | Promise<ServerAnswer>;
+  /**
+   * The id and roles of an actor your server would otherwise let do `permission`. The
+   * person-only check asks as an agent with them (refused) and as a person with them (let
+   * through). Default: roles `[permission]`.
+   */
+  serverActor?: (permission: string) => { id: string; roles: string[] };
   /** Map your bridge's event to {source, actor}; default is identity. */
   normalizeEvent?: (raw: unknown) => BridgeEvent;
 };

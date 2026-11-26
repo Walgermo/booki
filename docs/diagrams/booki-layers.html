@@ -29,6 +29,7 @@
     }
     .frame { max-width: 1200px; width: 100%; min-width: 0; }
     .diagram-container { width: 100%; overflow-x: auto; }
+    .diagram-container:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
     .eyebrow {
       font-family: var(--font-mono);
       font-size: 0.75rem;
@@ -68,7 +69,7 @@
     <p class="eyebrow">Layer stack · Booki</p>
     <h1>Defined once, rendered everywhere</h1>
     <p class="sub">Each control is defined once with no framework. Every framework package is generated from that definition, so one agent operates them all the same way.</p>
-    <div class="diagram-container">
+    <div class="diagram-container" tabindex="0" role="region" aria-label="Defined once, rendered everywhere (diagram, scrolls sideways)">
       <svg viewBox="0 0 1120 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="booki-layers-title booki-layers-desc">
         <title id="booki-layers-title">Defined once, rendered everywhere</title>
         <desc id="booki-layers-desc">Booki&#x27;s layers from the announcement: framework packages and optional styles are generated from @booki-aui/primitives, which takes its rules from @booki-aui/core; the agent&#x27;s side reads and acts on the screen; @booki-aui/core/server runs the same rules in your API.</desc>

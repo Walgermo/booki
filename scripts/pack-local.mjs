@@ -26,7 +26,11 @@ const run = (command, commandArgs, cwd) =>
   execFileSync(command, commandArgs, { cwd, stdio: ["ignore", "ignore", "inherit"] });
 run("node", [join(root, "scripts/ensure-built.mjs")], root);
 mkdirSync(out, { recursive: true });
-for (const file of readdirSync(out)) if (/^booki(-aui)?-[a-z]+-.*\.tgz$/.test(file)) rmSync(join(out, file));
+// Only the packages packed now: an adapter packed earlier (vue, say) stays, since an app may still install it.
+for (const file of readdirSync(out)) {
+  const packed = /^booki(?:-aui)?-([a-z]+)-\d.*\.tgz$/.exec(file);
+  if (packed && names.includes(packed[1])) rmSync(join(out, file));
+}
 const files = names.map((name) => {
   const dir = join(root, "packages", name);
   run("pnpm", ["pack", "--pack-destination", out], dir);
@@ -35,12 +39,19 @@ const files = names.map((name) => {
     file: join(out, `booki-aui-${name}-${JSON.parse(readFileSync(join(dir, "package.json"), "utf8")).version}.tgz`),
   };
 });
-// Paths from the app's own root, so the block works on every computer.
-let app = dirname(out);
-while (app !== dirname(app) && !existsSync(join(app, "pnpm-workspace.yaml")) && !existsSync(join(app, "package.json")))
-  app = dirname(app);
-const inApp = app !== dirname(app) && app !== root;
-const shown = (file) => (inApp ? `./${relative(app, file)}` : file);
+// Paths from the app's own root, so the block works on every computer. pnpm reads overrides at the
+// workspace root (pnpm-workspace.yaml), which can sit above the app's own package.json; npm runs in
+// the folder of the nearest package.json.
+const up = (marker) => {
+  for (let dir = dirname(out); dir !== dirname(dir); dir = dirname(dir))
+    if (existsSync(join(dir, marker))) return dir === root ? null : dir;
+  return null;
+};
+const npmRoot = up("package.json");
+const pnpmRoot = up("pnpm-workspace.yaml") ?? npmRoot;
+// Quoted for a POSIX shell when the path has a space or another character the shell would split on.
+const quoted = (text) => (/^[\w@%+=:,./-]+$/.test(text) ? text : `'${text.replaceAll("'", `'\\''`)}'`);
+const from = (base, file) => (base ? `./${relative(base, file)}` : file);
 const wanted = files.filter(({ name }) => name !== "primitives").map(({ name }) => `@booki-aui/${name}`);
 // The peers each package names, at the exact version Booki is built and tested with: ui-sdk is a beta.
 const peers = new Map();
@@ -53,16 +64,16 @@ const pinned = [...peers].map(([peer, range]) => `${peer}@${range}`);
 
 console.log(`Packed ${files.length} packages into ${out}
 
-pnpm: add to pnpm-workspace.yaml, then run the command.
+pnpm: add to pnpm-workspace.yaml${pnpmRoot ? ` in ${pnpmRoot}` : ""}, then run the command in the app's folder.
 
 overrides:
-${files.map(({ name, file }) => `  "@booki-aui/${name}": "file:${shown(file)}"`).join("\n")}
+${files.map(({ name, file }) => `  "@booki-aui/${name}": ${JSON.stringify(`file:${from(pnpmRoot, file)}`)}`).join("\n")}
 
 pnpm add ${[...wanted, ...pinned].join(" ")}
 
-npm: one command.
+npm: one command${npmRoot ? `, in ${npmRoot}` : ""}.
 
-npm install ${[...files.map(({ file }) => shown(file)), ...pinned].join(" ")}
+npm install --save-exact ${[...files.map(({ file }) => quoted(from(npmRoot, file))), ...pinned].join(" ")}
 
 Packing again later: run the same add or install command again. The file names stay the same,
 so pnpm install keeps the build it already has.`);

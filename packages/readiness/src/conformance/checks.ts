@@ -2,7 +2,7 @@ import { PERSON_ACTION } from "../person-action.js";
 import { findSecrets } from "../secrets.js";
 import type { ConformanceTarget } from "./run.js";
 import { PERSON_ONLY_PERMISSIONS } from "./permissions.js";
-import type { ActResult, ActStep, BridgeComponent, BridgeEvent, ServerActor } from "./types.js";
+import type { ActResult, ActStep, BridgeComponent, BridgeEvent } from "./types.js";
 
 export type CheckOutcome = { status: "pass" | "fail" | "skip"; message: string };
 
@@ -42,6 +42,9 @@ const isNamed = (value: unknown): value is string => typeof value === "string" &
 const isMinorKey = (key: string) => key === "minor" || key.endsWith("Minor");
 const isDateKey = (key: string) => key === "date" || key.endsWith("Date");
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+// Controls whose `value` is a date, or an amount in minor units.
+const DATE_COMPONENTS = new Set(["financial-date", "field-date"]);
+const AMOUNT_COMPONENTS = new Set(["amount-field", "field-amount"]);
 
 const checks: ConformanceCheck[] = [
   {
@@ -90,22 +93,26 @@ const checks: ConformanceCheck[] = [
     run: async (target) => {
       const snap = await components(target);
       const bad: string[] = [];
-      for (const c of snap) {
-        for (const [key, value] of Object.entries(c)) {
-          if (isMinorKey(key) && !(value === null || Number.isInteger(value))) {
-            bad.push(`${c.ref}.${key}=${JSON.stringify(value)}`);
-          }
-          if (isDateKey(key) && !(value === null || (typeof value === "string" && DATE.test(value)))) {
-            bad.push(`${c.ref}.${key}=${JSON.stringify(value)}`);
-          }
-          if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-            for (const [inner, innerValue] of Object.entries(value as Record<string, unknown>)) {
-              if (isMinorKey(inner) && !(innerValue === null || Number.isInteger(innerValue))) {
-                bad.push(`${c.ref}.${key}.${inner}=${JSON.stringify(innerValue)}`);
-              }
-            }
-          }
+      // Every level, arrays too (a voucher's lines). A date control's canonical `value` is a
+      // date as well; its `formatted` is for people and is not checked.
+      const visit = (value: unknown, path: string, key: string, dateValue: boolean) => {
+        if (isMinorKey(key) && !(value === null || Number.isInteger(value)))
+          bad.push(`${path}=${JSON.stringify(value)}`);
+        const isDate = value === null || (typeof value === "string" && DATE.test(value));
+        // "" is a date control's "no date".
+        if ((isDateKey(key) && !isDate) || (dateValue && !isDate && value !== "")) {
+          bad.push(`${path}=${JSON.stringify(value)}`);
         }
+        if (Array.isArray(value)) value.forEach((item, i) => visit(item, `${path}[${i}]`, "", false));
+        else if (value !== null && typeof value === "object") {
+          for (const [inner, innerValue] of Object.entries(value as Record<string, unknown>))
+            visit(innerValue, `${path}.${inner}`, inner, false);
+        }
+      };
+      for (const c of snap) {
+        const dateControl = DATE_COMPONENTS.has(c.component) || c.kind === "date";
+        for (const [key, value] of Object.entries(c))
+          visit(value, `${c.ref}.${key}`, key, dateControl && key === "value");
       }
       if (bad.length > 0) {
         return fail(`Minor-unit values must be integers or null, dates YYYY-MM-DD or null: ${bad.join("; ")}.`);
@@ -122,7 +129,17 @@ const checks: ConformanceCheck[] = [
       const json = JSON.stringify(snap);
       const literal = (target.secrets ?? []).filter((s) => typeof s === "string" && s.length > 0);
       const leaked = literal.filter((s) => json.includes(s));
-      const found = findSecrets(json).map((hit) => hit.kind);
+      // An amount in minor units can pass a bank account's checksum, so the patterns skip
+      // monetary values (and an amount control's `value`, the same number). Literal secrets
+      // are still looked for everywhere.
+      const withoutAmounts = snap.map((c) =>
+        JSON.stringify(c, (key, value) =>
+          typeof value === "number" && (isMinorKey(key) || (key === "value" && AMOUNT_COMPONENTS.has(c.component)))
+            ? null
+            : value,
+        ),
+      );
+      const found = findSecrets(`[${withoutAmounts.join(",")}]`).map((hit) => hit.kind);
       if (leaked.length > 0 || found.length > 0) {
         const parts: string[] = [];
         if (leaked.length > 0) parts.push(`${leaked.length} literal secret(s)`);
@@ -265,15 +282,15 @@ const checks: ConformanceCheck[] = [
         if (result?.ok !== true) {
           return fail(`The drive step was not performed: ${result?.error?.message ?? "no message"}.`);
         }
+        // Attribution is per change: a step that changes two values may record two events.
         const agentEvents = events.filter((e) => e.source === "agent");
-        if (agentEvents.length !== 1) {
-          return fail(`Expected exactly one agent event for the drive step, got ${agentEvents.length}.`);
+        if (agentEvents.length === 0) return fail("The drive step recorded no agent event.");
+        const unattributed = agentEvents.find((e) => typeof e.actor !== "string" || !e.actor.startsWith("agent:"));
+        if (unattributed) {
+          return fail(`An agent event has actor ${JSON.stringify(unattributed.actor)}; it must start with "agent:".`);
         }
-        const [event] = agentEvents;
-        if (typeof event.actor !== "string" || !event.actor.startsWith("agent:")) {
-          return fail(`The agent event has actor ${JSON.stringify(event.actor)}; it must start with "agent:".`);
-        }
-        return pass(`One agent event recorded with actor ${event.actor}.`);
+        const actors = [...new Set(agentEvents.map((e) => e.actor))].join(", ");
+        return pass(`${agentEvents.length} agent event(s) recorded, each with an agent actor (${actors}).`);
       } finally {
         if (typeof unsubscribe === "function") unsubscribe();
       }
@@ -285,17 +302,34 @@ const checks: ConformanceCheck[] = [
     level: "MUST",
     run: async (target) => {
       if (!target.server) return skip("No server gate was given.");
-      const actor: ServerActor = { kind: "agent", id: "conformance", roles: ["owner"] };
+      // An agent holding the roles that would let a person do it, so a 403 comes from the
+      // person-only rule and not from a role the probe lacks. A person with the same roles
+      // must be let through, or the permission is not verified.
       const notRefused: string[] = [];
+      const unverified: string[] = [];
       for (const permission of PERSON_ONLY_PERMISSIONS) {
-        const answer = await target.server(actor, permission);
-        if (answer?.status !== 403) notRefused.push(`${permission} (${answer?.status})`);
+        const fixture = target.serverActor?.(permission) ?? { id: "conformance", roles: [permission] };
+        const answer = await target.server({ kind: "agent", ...fixture }, permission);
+        if (answer?.status !== 403) {
+          notRefused.push(`${permission} (${answer?.status})`);
+          continue;
+        }
+        const person = await target.server({ kind: "person", ...fixture }, permission);
+        const status = person?.status;
+        if (!(typeof status === "number" && status >= 200 && status < 300))
+          unverified.push(`${permission} (${status})`);
       }
       if (notRefused.length > 0) {
         return fail(`The server did not refuse an agent for: ${notRefused.join(", ")}.`);
       }
+      const verified = PERSON_ONLY_PERMISSIONS.length - unverified.length;
+      const note =
+        unverified.length > 0
+          ? ` Not verified, because a person with the same roles was refused too (give serverActor the roles that grant each): ${unverified.join(", ")}.`
+          : "";
+      if (verified === 0) return skip(`No person-only permission could be verified.${note}`);
       return pass(
-        `The server refuses an agent with 403 for all ${PERSON_ONLY_PERMISSIONS.length} person-only permissions.`,
+        `The server refuses an agent with 403, and lets a person with the same roles through, for ${verified} of ${PERSON_ONLY_PERMISSIONS.length} person-only permissions.${note}`,
       );
     },
   },

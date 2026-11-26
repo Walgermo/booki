@@ -20,15 +20,18 @@ on:
   push:
     branches: [main]
 
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
-
+# Two queues, not one for the whole run: while `publish` waits for its reviewer, a
+# later push still updates the Version Packages pull request. `plan` shares the
+# npm queue with `publish`, so it looks at npm only after the release before it
+# has finished, and a push that brings nothing new asks for no second approval.
 permissions:
   contents: read
 
 jobs:
   version:
+    concurrency:
+      group: release-version-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -70,6 +73,9 @@ jobs:
   plan:
     needs: version
     if: needs.version.outputs.hasChangesets == 'false' && vars.NPM_PUBLISH == 'true'
+    concurrency:
+      group: release-npm-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -86,6 +92,9 @@ jobs:
   publish:
     needs: plan
     if: needs.plan.outputs.pending == 'true'
+    concurrency:
+      group: release-npm-${{ github.ref }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: npm
