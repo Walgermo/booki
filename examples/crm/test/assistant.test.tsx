@@ -136,6 +136,70 @@ describe("the assistant on the page, through AI SDK's WebMCP client", () => {
     close();
   });
 
+  it("reports the server's refusal of a step as that step's failure, and runs none after it", async () => {
+    const { call, close } = await openWithAssistant();
+    const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];
+    const board = snapshot.find((entry) => entry.component === "deal-pipeline")!;
+    // Another tab changes the deal: this tab's copy is now stale, and the server refuses a change made from it.
+    crm().deals = crm().deals.map((deal) => (deal.id === "D-101" ? { ...deal, expectedClose: "2026-12-20" } : deal));
+    const server = globalThis.fetch;
+    const writes: unknown[] = [];
+    vi.stubGlobal("fetch", async (...args: Parameters<typeof fetch>) => {
+      const body = JSON.parse(String(args[1]?.body)) as { action: string };
+      if (body.action === "deals") writes.push(body);
+      return server(...args);
+    });
+    const result = await call("crm_act", {
+      steps: [
+        { ref: board.ref, action: "moveDeal", args: ["D-101", "negotiation"] },
+        { ref: board.ref, action: "setExpectedClose", args: ["D-101", "2027-01-15"] },
+      ],
+    });
+    expect(result).toMatchObject({ ok: false, error: { step: 0 } });
+    expect(result.error.message).toMatch(/^Serveren sa nei: /);
+    expect(result.steps).toEqual([]);
+    // The second step never started.
+    expect(writes).toHaveLength(1);
+    expect(crm().deals.find((deal) => deal.id === "D-101")).toMatchObject({
+      stageId: "quote",
+      expectedClose: "2026-12-20",
+    });
+    close();
+  });
+
+  it("reports the server's refusal of a single step too", async () => {
+    const { call, close } = await openWithAssistant();
+    const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];
+    const board = snapshot.find((entry) => entry.component === "deal-pipeline")!;
+    crm().deals = crm().deals.map((deal) => (deal.id === "D-101" ? { ...deal, expectedClose: "2026-12-20" } : deal));
+    const result = await call("crm_act", {
+      steps: [{ ref: board.ref, action: "moveDeal", args: ["D-101", "negotiation"] }],
+    });
+    expect(result).toMatchObject({ ok: false, error: { step: 0 } });
+    expect(result.error.message).toMatch(/^Serveren sa nei: /);
+    expect(crm().deals.find((deal) => deal.id === "D-101")?.stageId).toBe("quote");
+    close();
+  });
+
+  it("saves nothing from a longer call with a later step in the wrong shape, or a field act does not take", async () => {
+    const { call, close } = await openWithAssistant();
+    const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];
+    const board = snapshot.find((entry) => entry.component === "deal-pipeline")!;
+    const move = { ref: board.ref, action: "moveDeal", args: ["D-101", "negotiation"] };
+    const later = await call("crm_act", {
+      steps: [move, { ref: board.ref, action: "setExpectedClose", args: { id: "D-101", date: "2027-01-15" } }],
+    });
+    expect(later).toMatchObject({ ok: false, error: { step: 1 } });
+    // The bridge's own sentence for the whole call, as it gives it.
+    expect(later.error.message).toMatch(/^steps\[1\] takes "args" as a list.*(No step ran|Ingen steg ble kjørt)\.$/);
+    const extra = await call("crm_act", { steps: [move, move], confirm: true });
+    expect(extra).toMatchObject({ ok: false, error: { step: 0 } });
+    expect(extra.error.message).toMatch(/"confirm".*Ingen steg ble kjørt\.$/);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(crm().deals.find((deal) => deal.id === "D-101")?.stageId).toBe("quote");
+    close();
+  });
+
   it("is refused marking a deal won: a person's decision, whatever the model is told", async () => {
     const { call, close } = await openWithAssistant();
     const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];

@@ -27,4 +27,33 @@ describe("the deal's value form", () => {
       expect(screen.getByRole("button", { name: "Lagre verdien" })).not.toHaveProperty("disabled", true),
     );
   });
+
+  it("drops the source and status given for one figure when the figure changes again before saving", async () => {
+    render(<CrmApp initial={structuredClone(crm())} />);
+    const amount = () => document.querySelector<HTMLInputElement>("#deal-amount")!;
+    const source = screen.getByPlaceholderText("Tilbudsnummer eller grunnlag for estimatet") as HTMLInputElement;
+    const status = document.querySelector<HTMLSelectElement>("#deal-status")!;
+    const type = (text: string) => {
+      fireEvent.focus(amount());
+      fireEvent.input(amount(), { target: { value: text } });
+      fireEvent.blur(amount());
+    };
+
+    type("280000");
+    fireEvent.change(source, { target: { value: "Tilbud 2026-200" } });
+    fireEvent.change(status, { target: { value: "known" } });
+    expect(source.value).toBe("Tilbud 2026-200");
+    expect(status.value).toBe("known");
+
+    // A new figure: the quote vouched for 280 000, not this.
+    type("300000");
+    expect(source.value).toBe("");
+    expect(status.value).toBe("unknown");
+
+    fireEvent.click(screen.getByRole("button", { name: "Lagre verdien" }));
+    await waitFor(() => expect(crm().deals.find((deal) => deal.id === "D-101")?.valueMinor).toBe(300_000_00));
+    const saved = crm().deals.find((deal) => deal.id === "D-101")!;
+    expect(saved.valueStatus).toBe("unknown");
+    expect(saved.valueSource).toBeUndefined();
+  });
 });
