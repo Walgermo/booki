@@ -49,6 +49,11 @@ describe("supplier invoice to payment, with four people and an agent", () => {
 
     // An agent cannot press a person's button in the inbox.
     expect((await press("supplier-invoice-inbox", "Godkjenn for bokføring")).ok).toBe(false);
+    // The audit trail says why, not only that a step failed.
+    await settled();
+    expect(
+      books().audit.find((row) => row.actor === "agent:bookkeeper" && row.action.startsWith("steg:"))?.detail,
+    ).toMatch(/\S/);
 
     // Kari rejects the copy (the agent filled in the reason) and approves the cleaning invoice.
     await as(/Kari/);

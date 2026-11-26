@@ -2,7 +2,7 @@
 
 import { formatMoney } from "@booki-aui/core/money";
 import { actAndRecord, type AgentBridge } from "@booki-aui/react";
-import { STAGES, TODAY } from "./data";
+import { STAGES } from "./data";
 import { AGENT_ID } from "./people";
 import { logDecision } from "./agent";
 import { settled, takeRefusals } from "./writes";
@@ -48,8 +48,20 @@ const entry = (agent: AgentBridge, component: string) =>
 const kr = (minor: number, currency = "NOK") =>
   formatMoney({ minor, currency }, { locale: "nb-NO", trimZeroFraction: true });
 
+/**
+ * Today on the person's calendar. A follow-up is dated from it, not from the
+ * example's fixed TODAY: the timeline and the server judge "overdue" and "has
+ * not happened yet" by the real date, so a task planned three days out is
+ * never overdue the moment it is made.
+ */
+const today = () => {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
 const plusDays = (days: number) => {
-  const date = new Date(`${TODAY}T00:00:00Z`);
+  const date = new Date(`${today()}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 };
@@ -115,6 +127,9 @@ async function afterMeeting(agent: AgentBridge, dealId: string): Promise<Report>
   const deal = (board?.deals as DealView[] | undefined)?.find((item) => item.id === dealId);
   if (!board || !deal) return { did: [], waiting: ["Fant ikke avtalen på tavlen."] };
   const open = STAGES.filter((stage) => !stage.outcome);
+  // A won or lost deal is past this: its figure is the closed one, and reopening it is a person's. No step at all.
+  if (!open.some((stage) => stage.id === deal.stageId))
+    return { did: [], waiting: [`${deal.name}: avtalen er lukket; en person åpner den igjen før den oppdateres`] };
   const next = open[open.findIndex((stage) => stage.id === deal.stageId) + 1];
   const steps: { step: Step; done: string }[] = [
     {
@@ -123,7 +138,7 @@ async function afterMeeting(agent: AgentBridge, dealId: string): Promise<Report>
         action: "setValue",
         args: [
           dealId,
-          { valueMinor: 210_000_00, currency: "NOK", valueStatus: "estimate", valueSource: `Møte ${TODAY}` },
+          { valueMinor: 210_000_00, currency: "NOK", valueStatus: "estimate", valueSource: `Møte ${today()}` },
         ],
       },
       done: `${deal.name}: estimat ${kr(210_000_00)} med kilde`,

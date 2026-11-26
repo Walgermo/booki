@@ -2,12 +2,14 @@
 
 import { createMCPClient, Experimental_WebMCPTransport as WebMCPTransport, type MCPClient } from "@ai-sdk/mcp";
 import { useChat } from "@ai-sdk/react";
-import { registerTools } from "@booki-aui/react";
+import { msgIn } from "@booki-aui/core/messages";
+import { registerTools, type AgentBridge } from "@booki-aui/react";
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type UIMessage } from "ai";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { asAgentWork, logDecision, pageAgent } from "./agent";
 import { TOOL_NAMES } from "./chat-tools";
 import { AGENT_ID } from "./people";
+import { settled } from "./writes";
 
 type ModelContext = ConstructorParameters<typeof WebMCPTransport>[0]["modelContext"] & {
   registerTool?: unknown;
@@ -23,7 +25,7 @@ type ModelContext = ConstructorParameters<typeof WebMCPTransport>[0]["modelConte
  * the server with the agent's credential.
  */
 export async function connectAssistant(context: ModelContext, signal: AbortSignal): Promise<MCPClient | undefined> {
-  const unregister = registerTools(pageAgent(), {
+  const unregister = registerTools(oneStepAtATime(pageAgent()), {
     allow: "bridge",
     prefix: "crm",
     agentId: AGENT_ID,
@@ -51,6 +53,51 @@ export async function connectAssistant(context: ModelContext, signal: AbortSigna
     return undefined;
   }
   return client;
+}
+
+type ActOutcome = {
+  ok: boolean;
+  error?: { step: number; message: string };
+  steps?: { step: number }[];
+  appeared?: unknown[];
+};
+
+/**
+ * The same bridge, with `act` running a call's steps one at a time and
+ * waiting for the server's answer to each before the next. The controls are
+ * controlled: a change shows once the server has kept it, so a second step
+ * that ran before then would start from the old board and send it back. The
+ * scripted tasks wait the same way.
+ */
+export function oneStepAtATime(bridge: AgentBridge): AgentBridge {
+  const act = async (input: unknown, options?: { signal?: AbortSignal }): Promise<ActOutcome> => {
+    const steps = (input as { steps?: unknown } | null)?.steps;
+    const run = (call: unknown) => bridge.act(call as never, options) as unknown as Promise<ActOutcome>;
+    // A call in the wrong shape, or one step: the bridge answers it as it is.
+    if (!Array.isArray(steps) || steps.length < 2) return run(input);
+    const done: { step: number }[] = [];
+    const appeared: unknown[] = [];
+    let last: ActOutcome = { ok: true };
+    for (const [index, step] of steps.entries()) {
+      last = await run({ steps: [step] });
+      done.push(...(last.steps ?? []).map((entry) => ({ ...entry, step: index })));
+      appeared.push(...(last.appeared ?? []));
+      if (!last.ok && last.error) {
+        // What the bridge says after a failed step in a longer call: which steps stay done, what to send again.
+        const rest = steps.length - index - 1;
+        const after = [
+          index > 0 ? msgIn("nb", "bridge.steps-stay-done") : "",
+          rest === 1 ? msgIn("nb", "bridge.send-again-one", { total: 2 }) : "",
+          rest > 1 ? msgIn("nb", "bridge.send-again-many", { rest, total: rest + 1 }) : "",
+        ].filter(Boolean);
+        const message = [last.error.message, ...after].join(" ");
+        return { ...last, error: { step: index, message }, steps: done, appeared };
+      }
+      await settled();
+    }
+    return { ...last, steps: done, appeared };
+  };
+  return Object.assign(Object.create(bridge) as AgentBridge, { act });
 }
 
 /**

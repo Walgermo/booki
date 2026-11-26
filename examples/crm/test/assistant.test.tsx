@@ -89,6 +89,53 @@ describe("the assistant on the page, through AI SDK's WebMCP client", () => {
     close();
   });
 
+  it("runs a call's steps one at a time, each after the server kept the one before", async () => {
+    const { call, close } = await openWithAssistant();
+    // Every write takes a while on its way: a second step that did not wait would start from the old board.
+    const server = globalThis.fetch;
+    vi.stubGlobal("fetch", async (...args: Parameters<typeof fetch>) => {
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      return server(...args);
+    });
+    const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];
+    const board = snapshot.find((entry) => entry.component === "deal-pipeline")!;
+    const result = await call("crm_act", {
+      steps: [
+        { ref: board.ref, action: "moveDeal", args: ["D-101", "negotiation"] },
+        { ref: board.ref, action: "setExpectedClose", args: ["D-101", "2027-01-15"] },
+        { ref: board.ref, action: "moveDeal", args: ["D-102", "quote"] },
+      ],
+    });
+    expect(result.ok).toBe(true);
+    expect(result.steps.map((step: { step: number }) => step.step)).toEqual([0, 1, 2]);
+    await waitFor(() => expect(crm().deals.find((deal) => deal.id === "D-102")?.stageId).toBe("quote"));
+    expect(crm().deals.find((deal) => deal.id === "D-101")).toMatchObject({
+      stageId: "negotiation",
+      expectedClose: "2027-01-15",
+    });
+    close();
+  });
+
+  it("says which step of a longer call failed, and that the ones before it stay done", async () => {
+    const { call, close } = await openWithAssistant();
+    const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];
+    const board = snapshot.find((entry) => entry.component === "deal-pipeline")!;
+    const result = await call("crm_act", {
+      steps: [
+        { ref: board.ref, action: "setExpectedClose", args: ["D-102", "2027-02-01"] },
+        { ref: board.ref, action: "moveDeal", args: ["D-101", "won"] },
+      ],
+    });
+    expect(result).toMatchObject({ ok: false, error: { step: 1 } });
+    expect(result.error.message).toMatch(/Stegene før dette er utført\.$/);
+    expect(result.steps.map((step: { step: number }) => step.step)).toEqual([0]);
+    await waitFor(() => expect(crm().deals.find((deal) => deal.id === "D-102")?.expectedClose).toBe("2027-02-01"));
+    await waitFor(() =>
+      expect(crm().audit[0]).toMatchObject({ action: "agent.failed", detail: expect.stringMatching(/^moveDeal: /) }),
+    );
+    close();
+  });
+
   it("is refused marking a deal won: a person's decision, whatever the model is told", async () => {
     const { call, close } = await openWithAssistant();
     const snapshot = (await call("crm_snapshot", {})) as { ref: string; component: string }[];

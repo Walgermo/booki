@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { Answer, Crm, Write } from "@/lib/crm";
 import { agentWorking, cursor, listenToDecisions, pageAgent } from "@/lib/agent";
-import { AGREEMENTS, COMPANIES, HISTORY, OPEN_STAGES, PAST_STAYS, STAGES, STAGE_TARGETS, TODAY } from "@/lib/data";
+import { AGREEMENTS, COMPANIES, OPEN_STAGES, STAGES, STAGE_TARGETS, TODAY } from "@/lib/data";
 import { OWNERS, PEOPLE, ROLES, nameOf, type PersonId } from "@/lib/people";
 import { track } from "@/lib/writes";
 import { AgentPanel } from "./agent-panel";
@@ -70,10 +70,11 @@ export function CrmApp({ initial }: { initial: Crm }) {
   const deal = crm.deals.find((item) => item.id === dealId) ?? crm.deals[0]!;
 
   // The funnel from each deal's stage history; time in stage from finished stays and the stay each open deal is in now.
+  // The server records both with every stage change, so a move, a close or a reopen keeps what came before.
   const order = [...OPEN_STAGES, "won"];
   const funnelSteps = useMemo(() => {
     const counts = reachedCounts(
-      crm.deals.map((item) => [...(HISTORY[item.id] ?? []), item.stageId]),
+      crm.deals.map((item) => [...(crm.history[item.id] ?? []), item.stageId]),
       order,
     );
     return order.map((id, index) => ({
@@ -82,15 +83,15 @@ export function CrmApp({ initial }: { initial: Crm }) {
       count: counts[index]!,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [crm.deals]);
+  }, [crm.deals, crm.history]);
   const stays = useMemo<StageStay[]>(
     () => [
-      ...PAST_STAYS,
+      ...crm.stays,
       ...crm.deals
         .filter((item) => OPEN_STAGES.includes(item.stageId) && item.stageChangedAt)
         .map((item) => ({ dealId: item.name, stageId: item.stageId, enteredAt: item.stageChangedAt! })),
     ],
-    [crm.deals],
+    [crm.deals, crm.stays],
   );
 
   return (
@@ -142,14 +143,26 @@ export function CrmApp({ initial }: { initial: Crm }) {
               today={TODAY}
               actor={me}
               nameOf={nameOf}
-              onDealsChange={(next, details) => void send({ action: "deals", deals: next }, details.source)}
+              // With the list it started from: the server takes only what this change did, not an older copy of the rest.
+              onDealsChange={(next, details) =>
+                void send({ action: "deals", deals: next, base: crm.deals }, details.source)
+              }
             />
 
             <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div className="grid content-start gap-3">
                 <label className="grid max-w-sm gap-1 text-sm" htmlFor="open-deal">
                   Åpen avtale
-                  <select id="open-deal" value={deal.id} onChange={(event) => setDealId(event.target.value)}>
+                  {/* Held while the agent works: its next step on the open deal's timeline stays on that deal. */}
+                  <select
+                    id="open-deal"
+                    value={deal.id}
+                    disabled={agentBusy}
+                    aria-describedby={agentBusy ? "switch-wait" : undefined}
+                    onChange={(event) => {
+                      if (!agentBusy) setDealId(event.target.value);
+                    }}
+                  >
                     {crm.deals.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.name} · {item.company}
@@ -162,10 +175,17 @@ export function CrmApp({ initial }: { initial: Crm }) {
                   activities={crm.activities[deal.id] ?? []}
                   me={me}
                   onSaveDeal={(next) =>
-                    void send({ action: "deals", deals: crm.deals.map((item) => (item.id === next.id ? next : item)) })
+                    void send({
+                      action: "deals",
+                      deals: crm.deals.map((item) => (item.id === next.id ? next : item)),
+                      base: crm.deals,
+                    })
                   }
                   onActivitiesChange={(next, details) =>
-                    void send({ action: "activities", dealId: deal.id, activities: next }, details.source)
+                    void send(
+                      { action: "activities", dealId: deal.id, activities: next, base: crm.activities[deal.id] ?? [] },
+                      details.source,
+                    )
                   }
                 />
               </div>
