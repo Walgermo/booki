@@ -1534,6 +1534,37 @@ html[data-kpi-still] {
   }
 }
 
+/* A component page: the control, then the agent's side, then the code. On a wide screen the
+   control and the code share the left column and the agent's column stays in view beside them. */
+.doc-layout {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .doc-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    grid-template-areas:
+      "preview agent"
+      "code agent";
+    align-items: start;
+  }
+
+  .doc-layout__preview {
+    grid-area: preview;
+  }
+
+  .doc-layout__code {
+    grid-area: code;
+  }
+
+  .doc-layout > .doc-agent {
+    grid-area: agent;
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
 /* Anchored headings land below the sticky header. */
 :root:has(.docs-header) {
   scroll-padding-top: 5rem;
@@ -4648,10 +4679,25 @@ a.site-chip:focus-visible {
   min-width: 0;
 }
 
-/* A docs preview holds its height before the control mounts and while the agent works on it. */
+/* A docs preview: the control on a canvas, centred, with room around it for its own popups
+   (a select's list, a date picker). It holds its height before the control mounts and while
+   the agent works on it. */
 .doc-sheet {
-  min-height: var(--reserve-sm, 0);
-  /* A wide table scrolls inside its sheet, never the page. */
+  display: grid;
+  align-content: center;
+  min-height: max(var(--reserve-sm, 0px), 11rem);
+  padding: 2rem 1.5rem;
+  border: 1px solid var(--bk-border);
+  background-color: var(--bk-card);
+  background-image: radial-gradient(var(--bk-border) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+  isolation: isolate;
+}
+
+/* Only a sheet that holds a wide table scrolls, inside itself, never the page; the rest let
+   their popups out. */
+.doc-sheet:has(table) {
   overflow-x: auto;
 }
 
@@ -4662,7 +4708,8 @@ body:has([data-slot="agent-cursor"]) {
 
 @media (min-width: 768px) {
   .doc-sheet {
-    min-height: var(--reserve, 0);
+    min-height: max(var(--reserve, 0px), 13rem);
+    padding: 2.5rem 2rem;
   }
 }
 
