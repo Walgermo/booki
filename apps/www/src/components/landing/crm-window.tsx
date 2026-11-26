@@ -27,7 +27,7 @@ const OWNERS = [
 
 type Phase = "idle" | "running" | "done";
 
-/** A sales pipeline in the same made-up suite: after a meeting, the agent updates the deal. */
+/** A sales pipeline in A-CRM, a made-up agentic CRM: after a meeting, the agent updates the deal. */
 export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab[] }) {
   const { t } = useLang();
   const stages: PipelineStage[] = [
@@ -113,6 +113,7 @@ export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab
         </Button>
       </div>
       <ErpFrame
+        brand="acrm"
         label={t("Demo CRM", "Demo-CRM")}
         tabs={tabs}
         path="/analog-angst/salg"

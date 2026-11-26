@@ -224,6 +224,7 @@ export function ErpWindow({
         </Button>
       </div>
       <ErpFrame
+        brand="kvadruptex"
         label={t("Demo ERP", "Demo-ERP")}
         tabs={tabs}
         path="/analog-angst/bilag/ny"

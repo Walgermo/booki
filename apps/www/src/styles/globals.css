@@ -2565,10 +2565,14 @@ html[data-kpi-still] {
   zoom: 0.84;
   --kvx-blue: var(--bk-brand);
   --kvx-on-blue: var(--bk-ink-fg);
+  /* A-CRM, the agentic CRM: green from the success token, so it never reads as Kvadruptex. */
+  --trk-green: var(--bk-success);
+  --trk-on-green: var(--bk-ink-fg);
 }
 
 [data-bk-theme="dark"] .erp-window {
   --kvx-blue: color-mix(in oklch, var(--bk-brand) 42%, var(--bk-ink));
+  --trk-green: color-mix(in oklch, var(--bk-success) 60%, var(--bk-ink));
 }
 
 /* Browser chrome: Chrome on macOS, drawn with tokens. */
@@ -2773,7 +2777,11 @@ html[data-kpi-still] {
   letter-spacing: -0.01em;
 }
 
-/* "tex", lighter: the nod to the screen it parodies. */
+.erp-window[data-brand="acrm"] .erp-app__word {
+  color: var(--bk-success);
+}
+
+/* "tex" (and A-CRM's "CRM"), lighter: the nod to the screen it parodies. */
 .erp-app__word span {
   color: var(--bk-muted-fg);
   font-weight: 450;

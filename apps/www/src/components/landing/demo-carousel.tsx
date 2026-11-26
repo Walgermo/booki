@@ -54,10 +54,11 @@ export function DemoCarousel({
 
   const tabs: FrameTab[] = SLIDES.map((s) => ({
     id: s,
+    brand: s === "invoice" ? "kvadruptex" : "acrm",
     title:
       s === "invoice"
         ? t("New voucher – Kvadruptex", "Nytt bilag – Kvadruptex")
-        : t("Pipeline – Kvadruptex", "Salgsløp – Kvadruptex"),
+        : t("Pipeline – A-CRM", "Salgsløp – A-CRM"),
     active: s === slide,
     onSelect: () => go(s),
     onKeyDown: onKey,
