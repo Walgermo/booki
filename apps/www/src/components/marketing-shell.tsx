@@ -58,6 +58,12 @@ export function MarketingShell() {
             </p>
             <p className="m-0">
               {t(
+                "Claude, ChatGPT, Gemini and Grok are trademarks of their owners. Booki is not affiliated with them.",
+                "Claude, ChatGPT, Gemini og Grok er varemerker som tilhører eierne sine. Booki er ikke tilknyttet dem.",
+              )}
+            </p>
+            <p className="m-0">
+              {t(
                 "Before 1.0: React with the Norwegian and US profiles is supported, the rest is experimental.",
                 "Før 1.0: React med norsk og amerikansk profil er støttet, resten er eksperimentelt.",
               )}{" "}

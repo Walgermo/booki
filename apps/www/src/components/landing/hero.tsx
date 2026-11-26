@@ -8,6 +8,7 @@ import { HeroTitle } from "./hero-title";
 import { PromptButton } from "./prompt-button";
 import { ProofStrip } from "./proof-strip";
 import { InstallBlock } from "@/components/install-block";
+import { AgentName } from "./agent-names";
 import { AGENT_PROMPT, AGENT_PROMPT_FULL, REPO_URL, type LandingAgent } from "./shared";
 
 export function Hero({ agent }: { agent: LandingAgent }) {
@@ -28,16 +29,17 @@ export function Hero({ agent }: { agent: LandingAgent }) {
           markRef={markRef}
         />
         <p className="landing-hero__hook">
-          {t(
-            "UI components that let Claude, ChatGPT, Gemini or Grok work in your app, next to your people.",
-            "UI-komponenter som lar Claude, ChatGPT, Gemini eller Grok jobbe i appen deres, side om side med folkene deres.",
-          )}
+          {t("UI components that let ", "UI-komponenter som lar ")}
+          <AgentName id="claude" after="," /> <AgentName id="chatgpt" after="," /> <AgentName id="gemini" />{" "}
+          {t("or", "eller")} <AgentName id="grok" />{" "}
+          {t("work in your app, next to your people.", "jobbe i appen deres, side om side med folkene deres.")}
         </p>
         <ol
           className="landing-hero__timeline"
           aria-label={t("One amount field, three ways to fill it in", "Ett beløpsfelt, tre måter å fylle det ut")}
         >
           <li>
+            <span className="landing-hero__date">1995</span>
             <span className="landing-hero__era">{t("People type", "Mennesker skriver")}</span>
             <span className="landing-hero__scene" aria-hidden="true">
               <span className="landing-hero__field">
@@ -52,10 +54,14 @@ export function Hero({ agent }: { agent: LandingAgent }) {
               </svg>
             </span>
             <span className="landing-hero__note">
-              {t("Screens were made for people.", "Skjermbilder ble laget for mennesker.")}
+              {t("HTML 2.0 gives every web page an <input>.", "HTML 2.0 gir hver nettside en <input>.")}
             </span>
           </li>
           <li>
+            <span className="landing-hero__gap" aria-hidden="true">
+              {t("29 years of clicking", "29 år med klikking")}
+            </span>
+            <span className="landing-hero__date">2024</span>
             <span className="landing-hero__era">{t("Agents guess", "Agenter gjetter")}</span>
             <span className="landing-hero__scene" aria-hidden="true">
               <span className="landing-hero__field" data-wrong="">
@@ -67,10 +73,17 @@ export function Hero({ agent }: { agent: LandingAgent }) {
               <span className="landing-hero__detect">{t("Amount field? 82% sure", "Beløpsfelt? 82 % sikker")}</span>
             </span>
             <span className="landing-hero__note">
-              {t("An AI agent reads a screenshot and gets it wrong.", "En AI-agent leser et skjermbilde og tar feil.")}
+              {t(
+                "AI agents start using computers by reading screenshots.",
+                "AI-agenter begynner å bruke datamaskiner ved å lese skjermbilder.",
+              )}
             </span>
           </li>
           <li data-current="">
+            <span className="landing-hero__gap" aria-hidden="true">
+              {t("2 years of guessing", "2 år med gjetting")}
+            </span>
+            <span className="landing-hero__date">{t("Today", "I dag")}</span>
             <span className="landing-hero__era">
               {t("With Booki, agents act by name", "Med Booki handler agenter ved navn")}
             </span>
