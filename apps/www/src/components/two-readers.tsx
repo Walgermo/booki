@@ -1,6 +1,7 @@
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from "@ui-sdk/react/collapsible";
 import { useState, type ReactNode } from "react";
 
+import { CodePanel } from "@/components/code-panel";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
 import { cn } from "@/lib/utils";
@@ -91,12 +92,18 @@ export function CodeDisclosure({ title, source }: { title: string; source: strin
   };
   return (
     <Disclosure title={title} meta={t(`${lines} lines`, `${lines} linjer`)}>
-      <div className="site-code-block mt-3">
-        <Button type="button" variant="ghost" size="sm" className="site-code-block__copy" onClick={copy}>
-          {copied ? t("Copied", "Kopiert") : t("Copy", "Kopier")}
-        </Button>
-        <pre className="site-code max-h-[28rem] overflow-y-auto text-xs">{source}</pre>
-      </div>
+      <CodePanel
+        className="mt-3"
+        label={title}
+        maxHeight="28rem"
+        action={
+          <Button type="button" variant="ghost" size="sm" className="code-panel__copy" onClick={copy}>
+            {copied ? t("Copied", "Kopiert") : t("Copy", "Kopier")}
+          </Button>
+        }
+      >
+        <pre>{source}</pre>
+      </CodePanel>
     </Disclosure>
   );
 }

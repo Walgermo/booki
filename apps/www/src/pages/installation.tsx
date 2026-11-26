@@ -1,26 +1,24 @@
 import { Link } from "react-router-dom";
 
 import { InstallBlock } from "../components/install-block";
+import { PromptButton } from "../components/landing/prompt-button";
+import { AGENT_PROMPT } from "../components/landing/shared";
 import { Section } from "../components/section";
 import { useLang } from "@/lib/lang";
 
 const NEEDS = [
   [
-    { en: "React 19 or later", nb: "React 19 eller nyere" },
-    { en: "The controls take ref as a plain prop.", nb: "Kontrollene tar ref som en vanlig prop." },
-  ],
-  [
-    { en: "Supported: React 19 with the NO and US profiles", nb: "Støttet: React 19 med NO- og US-profilene" },
+    { en: "Your app's framework", nb: "Rammeverket appen bruker" },
     {
-      en: "Vue, Svelte, Solid, Web Components and the SE, DK, GB and DE profiles are experimental.",
-      nb: "Vue, Svelte, Solid, Web Components og profilene for SE, DK, GB og DE er eksperimentelle.",
+      en: "React 19 or later with the NO and US profiles is supported. Vue, Svelte, Solid, Web Components and the SE, DK, GB and DE profiles are experimental.",
+      nb: "React 19 eller nyere med NO- og US-profilene er støttet. Vue, Svelte, Solid, Web Components og profilene for SE, DK, GB og DE er eksperimentelle.",
     },
   ],
   [
-    { en: "@ui-sdk/core and @ui-sdk/react 0.1.0-beta.17", nb: "@ui-sdk/core og @ui-sdk/react 0.1.0-beta.17" },
+    { en: "Two pinned dependencies", nb: "To låste avhengigheter" },
     {
-      en: "Add both exact versions in the same command.",
-      nb: "Legg til begge de eksakte versjonene i samme kommando.",
+      en: "Add them with Booki in the same command, at the exact versions below.",
+      nb: "Legg dem til sammen med Booki i samme kommando, med de eksakte versjonene under.",
     },
   ],
   [
@@ -144,19 +142,26 @@ await window.agent.act({
   steps: [{ ref: "Amount excl. tax", action: "setMinor", args: [125000] }],
 })`;
 
-/** Five-minute integration guide for a team with an existing React product. */
+/** Five-minute integration guide for a team with an existing product. The agent prompt comes first. */
 export function InstallationPage() {
   const { lang, t } = useLang();
   const p = "m-0 max-w-prose text-sm text-muted-foreground";
   return (
     <article className="installation-guide">
-      <h1 className="site-page-title mt-0 mb-0">
-        {t("Add Booki to a React product", "Legg Booki inn i et React-produkt")}
-      </h1>
-      <p className="mt-4 mb-10 max-w-prose text-lg leading-relaxed text-muted-foreground text-pretty">
+      <h1 className="site-page-title mt-0 mb-0">{t("Add Booki to your app", "Legg Booki inn i appen deres")}</h1>
+      <p className="mt-4 mb-6 max-w-prose text-lg leading-relaxed text-muted-foreground text-pretty">
         {t(
-          "Five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. About five minutes.",
-          "Fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med dine godkjenningsregler. Omtrent fem minutter.",
+          "Quickest: copy the prompt into your coding agent. It explains Booki, suggests one screen and asks before changing anything.",
+          "Raskest: kopier prompten inn i kodeagenten deres. Den forklarer Booki, foreslår ett skjermbilde og spør før den endrer noe.",
+        )}
+      </p>
+      <div className="mb-10 grid justify-items-center gap-2 lg:justify-items-start">
+        <PromptButton prompt={AGENT_PROMPT} />
+      </div>
+      <p className="mt-0 mb-10 max-w-prose text-muted-foreground text-pretty">
+        {t(
+          "By hand, five steps: install, wrap the app, replace one amount input and one voucher table, then give an agent a bridge with your approval rules. The code below uses the React package; the same controls ship for Vue, Svelte, Solid and Web Components.",
+          "For hånd, fem steg: installer, pakk inn appen, bytt ut ett beløpsfelt og én bilagstabell, og gi så en agent en bro med reglene deres for godkjenning. Koden under bruker React-pakken; de samme kontrollene finnes for Vue, Svelte, Solid og Web Components.",
         )}
       </p>
 
@@ -164,8 +169,8 @@ export function InstallationPage() {
         id="install"
         title={t("Install", "Installer")}
         note={t(
-          "Install Booki and the pinned UI SDK packages together.",
-          "Installer Booki og de låste UI SDK-pakkene sammen.",
+          "Install Booki and its pinned dependencies together.",
+          "Installer Booki og de låste avhengighetene sammen.",
         )}
       >
         <ul className="site-rows mb-6">

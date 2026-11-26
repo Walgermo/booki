@@ -132,10 +132,12 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             <InstallBlock
               label={t("One screen (the button above)", "Ett skjermbilde (knappen over)")}
               command={AGENT_PROMPT}
+              wrap
             />
             <InstallBlock
               label={t("The whole app instead: takes hours", "Hele appen i stedet: tar timer")}
               command={AGENT_PROMPT_FULL}
+              wrap
             />
           </div>
         </div>

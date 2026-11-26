@@ -150,14 +150,20 @@ export function ComponentDocPage() {
         </p>
       ) : null}
       <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
-      <div className={stacked || name === "money" ? "mt-8 grid gap-10" : "doc-layout mt-8"}>
+      {/* One grid for every page: the control, the agent's column, then install and the example.
+          A wide control takes the full row with the agent beside the code; on a phone it all stacks. */}
+      <div
+        className="doc-layout mt-8"
+        data-wide={stacked ? "" : undefined}
+        data-solo={name === "money" ? "" : undefined}
+      >
         <div className="doc-layout__preview min-w-0">
           <Preview sheetRef={sheet} reserve={PREVIEW_RESERVE[name]}>
             <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
           </Preview>
         </div>
-        {/* The agent's side, in its own column: run it, see its calls, see what it reads. It stays
-            in view beside the code; on a phone it comes right after the control. */}
+        {/* The agent's side, in its own column: run it, see its calls, see what it reads. On a phone
+            it comes right after the control. */}
         {name !== "money" && (
           <aside className="doc-agent grid min-w-0 content-start gap-6" aria-label={t("The agent", "Agenten")}>
             <section className="grid min-w-0 content-start gap-2">
@@ -167,9 +173,8 @@ export function ComponentDocPage() {
             <AgentView key={`${name}-${country}-${run}`} scope={sheet} />
           </aside>
         )}
-        {stacked || name === "money" ? null : <div className="doc-layout__code min-w-0">{docCode}</div>}
+        <div className="doc-layout__code min-w-0">{docCode}</div>
       </div>
-      {stacked || name === "money" ? docCode : null}
     </article>
   );
 }

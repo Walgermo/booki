@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 
+import { CodePanel } from "@/components/code-panel";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,8 @@ export type InstallBlockProps = {
   trailing?: ReactNode;
   /** A single copy button (hero) or a code block with a copy action (docs). */
   variant?: "docs" | "hero";
+  /** Prose (a prompt) wraps; code keeps its lines and scrolls. */
+  wrap?: boolean;
   /** The hero button's look. */
   buttonVariant?: "primary" | "secondary" | "outline";
 };
@@ -24,6 +27,7 @@ export function InstallBlock({
   className,
   trailing,
   variant = "docs",
+  wrap,
   buttonVariant = "primary",
 }: InstallBlockProps) {
   const { t } = useLang();
@@ -59,19 +63,22 @@ export function InstallBlock({
   }
 
   return (
-    <div className={cn("my-5", className)}>
-      <div className="flex items-center justify-between gap-3">
-        <p className="site-label">{label ?? t("Run", "Kjør")}</p>
-        <div className="flex items-center gap-2">
+    <CodePanel
+      className={cn("my-5", className)}
+      wrap={wrap}
+      label={label ?? t("Run", "Kjør")}
+      action={
+        <>
           {trailing}
-          <Button type="button" variant="ghost" size="sm" onClick={onCopy}>
+          <Button type="button" variant="ghost" size="sm" className="code-panel__copy" onClick={onCopy}>
             {copied ? t("Copied", "Kopiert") : t("Copy", "Kopier")}
           </Button>
-        </div>
-      </div>
-      <pre className="site-code" data-language={language}>
+        </>
+      }
+    >
+      <pre data-language={language}>
         <code>{command}</code>
       </pre>
-    </div>
+    </CodePanel>
   );
 }

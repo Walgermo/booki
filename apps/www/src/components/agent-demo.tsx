@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { agent, cursor, whenCursorFree } from "@/agent";
 import { entriesIn, type Entry } from "@/components/agent-view";
 import { Button } from "@/components/ui/button";
+import { CodePanel } from "@/components/code-panel";
 import { useLang, type Lang } from "@/lib/lang";
 import { AGENT_DEMOS, type Said } from "@/pages/agent-demos";
 
@@ -211,44 +212,43 @@ function AgentDemoRun({
           />
         </span>
       </div>
-      <div className="site-machine grid min-w-0 grid-rows-[auto_minmax(0,1fr)] !p-4" style={{ height: "12.5rem" }}>
-        <p className="site-kicker m-0 mb-3">
-          {t("Agent calls", "Agentens kall")}
-          <span className="tabular-nums">
-            {refusals > 0 ? ` · ${t(`${refusals} refused`, `${refusals} avvist`)}` : ""}
-          </span>
-        </p>
-        <div
-          ref={logBox}
-          className="min-h-0 overflow-y-auto [overscroll-behavior:contain] [scrollbar-gutter:stable]"
-          aria-live="polite"
-        >
-          {rows.length === 0 ? (
-            <p className="m-0 font-mono text-xs text-ink-muted">
-              {t(
-                "No steps yet. Each call and the library's answer will be listed here.",
-                "Ingen steg ennå. Hvert kall og bibliotekets svar listes her.",
-              )}
-            </p>
-          ) : (
-            <ol className="site-rows site-rows--ink m-0 list-none p-0 font-mono">
-              {rows.map((row) => (
-                <li key={row.id} className="grid min-w-0 gap-1 text-xs">
-                  <div className="flex min-w-0 items-start justify-between gap-3">
-                    <code className="min-w-0 text-ink-foreground [overflow-wrap:anywhere]">{row.call}</code>
-                    <span className="landing-tag shrink-0" data-tone={TONE[row.word]}>
-                      {WORDS[row.word][lang]}
-                    </span>
-                  </div>
-                  <span className="text-ink-muted [overflow-wrap:anywhere]">
-                    {typeof row.text === "string" ? readable(row.text, lang) : row.text[lang]}
+      <CodePanel
+        label={t("Agent calls", "Agentens kall")}
+        action={
+          refusals > 0 ? (
+            <span className="code-panel__label tabular-nums">{t(`${refusals} refused`, `${refusals} avvist`)}</span>
+          ) : null
+        }
+        bodyRef={logBox}
+        minHeight="5.5rem"
+        maxHeight="16rem"
+        live
+      >
+        {rows.length === 0 ? (
+          <p className="m-0 font-mono text-xs text-ink-muted">
+            {t(
+              "No steps yet. Each call and the library's answer will be listed here.",
+              "Ingen steg ennå. Hvert kall og bibliotekets svar listes her.",
+            )}
+          </p>
+        ) : (
+          <ol className="site-rows site-rows--ink m-0 list-none p-0 font-mono">
+            {rows.map((row) => (
+              <li key={row.id} className="grid min-w-0 gap-1 text-xs">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <code className="min-w-0 text-ink-foreground [overflow-wrap:anywhere]">{row.call}</code>
+                  <span className="landing-tag shrink-0" data-tone={TONE[row.word]}>
+                    {WORDS[row.word][lang]}
                   </span>
-                </li>
-              ))}
-            </ol>
-          )}
-        </div>
-      </div>
+                </div>
+                <span className="text-ink-muted [overflow-wrap:anywhere]">
+                  {typeof row.text === "string" ? readable(row.text, lang) : row.text[lang]}
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </CodePanel>
     </div>
   );
 }

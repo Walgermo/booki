@@ -712,7 +712,6 @@
 
 [data-slot="payment-confirm"],
 [data-slot="sca-prompt"],
-[data-slot="exception-banner"],
 [data-slot="approval-gate-dialog"] {
   display: grid;
   gap: var(--bk-gap-lg);
@@ -772,7 +771,6 @@
 
 [data-slot="payment-confirm-actions"],
 [data-slot="sca-prompt-actions"],
-[data-slot="exception-banner-actions"],
 [data-slot="approval-gate-actions"] {
   display: flex;
   justify-content: flex-end;
@@ -817,25 +815,6 @@
   margin: 0;
   font-weight: var(--bk-font-weight-semibold);
   color: var(--bk-success);
-}
-
-[data-slot="exception-banner"] {
-  border-color: color-mix(in srgb, var(--bk-danger) 28%, var(--bk-border));
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bk-danger) 7%, var(--bk-card)), var(--bk-card));
-}
-
-[data-slot="exception-banner-title"] {
-  font-size: 0.9375rem;
-  font-weight: var(--bk-font-weight-semibold);
-  letter-spacing: -0.01em;
-  color: var(--bk-danger);
-}
-
-[data-slot="exception-banner-reason"] {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: var(--bk-fg);
 }
 
 [data-slot="approval-gate-summary"] {

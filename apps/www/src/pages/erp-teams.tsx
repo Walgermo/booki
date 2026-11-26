@@ -7,6 +7,7 @@ import { CodeDisclosure } from "@/components/two-readers";
 import { Button } from "@/components/ui/button";
 import { ServerRules } from "@/components/server-rules";
 import { OPUS, RUNS, billed, cheapModel, fairCost, modelName, realFor, formatters, versus } from "@/lib/bench";
+import { CodePanel } from "@/components/code-panel";
 import { useLang, type Lang } from "@/lib/lang";
 
 const REPO_URL = "https://github.com/Walgermo/booki";
@@ -612,7 +613,9 @@ export function ErpTeamsPage() {
           <p className="site-kicker">
             {t("The whole screen, wired to your API", "Hele skjermbildet, koblet til API-et deres")}
           </p>
-          <pre className="site-code m-0 overflow-x-auto text-xs">{SAMPLE}</pre>
+          <CodePanel label="TSX">
+            <pre>{SAMPLE}</pre>
+          </CodePanel>
         </div>
       </Section>
 

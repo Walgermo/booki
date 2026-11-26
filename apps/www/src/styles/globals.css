@@ -722,12 +722,6 @@
   outline-offset: 2px;
 }
 
-.landing-hero__prompt .site-code {
-  max-height: 18rem;
-  overflow: auto;
-  white-space: pre-wrap;
-}
-
 /* Two measured figures under the hook, divided by a hairline. Not tiles: no boxes. */
 .landing-hero__stats {
   display: flex;
@@ -1538,10 +1532,13 @@ html[data-kpi-still] {
    control and the code share the left column and the agent's column stays in view beside them. */
 .doc-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
 }
 
-@media (min-width: 1024px) {
+/* Two columns only once the control keeps a useful width beside the agent (the sidebar
+   takes ~16rem). Every rule is scoped to the grid, so no area leaks into another layout. */
+@media (min-width: 1280px) {
   .doc-layout {
     grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
     grid-template-areas:
@@ -1550,19 +1547,46 @@ html[data-kpi-still] {
     align-items: start;
   }
 
-  .doc-layout__preview {
+  /* A wide control (two tables, a funnel) takes the full row; the agent sits beside the code. */
+  .doc-layout[data-wide] {
+    grid-template-areas:
+      "preview preview"
+      "code agent";
+  }
+
+  .doc-layout[data-solo] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "preview"
+      "code";
+  }
+
+  .doc-layout > .doc-layout__preview {
     grid-area: preview;
   }
 
-  .doc-layout__code {
+  .doc-layout > .doc-layout__code {
     grid-area: code;
   }
 
   .doc-layout > .doc-agent {
     grid-area: agent;
+  }
+}
+
+/* The agent's column follows the reader only when the whole column fits on screen;
+   a sticky column taller than the window would hide its own end. */
+@media (min-width: 1280px) and (min-height: 880px) {
+  .doc-layout > .doc-agent {
     position: sticky;
     top: 5.5rem;
   }
+}
+
+/* Inside a panel that already scrolls, the snapshot's JSON must not scroll on its own. */
+.code-panel .site-readers__json {
+  max-height: none;
+  overflow-y: visible;
 }
 
 /* Anchored headings land below the sticky header. */
@@ -1858,34 +1882,9 @@ html[data-kpi-still] {
 
 /* A disclosure never grows wider than its column: long code scrolls inside it. */
 .site-disclosure,
-.site-disclosure [data-slot="collapsible-panel"],
-.site-code-block {
+.site-disclosure [data-slot="collapsible-panel"] {
   min-width: 0;
   max-width: 100%;
-}
-
-/* A code block with its copy button in the top corner, over the ink. */
-.site-code-block {
-  position: relative;
-}
-
-.site-code-block__copy {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
-  background: var(--bk-ink-raised);
-  color: var(--bk-ink-fg);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .site-code-block__copy:hover {
-    background: var(--bk-ink-border);
-  }
-}
-
-.site-code-block .site-code {
-  padding-right: 5rem;
 }
 
 /* The server's answer to a live request: status first, then its sentence. */
@@ -2449,10 +2448,24 @@ html[data-kpi-still] {
   font-weight: 500;
 }
 
+/* Idle is plain status, not a control: no box, a hollow dot and muted text. */
 .site-signal[data-state="idle"] {
+  padding-inline: 0.25rem;
   background: transparent;
+  color: var(--bk-muted-fg);
+  font-weight: 400;
+}
+
+.site-machine .site-signal[data-state="idle"] {
   color: var(--bk-ink-muted);
-  box-shadow: inset 0 0 0 1px var(--bk-ink-border);
+}
+
+.site-signal[data-state="idle"]::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.25px currentColor;
 }
 
 /* While the agent works, a cursor block blinks after the word. */
@@ -2490,33 +2503,91 @@ html[data-kpi-still] {
   }
 }
 
-/* Code is machine text: it sits on ink. */
-.site-code {
-  margin: 0;
-  padding: 1.125rem 1.25rem;
-  border-radius: var(--bk-radius);
+.site-machine ::selection {
+  background: oklch(0.9 0.19 118 / 0.35);
+  color: var(--bk-ink-fg);
+}
+
+/* CodePanel: every dark panel on the site, one shape. Inside it the paper tokens point at ink,
+   like .site-machine, so a ghost button reads on it. */
+.code-panel {
+  --bk-bg: var(--bk-ink);
+  --bk-card: var(--bk-ink-raised);
+  --bk-muted: var(--bk-ink-raised);
+  --bk-fg: var(--bk-ink-fg);
+  --bk-muted-fg: var(--bk-ink-muted);
+  --bk-border: var(--bk-ink-border);
+  --bk-border-strong: var(--bk-ink-border);
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--bk-radius-lg);
   background: var(--bk-ink);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-fg);
+}
+
+.code-panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border-bottom: 1px solid var(--bk-ink-border);
+}
+
+.code-panel__label {
+  min-width: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--bk-ink-muted);
+}
+
+.code-panel__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.code-panel__body {
+  min-width: 0;
+  overflow: auto;
+  /* Sideways only: at the end of a long sample the page keeps scrolling. */
+  overscroll-behavior-x: contain;
+  padding: 1rem 1.25rem;
   font-family: var(--bk-mono);
   font-size: 0.8125rem;
   line-height: 1.65;
-  color: var(--bk-ink-fg);
-  overflow-x: auto;
-  white-space: pre;
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb-ink) transparent;
 }
 
-.installation-guide .site-code,
-.control-example .site-code {
+/* Code keeps its lines: it scrolls sideways rather than breaking mid-expression. */
+.code-panel__body pre {
+  margin: 0;
+  font: inherit;
+  white-space: pre;
+}
+
+.code-panel[data-wrap] .code-panel__body pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
-.site-code::selection,
-.site-code *::selection,
-.site-machine ::selection {
+.code-panel__body ::selection {
   background: oklch(0.9 0.19 118 / 0.35);
   color: var(--bk-ink-fg);
+}
+
+/* The Copy button on ink: quiet until hovered. */
+.code-panel__copy {
+  min-height: 2rem;
+  color: var(--bk-ink-muted);
 }
 
 /* A plain list separated by hairlines. */
