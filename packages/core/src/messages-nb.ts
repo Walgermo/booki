@@ -153,6 +153,8 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "reconciliation.match-not-suggested": 'Avstemmingen "{id}" er {status}. Bare et forslag kan trekkes tilbake.',
   "agent.not-text": '{action} tar tekst, som "12345678903"; fikk {got}.',
   "agent.needs-person": 'Krever en person: "{confirm}". Be dem gjøre det selv.',
+  "history.later-changes": 'Det er gjort endringer etter historikkoppføringen "{id}"; angre dem først.',
+  "history.no-entry": 'Ingen historikkoppføring "{id}". Oppføringer: {entries}.',
   "agent-token.secret-short": "En hemmelighet for agenttokens har minst 32 tegn.",
   "agent-token.ttl": "ttlSeconds er et helt tall fra 1 til 86400, ikke {value}.",
   "agent-token.grant": "Et agenttoken trenger agentId og onBehalfOf.",

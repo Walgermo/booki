@@ -11,6 +11,7 @@ import {
 import { useEffect, useLayoutEffect, useRef } from "react";
 import type { AgentBridge } from "./booki-agent.js";
 import { formatMoney, money } from "@booki-aui/core/money";
+import { isBookiError } from "@booki-aui/core/msg";
 import { createBookiHistory } from "./booki-agent.js";
 import { useBookiLocaleOptional } from "./locale.js";
 
@@ -166,7 +167,12 @@ function useAgentToasts(agent: AgentBridge | null | undefined, options: AgentToa
                     if (index < 0) return undefined;
                     // Going back past later changes would undo a person's work too: only the latest change undoes.
                     if (index !== history.position() - 1) return Promise.reject(new Error(words.later));
-                    return history.seek(index);
+                    // Checked again when the undo's turn runs: a person may edit while an agent turn holds it back.
+                    return history.undoEntry(entry.id).catch((error: unknown) => {
+                      if (isBookiError(error) && error.code === "history.later-changes") throw new Error(words.later);
+                      if (isBookiError(error) && error.code === "history.no-entry") return undefined;
+                      throw error;
+                    });
                   },
                 },
               }),

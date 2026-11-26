@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { AmountField } from "./amount-field.js";
 import type { AuditEvent } from "./audit-trail.js";
@@ -85,6 +85,63 @@ describe("an undo is the person's, not the agent's", () => {
     await agent.act({ steps: [{ ref: "Total", action: "setMinor", args: [70_000] }] });
     expect(rows.map((row) => row.actor)).toEqual(["agent:assistant", "person:kari", "agent:assistant"]);
     stop();
+    history.destroy();
+  });
+
+  it("a receipt's undo held back by an agent turn keeps a person's edit made meanwhile", async () => {
+    let release: () => void = () => {};
+    const paused = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let reached: () => void = () => {};
+    const atSecond = new Promise<void>((resolve) => {
+      reached = resolve;
+    });
+    let calls = 0;
+    const agent = createBookiAgent({
+      allow: async () => {
+        calls += 1;
+        if (calls === 2) {
+          reached();
+          await paused;
+          // The person turns the second step down: the agent's only change is the first.
+          return false;
+        }
+        return true;
+      },
+    });
+    const history = createBookiHistory(agent, { by: "person:kari" });
+    const values: Record<string, number> = {};
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField defaultValue={10_000} aria-label="First" onValueChange={(v) => (values.First = v)} />
+        <AmountField defaultValue={20_000} aria-label="Second" />
+        <AmountField defaultValue={30_000} aria-label="Third" onValueChange={(v) => (values.Third = v)} />
+      </BookiLocaleProvider>,
+    );
+    const turn = agent.act({
+      steps: [
+        { ref: "First", action: "setMinor", args: [11_000] },
+        { ref: "Second", action: "setMinor", args: [22_000] },
+      ],
+    });
+    await atSecond;
+    const first = history.entries().at(-1)!;
+    expect(history.position() - 1).toBe(history.entries().length - 1);
+    // Undo on the first amount's receipt: the latest change when clicked, so it is queued.
+    const undo = history.undoEntry(first.id);
+    // While it waits, the person edits another amount.
+    const third = document.querySelector("input[aria-label=Third]") as HTMLInputElement;
+    fireEvent.focus(third);
+    fireEvent.input(third, { target: { value: "333" } });
+    fireEvent.blur(third);
+    expect(values.Third).toBe(33_300);
+    release();
+    await turn.catch(() => undefined);
+    await expect(undo).rejects.toThrow(/Later changes came after history entry/);
+    expect(values.Third).toBe(33_300);
+    expect(values.First).toBe(11_000);
+    await expect(history.undoEntry("nope")).rejects.toThrow(/No history entry "nope"\. Entries: /);
     history.destroy();
   });
 
