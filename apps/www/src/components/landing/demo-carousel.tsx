@@ -28,6 +28,8 @@ export function DemoCarousel({
   const [slide, setSlide] = useState<Slide>("invoice");
   // Set when the visitor runs the other demo from a demo's header: it runs once it is shown.
   const [autoRun, setAutoRun] = useState<Slide | null>(null);
+  // The invoice demo's walkthrough from the hero title belongs to the first view only.
+  const [switched, setSwitched] = useState(false);
   // The window remounts on a switch, so the new tab takes the focus once it is there.
   const refocus = useRef(false);
 
@@ -40,6 +42,7 @@ export function DemoCarousel({
   function go(next: Slide, run = false) {
     if (next === slide) return;
     refocus.current = true;
+    setSwitched(true);
     setAutoRun(run ? next : null);
     setSlide(next);
   }
@@ -81,6 +84,7 @@ export function DemoCarousel({
           from={from}
           to={to}
           tabs={tabs}
+          walkthrough={!switched}
           autoRun={autoRun === "invoice"}
           other={{ label: t("Run CRM demo", "Kjør CRM-demo"), onRun: () => go("crm", true) }}
         />

@@ -51,6 +51,7 @@ export function ErpWindow({
   to,
   tabs,
   other,
+  walkthrough = true,
   autoRun = false,
 }: {
   agent: LandingAgent;
@@ -58,6 +59,8 @@ export function ErpWindow({
   to: RefObject<HTMLElement | null>;
   tabs: FrameTab[];
   other: OtherDemo;
+  /** Offer the walkthrough from the hero title: only on the page's first view of this demo. */
+  walkthrough?: boolean;
   /** Run as soon as it is shown: the visitor pressed this demo's button on the other one. */
   autoRun?: boolean;
 }) {
@@ -132,9 +135,11 @@ export function ErpWindow({
 
   // The desktop walkthrough starts from the hero title. Touch, narrow screens, and reduced
   // motion use the demo button, so reading the task or install guide never starts a scroll.
+  // Coming back from the other demo is not a new visit, so it never starts again then.
   useEffect(() => {
     const markedWord = from.current;
     if (
+      !walkthrough ||
       !markedWord ||
       !window.matchMedia("(min-width: 48rem) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches
     ) {
