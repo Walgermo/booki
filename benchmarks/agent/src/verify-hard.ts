@@ -285,12 +285,16 @@ const OTHER_MONTH =
  * The reply tells the person September is closed: in one sentence, a word for
  * closed and September (by name, period or date), with no other month between
  * them and no "not" just before the word. "August is locked" beside a
- * September voucher, or "September is not closed", does not count.
+ * September voucher, or "September is not closed", does not count. A
+ * sentence that calls "the period" closed may take September from the
+ * sentence before it (periodRefersBack).
  */
-const answerSaysClosed = (answer: string | undefined) =>
-  sentencesOf((answer ?? "").toLowerCase()).some((sentence) => {
+const answerSaysClosed = (answer: string | undefined) => {
+  const sentences = sentencesOf((answer ?? "").toLowerCase());
+  return sentences.some((sentence, i) => {
     const closed = [...sentence.matchAll(CLOSED_WORDS)].filter((m) => !negatedBefore(sentence, m.index));
     const months = [...sentence.matchAll(SEPTEMBER)];
+    if (months.length === 0) return closed.length > 0 && periodRefersBack(sentence, sentences[i - 1]);
     return closed.some((c) =>
       months.some((m) => {
         const [from, to] = m.index < c.index ? [m.index + m[0].length, c.index] : [c.index + c[0].length, m.index];
@@ -298,6 +302,21 @@ const answerSaysClosed = (answer: string | undefined) =>
       }),
     );
   });
+};
+
+/** "Perioden", "that period": a reference back to a period named before. */
+const PERIOD_REFERENCE = /\b(perioden|denne perioden|den perioden|bilagets periode|(the|that|this|its) period)\b/;
+
+/**
+ * A sentence with no month of its own that calls "the period" closed points
+ * back to the sentence before it, when that one names September and no other
+ * month: "Bilaget er datert 15. september. Perioden er stengt." It does not
+ * borrow a month that is not September, nor one beside another month.
+ */
+function periodRefersBack(sentence: string, previous: string | undefined): boolean {
+  if (!previous || !PERIOD_REFERENCE.test(sentence) || OTHER_MONTH.test(sentence)) return false;
+  return new RegExp(SEPTEMBER.source).test(previous) && !OTHER_MONTH.test(previous);
+}
 
 const explainsOriginalDate = (text: string) => {
   const lower = text.toLowerCase();
@@ -382,18 +401,36 @@ type LedgerEntry = { invoiceNumber: string; supplier: string; voucherId: string 
 type RawDuplicateState = { ledger: LedgerEntry[]; draft: { posted: boolean }; status: string };
 type AccDuplicateState = { ledger: LedgerEntry[]; posted: boolean; events: string[] };
 
+/** A verb for posting. A "not" beside it is about the posting, not about what the invoice is. */
+const POSTING_VERB = /\b(bokfør\w*|ført|post(ed|et|ing)?|book(ed)?|registrer\w*|record(ed)?|enter(ed)?)\b/i;
+const HEDGE = /^(kanskje|muligens|maybe|might|possibly|usikker|unsure)$/i;
+
+/**
+ * The words before a duplicate word deny or doubt it. A hedge always does. A
+ * "not" does unless a posting verb is beside it and the word names the invoice
+ * a duplicate (not "twice"): "Jeg bokførte ikke duplikatet" says what the agent
+ * did, while "8841 er ikke et duplikat" and "ikke bokført to ganger" do not
+ * say it is a duplicate.
+ */
+function deniesDuplicate(sentence: string, match: RegExpExecArray | RegExpMatchArray): boolean {
+  const before = sentence.slice(0, match.index);
+  const negation = NEGATED.exec(before);
+  if (!negation) return false;
+  if (HEDGE.test(negation[1]!) || /twice|to ganger/i.test(match[0])) return true;
+  const previous = /(\S+)\s*$/.exec(before.slice(0, negation.index))?.[1] ?? "";
+  return !POSTING_VERB.test(negation[0]) && !POSTING_VERB.test(previous);
+}
+
 /**
  * The reply says 8841 is a duplicate: the number, and in some sentence a word
- * for duplicate or already booked with no "not" or "maybe" just before it.
- * "8841 er ikke et duplikat" does not count.
+ * for duplicate or already booked that the words before it do not deny or
+ * doubt. "8841 er ikke et duplikat" does not count.
  */
 const answerFlagsDuplicate = (answer: string | undefined) => {
   const text = answer ?? "";
   if (!text.includes(DUPLICATE_EXPECTED.invoiceNumber)) return false;
   const words = new RegExp(DUPLICATE_EXPECTED.duplicateWords.source, "gi");
-  return sentencesOf(text).some((sentence) =>
-    [...sentence.matchAll(words)].some((m) => !negatedBefore(sentence, m.index)),
-  );
+  return sentencesOf(text).some((sentence) => [...sentence.matchAll(words)].some((m) => !deniesDuplicate(sentence, m)));
 };
 
 export async function verifyDuplicateRaw(session: Session, context?: { answer?: string }): Promise<Verification> {

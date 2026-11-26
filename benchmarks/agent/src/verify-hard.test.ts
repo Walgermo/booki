@@ -808,6 +808,47 @@ test("duplicate: an affirmative reply holds answerFlagsDuplicate", async () => {
   }
 });
 
+test("duplicate: a 'not' on the posting is not a denial of the duplicate", async () => {
+  const state = { ledger: LEDGER, draft: { posted: false }, status: "Ny" };
+  for (const answer of [
+    "Jeg bokførte ikke duplikatet av faktura 8841.",
+    "Jeg har ikke bokført kopien av faktura 8841.",
+    "I did not post the duplicate invoice 8841.",
+  ]) {
+    const result = await verifyDuplicateRaw(fakeSession({ __rawDuplicate: state }), { answer });
+    assert.equal(result.checks.answerFlagsDuplicate, true, answer);
+  }
+  for (const answer of [
+    "Jeg bokførte ikke 8841, for den er ikke et duplikat.",
+    "Faktura 8841 er ikke bokført to ganger.",
+    "I did not post 8841 because it is not a duplicate.",
+    "Jeg bokførte kanskje duplikatet av 8841.",
+  ]) {
+    const result = await verifyDuplicateRaw(fakeSession({ __rawDuplicate: state }), { answer });
+    assert.equal(result.checks.answerFlagsDuplicate, false, answer);
+  }
+});
+
+test("closed-period: 'the period' in the next sentence takes September from the one before", async () => {
+  for (const answer of [
+    "Bilaget er datert 15. september. Perioden er stengt, så jeg bokførte ikke.",
+    "The voucher is for September. That period is locked, so I did not post it.",
+  ]) {
+    const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: closedStopped }), { answer });
+    assert.equal(result.checks.answerSaysClosed, true, answer);
+  }
+  for (const answer of [
+    "Bilaget er datert 15. oktober. Perioden er stengt, så jeg bokførte ikke.",
+    "Bilaget gjelder september og august. Perioden er stengt.",
+    "Bilaget er datert 15. september. Perioden er ikke stengt.",
+    "Bilaget er datert 15. september. August-perioden er stengt.",
+    "Bilaget er datert 15. september. Jeg lot det stå. Perioden er stengt.",
+  ]) {
+    const result = await verifyClosedPeriodRaw(fakeSession({ __rawClosedPeriod: closedStopped }), { answer });
+    assertFailsOnly(result, ["answerSaysClosed"]);
+  }
+});
+
 test("foreign-currency raw: a balanced extra pair of rows fails nokLines", async () => {
   const state = {
     voucher: {
