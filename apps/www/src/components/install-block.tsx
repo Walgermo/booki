@@ -13,6 +13,8 @@ export type InstallBlockProps = {
   trailing?: ReactNode;
   /** A single copy button (hero) or a code block with a copy action (docs). */
   variant?: "docs" | "hero";
+  /** Prose (a prompt) wraps; code keeps its lines and scrolls. */
+  wrap?: boolean;
   /** The hero button's look. */
   buttonVariant?: "primary" | "secondary" | "outline";
 };
@@ -25,6 +27,7 @@ export function InstallBlock({
   className,
   trailing,
   variant = "docs",
+  wrap,
   buttonVariant = "primary",
 }: InstallBlockProps) {
   const { t } = useLang();
@@ -62,6 +65,7 @@ export function InstallBlock({
   return (
     <CodePanel
       className={cn("my-5", className)}
+      wrap={wrap}
       label={label ?? t("Run", "Kjør")}
       action={
         <>

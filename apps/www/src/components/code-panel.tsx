@@ -17,6 +17,7 @@ export function CodePanel({
   live,
   bodyRef,
   className,
+  wrap,
 }: {
   label?: ReactNode;
   /** Beside the label: a Copy button, a count. */
@@ -28,10 +29,12 @@ export function CodePanel({
   live?: boolean;
   bodyRef?: Ref<HTMLDivElement>;
   className?: string;
+  /** Prose (a prompt) wraps; code keeps its lines. */
+  wrap?: boolean;
 }) {
   const style: CSSProperties = { maxHeight, minHeight };
   return (
-    <div className={cn("code-panel", className)}>
+    <div className={cn("code-panel", className)} data-wrap={wrap ? "" : undefined}>
       {label || action ? (
         <div className="code-panel__bar">
           <span className="code-panel__label">{label}</span>

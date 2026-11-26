@@ -722,12 +722,6 @@
   outline-offset: 2px;
 }
 
-.landing-hero__prompt .site-code {
-  max-height: 18rem;
-  overflow: auto;
-  white-space: pre-wrap;
-}
-
 /* Two measured figures under the hook, divided by a hairline. Not tiles: no boxes. */
 .landing-hero__stats {
   display: flex;
@@ -1858,34 +1852,9 @@ html[data-kpi-still] {
 
 /* A disclosure never grows wider than its column: long code scrolls inside it. */
 .site-disclosure,
-.site-disclosure [data-slot="collapsible-panel"],
-.site-code-block {
+.site-disclosure [data-slot="collapsible-panel"] {
   min-width: 0;
   max-width: 100%;
-}
-
-/* A code block with its copy button in the top corner, over the ink. */
-.site-code-block {
-  position: relative;
-}
-
-.site-code-block__copy {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
-  background: var(--bk-ink-raised);
-  color: var(--bk-ink-fg);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .site-code-block__copy:hover {
-    background: var(--bk-ink-border);
-  }
-}
-
-.site-code-block .site-code {
-  padding-right: 5rem;
 }
 
 /* The server's answer to a live request: status first, then its sentence. */
@@ -2490,30 +2459,6 @@ html[data-kpi-still] {
   }
 }
 
-/* Code is machine text: it sits on ink. */
-.site-code {
-  margin: 0;
-  padding: 1.125rem 1.25rem;
-  border-radius: var(--bk-radius);
-  background: var(--bk-ink);
-  font-family: var(--bk-mono);
-  font-size: 0.8125rem;
-  line-height: 1.65;
-  color: var(--bk-ink-fg);
-  overflow-x: auto;
-  white-space: pre;
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb-ink) transparent;
-}
-
-.installation-guide .site-code,
-.control-example .site-code {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.site-code::selection,
-.site-code *::selection,
 .site-machine ::selection {
   background: oklch(0.9 0.19 118 / 0.35);
   color: var(--bk-ink-fg);
@@ -2582,6 +2527,11 @@ html[data-kpi-still] {
   margin: 0;
   font: inherit;
   white-space: pre;
+}
+
+.code-panel[data-wrap] .code-panel__body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .code-panel__body ::selection {
