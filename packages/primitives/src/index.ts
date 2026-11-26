@@ -235,6 +235,21 @@ export {
   financialDate,
 } from "./financial-date-field.js";
 export {
+  type Details as ChartOfAccountsDetails,
+  type Options as ChartOfAccountsOptions,
+  type ChartTaxCode,
+  type StandardAccount,
+  type ChartRow,
+  type ChartClassSummary,
+  type EditableField,
+  PROPOSE_FORMAT,
+  chartColumns,
+  matchingAccounts,
+  activeKey,
+  cellKey,
+  chartOfAccounts,
+} from "./chart-of-accounts.js";
+export {
   type Details as FixedAssetRegisterDetails,
   type Options as FixedAssetRegisterOptions,
   type AssetRow,

@@ -431,6 +431,14 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki-aui/react"),
   },
   {
+    name: "chart-of-accounts",
+    title: "ChartOfAccounts",
+    description:
+      "The whole chart of accounts under its classes, with search, filters, inline edits and checks: duplicate numbers, numbers outside their class, a missing SAF-T mapping. An agent proposes; a person commits.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
     name: "account-picker",
     title: "AccountPicker",
     description: "Unambiguous chart-of-accounts selection.",

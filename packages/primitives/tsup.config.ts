@@ -39,6 +39,7 @@ export default defineConfig({
     "src/evidence-list.ts",
     "src/expense-claim.ts",
     "src/financial-date-field.ts",
+    "src/chart-of-accounts.ts",
     "src/fixed-asset-register.ts",
     "src/iban-input.ts",
     "src/invoice-editor.ts",

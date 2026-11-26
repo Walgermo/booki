@@ -245,6 +245,10 @@
       "types": "./dist/stage-duration.d.ts",
       "default": "./dist/stage-duration.js"
     },
+    "./chart-of-accounts": {
+      "types": "./dist/chart-of-accounts.d.ts",
+      "default": "./dist/chart-of-accounts.js"
+    },
     "./fixed-asset-register": {
       "types": "./dist/fixed-asset-register.d.ts",
       "default": "./dist/fixed-asset-register.js"

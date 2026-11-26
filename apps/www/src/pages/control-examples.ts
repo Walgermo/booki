@@ -177,6 +177,10 @@ const results: Record<string, Said> = {
     "Shows three accounts separately and adds the rest to Other. Bar amounts are in minor units.",
     "Viser tre kontoer separat og summerer resten under Annet. Beløpene i stolpene er i minste valutaenhet.",
   ),
+  "chart-of-accounts": note(
+    "The search narrows the list; find also returns how many accounts match and the first ten, so one call answers whether an account exists.",
+    "Søket snevrer inn listen; find returnerer også hvor mange kontoer som passer og de ti første, så ett kall svarer på om kontoen finnes.",
+  ),
   "account-picker": note(
     "The selected value becomes the expense account number supplied. The snapshot also shows the account name.",
     "Den valgte verdien blir utgiftskontoen i kallet. Øyeblikksbildet viser også kontonavnet.",

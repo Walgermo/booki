@@ -13,6 +13,7 @@ export * from "./bank-account-input.js";
 export * from "./bank-reconciliation.js";
 export * from "./bar-chart.js";
 export * from "./cashflow-waterfall.js";
+export * from "./chart-of-accounts.js";
 export * from "./client-requests.js";
 export * from "./close-checklist.js";
 export * from "./currency-select.js";

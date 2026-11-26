@@ -1,0 +1,501 @@
+/* ── Chart of accounts: classes, accounts, checks and an agent's proposal ── */
+
+[data-slot="chart-of-accounts"] {
+  display: grid;
+  gap: var(--bk-gap-lg);
+  min-width: 0;
+  font-family: var(--bk-font);
+  color: var(--bk-fg);
+}
+
+[data-slot="chart-of-accounts-toolbar"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--bk-gap) var(--bk-gap-lg);
+}
+
+[data-slot="chart-of-accounts-field"] {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-field"][data-wide] {
+  flex: 1 1 14rem;
+}
+
+[data-slot="chart-of-accounts-export"] {
+  margin-inline-start: auto;
+}
+
+[data-slot="chart-of-accounts-summary"] {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--bk-radius-sm);
+  background: color-mix(in srgb, var(--bk-warning) 10%, var(--bk-muted));
+  font-size: 0.8125rem;
+  color: var(--bk-fg);
+}
+
+/* An agent's proposal: signal, because an agent made it. */
+[data-slot="chart-of-accounts-proposal"] {
+  display: grid;
+  gap: var(--bk-gap);
+  padding: var(--bk-gap-lg);
+  border-radius: var(--bk-radius);
+  border-inline-start: 3px solid var(--bk-signal);
+  background: var(--bk-signal-tint);
+}
+
+[data-slot="chart-of-accounts-proposal-title"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="chart-of-accounts-agent"] {
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-signal);
+  color: var(--bk-signal-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="chart-of-accounts-changes"] {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+
+[data-slot="chart-of-accounts-changes"] li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+[data-slot="chart-of-accounts-kind"] {
+  min-width: 4.5rem;
+  color: var(--bk-signal-ink);
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="chart-of-accounts-diff"] del {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-diff"] ins {
+  text-decoration: none;
+  font-weight: var(--bk-font-weight-medium);
+}
+
+:is([data-slot="chart-of-accounts-proposal-issues"], [data-slot="chart-of-accounts-issues"]) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+}
+
+:is([data-slot="chart-of-accounts-proposal-issues"], [data-slot="chart-of-accounts-issues"]) li[data-level="error"] {
+  color: var(--bk-danger);
+}
+
+:is([data-slot="chart-of-accounts-proposal-issues"], [data-slot="chart-of-accounts-issues"]) li[data-level="warning"] {
+  color: var(--bk-warning);
+}
+
+[data-slot="chart-of-accounts-issues"] {
+  margin-top: 0.2rem;
+}
+
+[data-slot="chart-of-accounts-actions"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bk-gap);
+}
+
+/* The table scrolls inside its own frame, never the page. */
+[data-slot="chart-of-accounts-scroll"] {
+  /*
+   * Narrow layouts follow the list's own width, not the window's. The
+   * container is the list, not the control: a size container takes no width
+   * from its content, and the toolbar still gives the control its width.
+   */
+  container: chart-of-accounts / inline-size;
+  min-width: 0;
+  overflow-x: auto;
+  border-radius: var(--bk-radius);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-sm);
+}
+
+[data-slot="chart-of-accounts-table"] {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+[data-slot="chart-of-accounts-table"] thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.35rem 0.75rem;
+  text-align: start;
+  background: var(--bk-wood);
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: var(--bk-font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+/* A header's label sorts the list: plain text with a mark, not a filled button. */
+[data-slot="chart-of-accounts-sort"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+[data-slot="chart-of-accounts-sort"]:active:not(:disabled) {
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="chart-of-accounts-sort"]:hover:not(:disabled) {
+    background: none;
+    color: var(--bk-fg);
+  }
+}
+
+[data-slot="chart-of-accounts-sort-mark"] {
+  color: var(--bk-muted-fg);
+  opacity: 0.6;
+}
+
+[data-slot="chart-of-accounts-sort"][data-sorted] [data-slot="chart-of-accounts-sort-mark"] {
+  opacity: 1;
+  color: var(--bk-fg);
+}
+
+/* A class heading: the row that folds its accounts away. */
+[data-slot="chart-of-accounts-class"] th {
+  padding: 0;
+  border-top: 1px solid var(--bk-border-strong);
+  background: var(--bk-muted);
+  text-align: start;
+  font-weight: inherit;
+}
+
+[data-slot="chart-of-accounts-heading"] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  width: 100%;
+  min-height: var(--bk-control-h);
+  padding: 0.4rem 0.75rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--bk-fg);
+  font: inherit;
+  text-align: start;
+}
+
+[data-slot="chart-of-accounts-heading"]:active:not(:disabled) {
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-slot="chart-of-accounts-heading"]:hover:not(:disabled) {
+    background: var(--bk-accent);
+  }
+}
+
+[data-slot="chart-of-accounts-chevron"] {
+  align-self: center;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-inline-end: 1.5px solid currentColor;
+  border-block-end: 1.5px solid currentColor;
+  transform: rotate(45deg) translate(-0.1rem, -0.1rem);
+  transition: transform var(--bk-duration) var(--bk-ease-out);
+}
+
+[data-slot="chart-of-accounts-heading"][aria-expanded="false"] [data-slot="chart-of-accounts-chevron"] {
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="chart-of-accounts-chevron"] {
+    transition: none;
+  }
+}
+
+[data-slot="chart-of-accounts-class-id"] {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="chart-of-accounts-class-name"] {
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+:is([data-slot="chart-of-accounts-class-range"], [data-slot="chart-of-accounts-class-count"]) {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-class-count"] {
+  margin-inline-start: auto;
+}
+
+[data-slot="chart-of-accounts-row"] :is(td, th) {
+  padding: 0.25rem 0.75rem;
+  border-top: 1px solid var(--bk-border);
+  vertical-align: middle;
+  text-align: start;
+  font-weight: inherit;
+}
+
+/* Account numbers line up digit under digit. */
+:is([data-slot="chart-of-accounts-number"], [data-slot="chart-of-accounts-code"] input) {
+  font-family: var(--bk-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+[data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-number"] {
+  font-weight: var(--bk-font-weight-medium);
+}
+
+[data-slot="chart-of-accounts-type"] {
+  color: var(--bk-muted-fg);
+  white-space: nowrap;
+}
+
+/* Cells read as text until a person edits them. */
+[data-slot="chart-of-accounts-row"] :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-slot="chart-of-accounts-row"] :is(input, select):hover {
+  border-color: var(--bk-border);
+}
+
+[data-slot="chart-of-accounts-row"] :is(input, select):focus-visible {
+  border-color: var(--bk-border-strong);
+  background: var(--bk-card);
+}
+
+[data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-name"] input {
+  min-width: 9rem;
+}
+
+[data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-code"] input {
+  width: 5.5rem;
+}
+
+[data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-code"] select {
+  width: 9rem;
+}
+
+[data-slot="chart-of-accounts-row"] [aria-invalid="true"] {
+  border-color: color-mix(in srgb, var(--bk-warning) 60%, transparent);
+}
+
+[data-slot="chart-of-accounts-row"][data-issue="error"] [data-slot="chart-of-accounts-number"] {
+  box-shadow: inset 2px 0 0 var(--bk-danger);
+}
+
+[data-slot="chart-of-accounts-row"][data-issue="warning"] [data-slot="chart-of-accounts-number"] {
+  box-shadow: inset 2px 0 0 var(--bk-warning);
+}
+
+[data-slot="chart-of-accounts-row"][data-inactive] :is([data-slot="chart-of-accounts-number"], input, select) {
+  color: var(--bk-muted-fg);
+}
+
+/* Has postings: a small lock beside the number. */
+[data-slot="chart-of-accounts-lock"] {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.45rem;
+  margin-inline-start: 0.4rem;
+  border: 1.5px solid var(--bk-muted-fg);
+  border-radius: 1px;
+  vertical-align: baseline;
+  position: relative;
+}
+
+[data-slot="chart-of-accounts-lock"]::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 50%;
+  bottom: 100%;
+  width: 0.35rem;
+  height: 0.3rem;
+  border: 1.5px solid var(--bk-muted-fg);
+  border-bottom: 0;
+  border-radius: 0.2rem 0.2rem 0 0;
+  transform: translateX(-50%);
+}
+
+[data-slot="chart-of-accounts-sr"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+[data-slot="chart-of-accounts-active"] {
+  min-width: 5.5rem;
+}
+
+[data-slot="chart-of-accounts-active"][aria-pressed="false"] {
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-empty"] {
+  padding: 1.5rem 0.75rem;
+  text-align: start;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-empty"] strong {
+  display: block;
+  color: var(--bk-fg);
+  font-weight: var(--bk-font-weight-semibold);
+}
+
+[data-slot="chart-of-accounts-empty"] p {
+  margin: 0.25rem 0 0.75rem;
+  max-width: 60ch;
+}
+
+[data-slot="chart-of-accounts-pagination"] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--bk-gap);
+}
+
+[data-slot="chart-of-accounts-range"] {
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="chart-of-accounts-error"] {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--bk-danger);
+}
+
+/* Narrow: each account becomes a small card, labelled field by field. */
+@container chart-of-accounts (max-width: 40rem) {
+  [data-slot="chart-of-accounts-table"],
+  [data-slot="chart-of-accounts-table"] :is(tbody, tr, th, td) {
+    display: block;
+  }
+
+  [data-slot="chart-of-accounts-table"] thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  /* Number, name and status on the first line; type, VAT code and standard account under them. */
+  [data-slot="chart-of-accounts-table"] tr[data-slot="chart-of-accounts-row"] {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 6.5rem;
+    align-items: end;
+    gap: 0.25rem 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--bk-border);
+  }
+
+  [data-slot="chart-of-accounts-row"] :is(td, th) {
+    padding: 0;
+    border-top: 0;
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-number"] {
+    grid-area: 1 / 1;
+    align-self: center;
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-name"] {
+    grid-area: 1 / 2;
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-status"] {
+    grid-area: 1 / 3;
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-type"] {
+    grid-area: 2 / 1;
+    align-self: center;
+    font-size: 0.75rem;
+    white-space: normal;
+  }
+
+  /* The issues of an account read under the whole card. */
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-issues"] {
+    margin-top: 0.25rem;
+  }
+
+  [data-slot="chart-of-accounts-row"]
+    :is([data-slot="chart-of-accounts-name"], [data-slot="chart-of-accounts-status"])
+    :is(input, button) {
+    min-width: 0;
+    width: 100%;
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-code"]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--bk-muted-fg);
+  }
+
+  [data-slot="chart-of-accounts-row"] [data-slot="chart-of-accounts-code"] :is(input, select) {
+    width: 100%;
+  }
+}

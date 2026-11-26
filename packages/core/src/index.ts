@@ -37,5 +37,6 @@ export * from "./activity.js";
 export * from "./recurring.js";
 export * from "./funnel.js";
 export * from "./fixed-assets.js";
+export * from "./chart-of-accounts.js";
 export * from "./messages.js";
 export * from "./table.js";
