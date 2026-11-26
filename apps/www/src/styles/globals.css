@@ -1160,9 +1160,54 @@ html[data-kpi-still] {
   text-wrap: balance;
 }
 
+/* Docs sidebar: sections by accounting task, one plain name per line. On a phone the
+   sections sit side by side in columns inside the "Browse the docs" disclosure. */
+.site-docnav {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 1.5rem 1.25rem;
+}
+
+.site-docnav__heading {
+  margin: 0 0 0.25rem;
+}
+
+.site-docnav__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-docnav-link {
+  display: flex;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  white-space: normal;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.site-code-name {
+  font-family: var(--bk-mono);
+  font-size: 0.875rem;
+  color: var(--bk-muted-fg);
+}
+
 @media (min-width: 1024px) {
-  .site-docnav-link {
+  .site-docnav {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+
+  .site-docnav__heading {
     padding-left: 0.75rem;
+  }
+
+  .site-docnav-link {
+    min-height: 2rem;
+    padding: 0.25rem 0 0.25rem 0.75rem;
   }
 
   .site-docnav-link[aria-current="page"] {

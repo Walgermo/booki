@@ -32,6 +32,7 @@ import { Fragment, useMemo, useRef, useState } from "react";
 
 import { getCatalogItem } from "../catalog";
 import { catalogText, groupName } from "../catalog-nb";
+import { plainName, sectionOf } from "../docs-nav";
 import { useLang, usePageMeta, type PageMeta } from "@/lib/lang";
 import { AgentDemo } from "../components/agent-demo";
 import { AgentView } from "../components/agent-view";
@@ -70,8 +71,13 @@ export function ComponentDocPage() {
     if (!item) return null;
     const en = catalogText(item, "en");
     const nb = catalogText(item, "nb");
+    // The plain name for people, the code name for a search on the import.
+    const named = (lang: "en" | "nb", title: string) => {
+      const plain = plainName(item.name, lang);
+      return plain && plain !== title ? `${plain} (${title})` : title;
+    };
     return {
-      title: { en: `${en.title} · Booki`, nb: `${nb.title} · Booki` },
+      title: { en: `${named("en", en.title)} · Booki`, nb: `${named("nb", nb.title)} · Booki` },
       description: { en: en.description, nb: nb.description },
     };
   }, [item]);
@@ -81,6 +87,8 @@ export function ComponentDocPage() {
     return <Navigate to="/docs" replace />;
   }
 
+  const plain = plainName(item.name, lang);
+  const section = sectionOf(item.name);
   const example = controlExample(name, { country, profile });
   const bridgeExample = usesBridge(name);
 
@@ -100,8 +108,13 @@ export function ComponentDocPage() {
   return (
     <article>
       <SiteAgentCursor />
-      <p className="site-kicker">{groupName(item.group, lang)}</p>
-      <h1 className="site-page-title mt-1 mb-0">{catalogText(item, lang).title}</h1>
+      <p className="site-kicker">{section ? (lang === "nb" ? section.nb : section.en) : groupName(item.group, lang)}</p>
+      <h1 className="site-page-title mt-1 mb-0">{plain ?? catalogText(item, lang).title}</h1>
+      {plain && plain !== catalogText(item, lang).title ? (
+        <p className="mt-2 mb-0">
+          <code className="site-code-name">{catalogText(item, lang).title}</code>
+        </p>
+      ) : null}
       <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
       <div
         className={
