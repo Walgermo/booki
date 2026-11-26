@@ -430,3 +430,44 @@ describe("the bridge's follow-up when the first step fails", () => {
     );
   });
 });
+
+describe("a failed check's values", () => {
+  it("reads a JSON string whole, so ', not ' inside it is the field's text and stays as it is", () => {
+    const en = 'Description (c1) is "Labour, not materials", not "Materials".';
+    expect(localize(en, "nb")).toBe('Description (c1) er "Labour, not materials", ikke "Materials".');
+    expect(localize("Amount (c2) is 1200, not 1300.", "nb")).toBe("Amount (c2) er 1200, ikke 1300.");
+    expect(localize('Note (c3) is "a \\"quoted\\" word", not null.', "nb")).toBe(
+      'Note (c3) er "a \\"quoted\\" word", ikke null.',
+    );
+  });
+
+  it("says which currency the setForeign amount example is for", () => {
+    // 42000 is 420.00 only in a two-decimal currency: 42000 JPY or 42 KWD otherwise.
+    for (const language of ["en", "nb"] as const) {
+      const text = msgIn(language, "voucher.foreign-amount", { got: "420.5", format: "x" });
+      expect(text).toMatch(/USD/);
+      expect(text).toMatch(/JPY/);
+    }
+  });
+
+  it("does not translate a field's text that happens to be a catalogue sentence", () => {
+    expect(localize('Memo (c4) is "none defined", not "x".', "nb")).toBe('Memo (c4) er "none defined", ikke "x".');
+  });
+});
+
+describe("the first step's button list and the retry after it", () => {
+  it("translates the retry when the failed step listed buttons holding a sentence", () => {
+    const en =
+      'Invoice (inv) takes no setValue now. It takes: press. press takes a button\'s text: "Post", "Save it. Now". Send it again with the step after it, 2 steps in one call.';
+    expect(localize(en, "nb")).toContain("Send det på nytt med steget etter det, 2 steg i ett kall.");
+    expect(localize(en, "nb")).not.toContain("Send it again");
+  });
+
+  it("translates a confirmation of two sentences", () => {
+    const confirm = "Posts voucher 1042 to the ledger. This cannot be undone.";
+    expect(localize(`The person said no to "${confirm}".`, "nb")).toBe(`Personen sa nei til "${confirm}".`);
+    expect(localize(`Needs a person: "${confirm}". Ask them to press "Post" themselves.`, "nb")).toBe(
+      `Krever en person: "${confirm}". Be dem trykke "Post" selv.`,
+    );
+  });
+});

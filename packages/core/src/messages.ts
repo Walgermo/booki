@@ -46,7 +46,9 @@ export function msgIn(language: MessageLanguage, code: MessageCode, params: Mess
   // record's state, which reads in the person's language (the `word.*` codes).
   const quotedStatus = /["«]\{status\}["»]/.test(template);
   return render(template, params, language, (text, lang, name) =>
-    name === "status" && quotedStatus ? text : localize(text, lang),
+    (name === "status" && quotedStatus) || (name !== undefined && JSON_PARAMS.has(name) && isJsonString(text))
+      ? text
+      : localize(text, lang),
   );
 }
 
@@ -76,6 +78,23 @@ const SENTENCE_PARAMS = new Set([
 
 const WITHIN_SENTENCE = `(?:(?![.!?:;]\\s+["'(A-ZÆØÅ])[\\s\\S])*?`;
 
+/**
+ * Placeholders the bridge fills with a JSON value (`JSON.stringify` of what a
+ * field holds). A JSON string is read whole, so a comma or "not" inside it is
+ * never taken for the sentence around it, and it is never translated.
+ */
+const JSON_PARAMS = new Set(["value", "expected", "asked"]);
+const JSON_STRING = `"(?:[^"\\\\\\n]|\\\\.)*"`;
+
+function isJsonString(text: string): boolean {
+  if (!/^"[\s\S]*"$/.test(text)) return false;
+  try {
+    return typeof JSON.parse(text) === "string";
+  } catch {
+    return false;
+  }
+}
+
 function escapeRegex(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -99,7 +118,8 @@ function compile(): Compiled[] {
       if (names.includes(name)) {
         source += `\\k<p${names.indexOf(name)}>`;
       } else {
-        source += `(?<p${names.length}>${SENTENCE_PARAMS.has(name) ? "[\\s\\S]*?" : WITHIN_SENTENCE})`;
+        const any = SENTENCE_PARAMS.has(name) ? "[\\s\\S]*?" : WITHIN_SENTENCE;
+        source += `(?<p${names.length}>${JSON_PARAMS.has(name) ? `${JSON_STRING}|${any}` : any})`;
         names.push(name);
       }
       last = (match.index ?? 0) + match[0].length;
