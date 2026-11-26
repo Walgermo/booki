@@ -30,7 +30,10 @@ Requires React 19+ for `@booki-aui/react`. Every control is defined once in `pac
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/react@0.1.0-beta.18
+booki_version=$(npm view @booki-aui/react@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
 ```
 
 The `@ui-sdk` packages are pinned exactly, so add them in the same command as Booki (see the

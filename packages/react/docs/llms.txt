@@ -6,7 +6,10 @@ Agents should operate controls via `createBookiAgent` / `createAgent` — not DO
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/react@0.1.0-beta.18
+booki_version=$(npm view @booki-aui/react@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
 ```
 
 The two `@ui-sdk` packages are direct dependencies of the app, at exactly that version: the bridge and `Button` / `Input` come from them. Add them in the same command.

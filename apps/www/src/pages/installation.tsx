@@ -17,8 +17,8 @@ const NEEDS = [
   [
     { en: "Two pinned dependencies", nb: "To låste avhengigheter" },
     {
-      en: "Add them with Booki in the same command, at the exact versions below.",
-      nb: "Legg dem til sammen med Booki i samme kommando, med de eksakte versjonene under.",
+      en: "Run these commands in a POSIX shell such as Bash or Zsh. They read the exact UI SDK version required by the published Booki release.",
+      nb: "Kjør kommandoene i et POSIX-skall som Bash eller Zsh. De henter den eksakte UI SDK-versjonen som den publiserte Booki-utgaven krever.",
     },
   ],
   [
@@ -27,11 +27,14 @@ const NEEDS = [
   ],
 ] as const;
 
-const PACKAGES = [
-  "@booki-aui/core @booki-aui/react",
-  "@booki-aui/styles @ui-sdk/core@0.1.0-beta.18",
-  "@ui-sdk/react@0.1.0-beta.18",
-].join(" ");
+function installCommand(add: string) {
+  return [
+    "booki_version=$(npm view @booki-aui/react@latest version) &&",
+    'ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&',
+    `${add} --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \\`,
+    '  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"',
+  ].join("\n");
+}
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"
 import "@booki-aui/styles"
@@ -181,8 +184,8 @@ export function InstallationPage() {
             </li>
           ))}
         </ul>
-        <InstallBlock label="npm" command={`npm install ${PACKAGES}`} />
-        <InstallBlock label="pnpm" command={`pnpm add ${PACKAGES}`} />
+        <InstallBlock label="npm" command={installCommand("npm install")} />
+        <InstallBlock label="pnpm" command={installCommand("pnpm add")} />
         <p className={p}>
           {t(
             "The optional @booki-aui/styles package provides the default look.",

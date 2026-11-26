@@ -9,7 +9,10 @@ actions as `@booki-aui/react`, generated from the same framework-free definition
 in `@booki-aui/primitives`.
 
 ```bash
-pnpm add @booki-aui/vue @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/vue@0.1.0-beta.18
+booki_version=$(npm view @booki-aui/vue@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/vue@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/vue@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/vue@$ui_sdk_version"
 ```
 
 Each control is a namespace of parts, like `AmountField.Root` and

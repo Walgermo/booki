@@ -181,6 +181,23 @@ describe('registerTools with allow: "bridge"', () => {
     expect(rows[0]).toMatchObject({ actor: "agent:browser", action: "agent.failed", target: "Amount" });
   });
 
+  it("records a cancelled tool invocation as a cancellation, including in Norwegian", async () => {
+    const tools = webmcp();
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({ language: "nb" });
+    registerTools(agent, { allow: "bridge", audit: (row) => rows.push(row), agentId: "browser" });
+    render(<Button data-agent-confirm="Ask first">Post voucher</Button>);
+    const controller = new AbortController();
+    controller.abort();
+    const result = (await tools
+      .find((tool) => tool.name === "act")!
+      .execute({ steps: [{ ref: "Post voucher", action: "press" }] }, { signal: controller.signal })) as Result;
+    expect(result.error?.message).toMatch(/avbrutt/);
+    expect(rows.map((row) => [row.actor, row.action, row.target])).toEqual([
+      ["agent:browser", "agent.cancelled", "Post voucher"],
+    ]);
+  });
+
   it("answers a call without steps with ui-sdk's sentence, instead of throwing", async () => {
     const tools = webmcp();
     const rows: AgentDecisionRow[] = [];

@@ -9,7 +9,10 @@ agent actions as `@booki-aui/react`, for any framework or none. Use it in Angula
 in pages rendered on the server, or in plain HTML.
 
 ```bash
-pnpm add @booki-aui/web @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/web@0.1.0-beta.18
+booki_version=$(npm view @booki-aui/web@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/web@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/web@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/web@$ui_sdk_version"
 ```
 
 ```html
