@@ -137,4 +137,7 @@ dist-tag. Leave with `pnpm changeset pre exit` before the final release.
 Each Release run waits its turn instead of replacing the one before it, so two
 Version Packages merges in a row publish and tag both versions, oldest first.
 Should an older version still reach npm after a newer one, it goes to the
-`previous` dist-tag and `latest` stays on the newer version.
+`previous` dist-tag and `latest` stays on the newer version; its GitHub Release
+is created without the Latest mark. An older release candidate goes to
+`previous-next` in the same way, so `next` never moves back.
+`scripts/release-plan.mjs` makes the decision and `pnpm test:scripts` covers it.
