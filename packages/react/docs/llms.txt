@@ -6,7 +6,10 @@ Agents should operate controls via `createBookiAgent` / `createAgent` â€” not DO
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+booki_version=$(npm view @booki-aui/react@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
 ```
 
 The two `@ui-sdk` packages are direct dependencies of the app, at exactly that version: the bridge and `Button` / `Input` come from them. Add them in the same command.
@@ -241,5 +244,5 @@ A `set` step that leaves the value as it was fails (`didn't take: it is still â€
 
 ## Two more bridge behaviours
 
-- `data-agent-secret` on any part redacts every key of that component's snapshot. Keep a secret out of `controlled` instead, and mark only a plain element that shows it.
+- `data-agent-secret` on any part marks the component as private. Keep secrets out of `controlled`; the bridge can expose presentation state such as `open` or `visible`. Mark a plain element when it alone displays a secret.
 - A component whose inputs are all `disabled` offers an agent no actions. For a closed row use `aria-readonly` and ignore typing, not `disabled`.

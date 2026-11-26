@@ -22,7 +22,9 @@ function writeIfChanged(file, content) {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const reactSrc = path.join(root, "packages/react/src");
-const VERSION = "0.1.0-beta.17";
+const VERSION = JSON.parse(readFileSync(path.join(root, "packages/primitives/package.json"), "utf8")).peerDependencies[
+  "@ui-sdk/core"
+];
 
 const FRAMEWORKS = [
   {
@@ -224,7 +226,10 @@ actions as \`@booki-aui/react\`, generated from the same framework-free definiti
 in \`@booki-aui/primitives\`.
 
 \`\`\`bash
-pnpm add @booki-aui/${fw.id} @booki-aui/styles @ui-sdk/core@${VERSION} @ui-sdk/${fw.id}@${VERSION}
+booki_version=$(npm view @booki-aui/${fw.id}@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/${fw.id}@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/${fw.id}@$booki_version" "@booki-aui/styles@$booki_version" \\
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/${fw.id}@$ui_sdk_version"
 \`\`\`
 
 Each control is a namespace of parts, like \`AmountField.Root\` and

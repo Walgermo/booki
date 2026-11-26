@@ -51,7 +51,7 @@ the person that the setup is experimental before you wire it.
 **A minimum release age.** Booki and its exactly pinned `@ui-sdk` packages are new when they
 come out, so an app with a release-age rule (pnpm `minimumReleaseAge`, Renovate's
 `minimumReleaseAge`) can refuse them for its first days (`ERR_PNPM_NO_MATURE_MATCHING_VERSION`).
-Then stop and say so, and ask the product's owner for an exception for exactly those versions, on
+Wait until the packages meet the policy, or ask the product's owner for an exception for exactly those versions, on
 your branch only. Never add an exception yourself, and don't change the exact pin in `package.json`.
 
 **A trust policy.** Booki is published from its release workflow with provenance but no person
@@ -60,13 +60,16 @@ approving each version on npm. pnpm's `trustPolicy: no-downgrade` can refuse tha
 `trustPolicyExclude` entry for exactly those versions, on your branch only. Never add one yourself.
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+booki_version=$(npm view @booki-aui/react@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
 ```
 
-With npm, the same packages after `npm install`. Booki is before 1.0: read the release
+The snippet uses a POSIX shell (Bash or Zsh). With npm, use `npm install --save-exact` in place of `pnpm add --save-exact`. Booki is before 1.0: read the release
 notes (the GitHub Releases, or each package's CHANGELOG) before moving to a new minor.
 
-The command adds the two `@ui-sdk` packages at exactly `0.1.0-beta.17` as direct dependencies of
+The command reads the SDK pin from the published Booki release and adds both `@ui-sdk` packages as direct dependencies of
 the app. The bridge and controls come from them, and the guide imports `Button` from
 `@ui-sdk/react/button`, which `@booki-aui/react` does not re-export. Keep all five in one command:
 adding only `@ui-sdk/react` has made pnpm drop `@ui-sdk/core` from the lockfile.

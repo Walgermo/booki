@@ -5,11 +5,11 @@ packages:
   - "examples/*"
 allowBuilds:
   esbuild: true
-# Approved by the owner for the ui-sdk beta.17 upgrade (published 2026-11-24); harmless once it is a day old.
+# Only the exact UI SDK release selected for this workspace bypasses the release-age window.
 minimumReleaseAgeExclude:
-  - "@ui-sdk/core@0.1.0-beta.17"
-  - "@ui-sdk/react@0.1.0-beta.17"
-  - "@ui-sdk/solid@0.1.0-beta.17"
-  - "@ui-sdk/svelte@0.1.0-beta.17"
-  - "@ui-sdk/vue@0.1.0-beta.17"
-  - "@ui-sdk/web@0.1.0-beta.17"
+  - "@ui-sdk/core@0.1.0-beta.18"
+  - "@ui-sdk/react@0.1.0-beta.18"
+  - "@ui-sdk/solid@0.1.0-beta.18"
+  - "@ui-sdk/svelte@0.1.0-beta.18"
+  - "@ui-sdk/vue@0.1.0-beta.18"
+  - "@ui-sdk/web@0.1.0-beta.18"

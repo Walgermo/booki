@@ -229,9 +229,10 @@ export async function actAndRecord<A extends Actable>(
     // A call in the wrong shape: ui-sdk's sentence quotes what the agent sent, which can be an account
     // number, so the row says only that no step ran.
     const shape = /(?:No step ran|Ingen steg ble kjørt)\.$/.test(failed.message);
+    const cancelled = actOptions?.signal?.aborted && /(?: was cancelled| ble avbrutt)\./.test(failed.message);
     options.audit({
       actor: `agent:${options.agentId ?? "bridge"}`,
-      action: "agent.failed",
+      action: cancelled ? "agent.cancelled" : "agent.failed",
       target: shape ? "act" : (label ?? step?.ref ?? "?"),
       detail: shape
         ? "act: the call was not in the shape act takes; no step ran"

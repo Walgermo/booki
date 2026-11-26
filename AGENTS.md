@@ -5,7 +5,7 @@
 **Booki** (Accounting UI-SDK) is an **agent-first** design system for **accounting and auditing**:
 
 - Distribution = **npm packages** (`@booki-aui/core`, `@booki-aui/react`, `@booki-aui/styles`)
-- Behavior = **UI SDK** primitives/behaviors (`@ui-sdk/core` / `@ui-sdk/react` `0.1.0-beta.17`)
+- Behavior = **UI SDK** primitives/behaviors (`@ui-sdk/core` / `@ui-sdk/react` `0.1.0-beta.18`)
 - Scope = **global** with **country profiles** (Norway `NO`, United States `US`)
 - Domain = money, vouchers, bank/payment refs, attestation, audit trail
 
@@ -30,7 +30,10 @@ Requires React 19+ for `@booki-aui/react`. Every control is defined once in `pac
 ## Install
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+booki_version=$(npm view @booki-aui/react@latest version) &&
+ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
+pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
+  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
 ```
 
 The `@ui-sdk` packages are pinned exactly, so add them in the same command as Booki (see the
@@ -81,7 +84,7 @@ ERP adapters are out of scope — apps integrate ERPs themselves.
 - Approving, signing off, finalizing and releasing are a person's buttons and never in `agent.actions`. On the server, `@booki-aui/core/server` refuses them for `kind: "agent"` (`PERSON_ONLY`); every write route goes through a guard Pass `actor` so the decision is recorded as that person's
 - A person's click passes its DOM event into `change(key, value, { reason, event })`, so ui-sdk reports the real source
 - Never name a state key `error` for a message to the person: ui-sdk reads it as a failed action. Use `refusal`
-- `data-agent-secret` on any part redacts the whole component's snapshot: keep a secret out of `controlled` and mark only a plain element that shows it
+- `data-agent-secret` on any part marks the component as private. Keep secrets out of `controlled`; the bridge can expose presentation state such as `open` or `visible`. Mark a plain element when it alone displays a secret
 - A component whose inputs are all `disabled` offers an agent no actions: use `aria-readonly` for a closed row
 - A slot name is lowercased by `mount`, so name slots in one word (`prepare`, not `signPreparer`)
 - One stylesheet per control in `packages/styles/src/controls/`; the build concatenates them

@@ -282,8 +282,8 @@ const SECURITY = (t: T): { label: string; text: string }[] => [
   {
     label: t("Reads", "Leser"),
     text: t(
-      "Only the state a control declares. A secret part (account number, IBAN, KID) redacts that control's whole snapshot.",
-      "Bare tilstanden en kontroll oppgir. En hemmelig del (kontonummer, IBAN, KID) skjuler hele øyeblikksbildet til den kontrollen.",
+      "Only the state a control declares. The bridge redacts account numbers, IBANs and KIDs. It can still report whether a secret control is open or visible.",
+      "Bare tilstanden en kontroll oppgir. Broen skjuler kontonumre, IBAN og KID. Den kan fremdeles vise om en hemmelig kontroll er åpen eller synlig.",
     ),
   },
   {
@@ -395,8 +395,8 @@ const FOUND = (t: T): string[] => [
 
 const SHORTFALLS = (t: T): string[] => [
   t(
-    "The agent bridge it is built on is in beta (0.1.0-beta.17). Its API may still change.",
-    "Agentbroen den bygger på, er i beta (0.1.0-beta.17). API-et kan fortsatt endre seg.",
+    "The agent bridge it is built on is in beta (0.1.0-beta.18). Its API may still change.",
+    "Agentbroen den bygger på, er i beta (0.1.0-beta.18). API-et kan fortsatt endre seg.",
   ),
   t(
     "Outside React the controls come as parts, so you write the markup around them (rows, options). The agent cursor works everywhere through <booki-agent-cursor>.",
