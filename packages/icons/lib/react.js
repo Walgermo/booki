@@ -35,7 +35,7 @@ export function Icon({ name, ...props }) {
 export function AgentCursorIcon(props) {
   return render(
     "agent-cursor",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/></g><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/>',
     props,
   );
 }
@@ -44,7 +44,7 @@ export function AgentCursorIcon(props) {
 export function AgentDoneIcon(props) {
   return render(
     "agent-done",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M15.75 19.25l2 2 4.5-4.5"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><path d="M15.75 19.25l2 2 4.5-4.5"/>',
     props,
   );
 }
@@ -53,7 +53,7 @@ export function AgentDoneIcon(props) {
 export function AgentIdleIcon(props) {
   return render(
     "agent-idle",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><circle cx="19" cy="19" r="3.25"/>',
     props,
   );
 }
@@ -62,7 +62,7 @@ export function AgentIdleIcon(props) {
 export function AgentRefusedIcon(props) {
   return render(
     "agent-refused",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/><path d="M16.75 16.75l4.5 4.5"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><circle cx="19" cy="19" r="3.25"/><path d="M16.75 16.75l4.5 4.5"/>',
     props,
   );
 }
@@ -71,7 +71,7 @@ export function AgentRefusedIcon(props) {
 export function AgentWaitingIcon(props) {
   return render(
     "agent-waiting",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M17.25 15.75v6.5"/><path d="M20.75 15.75v6.5"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><path d="M17.25 15.75v6.5"/><path d="M20.75 15.75v6.5"/>',
     props,
   );
 }
@@ -80,7 +80,7 @@ export function AgentWaitingIcon(props) {
 export function AgentWorkingIcon(props) {
   return render(
     "agent-working",
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M19 15.75A3.25 3.25 0 1 1 15.75 19"/>',
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/></g><path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/><path d="M19 15.75A3.25 3.25 0 1 1 15.75 19"/>',
     props,
   );
 }

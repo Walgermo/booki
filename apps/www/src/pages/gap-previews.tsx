@@ -1,3 +1,4 @@
+import { AGENT_STATUS_STATES, agentStatusLabel } from "@booki-aui/core/msg/agent-status";
 import { Button } from "@ui-sdk/react/button";
 import { drawSample, startWorkpaper } from "@booki-aui/core/audit";
 import { NO_VAT_SCHEMA_EXAMPLE } from "@booki-aui/core/vat-return";
@@ -61,9 +62,8 @@ import {
 } from "@/lib/demo-data";
 import { CASHFLOW, COST_BY_ACCOUNT, COSTS, OPENING, REVENUE, series } from "@/components/erp-dashboard";
 import type { ClientRequest, EditorDocument, Finding, Mention, SignableDocument, StackSheet } from "@booki-aui/react";
-import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLang } from "@/lib/lang";
-import { Button as SiteButton } from "@/components/ui/button";
 
 // Made-up engagement: no real company or person.
 const AUDIT_EVIDENCE = [
@@ -247,33 +247,27 @@ function ToastsPreview() {
   );
 }
 
-const AGENT_STATES: AgentStatusState[] = ["idle", "working", "waiting", "working", "done", "refused"];
-
-/** One run of an agent, on paper and on ink, a state every two seconds. Pause holds it. */
 function AgentStatusPreview() {
-  const { t } = useLang();
-  const [step, setStep] = useState(0);
-  const [paused, setPaused] = useState(false);
-  useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(() => setStep((n) => (n + 1) % AGENT_STATES.length), 2000);
-    return () => clearInterval(timer);
-  }, [paused]);
-  const state = AGENT_STATES[step]!;
+  const { lang, t } = useLang();
+  const [state, setState] = useState<AgentStatusState>("idle");
   return (
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <AgentStatus state={state} />
-        <div className="site-machine rounded-[var(--bk-radius)] px-3 py-2">
-          <AgentStatus state={state} />
+        <AgentStatus state={state} label={agentStatusLabel(lang, state)} />
+        <div aria-hidden="true" data-bk-surface="ink" className="site-machine rounded-[var(--bk-radius)] px-3 py-2">
+          <AgentStatus state={state} label={agentStatusLabel(lang, state)} />
         </div>
       </div>
-      {/* The demo's own control, for the reader: not part of what the agent sees. */}
-      <div data-agent-hidden="" className="justify-self-start">
-        <SiteButton variant="ghost" size="sm" onClick={() => setPaused((p) => !p)}>
-          {paused ? t("Play", "Spill av") : t("Pause", "Pause")}
-        </SiteButton>
-      </div>
+      <label data-agent-hidden="" className="grid justify-self-start gap-1">
+        {t("Agent state", "Agenttilstand")}
+        <select value={state} onChange={(event) => setState(event.currentTarget.value as AgentStatusState)}>
+          {AGENT_STATUS_STATES.map((value) => (
+            <option key={value} value={value}>
+              {agentStatusLabel(lang, value)}
+            </option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }

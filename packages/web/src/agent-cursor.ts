@@ -1,4 +1,6 @@
 import {
+  AGENT_CURSOR_PATH,
+  AGENT_CURSOR_VIEW_BOX,
   createAgentCursor,
   cursorLabelRoom,
   type AgentCursorController,
@@ -49,11 +51,11 @@ export class BookiAgentCursorElement extends ElementBase {
     this.#pointer.dataset.slot = "agent-cursor-pointer";
     const svg = document.createElementNS(SVG, "svg");
     svg.setAttribute("data-slot", "agent-cursor-arrow");
-    svg.setAttribute("viewBox", "0 0 20 22");
+    svg.setAttribute("viewBox", AGENT_CURSOR_VIEW_BOX);
     svg.setAttribute("width", "20");
     svg.setAttribute("height", "22");
     const path = document.createElementNS(SVG, "path");
-    path.setAttribute("d", "M2 1.5 L2 18.5 L6.6 14.3 L9.6 20.6 L12.6 19.2 L9.7 13.1 L16 12.6 Z");
+    path.setAttribute("d", AGENT_CURSOR_PATH);
     svg.append(path);
     const ripple = document.createElement("span");
     ripple.dataset.slot = "agent-cursor-ripple";

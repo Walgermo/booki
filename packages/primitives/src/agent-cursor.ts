@@ -12,6 +12,11 @@ import { isAllowed, type AgentDecision } from "./agent-policy.js";
  * cursor leads, your own `allow` still decides.
  */
 
+/** Booki's pointer silhouette on the status icons' 24-unit grid. */
+export const AGENT_CURSOR_PATH = "M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z";
+/** Crop used by the floating pointer to keep its tip at the target. */
+export const AGENT_CURSOR_VIEW_BOX = "0.75 1 16 18";
+
 /** The fields of a bridge step the cursor reads. */
 export type AgentCursorStep = {
   ref: string;

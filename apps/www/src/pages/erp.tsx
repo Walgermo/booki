@@ -12,6 +12,7 @@ import {
   BookiLocaleProvider,
   AgedBalances,
   AgentPresence,
+  AgentStatus,
   DataTable,
   type DataTableColumn,
   AuditWorkpaper,
@@ -940,12 +941,10 @@ function Erp() {
             ) : null}
           </main>
 
-          <aside lang="en" aria-label="Agent" className="erp-agent site-machine min-w-0">
+          <aside lang="en" data-bk-surface="ink" aria-label="Agent" className="erp-agent site-machine min-w-0">
             <div className="flex items-center justify-between gap-3">
               <h2 className="site-kicker">Agent</h2>
-              <span className="site-signal" data-state={running ? "working" : "idle"}>
-                {running ? "working" : "idle"}
-              </span>
+              <AgentStatus state={running ? "working" : "idle"} label={running ? "working" : "idle"} />
             </div>
             <p className="mt-3 mb-0 text-sm text-ink-muted">
               A fixed script sending real actions to the controls on screen. Every answer below is the library's own.

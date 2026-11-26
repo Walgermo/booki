@@ -1,3 +1,4 @@
+import { AgentCursorGlyph } from "./agent-cursor-glyph.js";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { cursorLabelRoom, type AgentCursorController, type AgentCursorState } from "@booki-aui/primitives/agent-cursor";
 import { useBookiLocaleOptional } from "./locale.js";
@@ -80,9 +81,7 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
             } as CSSProperties
           }
         >
-          <svg data-slot="agent-cursor-arrow" viewBox="0 0 20 22" width="20" height="22">
-            <path d="M2 1.5 L2 18.5 L6.6 14.3 L9.6 20.6 L12.6 19.2 L9.7 13.1 L16 12.6 Z" />
-          </svg>
+          <AgentCursorGlyph />
           <span data-slot="agent-cursor-ripple" />
           <span data-slot="agent-cursor-label">
             {label}

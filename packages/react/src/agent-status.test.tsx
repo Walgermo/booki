@@ -4,6 +4,7 @@ import { act, cleanup, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AgentStatus, Spinner, type AgentStatusState } from "./agent-status.js";
+import { AgentCursor, createAgentCursor } from "./agent-cursor.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
 
@@ -97,6 +98,27 @@ describe("AgentStatus", () => {
       vi.advanceTimersByTime(200);
     });
     expect(icons().map((icon) => icon.getAttribute("data-state"))).toEqual(["done"]);
+  });
+
+  it("uses the live cursor's silhouette in every state, with a distinct decorative badge", () => {
+    const cursor = createAgentCursor();
+    render(en(<AgentCursor cursor={cursor} />));
+    act(() => cursor.rest(document.body));
+    const pointer = document.querySelector('[data-slot="agent-cursor-arrow"] path')?.getAttribute("d");
+    expect(pointer).toBeTruthy();
+    const badges = new Set<string>();
+    for (const [state] of STATES) {
+      const { unmount } = render(en(<AgentStatus state={state} />));
+      const status = screen.getByRole("status");
+      expect(status.querySelector("svg > path")?.getAttribute("d")).toBe(pointer);
+      expect(status.querySelector('[data-slot="agent-cursor-ring"]')).toBeNull();
+      const badge = status.querySelector('[data-slot="agent-status-badge"]');
+      expect(badge?.childElementCount).toBeGreaterThan(0);
+      badges.add(badge!.innerHTML);
+      unmount();
+    }
+    expect(badges.size).toBe(STATES.length);
+    act(() => cursor.setEnabled(false));
   });
 
   it("draws the same geometry as the icons in @booki-aui/icons", () => {

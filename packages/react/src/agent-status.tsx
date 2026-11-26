@@ -1,5 +1,6 @@
 import { agentStatusLabel, type AgentStatusState } from "@booki-aui/core/msg/agent-status";
-import { useEffect, useState, type ComponentProps, type ReactNode } from "react";
+import { useEffect, useState, type ComponentProps, type ReactElement, type ReactNode } from "react";
+import { AgentCursorGlyph } from "./agent-cursor-glyph.js";
 import { useBookiLocaleOptional } from "./locale.js";
 
 export type { AgentStatusState };
@@ -14,13 +15,7 @@ export type AgentStatusProps = Omit<ComponentProps<"span">, "children" | "role">
   label?: ReactNode;
 };
 
-// The geometry of the icons in @booki-aui/icons (agent-idle, agent-working, …),
-// inlined so this package needs no icon package. agent-status.test.tsx keeps
-// them equal to the drawings.
-const CURSOR =
-  "M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z";
-
-const BADGE: Record<AgentStatusState, ReactNode> = {
+const BADGE: Record<AgentStatusState, ReactElement> = {
   idle: <circle cx="19" cy="19" r="3.25" />,
   working: <path d="M19 15.75A3.25 3.25 0 1 1 15.75 19" />,
   waiting: (
@@ -37,27 +32,6 @@ const BADGE: Record<AgentStatusState, ReactNode> = {
     </>
   ),
 };
-
-function StatusIcon({ state }: { state: AgentStatusState }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d={CURSOR} fill="currentColor" stroke="none" opacity="0.2" />
-      <path d={CURSOR} />
-      <g data-slot="agent-status-badge">{BADGE[state]}</g>
-    </svg>
-  );
-}
 
 export type SpinnerProps = Omit<ComponentProps<"svg">, "children"> & {
   /** Pixels. The icons are drawn for 16 and 20. Default 16. */
@@ -145,11 +119,11 @@ export function AgentStatus({ state, label, className, ...props }: AgentStatusPr
       <span data-slot="agent-status-icons" aria-hidden="true">
         {leaving !== null && leaving !== state ? (
           <span key={`out-${leaving}`} data-slot="agent-status-icon" data-state={leaving} data-leaving="">
-            <StatusIcon state={leaving} />
+            <AgentCursorGlyph badge={BADGE[leaving]} />
           </span>
         ) : null}
         <span key={state} data-slot="agent-status-icon" data-state={state}>
-          <StatusIcon state={state} />
+          <AgentCursorGlyph badge={BADGE[state]} />
         </span>
       </span>
       <span data-slot="agent-status-label">{label ?? agentStatusLabel(language, state)}</span>

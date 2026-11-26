@@ -1,6 +1,7 @@
+import { agentStatusLabel, type AgentStatusState } from "@booki-aui/core/msg/agent-status";
 import { localize } from "@booki-aui/core/messages";
 import { formatMoney, money } from "@booki-aui/core/money";
-import { AgentLog, useBookiLocale } from "@booki-aui/react";
+import { AgentLog, AgentStatus, useBookiLocale } from "@booki-aui/react";
 import { elementOf } from "@ui-sdk/react/observe";
 import { useEffect, useRef, useState, type RefObject } from "react";
 
@@ -101,11 +102,7 @@ function AgentDemoRun({
     try {
       await whenCursorFree();
       for (const step of demo({ country, profile, fmt })) {
-        if (stop.current) {
-          if (alive.current)
-            push({ call: "—", text: { en: "Stopped by you.", nb: "Stoppet av deg." }, word: "stopped" });
-          break;
-        }
+        if (stop.current) break;
         const all = entriesIn(scope.current);
         const target = step.on ? all.filter((entry) => entry.component === step.on)[step.nth ?? 0] : undefined;
 
@@ -149,10 +146,19 @@ function AgentDemoRun({
         });
         await wait(pace);
       }
+      if (stop.current) push({ call: "—", text: { en: "Stopped by you.", nb: "Stoppet av deg." }, word: "stopped" });
+    } catch (error) {
+      push({ call: "—", text: error instanceof Error ? error.message : String(error), word: "refused" });
     } finally {
       if (alive.current) setRunning(false);
     }
   }
+
+  const outcome = rows.at(-1)?.word;
+  const stopped = outcome === "stopped";
+  let state: AgentStatusState = "idle";
+  if (running) state = "working";
+  else if (outcome && !stopped) state = outcome === "refused" ? "refused" : "done";
 
   const runLabels = [
     t("Agent working…", "Agenten jobber…"),
@@ -183,16 +189,10 @@ function AgentDemoRun({
         >
           <Same show={running ? 0 : 1} labels={stopLabels} />
         </Button>
-        <span className="site-signal" data-state={running ? "working" : rows.length ? "done" : "idle"}>
-          <Same
-            show={running ? 0 : rows.length ? 1 : 2}
-            labels={[
-              t("agent running", "agenten kjører"),
-              t("agent done", "agenten er ferdig"),
-              t("agent idle", "agenten venter"),
-            ]}
-          />
-        </span>
+        <AgentStatus
+          state={state}
+          label={stopped && !running ? t("Stopped by you", "Stoppet av deg") : agentStatusLabel(lang, state)}
+        />
       </div>
       {/* Booki's own AgentLog: each call, its status and the library's answer. A read is listed as done. */}
       <AgentLog
