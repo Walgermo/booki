@@ -581,7 +581,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "voucher.foreign-currency":
     'setForeign: valutaen er en kode på tre bokstaver, som "EUR", ikke {got}. Skriv {format}.',
   "voucher.foreign-amount":
-    "setForeign: beløpet er et heltall i minste enhet av den utenlandske valutaen (42000 er 420,00), ikke {got}. Skriv {format}.",
+    "setForeign: beløpet er et heltall i minste enhet av den utenlandske valutaen (for NOK eller USD er 42000 det samme som 420,00; JPY har ingen desimaler, KWD tre), ikke {got}. Skriv {format}.",
   "voucher.foreign-rate":
     "setForeign: kursen er et heltall i milliondeler over null (10,5 er 10500000), ikke {got}. Skriv {format}.",
   "invoice.no-line": 'Ingen fakturalinje "{id}". Linjer: {lines}.',

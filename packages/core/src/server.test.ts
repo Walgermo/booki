@@ -196,6 +196,16 @@ describe("server guards", () => {
     expect(nb.ok === false && nb.message).toMatch(/rollene: Partner\.$/);
     expect(nb.ok === false && nb.message).not.toMatch(/Agent/);
   });
+
+  it("names the able roles in a person-only refusal when the agent holds all of them", () => {
+    // A role shared by an agent and a person is still who to ask: not "none defined".
+    const actor: ServerActor = { id: "bot", kind: "agent", roles: ["manager", "controller"] };
+    const refused = guard({ actor }, "supplier-invoice.approve", () => true);
+    expect(refused).toMatchObject({ ok: false, status: 403, code: "server.person-only" });
+    expect(refused.ok === false && refused.message).toMatch(/Manager/);
+    expect(refused.ok === false && refused.message).not.toMatch(/none defined/);
+    expect(guard({ actor: kari }, "supplier-invoice.approve", () => true)).toMatchObject({ ok: true });
+  });
 });
 
 describe("audit engagements", () => {

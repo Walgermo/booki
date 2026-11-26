@@ -214,6 +214,20 @@ describe("AuditWorkpaper", () => {
     expect(entry().workpaper.items[0].tickMark).toBe("B");
   });
 
+  it("shows a misstatement at its currency's decimals, so the figure shown is the one stored", async () => {
+    const view = setup(
+      "audit-workpaper",
+      "Audit workpaper",
+      <AuditWorkpaper population={population} materiality={figures} tickMarks={legend} actor="kari" currency="CLP" />,
+    );
+    await view.act("drawSample", ["all-above", { seed: "wp-7" }]);
+    const cell = view.field("Misstatement: inv-2");
+    fireEvent.change(cell, { target: { value: "15000" } });
+    fireEvent.blur(cell);
+    expect(view.entry().workpaper.items[0].misstatementMinor).toBe(15_000);
+    expect(view.field("Misstatement: inv-2").value).toBe("15000");
+  });
+
   it("lets a person draw the sample from the form, the same way an agent would", async () => {
     const { entry, button, alert } = setup("audit-workpaper", "Audit workpaper", ui());
     fireEvent.change(document.querySelector<HTMLSelectElement>('[data-slot="audit-workpaper-method"]')!, {

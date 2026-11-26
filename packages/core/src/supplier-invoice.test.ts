@@ -54,6 +54,9 @@ describe("supplier invoice", () => {
     expect(() => correctField(inv, "dueDate", "09.02.2026", "kari")).toThrow(/YYYY-MM-DD/);
     expect(() => correctField(inv, "dueDate", "2026-02-30", "kari")).toThrow(/YYYY-MM-DD/);
     expect(() => correctField(inv, "currency", "kr", "kari")).toThrow(/three-letter/);
+    // A typo of the right shape has no ISO minor unit, and would break the amounts shown.
+    expect(() => correctField(inv, "currency", "UDS", "kari")).toThrow(/three-letter ISO code/);
+    expect(correctField(inv, "currency", "USD", "kari").fields.currency).toMatchObject({ value: "USD" });
     expect(() => correctField(inv, "supplierName", " ", "kari")).toThrow(/cannot be empty/);
     expect(() => correctField(inv, "total" as never, 1, "kari")).toThrow(/no field "total". Fields: supplierName/);
     expect(() => correctField(inv, "netMinor", 1, "")).toThrow(/needs the id/);

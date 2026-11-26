@@ -280,10 +280,11 @@ function admit(context: GuardContext, permission: Permission): void {
   }
   const personOnly = PERSON_ONLY.includes(permission) || (context.personOnly ?? []).includes(permission);
   if (actor?.kind === "agent" && personOnly) {
-    // Who to ask: a role the refused agent holds is no answer for the reader.
-    const able = roles
-      .filter((role) => role.permissions.includes(permission) && !actor.roles.includes(role.id))
-      .map((role) => role.name);
+    // Who to ask: a role the refused agent holds is no answer for the reader, unless a person
+    // can hold it too. When every able role is also the agent's, name them all.
+    const all = roles.filter((role) => role.permissions.includes(permission));
+    const forPeople = all.filter((role) => !actor.roles.includes(role.id));
+    const able = (forPeople.length ? forPeople : all).map((role) => role.name);
     throw new BookiError("server.person-only", {
       permission: String(permission),
       roles: able.join(", ") || msg("permissions.none-defined"),

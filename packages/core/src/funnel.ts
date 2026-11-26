@@ -51,16 +51,20 @@ export function funnel(input: readonly FunnelStepInput[]): Funnel {
     return true;
   });
   const first = kept[0]?.count ?? 0;
-  let biggest: { id: string; lost: number } | null = null;
+  // The largest share lost, compared exactly (lost / base), not by its rounded percent.
+  let biggest: { id: string; lost: number; base: number } | null = null;
   const steps = kept.map((step, index): FunnelStep => {
     const before = index === 0 ? null : kept[index - 1]!;
     if (before && step.count > before.count) {
       issues.push(msg("funnel.issue.rises", { id: step.id, before: before.id }));
     }
     const dropOff = before ? Math.max(0, before.count - step.count) : 0;
-    const share = before ? pct(dropOff, before.count) : null;
-    if (share !== null && share > 0 && (biggest === null || share > biggest.lost))
-      biggest = { id: step.id, lost: share };
+    if (
+      before &&
+      dropOff > 0 &&
+      (biggest === null || BigInt(dropOff) * BigInt(biggest.base) > BigInt(biggest.lost) * BigInt(before.count))
+    )
+      biggest = { id: step.id, lost: dropOff, base: before.count };
     return {
       id: String(step.id),
       label: String(step.label ?? step.id),

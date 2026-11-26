@@ -297,6 +297,30 @@ describe("InvoiceEditor", () => {
     expect(alert()).toMatch(/not a number/);
     expect(entry().invoice.lines[0].quantityMilli).toBe(2000);
   });
+
+  it("shows a price at its currency's decimals, so the figure shown is the one stored", () => {
+    for (const [currency, minor, shown] of [
+      ["CLP", 15_000, "15,000"],
+      ["BHD", 1_250, "1.250"],
+    ] as const) {
+      const { entry } = setup(
+        "invoice-editor",
+        "Invoice",
+        <InvoiceEditor
+          defaultInvoice={{ ...draft, currency, lines: [{ ...draft.lines[0]!, unitPriceMinor: minor }] }}
+          nextNumber="1001"
+          aria-label="Invoice"
+        />,
+      );
+      const price = document.querySelector('input[aria-label="Unit price 1"]') as HTMLInputElement;
+      expect(price.value).toBe(shown);
+      // Committing the figure as shown leaves the amount as it was.
+      fireEvent.change(price, { target: { value: price.value } });
+      fireEvent.blur(price);
+      expect(entry().invoice.lines[0].unitPriceMinor).toBe(minor);
+      cleanup();
+    }
+  });
 });
 
 import { VoucherComposer } from "./voucher-composer.js";

@@ -70,6 +70,11 @@ describe("pipeline rules", () => {
     });
     expect(restated).toMatchObject({ valueStatus: "estimate", valueSource: "Call 3 Nov" });
     expect(setDealValue(deal(), { currency: "EUR" }).valueStatus).toBe("unknown");
+    // A new figure with a status but no source does not inherit the old figure's evidence.
+    expect(() => setDealValue(deal(), { valueMinor: 200_000_00, valueStatus: "known" })).toThrow(/needs both/);
+    expect(setDealValue(deal(), { valueMinor: 200_000_00, valueStatus: "unknown" }).valueSource).toBeUndefined();
+    // A status-only change keeps the source.
+    expect(setDealValue(deal(), { valueStatus: "estimate" }).valueSource).toBe(deal().valueSource);
     expect(() => setDealValue(deal(), { valueMinor: 12.5 })).toThrow(/minor units/);
     expect(() => setDealValue(deal(), { valueMinor: -1 })).toThrow(/non-negative/);
     expect(() => setDealValue(deal(), { currency: "kr" })).toThrow(/three-letter/);

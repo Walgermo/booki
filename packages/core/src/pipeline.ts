@@ -199,8 +199,9 @@ export function setDealValue(deal: Deal, patch: DealValuePatch): Deal {
     next.currency = currency;
   }
   const figureChanged = next.valueMinor !== deal.valueMinor || next.currency !== deal.currency;
-  if (figureChanged && !("valueStatus" in patch)) {
-    next.valueStatus = "unknown";
+  if (figureChanged) {
+    // Evidence for one figure is not evidence for another, whatever status comes with it.
+    if (!("valueStatus" in patch)) next.valueStatus = "unknown";
     if (!("valueSource" in patch)) delete next.valueSource;
   }
   if ("valueStatus" in patch) {
@@ -319,6 +320,18 @@ function daysBetween(from: string, to: string): number {
   const a = Date.parse(`${from.slice(0, 10)}T00:00:00Z`);
   const b = Date.parse(`${to.slice(0, 10)}T00:00:00Z`);
   return Math.round((b - a) / 86_400_000);
+}
+
+/**
+ * Whole days of one stay. A finished stay with a time at both ends counts the
+ * time that passed, so 23:59 to 00:01 is no day; dates alone count calendar days.
+ */
+function stayDays(stay: { enteredAt: string; leftAt?: string }, today: string): number {
+  if (stay.leftAt !== undefined && stay.enteredAt.length > 10 && stay.leftAt.length > 10) {
+    const elapsed = Date.parse(stay.leftAt) - Date.parse(stay.enteredAt);
+    if (Number.isFinite(elapsed)) return Math.floor(elapsed / 86_400_000);
+  }
+  return daysBetween(stay.enteredAt, stay.leftAt ?? today);
 }
 
 /** What a person should know about a deal, as sentences. Warnings, never refusals. */
@@ -454,8 +467,11 @@ export function forecastByPeriod(
       continue;
     }
     const value = deal.valueMinor as number;
+    // A period can start before `from` or end after `to`: only days in the range count.
+    const inRange = (day: string) => day >= options.from && day <= options.to;
     if (stage.outcome === "won") {
-      const row = deal.closedAt ? rows.get(periodOf(deal.closedAt.slice(0, 10), options.grouping)) : undefined;
+      const closed = deal.closedAt?.slice(0, 10);
+      const row = closed && inRange(closed) ? rows.get(periodOf(closed, options.grouping)) : undefined;
       if (row) {
         row.wonMinor += value;
         row.count += 1;
@@ -467,7 +483,7 @@ export function forecastByPeriod(
       continue;
     }
     if (deal.expectedClose < options.today) overdue.push(deal.id);
-    const row = rows.get(periodOf(deal.expectedClose, options.grouping));
+    const row = inRange(deal.expectedClose) ? rows.get(periodOf(deal.expectedClose, options.grouping)) : undefined;
     if (!row) continue;
     if (deal.valueStatus === "known") row.committedMinor += value;
     else row.bestCaseMinor += value;
@@ -527,10 +543,11 @@ export function timeInStage(
     .filter((stage) => !stage.outcome)
     .map((stage) => {
       const here = stays.filter((stay) => stay.stageId === stage.id);
-      const days = here
-        .map((stay) => Math.max(0, daysBetween(stay.enteredAt, stay.leftAt ?? today)))
-        .sort((a, b) => a - b);
-      const middle = days.length ? days[Math.floor((days.length - 1) / 2)]! : null;
+      const days = here.map((stay) => Math.max(0, stayDays(stay, today))).sort((a, b) => a - b);
+      // An even count has two middle stays: their mean, to the nearest whole day.
+      const middle = days.length
+        ? Math.round((days[Math.floor((days.length - 1) / 2)]! + days[Math.floor(days.length / 2)]!) / 2)
+        : null;
       const target = Number.isSafeInteger(targets[stage.id]) ? (targets[stage.id] as number) : null;
       const current = here.filter((stay) => stay.leftAt === undefined);
       return {
