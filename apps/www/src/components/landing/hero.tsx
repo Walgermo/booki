@@ -29,33 +29,67 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         />
         <p className="landing-hero__hook">
           {t(
-            "UI components that people and AI agents both use. The agent acts by name; decisions stay with a person.",
-            "UI-komponenter som både mennesker og AI-agenter bruker. Agenten handler ved navn; beslutninger blir hos en person.",
+            "UI components that people and AI agents both use.",
+            "UI-komponenter som både mennesker og AI-agenter bruker.",
           )}
         </p>
-        <ol className="landing-hero__timeline" aria-label={t("How UI has changed", "Hvordan UI har endret seg")}>
+        <ol
+          className="landing-hero__timeline"
+          aria-label={t("One amount field, three ways to fill it in", "Ett beløpsfelt, tre måter å fylle det ut")}
+        >
           <li>
-            <span className="landing-hero__era">{t("Then", "Før")}</span>
-            <strong>{t("UI for people", "UI for mennesker")}</strong>
-            <span>{t("Forms and buttons, made to be clicked.", "Skjemaer og knapper, laget for å klikkes.")}</span>
+            <span className="landing-hero__era">{t("People type", "Mennesker skriver")}</span>
+            <span className="landing-hero__scene" aria-hidden="true">
+              <span className="landing-hero__field">
+                <span className="landing-hero__field-label">{t("Amount", "Beløp")}</span>
+                <span className="landing-hero__field-value">
+                  {t("12,500.00", "12 500,00")}
+                  <i className="landing-hero__caret" />
+                </span>
+              </span>
+              <svg className="landing-hero__pointer" viewBox="0 0 16 16" width="16" height="16">
+                <path d="M3 2v11l3-3 2.2 4.5 1.8-.9L7.8 9.2H12z" />
+              </svg>
+            </span>
+            <span className="landing-hero__note">
+              {t("Screens were made for people.", "Skjermbilder ble laget for mennesker.")}
+            </span>
           </li>
           <li>
-            <span className="landing-hero__era">{t("Now", "Nå")}</span>
-            <strong>{t("Agents guess", "Agenter gjetter")}</strong>
-            <span>
-              {t(
-                "They read the screen and click where it looks right.",
-                "De leser skjermen og klikker der det ser riktig ut.",
-              )}
+            <span className="landing-hero__era">{t("Agents guess", "Agenter gjetter")}</span>
+            <span className="landing-hero__scene" aria-hidden="true">
+              <span className="landing-hero__field" data-wrong="">
+                <span className="landing-hero__field-label">{t("Amount", "Beløp")}</span>
+                <span className="landing-hero__field-value">
+                  <s>{t("125.00", "125,00")}</s>
+                </span>
+              </span>
+              <span className="landing-hero__detect">{t("Amount field? 82% sure", "Beløpsfelt? 82 % sikker")}</span>
+            </span>
+            <span className="landing-hero__note">
+              {t("An AI agent reads a screenshot and gets it wrong.", "En AI-agent leser et skjermbilde og tar feil.")}
             </span>
           </li>
           <li data-current="">
-            <span className="landing-hero__era">{t("With Booki", "Med Booki")}</span>
-            <strong>{t("One UI for both", "Ett UI for begge")}</strong>
-            <span>
+            <span className="landing-hero__era">
+              {t("With Booki, agents act by name", "Med Booki handler agenter ved navn")}
+            </span>
+            <span className="landing-hero__scene" aria-hidden="true">
+              <span className="landing-hero__field" data-agent="">
+                <span className="landing-hero__field-label">{t("Amount", "Beløp")}</span>
+                <span className="landing-hero__field-value">{t("12,500.00", "12 500,00")}</span>
+              </span>
+              <span className="landing-hero__agent">
+                <svg viewBox="0 0 16 16" width="16" height="16">
+                  <path d="M3 2v11l3-3 2.2 4.5 1.8-.9L7.8 9.2H12z" />
+                </svg>
+                <span>{t("Agent · sets Amount", "Agent · setter Beløp")}</span>
+              </span>
+            </span>
+            <span className="landing-hero__note">
               {t(
-                "The agent acts by name; people keep the decisions.",
-                "Agenten handler ved navn; mennesker beholder beslutningene.",
+                "The exact amount, checked. A person still approves.",
+                "Eksakt beløp, sjekket. En person godkjenner fortsatt.",
               )}
             </span>
           </li>
