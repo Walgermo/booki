@@ -203,6 +203,22 @@ describe("PaymentBatch", () => {
 });
 
 describe("InvoiceEditor", () => {
+  it("keeps the US profile rate exact in the picker, bridge, and totals", async () => {
+    const { entry, act } = setup(
+      "invoice-editor",
+      "Invoice",
+      <InvoiceEditor defaultInvoice={{ ...draft, lines: [] }} aria-label="Invoice" />,
+    );
+    expect(
+      (await act("addLine", [{ description: "Work", quantity: 1, unitPriceMinor: 312_500, taxRate: 8.875 }])).ok,
+    ).toBe(true);
+    expect(entry().invoice.lines[0].taxRateBp).toBe(887.5);
+    expect(entry().totals).toMatchObject({ taxMinor: 27_734, grossMinor: 340_234 });
+    const picker = document.querySelector("select")!;
+    expect(picker.selectedOptions[0]?.textContent).toBe("8.875%");
+    expect([...picker.options].map((option) => option.value)).not.toContain("S:888");
+  });
+
   it("takes a line as one object with the names people use, and says which fields exist", async () => {
     const empty = { ...draft, lines: [] };
     const { entry, act } = setup(

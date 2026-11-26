@@ -695,7 +695,9 @@ export const documentEditor = definePrimitive({
           if (menu && menu.blockId === id && items.length) {
             if (event.key === "ArrowDown" || event.key === "ArrowUp") {
               const step = event.key === "ArrowDown" ? 1 : -1;
-              context.store.set({ menu: { ...menu, active: (menu.active + step + items.length) % items.length } });
+              const active = (menu.active + step + items.length) % items.length;
+              context.store.set({ menu: { ...menu, active } });
+              context.element("option", items[active]!.id)?.scrollIntoView?.({ block: "nearest" });
               return true;
             }
             if (event.key === "Enter" || event.key === "Tab") {
@@ -848,7 +850,7 @@ export const documentEditor = definePrimitive({
           "data-type": block?.type,
           "data-level": block?.level ? String(block.level) : undefined,
           "aria-autocomplete": "list",
-          "aria-expanded": open ? "true" : "false",
+          "aria-haspopup": "listbox",
           "aria-controls": open ? menuId(state.document.id, id) : undefined,
           "aria-activedescendant": open
             ? optionId(state.document.id, id, state.items[state.menu!.active]?.id ?? "")

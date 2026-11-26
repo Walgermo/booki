@@ -64,6 +64,7 @@ const checks: ConformanceCheck[] = [
       if (missing.length > 0) return fail(`Missing functions: ${missing.join(", ")}.`);
       const snap = await target.bridge.snapshot();
       if (!Array.isArray(snap)) return fail("snapshot() must return an array of components.");
+      if (snap.length === 0) return skip("No mounted controls. Mount the screen before running conformance.");
       return pass(`snapshot, act and subscribe are functions; snapshot returns ${snap.length} components.`);
     },
   },

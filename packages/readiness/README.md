@@ -158,7 +158,7 @@ The checks, with the section each enforces:
 
 | Id | § | Level | What it checks |
 | --- | --- | --- | --- |
-| `bridge-shape` | 2 | MUST | `snapshot`, `act` and `subscribe` are functions, and `snapshot` returns an array. |
+| `bridge-shape` | 2 | MUST | `snapshot`, `act` and `subscribe` are functions, and `snapshot` returns an array with mounted controls. An empty array skips this check. |
 | `snapshot-named` | 3.1 | MUST | Every component has a `ref`, `component`, `label` and string `actions`; labels are unique. |
 | `snapshot-values` | 3.2 | MUST | Minor-unit values are integers or `null`; dates (and a date control's `value`) are `YYYY-MM-DD` or `null`, at every level, lists included. |
 | `snapshot-secrets` | 3.5 | MUST | The snapshot holds none of the literal `secrets` and no secret pattern (the same finder as the audit; amounts in minor units are not read as account numbers). |
@@ -174,7 +174,7 @@ The checks, with the section each enforces:
 Each check returns `pass`, `fail` or `skip`. A **skip** means the suite had no
 input for the check, not that the check passed: no `drive`, `closedList`,
 `server` or `secrets` option was given, or the bridge has no components to
-probe. `conforms` is `false` only when a MUST check fails. The report lists the
+probe. `conforms` is `false` when a MUST check fails or the bridge has no mounted controls. An empty screen reports an incomplete check. The report lists the
 passes, failures and skips, so give every option you can.
 
 The suite does not yet cover the per-language refusals (spec 10.4) or the

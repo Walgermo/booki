@@ -46,6 +46,20 @@ describe("days overdue", () => {
 });
 
 describe("ageItems", () => {
+  it("nets large amounts exactly in either order and refuses unrepresentable totals", () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    const open = [max, 2, -max].map((minor, n) => item(String(n), "acme", "2026-04-29", minor));
+    for (const ordered of [open, [...open].reverse()]) {
+      const report = ageItems(ordered, AS_OF);
+      expect(report.grandTotalMinor).toBe(2);
+      expect(report.totalsMinor[1]).toBe(2);
+      expect(report.rows[0]).toMatchObject({ amountsMinor: [0, 2, 0, 0, 0], totalMinor: 2 });
+      expect(overdueParties(ordered, AS_OF)[0]?.overdueMinor).toBe(2);
+    }
+    expect(() => ageItems(open.slice(0, 2), AS_OF)).toThrow(/safe integer/);
+    expect(() => overdueParties(open.slice(0, 2), AS_OF)).toThrow(/safe integer/);
+  });
+
   it("puts each item on the right side of every bucket edge", () => {
     const report = ageItems(items, AS_OF);
     expect(report.buckets.map((bucket) => bucket.id)).toEqual(["not-due", "1-30", "31-60", "61-90", "over-90"]);

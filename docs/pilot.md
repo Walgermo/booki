@@ -15,20 +15,16 @@ after on your own staging, with your own data.
 ## Pick the screen
 
 Pick one where agents already struggle and where a mistake costs something.
-The ones we measured, in order of payoff:
 
-| Screen | Why | Measured on a rebuilt screen, Claude Opus 5.5 |
-| --- | --- | --- |
-| Supplier invoice entry | Many pickers, every field matters | 24 → 4 calls, 5.9× cheaper, 2.6× faster |
-| Sales invoice | Line tables with unnamed inputs | 16 → 3 calls, 6.4× cheaper, 3× faster |
-| Dashboard / reports | Figures only in pixels or tooltips | 4 → 1 call, 6.5× cheaper, 3.8× faster |
-| Voucher entry | Unnamed account and VAT pickers | 16 → 6 calls, 2.3× cheaper, 2.1× faster |
+Supplier invoice entry exercises amount, account and VAT pickers. A read-only
+dashboard is a smaller first step if the goal is to make figures in charts
+available to the agent.
 
-The two cheapest models (Claude Haiku 5.5, DeepSeek V4.1 Flash) were right 20 of
-20 times on the Booki screens, and 23 and 18 of 30 on the rebuilt ones (median of
-five runs per screen and model, 21 November 2026, at list price). Those runs were on screens rebuilt
-from DOM snapshots (see `benchmarks/agent/README.md`); the pilot replaces them
-with numbers from yours.
+The [live benchmark](https://booki.dev/#benchmark-summary) shows the current
+counted results. The [run ledger](../benchmarks/agent/RUNS.md) records which
+runs were withdrawn and why. The [API comparison](../benchmarks/agent/README.md#booki-against-an-agent-on-an-api-25-november-2026)
+also matters if your product already has a bookkeeping API. Use your own
+staging screen for the pilot baseline.
 
 ## Two weeks
 

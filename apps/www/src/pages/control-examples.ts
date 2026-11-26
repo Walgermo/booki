@@ -258,8 +258,8 @@ const results: Record<string, Said> = {
     "Registrerer godkjent testresultat på den første posten i utvalget med agenten som aktør.",
   ),
   "document-editor": note(
-    "A proposal p1 appears under block b4 in the agent's colour. The blocks stay as they were until a person presses Accept.",
-    "Et forslag p1 dukker opp under blokk b4 i agentens farge. Blokkene er som før til en person trykker Godta.",
+    "The result lists the blocks that mention January, with their IDs and text.",
+    "Resultatet viser blokkene som nevner January, med ID og tekst.",
   ),
   "sheet-stack": note(
     "Closes sheets above 05.3.2 and makes that sheet the top one.",

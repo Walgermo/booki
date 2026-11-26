@@ -1,3 +1,4 @@
+import { isIsoDate } from "./iso-date.js";
 import { BookiError, msg } from "./msg.js";
 
 /** One payment going out in a batch. */
@@ -75,8 +76,7 @@ export function currentApprovals(batch: PaymentBatch): BatchApproval[] {
 export function batchIssues(batch: PaymentBatch): string[] {
   const issues: string[] = [];
   if (batch.items.length === 0) issues.push(msg("batch.no-payments"));
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(batch.valueDate))
-    issues.push(msg("batch.value-date-format", { value: String(batch.valueDate) }));
+  if (!isIsoDate(batch.valueDate)) issues.push(msg("batch.value-date-format", { value: String(batch.valueDate) }));
   if (!batch.debitAccount.trim()) issues.push(msg("batch.no-debit-account"));
   const ids = new Set<string>();
   for (const item of batch.items) {

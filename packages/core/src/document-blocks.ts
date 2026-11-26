@@ -233,7 +233,9 @@ function propose(document: EditorDocument, proposal: Omit<DocProposal, "id" | "b
   }
   const reason = options.reason?.trim();
   const next: DocProposal = {
-    id: nextId("p", document.proposals),
+    id:
+      "p-" +
+      Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join(""),
     ...proposal,
     ...(reason ? { reason } : {}),
     by: options.by,
@@ -606,9 +608,10 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
     taken.push({ id });
     return id;
   };
-  const attrsOf = (element: Element) => {
+  const attrsOf = (element: Element, structuralAttr?: string) => {
     const out: Record<string, string> = {};
-    for (const attr of Array.from(element.attributes)) if (attr.name !== idAttr) out[attr.name] = attr.value;
+    for (const attr of Array.from(element.attributes))
+      if (attr.name !== idAttr && attr.name !== structuralAttr) out[attr.name] = attr.value;
     return Object.keys(out).length ? out : undefined;
   };
   // The text of an inline run, or null when it holds something only an embed keeps.
@@ -664,7 +667,7 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
   const push = (element: Element, type: BlockType, extra: Partial<DocBlock> = {}, from: Element = element) => {
     const content = read(from);
     if (!content) return embed(element);
-    const attrs = attrsOf(element);
+    const attrs = attrsOf(element, type === "callout" ? "data-callout" : undefined);
     blocks.push(
       cleanBlock({
         id: idFor(element.getAttribute(idAttr)),
@@ -680,6 +683,7 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
     const tag = element.tagName;
     if (tag === "P") push(element, "paragraph");
     else if (/^H[1-6]$/.test(tag)) push(element, "heading", { level: Math.min(3, Number(tag[1])) as 1 | 2 | 3 });
+    else if (tag === "ASIDE" && element.hasAttribute("data-callout")) push(element, "callout");
     else if (tag === "BLOCKQUOTE") push(element, "quote");
     else if (tag === "HR") blocks.push({ id: idFor(element.getAttribute(idAttr)), type: "divider", text: "" });
     else if (tag === "UL" || tag === "OL") {
@@ -691,7 +695,7 @@ export function fromHtml(html: string, options: HtmlOptions = {}): DocBlock[] {
         continue;
       }
       items.forEach((item, n) => {
-        const attrs = n === 0 ? attrsOf(element) : undefined;
+        const attrs = n === 0 ? attrsOf(element, task ? "data-type" : undefined) : undefined;
         const content = read(item)!;
         blocks.push(
           cleanBlock({
@@ -745,10 +749,12 @@ export function toHtml(blocks: DocBlock[], options: HtmlOptions = {}): string {
       while (blocks[i + 1]?.type === block.type) run.push(blocks[++i]!);
       const task = block.type === "todo";
       const items = run
-        .map(
-          (item) =>
-            `<li${task ? ` data-type="taskItem" data-checked="${item.checked ? "true" : "false"}"` : ""}><p>${inline(item)}</p></li>`,
-        )
+        .map((item, index) => {
+          // The list element carries the first ID for existing HTML consumers.
+          const identity = index === 0 ? "" : ` ${idAttr}="${escapeHtml(item.id)}"`;
+          const checked = task ? ` data-type="taskItem" data-checked="${item.checked ? "true" : "false"}"` : "";
+          return `<li${identity}${checked}><p>${inline(item)}</p></li>`;
+        })
         .join("");
       html += `<${list}${attrs(block, task ? { "data-type": "taskList" } : {})}>${items}</${list}>`;
       continue;

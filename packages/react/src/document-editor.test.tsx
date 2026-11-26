@@ -81,11 +81,16 @@ describe("DocumentEditor", () => {
     expect(edit.ok).toBe(true);
     // The page is unchanged until a person accepts.
     expect(block("b2").value).toBe("Sales are recognised on delivery.");
-    expect(entry().proposals[0]).toMatchObject({ id: "p1", op: "edit", blockId: "b2", by: "agent:drafter" });
+    expect(entry().proposals[0]).toMatchObject({
+      id: expect.any(String),
+      op: "edit",
+      blockId: "b2",
+      by: "agent:drafter",
+    });
     expect(document.querySelector('[data-slot="document-editor-proposal"]')?.textContent).toMatch(/proposes a change/);
 
-    expect((await act("accept", ["p1"])).ok).toBe(false);
-    expect((await act("reject", ["p1"])).ok).toBe(false);
+    expect((await act("accept", [entry().proposals[0].id])).ok).toBe(false);
+    expect((await act("reject", [entry().proposals[0].id])).ok).toBe(false);
   });
 
   it("a person accepts; the change lands and both steps are audited", async () => {
@@ -98,7 +103,7 @@ describe("DocumentEditor", () => {
       ["propose-insert", "agent:drafter"],
       ["accept", "nina"],
     ]);
-    expect(audit[1]).toMatchObject({ outcome: "accepted", proposalId: "p1", version: 2 });
+    expect(audit[1]).toMatchObject({ outcome: "accepted", proposalId: audit[0]!.proposalId, version: 2 });
   });
 
   it("refuses a stale accept and lets the person reject", async () => {
@@ -106,7 +111,7 @@ describe("DocumentEditor", () => {
     await act("editBlock", ["b2", { text: "Agent text" }]);
     fireEvent.input(block("b2"), { target: { value: "A person wrote this.", selectionStart: 5 } });
     fireEvent.click(button("Accept")!);
-    expect(document.querySelector('[role="alert"]')?.textContent).toMatch(/changed after proposal p1/);
+    expect(document.querySelector('[role="alert"]')?.textContent).toMatch(/changed after proposal/);
     fireEvent.click(button("Reject")!);
     await waitFor(() => expect(document.querySelector('[data-slot="document-editor-proposal"]')).toBeNull());
     expect(block("b2").value).toBe("A person wrote this.");
@@ -133,7 +138,7 @@ describe("DocumentEditor", () => {
     await act("removeBlock", ["b2"]);
     const second = await act("removeBlock", ["b1"]);
     expect(second.error?.message).toMatch(/waits for a person/);
-    expect((await act("withdrawProposal", ["p1"])).ok).toBe(true);
+    expect((await act("withdrawProposal", [entry().proposals[0].id])).ok).toBe(true);
     expect(entry().proposals).toEqual([]);
   });
 
@@ -141,13 +146,13 @@ describe("DocumentEditor", () => {
     const stored: unknown[][] = [];
     const { act, entry } = editor({ onProposalsChange: (list) => stored.push(list) });
     await act("removeBlock", ["b2", { reason: "Duplicate" }]);
-    expect(stored.at(-1)).toMatchObject([{ id: "p1", op: "remove", blockId: "b2", reason: "Duplicate" }]);
+    const proposalId = entry().proposals[0].id;
+    expect(stored.at(-1)).toMatchObject([{ id: proposalId, op: "remove", blockId: "b2", reason: "Duplicate" }]);
     cleanup();
     // A new page load: the stored proposal comes back and still waits for a person.
     const again = editor({ proposals: stored.at(-1) as never });
-    expect(again.entry().proposals).toMatchObject([{ id: "p1", op: "remove" }]);
+    expect(again.entry().proposals).toMatchObject([{ id: proposalId, op: "remove" }]);
     expect(document.querySelector('[data-slot="document-editor-proposal"]')).not.toBeNull();
-    void entry;
   });
 
   it("refuses proposals on a read-only page", async () => {
@@ -160,12 +165,20 @@ describe("DocumentEditor", () => {
     const { block, changes } = editor();
     const area = block("b2");
     area.focus();
+    expect(area.hasAttribute("aria-expanded")).toBe(false);
+    expect(area.hasAttribute("aria-controls")).toBe(false);
     fireEvent.input(area, { target: { value: "/head", selectionStart: 5, selectionEnd: 5 } });
     const menu = document.querySelector('[data-slot="document-editor-menu"]');
     expect(menu?.textContent).toMatch(/Heading 1/);
-    expect(area.getAttribute("aria-expanded")).toBe("true");
+    expect(area.hasAttribute("aria-expanded")).toBe(false);
+    expect(area.getAttribute("aria-haspopup")).toBe("listbox");
+    expect(area.getAttribute("aria-controls")).toBe(menu?.id);
+    const activeId = area.getAttribute("aria-activedescendant")!;
+    expect(menu?.contains(document.getElementById(activeId))).toBe(true);
     fireEvent.keyDown(area, { key: "ArrowDown" });
     fireEvent.keyDown(area, { key: "Enter" });
+    expect(area.hasAttribute("aria-controls")).toBe(false);
+    expect(area.hasAttribute("aria-activedescendant")).toBe(false);
     expect(changes.at(-1)?.blocks[1]).toMatchObject({ id: "b2", type: "heading", level: 2, text: "" });
   });
 

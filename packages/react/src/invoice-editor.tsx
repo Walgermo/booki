@@ -1,5 +1,6 @@
 import {
   lineNetMinor,
+  taxBasisPoints,
   TAX_CATEGORIES,
   type Invoice,
   type InvoiceLine,
@@ -67,7 +68,7 @@ function InvoiceEditor({
   const say = useSay();
   const access = useAccessFor({ finalize: "invoice.finalize" });
   const rates = taxRatesBp ?? [
-    ...new Set(profile.tax.codes.map((code) => Math.round(code.percent * 100)).filter((bp) => bp > 0)),
+    ...new Set(profile.tax.codes.map((code) => taxBasisPoints(code.percent)).filter((bp) => bp > 0)),
   ];
 
   return (

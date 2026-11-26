@@ -52,7 +52,7 @@ export const EN = {
   "period.not-a-status": '"{status}" is not a period status. Use open, soft-closed or hard-closed.',
   "period.hard-closed-reopen": "Period {code} is hard-closed and cannot be reopened.",
   "batch.no-payments": "The batch has no payments.",
-  "batch.value-date-format": 'The value date must be YYYY-MM-DD, got "{value}".',
+  "batch.value-date-format": 'The value date must be a real calendar date in YYYY-MM-DD format, got "{value}".',
   "batch.no-debit-account": "The batch has no account to pay from.",
   "batch.duplicate-id": 'Payment id "{id}" appears twice.',
   "batch.amount-format": 'Payment "{id}": the amount is a whole number of minor units above zero, got {value}.',
@@ -176,6 +176,8 @@ export const EN = {
   "invoice.what.quantity": "quantity (in thousandths)",
   "invoice.what.unit-price": "unit price (minor units)",
   "invoice.what.discount": "discount (basis points)",
+  "invoice.invalid-tax-rate":
+    "Tax rate in basis points must be finite, non-negative and within the safe numeric range, got {value}.",
   "invoice.what.tax-rate": "tax rate (basis points)",
   "invoice.line-whole": 'Line "{id}": {what} is a whole number of at least {min}, got {value}.',
   "invoice.discount-too-high": 'Line "{id}": a discount cannot be more than 10000 basis points (100%).',

@@ -1,3 +1,4 @@
+import { taxBasisPoints, taxMinorAtBasisPoints, validateTaxBasisPoints } from "./tax-rate.js";
 import { closest, LISTED_WHOLE } from "./closest.js";
 import { assertForeignAmount, convertMinor, type ForeignAmount } from "./fx.js";
 import { BookiError, msg } from "./msg.js";
@@ -544,10 +545,9 @@ export function buildBalancedSalesVoucher(
   if (!Number.isInteger(netMinor) || netMinor < 0) {
     throw new BookiError("voucher.sales-amount-format", { value: String(netMinor) });
   }
-  // In whole basis points and integers, rounded half away from zero: 15000 at 11.11 % is 1667, not 1666.
-  const bp = BigInt(Math.round(input.taxPercent * 100));
-  const product = BigInt(netMinor) * bp;
-  const taxMinor = Number(product / 10000n + ((product % 10000n) * 2n >= 10000n ? 1n : 0n));
+  const bp = taxBasisPoints(input.taxPercent);
+  validateTaxBasisPoints(bp);
+  const taxMinor = Number(taxMinorAtBasisPoints(BigInt(netMinor), bp));
   const grossMinor = netMinor + taxMinor;
   return [
     createVoucherLine({

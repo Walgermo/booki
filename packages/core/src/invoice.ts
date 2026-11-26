@@ -1,3 +1,5 @@
+import { taxBasisPoints, taxMinorAtBasisPoints, validateTaxBasisPoints } from "./tax-rate.js";
+export { taxBasisPoints } from "./tax-rate.js";
 import { BookiError, msg } from "./msg.js";
 
 /**
@@ -18,7 +20,7 @@ export type InvoiceLine = {
   /** Discount in basis points: 1000 is 10%. */
   discountBp?: number;
   taxCategory: TaxCategory;
-  /** Tax rate in basis points: 2500 is 25%. Must be 0 unless the category is `S`. */
+  /** Tax rate in basis points: 2500 is 25%. Fractional basis points are supported. Must be 0 unless the category is `S`. */
   taxRateBp: number;
 };
 
@@ -94,7 +96,7 @@ export function validateInvoiceLine(line: InvoiceLine): InvoiceLine {
       categories: TAX_CATEGORIES.join(", "),
     });
   }
-  whole(line.taxRateBp, msg("invoice.what.tax-rate"), line.id);
+  validateTaxBasisPoints(line.taxRateBp);
   if (line.taxCategory !== "S" && line.taxRateBp !== 0) {
     throw new BookiError("invoice.category-no-tax", { id: String(line.id), category: line.taxCategory });
   }
@@ -130,7 +132,7 @@ export function invoiceTotals(lines: InvoiceLine[]): InvoiceTotals {
   let net = 0n;
   let tax = 0n;
   const list = [...groups.values()].map((group) => {
-    const groupTax = divRound(group.netMinor * BigInt(group.taxRateBp), 10_000n);
+    const groupTax = taxMinorAtBasisPoints(group.netMinor, group.taxRateBp);
     net += group.netMinor;
     tax += groupTax;
     return { ...group, netMinor: safeMinor(group.netMinor), taxMinor: safeMinor(groupTax) };
@@ -313,6 +315,10 @@ export function invoiceLineFields(input: unknown, id = "new"): Partial<InvoiceLi
     const n = number(value);
     if (!Number.isFinite(n))
       throw new BookiError("invoice.line-not-a-number", { id, field: key, value: String(value) });
+    if (spec.field === "taxRateBp" && spec.scale) {
+      out.taxRateBp = taxBasisPoints(n);
+      continue;
+    }
     out[spec.field] = spec.scale ? Math.round(n * spec.scale) : n;
   }
   if (out.taxRateBp !== undefined && out.taxCategory === undefined) {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ApprovalLevel, ApprovalRequest } from "./approval.js";
 import type { CloseTask } from "./close.js";
-import { approveBatch, type PaymentBatch } from "./payment-batch.js";
+import { approveBatch, batchFingerprint, type PaymentBatch } from "./payment-batch.js";
 import { draftCreditNote, finalizeInvoice } from "./invoice.js";
 import { BookiError } from "./msg.js";
 import {
@@ -134,13 +134,25 @@ describe("server guards", () => {
       ],
       approvals: [],
     };
-    const approved = approveBatch(approveBatch(draft, "kari", "2026-11-01T09:00:00Z"), "ola", "2026-11-01T09:05:00Z");
+    const impossible = { ...draft, valueDate: "2026-02-30" };
+    expect(() => approveBatch(impossible, "kari", "2026-01-01")).toThrow(/date/i);
+    const approved = approveBatch(
+      approveBatch({ ...draft, valueDate: "2028-02-29" }, "kari", "2026-11-01T09:00:00Z"),
+      "ola",
+      "2026-11-01T09:05:00Z",
+    );
     expect(guardReleasePayments({ actor: ola }, { batch: approved })).toMatchObject({
       ok: false,
       status: 403,
       code: "permissions.duty",
     });
     const lena: ServerActor = { id: "lena", kind: "person", roles: ["controller"] };
+    // An already-stored approval can predate calendar validation.
+    const legacy = {
+      ...impossible,
+      approvals: approved.approvals.map((a) => ({ ...a, fingerprint: batchFingerprint(impossible) })),
+    };
+    expect(guardReleasePayments({ actor: lena }, { batch: legacy })).toMatchObject({ ok: false, status: 422 });
     expect(guardReleasePayments({ actor: lena }, { batch: approved })).toMatchObject({
       ok: true,
       value: { status: "released" },
