@@ -127,7 +127,13 @@ export function AskAgent() {
 
       <div className="flex flex-wrap gap-2">
         {EXAMPLES[lang].map((example) => (
-          <Button key={example} variant="outline" disabled={busy || status !== "on"} onClick={() => void ask(example)}>
+          <Button
+            key={example}
+            variant="outline"
+            className="ask-agent__example"
+            disabled={busy || status !== "on"}
+            onClick={() => void ask(example)}
+          >
             {example}
           </Button>
         ))}
