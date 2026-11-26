@@ -115,6 +115,7 @@ export type IconName =
   | "table"
   | "tag"
   | "target"
+  | "terminal"
   | "timeline"
   | "token"
   | "trash"

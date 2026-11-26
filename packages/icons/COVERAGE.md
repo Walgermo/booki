@@ -2,7 +2,7 @@
 
 # What the icons cover
 
-123 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
+124 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
 Booki (its `data-aliases`), and what the search on booki.dev/docs/icons finds it by. Missing a use
 case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 
@@ -14,7 +14,8 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `agent-cursor` | agent, agent action, automation |
 | `bot` | bot, agent, llm, model |
 | `chat-sparkle` | assistant, chat, ai chat |
-| `prompt` | prompt, terminal, command |
+| `prompt` | ask, instruction, prompt input |
+| `terminal` | command, console, shell |
 | `token` | token, tokens, usage, credits |
 | `wrench` | tool, tool call, function |
 | `bolt` | action, act, run, trigger |
