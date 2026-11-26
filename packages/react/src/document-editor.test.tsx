@@ -1,4 +1,4 @@
-import type { EditorDocument } from "@booki-aui/core/document-blocks";
+import { type EditorDocument, fromHtml, toHtml } from "@booki-aui/core/document-blocks";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
@@ -251,6 +251,21 @@ describe("DocumentEditor", () => {
     fireEvent.blur(list, { relatedTarget: block("b1") });
     expect(screen.queryByRole("listbox")).toBeNull();
     expect(audit.filter((row) => row.action === "edit-text")).toHaveLength(1);
+  });
+
+  it("clears the callout classification when Backspace turns it into a paragraph", () => {
+    const blocks = fromHtml(
+      '<aside data-block-id="risk" data-callout="warning" data-origin="person"><p>Risk</p></aside>',
+    );
+    const { block, changes } = editor({ defaultDocument: page({ blocks }) });
+    const area = block("risk");
+    area.focus();
+    area.setSelectionRange(0, 0);
+    fireEvent.keyDown(area, { key: "Backspace" });
+    const saved = new DOMParser().parseFromString(toHtml(changes.at(-1)!.blocks), "text/html");
+    const paragraph = saved.querySelector('p[data-block-id="risk"]');
+    expect(paragraph?.getAttribute("data-origin")).toBe("person");
+    expect(paragraph?.hasAttribute("data-callout")).toBe(false);
   });
 
   it("Enter splits a block and the edit is audited once on blur", () => {

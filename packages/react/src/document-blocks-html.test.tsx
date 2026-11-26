@@ -60,7 +60,7 @@ describe("document blocks from and to HTML", () => {
     const blocks = fromHtml(html);
     const saved = new DOMParser().parseFromString(toHtml(blocks), "text/html");
     expect(saved.querySelector('aside[data-block-id="risk"]')?.getAttribute("data-callout")).toBe("warning");
-    expect(blocks[0]).toMatchObject({ type: "callout", attrs: { "data-callout": "warning" } });
+    expect(blocks[0]).toMatchObject({ type: "callout", calloutKind: "warning" });
   });
 
   it.each(["bullet", "numbered", "todo"] as const)("preserves editable callouts and %s item identities", (type) => {
