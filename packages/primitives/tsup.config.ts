@@ -16,6 +16,7 @@ export default defineConfig({
     "src/approval-chain.ts",
     "src/attestation-status.ts",
     "src/audit-findings.ts",
+    "src/document-editor.ts",
     "src/document-signoff.ts",
     "src/sheet-stack.ts",
     "src/agent-policy.ts",

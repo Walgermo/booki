@@ -131,6 +131,10 @@
       "types": "./dist/findings.d.ts",
       "default": "./dist/findings.js"
     },
+    "./document-blocks": {
+      "types": "./dist/document-blocks.d.ts",
+      "default": "./dist/document-blocks.js"
+    },
     "./client-request": {
       "types": "./dist/client-request.d.ts",
       "default": "./dist/client-request.js"

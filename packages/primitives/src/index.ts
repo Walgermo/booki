@@ -118,6 +118,19 @@ export {
   type LevelView,
   documentSignoff,
 } from "./document-signoff.js";
+export {
+  type Options as DocumentEditorOptions,
+  type BlockView,
+  type DocumentAuditEvent,
+  type MenuItem,
+  type ProposalView,
+  type SlashCommand,
+  DEFAULT_COMMANDS,
+  documentEditor,
+  menuId,
+  optionId,
+  triggerAt,
+} from "./document-editor.js";
 export { type Options as SheetStackOptions, sheetStack } from "./sheet-stack.js";
 export {
   type AgentDecision,

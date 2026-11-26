@@ -163,6 +163,10 @@ const NB: Record<string, { title?: string; description: string }> = {
   "fixed-asset-register": {
     description: "Driftsmidler, avskrivningsplaner og en foreslått kjøring. En agent foreslår; en person bekrefter.",
   },
+  "document-editor": {
+    description:
+      "En blokkeditor for arbeidspapirer: «/» åpner kommandoer og «@» nevner filene, bilagene, personene og sidene appen gir den. En agent leser siden som blokker og foreslår å sette inn, endre, flytte og fjerne; hvert forslag venter i agentens farge til en person godtar eller avviser det.",
+  },
   "data-table": {
     description:
       "Enhver liste med poster, med det folk forventer: sortering, søk, filter per kolonne, sider, kolonner, utvalg, summer, CSV og tomme, lastende og feilende tilstander. Kolonnene er data; agenter leser siden og tellingene, og kaller de samme handlingene.",

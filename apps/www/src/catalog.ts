@@ -384,6 +384,14 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki-aui/react"),
   },
   {
+    name: "document-editor",
+    title: "DocumentEditor",
+    description:
+      'A block editor for working papers: "/" opens commands and "@" mentions the files, evidence, people and pages the app passes. An agent reads the page as blocks and proposes inserts, edits, moves and removals; each waits in the agent\'s colour until a person accepts or rejects it.',
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
     name: "data-table",
     title: "DataTable",
     description:

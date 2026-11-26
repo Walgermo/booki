@@ -19,6 +19,7 @@ export * from "./close-checklist.js";
 export * from "./currency-select.js";
 export * from "./data-table.js";
 export * from "./deal-pipeline.js";
+export * from "./document-editor.js";
 export * from "./document-signoff.js";
 export * from "./evidence-list.js";
 export * from "./expense-claim.js";

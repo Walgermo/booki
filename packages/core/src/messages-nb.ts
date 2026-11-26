@@ -694,6 +694,34 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "request.issue.no-due-date": 'Forespørselen "{id}" har ingen frist.',
   "request.issue.overdue": 'Forespørselen "{id}" hadde frist {due} og venter fortsatt på klienten.',
   "request.issue.awaiting-decision": 'Forespørselen "{id}" er besvart; en person vurderer om svaret er nok.',
+  "doc.nothing-to-insert": "Ingenting å sette inn: send block, eller blocks for flere.",
+  "doc.read-only":
+    "Siden er skrivebeskyttet nå (signert eller låst). Ingenting kan foreslås før en person åpner den igjen.",
+  "doc.embed-fixed":
+    'Blokk "{id}" er appens eget innhold (en tabell eller et datafelt) og endres der det kommer fra. Flytt eller fjern den, eller foreslå en blokk ved siden av.',
+  "doc.embed-new": "En agent kan ikke lage en innebygd blokk. Typer: {types}.",
+  "doc.no-parser": "Å lese HTML trenger en DOMParser. På en server: send parse fra linkedom eller jsdom.",
+  "doc.no-block": 'Ingen blokk "{id}" på siden. Blokker: {ids}.',
+  "doc.no-proposal": 'Ingen forslag "{id}" venter. Forslag: {ids}.',
+  "doc.no-mention": 'Ingen omtale "{id}" i listen appen ga. Omtaler: {ids}.',
+  "doc.mentions-list": 'mentions er en liste med id-er, som ["e12"], fikk {got}.',
+  "doc.unknown-type": 'Ingen blokktype "{type}". Typer: {types}.',
+  "doc.heading-level": "En overskrift har nivå 1, 2 eller 3, fikk {level}.",
+  "doc.no-change": 'Blokk "{id}" ville ikke endret seg, så det er ingenting å foreslå.',
+  "doc.move-self": 'Blokk "{id}" kan ikke stå etter seg selv. Oppgi blokken den skal etter, eller null for øverst.',
+  "doc.block-has-proposal":
+    'Blokk "{id}" har allerede forslag {proposal} som venter. En person tar stilling til det først, eller trekk det.',
+  "doc.proposal-waiting":
+    "Forslag {id} på denne siden venter på en person. Vent til det er avgjort, og foreslå så på nytt.",
+  "doc.proposal-stale":
+    'Blokk "{block}" er endret etter at forslag {id} ble laget. Avvis det, så foreslår agenten på nytt ut fra siden slik den er.',
+  "doc.proposal-gone": 'Blokk "{block}" finnes ikke lenger på siden, så forslag {id} kan ikke godtas. Avvis det.',
+  "doc.unknown-command": 'Ingen kommando "{name}". Kommandoer: {names}.',
+  "doc.command-person":
+    'Kommandoen "{name}" kjøres av appen for en person, ikke av en agent. En agent kan kjøre: {names}.',
+  "doc.not-own-proposal": "Forslag {id} ble laget av {by}; en agent trekker bare sine egne.",
+  "doc.what.decide": "Å godta eller avvise et forslag",
+  "doc.what.edit": "Å redigere siden",
   "request.no-request": 'Ingen forespørsel til klienten "{id}". Forespørsler: {ids}.',
   "pipeline.no-stage": 'Ingen fase "{stage}" i salgsløpet. Faser: {stages}.',
   "pipeline.stage-id": "En fase i salgsløpet må ha en id som ikke er tom.",

@@ -651,6 +651,33 @@ export const EN = {
   "request.issue.no-due-date": 'Request "{id}" has no due date.',
   "request.issue.overdue": 'Request "{id}" was due {due} and is still waiting for the client.',
   "request.issue.awaiting-decision": 'Request "{id}" is answered; a person judges whether the answer is enough.',
+  "doc.nothing-to-insert": "Nothing to insert: pass block, or blocks for several.",
+  "doc.read-only":
+    "The page is read-only now (signed or locked). Nothing can be proposed until a person opens it again.",
+  "doc.embed-fixed":
+    'Block "{id}" is the app\'s own content (a table or a data field) and is changed where it comes from. Move or remove it, or propose a block next to it.',
+  "doc.embed-new": "An agent cannot create an embed. Types: {types}.",
+  "doc.no-parser": "Reading HTML needs a DOMParser. On a server, pass parse from linkedom or jsdom.",
+  "doc.no-block": 'No block "{id}" on the page. Blocks: {ids}.',
+  "doc.no-proposal": 'No proposal "{id}" waiting. Proposals: {ids}.',
+  "doc.no-mention": 'No mention "{id}" in the list the app gave. Mentions: {ids}.',
+  "doc.mentions-list": 'mentions is a list of mention ids, like ["e12"], got {got}.',
+  "doc.unknown-type": 'No block type "{type}". Types: {types}.',
+  "doc.heading-level": "A heading's level is 1, 2 or 3, got {level}.",
+  "doc.no-change": 'Block "{id}" would not change, so there is nothing to propose.',
+  "doc.move-self": 'Block "{id}" cannot go after itself. Name the block it goes after, or null for the top.',
+  "doc.block-has-proposal":
+    'Block "{id}" already has proposal {proposal} waiting. A person decides it first, or withdraw it.',
+  "doc.proposal-waiting":
+    "Proposal {id} on this page waits for a person. Wait until it is decided, then propose again.",
+  "doc.proposal-stale":
+    'Block "{block}" changed after proposal {id} was made. Reject it, and the agent proposes again from the page as it is.',
+  "doc.proposal-gone": 'Block "{block}" is no longer on the page, so proposal {id} cannot be accepted. Reject it.',
+  "doc.unknown-command": 'No command "{name}". Commands: {names}.',
+  "doc.command-person": 'Command "{name}" is run by the app for a person, not by an agent. An agent can run: {names}.',
+  "doc.not-own-proposal": "Proposal {id} was made by {by}; an agent withdraws only its own.",
+  "doc.what.decide": "Accepting or rejecting a proposal",
+  "doc.what.edit": "Editing the page",
   "request.no-request": 'No client request "{id}". Requests: {ids}.',
   "pipeline.no-stage": 'No stage "{stage}" in the pipeline. Stages: {stages}.',
   "pipeline.stage-id": "A pipeline stage needs a non-empty id.",

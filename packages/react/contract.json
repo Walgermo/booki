@@ -593,6 +593,56 @@
       "deal-pipeline-stage-unverified"
     ]
   },
+  "document-editor": {
+    "actions": ["editBlock", "findBlocks", "insertBlock", "moveBlock", "removeBlock", "runCommand", "withdrawProposal"],
+    "options": [
+      "actor",
+      "agentId",
+      "commands",
+      "defaultDocument",
+      "defaultProposals",
+      "denied",
+      "document",
+      "mentions",
+      "onAudit",
+      "onCommand",
+      "onDocumentChange",
+      "onProposalsChange",
+      "onePending",
+      "proposals",
+      "readOnly"
+    ],
+    "parts": ["accept", "add", "block", "check", "menu", "option", "reject", "root"],
+    "dataSlots": [
+      "document-editor",
+      "document-editor-agent",
+      "document-editor-becomes",
+      "document-editor-block",
+      "document-editor-blocks",
+      "document-editor-decide",
+      "document-editor-diff",
+      "document-editor-diff-label",
+      "document-editor-divider",
+      "document-editor-embed",
+      "document-editor-empty",
+      "document-editor-error",
+      "document-editor-ghost",
+      "document-editor-ghosts",
+      "document-editor-group",
+      "document-editor-marker",
+      "document-editor-mention",
+      "document-editor-option-hint",
+      "document-editor-option-kind",
+      "document-editor-option-label",
+      "document-editor-proposal",
+      "document-editor-proposal-head",
+      "document-editor-reason",
+      "document-editor-refs",
+      "document-editor-row",
+      "document-editor-status",
+      "document-editor-was"
+    ]
+  },
   "document-signoff": {
     "actions": ["assertSignable"],
     "options": [

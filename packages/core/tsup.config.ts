@@ -30,6 +30,7 @@ export default defineConfig({
     "src/sheet-stack.ts",
     "src/document-signoff.ts",
     "src/client-request.ts",
+    "src/document-blocks.ts",
     "src/pipeline.ts",
     "src/activity.ts",
     "src/recurring.ts",
