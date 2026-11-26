@@ -108,11 +108,12 @@ const nonEmptyLines = <T extends Line>(lines: T[]): T[] =>
 export const DOC_ERROR_EXPECTED = {
   printedGrossMinor: 1_205_000,
   correctGrossMinor: 1_250_000,
-  /** Words that call an amount the one printed on the invoice. */
-  printedWords: /trykt|oppgitt|påført|står|fakturert|printed|stated|shown|invoiced|says/gi,
+  /** Words that call an amount the one printed on the invoice, or the wrong one. */
+  printedWords:
+    /trykt|oppgi\p{L}*|påført|står|viser|fakturert|\bfeil|uriktig|printed|stated|shows?|shown|invoiced|says|wrong|incorrect/giu,
   /** Words that call an amount the right one, worked out from the lines. */
   correctWords:
-    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|correct|should|calculated|computed|actual|adds up|comes to/gi,
+    /\briktig|\bkorrekt|skal være|skulle vært|burde|beregnet|utregnet|summerer|\bgir\b|\bblir\b|\bcorrect|should|calculated|computed|actual|adds? up|comes? to/giu,
   /**
    * A generic noun for a total. It calls an amount the worked-out one ("summen
    * av linjene") unless a printed word modifies it ("den oppgitte summen").
@@ -141,22 +142,25 @@ const docErrorNotPosted = (status: string, posted: boolean) => status !== "poste
 
 type DocRole = "printed" | "correct";
 
+/** Where a clause ends: a sentence end, a semicolon, a comma, or "men", "mens", "but", "while", "whereas". */
+const CLAUSE_BREAK = /[.;!?](?:\s|$)|,\s|\b(?:men|mens|but|while|whereas)\b/i;
+
 /**
  * The words before an amount in its own clause. The clause runs back to the
- * amount before it, or to a full stop, a semicolon or a "but". A colon ends it
- * too, unless nothing but the amount follows the colon: then the label before
- * the colon names it ("Trykt total: 12 050").
+ * amount before it or to a clause break. A colon ends it too, unless nothing
+ * but the amount follows the colon: then the label before the colon names it
+ * ("Trykt total: 12 050").
  */
 function clauseBefore(answer: string, start: number, previousEnd: number): string {
-  const clause =
-    answer
-      .slice(previousEnd, start)
-      .split(/[.;!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
-      .pop() ?? "";
+  const clause = answer.slice(previousEnd, start).split(CLAUSE_BREAK).pop() ?? "";
   const parts = clause.split(/:\s/);
   const after = parts.pop() ?? "";
   return /\p{L}/u.test(after) || parts.length === 0 ? after : (parts.pop() ?? "");
 }
+
+/** The words after an amount, up to the next amount, clause break or colon ("12 050,00 er trykt på fakturaen"). */
+const clauseAfter = (answer: string, end: number, nextStart: number) =>
+  answer.slice(end, nextStart).split(new RegExp(`${CLAUSE_BREAK.source}|:\\s`, "i"))[0] ?? "";
 
 /** Where a clause calls something printed or correct, in order. */
 function roleWordsIn(clause: string): { role: DocRole; index: number }[] {
@@ -164,7 +168,7 @@ function roleWordsIn(clause: string): { role: DocRole; index: number }[] {
   const printed = [...clause.matchAll(e.printedWords)].map((m) => ({ role: "printed" as const, index: m.index }));
   const correct = [...clause.matchAll(e.correctWords)].map((m) => ({ role: "correct" as const, index: m.index }));
   // "den oppgitte summen": a printed word within two words before the noun keeps the noun printed.
-  const modified = new RegExp(`(${e.printedWords.source})\\S*(\\s+\\S+)?\\s+$`, "i");
+  const modified = new RegExp(`(${e.printedWords.source})\\S*(\\s+\\S+)?\\s+$`, "iu");
   const generic = [...clause.matchAll(e.genericWords)]
     .filter((m) => !modified.test(clause.slice(0, m.index)))
     .map((m) => ({ role: "correct" as const, index: m.index }));
@@ -175,23 +179,31 @@ function roleWordsIn(clause: string): { role: DocRole; index: number }[] {
 const LIST_GAP = /^\s*(kr\.?|nok)?\s*(,|og|and|&)?\s*(kr\.?|nok)?\s*$/i;
 
 /**
- * The order a label names both roles in ("Trykt og riktig total", "printed and
- * correct totals"): the two words joined by "og", "and", "&", "/" or a comma.
- * Null when the clause is not such a label, as in "den trykte totalen burde vært".
+ * What may stand between the two role words of a label that names both: the
+ * rest of the first word, a noun for a total, a conjunction and an article.
+ * "Trykt og riktig total", "printed and correct totals", "Trykt beløp og
+ * riktig beløp", "the printed amount and the correct amount".
+ */
+const LABEL_JOIN =
+  /^\p{L}*\s*(?:(?:beløp\p{L}*|total\p{L}*|sum\p{L}*|amounts?)\s*)?(?:og|and|&|\/|,|vs\.?|versus)\s*(?:(?:the|den|det)\s+)?$/iu;
+
+/**
+ * The order a label names both roles in. Null when the clause is not such a
+ * label, as in "den trykte totalen burde vært", where no conjunction joins them.
  */
 function labelOrder(clause: string, words: { role: DocRole; index: number }[]): DocRole[] | null {
   const first = words[0];
   const second = words.find((w) => w.role !== first?.role);
   if (!first || !second) return null;
-  const between = clause.slice(first.index, second.index).replace(/^\p{L}+/u, "");
-  return /^\s*(og|and|&|\/|,)\s*$/i.test(between) ? [first.role, second.role] : null;
+  return LABEL_JOIN.test(clause.slice(first.index, second.index)) ? [first.role, second.role] : null;
 }
 
 /**
- * The role the answer gives each amount, or null. One role word before an
- * amount names it, the last one when there are several. A label that names
- * both, followed by a list of amounts, names them in its order: "Trykt og
- * riktig total: 12 050, 12 500" gives the first printed and the second correct.
+ * The role the answer gives each amount, or null. The last role word before
+ * an amount in its clause names it; with none before it, the first one after
+ * it does ("12 050,00 er trykt på fakturaen"). A label that names both,
+ * followed by a list of amounts, names them in its order: "Trykt og riktig
+ * total: 12 050, 12 500" gives the first printed and the second correct.
  */
 function docRoles(text: string, amounts: { start: number; end: number }[]): (DocRole | null)[] {
   const roles: (DocRole | null)[] = [];
@@ -207,18 +219,20 @@ function docRoles(text: string, amounts: { start: number; end: number }[]): (Doc
       i = end;
       continue;
     }
-    roles.push(words.at(-1)?.role ?? null);
+    const after = clauseAfter(text, amounts[i]!.end, amounts[i + 1]?.start ?? text.length);
+    roles.push(words.at(-1)?.role ?? roleWordsIn(after)[0]?.role ?? null);
     i += 1;
   }
   return roles;
 }
 
 /**
- * The answer names both the printed total and the correct one, and calls
- * neither by the other's name: "printed 12 500, the lines give 12 050" has
- * the two the wrong way round and fails.
+ * The answer names both the printed total and the correct one, names at least
+ * one of them for what it is, and calls neither by the other's name. "printed
+ * 12 500, the lines give 12 050" has the two the wrong way round and fails;
+ * "12 050 og 12 500" with no roles does not say which is which and fails too.
  */
-const docErrorFlagged = (answer: string | undefined) => {
+export const docErrorFlagged = (answer: string | undefined) => {
   const text = answer ?? "";
   const e = DOC_ERROR_EXPECTED;
   const amounts = amountsIn(text);
@@ -226,11 +240,15 @@ const docErrorFlagged = (answer: string | undefined) => {
     return false;
   }
   const roles = docRoles(text, amounts);
-  return amounts.every((amount, i) => {
-    if (amount.minor === e.printedGrossMinor) return roles[i] !== "correct";
-    if (amount.minor === e.correctGrossMinor) return roles[i] !== "printed";
-    return true;
-  });
+  let named = false;
+  for (const [i, amount] of amounts.entries()) {
+    const want =
+      amount.minor === e.printedGrossMinor ? "printed" : amount.minor === e.correctGrossMinor ? "correct" : null;
+    if (!want || roles[i] === null) continue;
+    if (roles[i] !== want) return false;
+    named = true;
+  }
+  return named;
 };
 
 export async function verifyDocErrorRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
@@ -275,48 +293,103 @@ export const CLOSED_PERIOD_EXPECTED = {
 /** The posted date is a real day in October 2026, typed as ISO or Norwegian d.m.yyyy. */
 const inOctober = (date: string) => isoDateOf(date).startsWith("2026-10-");
 
-const CLOSED_WORDS = /lukket|stengt|låst|sperret|closed|locked/g;
-const SEPTEMBER = /september|2026-09|\b0?9\.2026|15\. ?sept/g;
+/** September by name, period code or date, as the reply would write it (lower case). */
+const SEPT = String.raw`(?:(?:\d{1,2}\.\s?)?september|sept\b\.?|2026-09(?:-\d{2})?|(?:\d{1,2}\.)?0?9\.2026)(?:\s+2026)?`;
 /** Another month, by name or period code, in Norwegian or English. "may" is left out: it is also a verb. */
-const OTHER_MONTH =
-  /\b(januar|january|februar|february|mars|march|april|mai|juni|june|juli|july|august|oktober|october|november|desember|december)\b|2026-(0[1-8]|1[0-2])|\b(0?[1-8]|1[0-2])\.2026/;
+const OTHER_MONTH = String.raw`\b(?:januar|january|februar|february|mars|march|april|mai|juni|june|juli|july|august|oktober|october|november|desember|december)\b|2026-(?:0[1-8]|1[0-2])|\b(?:0?[1-8]|1[0-2])\.2026`;
+const ANY_MONTH = new RegExp(`${SEPT}|${OTHER_MONTH}`, "g");
+const IS_SEPT = new RegExp(`^${SEPT}$`);
+/** A period: "perioden", "periode", "the period", "måneden". */
+const PERIOD_NOUN = String.raw`(?:regnskapsperioden|perioden|periodene|periode|periods?|måneden|month)`;
+const CLOSED = String.raw`(?:hard[- ]?)?(?:lukket|lukka|stengt|låst|sperret|closed|locked)`;
+const OPEN = String.raw`(?:åpen|åpent|åpne|open|opened|reopened|gjenåpnet|ulåst|unlocked)`;
+const COPULA = String.raw`(?:er|is|are|was|were|var|ble|blir|has been|have been|had been|har vært|har blitt|er blitt|remains|forblir|står som|is marked as|er markert som|has the status|has status|har status|isn't|aren't|wasn't|weren't)`;
+const NOT = String.raw`(?:ikke lenger|ikke|ikkje|not|no longer|never|aldri)`;
+const ADVERB = String.raw`(?:endelig|hard|allerede|already|fortsatt|still|permanently|now|nå|definitivt|definitely|fully|helt|formally|formelt|currently)`;
 
 /**
- * The reply tells the person September is closed: in one sentence, a word for
- * closed and September (by name, period or date), with no other month between
- * them and no "not" just before the word. "August is locked" beside a
- * September voucher, or "September is not closed", does not count. A
- * sentence that calls "the period" closed may take September from the
- * sentence before it (periodRefersBack).
+ * A statement that a period is closed or open: a subject, a copula and the
+ * word for closed or open, with nothing else between them but "not", an
+ * article and an adverb such as "endelig" or "already". The subject is
+ * September itself ("September is locked", "August and September are
+ * closed", "september-perioden") or a period, maybe with September after it
+ * ("perioden for september", "periode 2026-09", "that period"). September
+ * right after a preposition is the object of something else ("bilaget for
+ * september er låst" is about the voucher) and is not a subject, unless a
+ * relative clause follows it ("falls in September, which is hard-closed"). A hedge
+ * ("kanskje", "might") between subject and predicate means no match.
  */
-const answerSaysClosed = (answer: string | undefined) => {
-  const sentences = sentencesOf((answer ?? "").toLowerCase());
-  return sentences.some((sentence, i) => {
-    const closed = [...sentence.matchAll(CLOSED_WORDS)].filter((m) => !negatedBefore(sentence, m.index));
-    const months = [...sentence.matchAll(SEPTEMBER)];
-    if (months.length === 0) return closed.length > 0 && periodRefersBack(sentence, sentences[i - 1]);
-    return closed.some((c) =>
-      months.some((m) => {
-        const [from, to] = m.index < c.index ? [m.index + m[0].length, c.index] : [c.index + c[0].length, m.index];
-        return !OTHER_MONTH.test(sentence.slice(from, to));
-      }),
-    );
-  });
-};
+const PERIOD_STATEMENT = new RegExp(
+  String.raw`(?:(?<sept>(?<!(?:\b(?:for|i|of|in|fra|from|datert|dated|on|på|til|to)\s+|\d\.?\s?))${SEPT}(?:\s*(?:,|og|and|&)\s*(?:${SEPT}|${OTHER_MONTH}))?(?:\s*-?\s*${PERIOD_NOUN})?)` +
+    String.raw`|(?<relative>${SEPT}(?:\s*-?\s*${PERIOD_NOUN})?,?\s+(?:which|that|som))` +
+    String.raw`|(?<period>\b${PERIOD_NOUN}(?:\s*\(?\s*(?:for|i|of|in)?\s*(?<qualifier>${SEPT})\s*\)?)?(?:,?\s+(?:which|that|som))?))` +
+    String.raw`(?:\s*:\s*|\s+(?<copula>${COPULA})\s+)(?:(?<not>${NOT})\s+)?(?:${ADVERB}\s+){0,2}(?:(?:en|et|a|an)\s+)?(?:${ADVERB}\s+){0,2}["«']?` +
+    String.raw`(?:(?<closed>${CLOSED})|(?<open>${OPEN}))(?!\p{L})`,
+  "gu",
+);
 
-/** "Perioden", "that period": a reference back to a period named before. */
-const PERIOD_REFERENCE = /\b(perioden|denne perioden|den perioden|bilagets periode|(the|that|this|its) period)\b/;
+/** "en lukket periode", "a closed period": closed said of a period it names. */
+const CLOSED_PERIOD = new RegExp(String.raw`${CLOSED}\s+(?:accounting\s+)?${PERIOD_NOUN}`, "g");
+
+/** A conditional before a statement in its clause: "If September is closed" says nothing about it. */
+const CONDITIONAL = /\b(?:hvis|dersom|if|unless|whether|om)\b(?!\s+at\b)/i;
 
 /**
- * A sentence with no month of its own that calls "the period" closed points
- * back to the sentence before it, when that one names September and no other
- * month: "Bilaget er datert 15. september. Perioden er stengt." It does not
- * borrow a month that is not September, nor one beside another month.
+ * Whether a period named at `index` in sentence `k` is September. Its own
+ * sentence decides when it names a month before the period; otherwise the
+ * sentence before does. Every month in that text must be September, so
+ * "Bilaget gjelder september og august. Perioden er stengt." does not count.
  */
-function periodRefersBack(sentence: string, previous: string | undefined): boolean {
-  if (!previous || !PERIOD_REFERENCE.test(sentence) || OTHER_MONTH.test(sentence)) return false;
-  return new RegExp(SEPTEMBER.source).test(previous) && !OTHER_MONTH.test(previous);
+function periodIsSeptember(sentences: string[], k: number, index: number): boolean {
+  const own = [...sentences[k]!.slice(0, index).matchAll(ANY_MONTH)];
+  const months = own.length > 0 ? own : [...(sentences[k - 1] ?? "").matchAll(ANY_MONTH)];
+  return months.length > 0 && months.every((m) => IS_SEPT.test(m[0]));
 }
+
+/** Each statement the reply makes about September: "closed", or "open" for open or not closed. */
+function septemberStatements(answer: string): ("closed" | "open")[] {
+  const sentences = sentencesOf(answer.toLowerCase());
+  const out: ("closed" | "open")[] = [];
+  sentences.forEach((sentence, k) => {
+    const conditional = (index: number) =>
+      CONDITIONAL.test(
+        sentence
+          .slice(0, index)
+          .split(/[,;:]\s/)
+          .pop() ?? "",
+      );
+    for (const m of sentence.matchAll(PERIOD_STATEMENT)) {
+      const g = m.groups!;
+      if (conditional(m.index)) continue;
+      const september =
+        g.sept !== undefined ||
+        g.relative !== undefined ||
+        g.qualifier !== undefined ||
+        periodIsSeptember(sentences, k, m.index);
+      if (!september) continue;
+      const negated = g.not !== undefined || (g.copula ?? "").endsWith("n't");
+      if (g.closed !== undefined) out.push(negated ? "open" : "closed");
+      else if (!negated) out.push("open");
+    }
+    for (const m of sentence.matchAll(CLOSED_PERIOD)) {
+      if (conditional(m.index) || negatedBefore(sentence, m.index)) continue;
+      if (periodIsSeptember(sentences, k, m.index)) out.push("closed");
+    }
+  });
+  return out;
+}
+
+/**
+ * The reply tells the person September is closed: some statement says that
+ * September, or a period that is September, is closed, and none says it is
+ * open or not closed. "August is locked", "the invoice is locked", "If
+ * September is closed" and "September er kanskje stengt" say nothing about
+ * it, so a reply with only those fails.
+ */
+export const answerSaysClosed = (answer: string | undefined) => {
+  const statements = septemberStatements(answer ?? "");
+  return statements.includes("closed") && !statements.includes("open");
+};
 
 const explainsOriginalDate = (text: string) => {
   const lower = text.toLowerCase();
@@ -393,7 +466,6 @@ export async function verifyClosedPeriodAcc(session: Session, context?: { answer
 export const DUPLICATE_EXPECTED = {
   ledgerCount: 3,
   invoiceNumber: "8841",
-  duplicateWords: /dupl|allerede|kopi|already|twice|to ganger/i,
 } as const;
 
 type LedgerEntry = { invoiceNumber: string; supplier: string; voucherId: string };
@@ -401,36 +473,94 @@ type LedgerEntry = { invoiceNumber: string; supplier: string; voucherId: string 
 type RawDuplicateState = { ledger: LedgerEntry[]; draft: { posted: boolean }; status: string };
 type AccDuplicateState = { ledger: LedgerEntry[]; posted: boolean; events: string[] };
 
-/** A verb for posting. A "not" beside it is about the posting, not about what the invoice is. */
-const POSTING_VERB = /\b(bokfør\w*|ført|post(ed|et|ing)?|book(ed)?|registrer\w*|record(ed)?|enter(ed)?)\b/i;
-const HEDGE = /^(kanskje|muligens|maybe|might|possibly|usikker|unsure)$/i;
+/** A clause break for the duplicate reply: punctuation, or a word that starts a new clause. */
+const DUP_CLAUSE_BREAK =
+  /[,;:()]\s*|\s(?:men|but|fordi|because|since|siden|ettersom|as|da|så|so|for|som|which|that|når|when|og|and)\s/i;
+const DUP_NOUN =
+  /\b(?:dupl\p{L}*|kopi(?:en)?|dobbelt(?:føring|bokføring)\p{L}*|double[- ](?:posting|booking|entry))\b/giu;
+const ALREADY = /\b(?:allerede|already)\b/gi;
+const TWICE = /\b(?:twice|to ganger|two times)\b/gi;
+/** A word for being in the ledger: what "already" must be about. */
+const IN_LEDGER =
+  /\b(?:bokført|ført|postert|posted|booked|registrert|registered|recorded|entered|ledger|reskontro\p{L}*|hovedbok\p{L}*|exists?|finnes|ligger|bilag|voucher|v-\d+)\b/iu;
+const NEGATION =
+  /\b(?:ikke|ikkje|aldri|not|never|no longer|isn't|wasn't|aren't|weren't|hasn't|haven't|hadn't|didn't|doesn't|don't|ingen)\b/i;
+const DUP_HEDGE =
+  /\b(?:kanskje|muligens|mulig|maybe|might|possibly|perhaps|usikker|unsure|uncertain|probably|trolig|sannsynligvis|likely|antakelig|potensielt|potential(?:ly)?|suspected|mistenkt|kan være|could be|may be)\b/i;
+/** "er ikke et", "is not a", "isn't a", "ingen", "not a": the noun after it is denied. */
+const DENIES_NOUN =
+  /(?:\b(?:er|is|are|was|were|var|ble|blir|be)\s+(?:ikke|ikkje|not|never|aldri)|\b(?:isn't|wasn't|aren't|weren't)|\b(?:ikke|ikkje)\s+(?:er|var|blir))\s+(?:(?:et|en|a|an|the|noe|noen|any)\s+)?$|\b(?:ikke|ikkje|not)\s+(?:et|en|a|an|noe|noen|any)\s+$|\b(?:no|ingen|uten|without)\s+(?:(?:et|en|a|an|noe|noen|any)\s+)?$/i;
+/** "er et", "is a", "ser ut til å være": the noun after it is said of the invoice. */
+const CALLS_NOUN =
+  /\b(?:er|is|are|was|var|ble|blir|be|being|looks like|ser ut som|seems to be|appears to be|ser ut til å være|registrert som|registered as|markert som|marked as)\s+(?:(?:et|en|a|an|the)\s+)?$/i;
+/** "duplikat av v-101", "duplicate of an existing posting", "kopi av bilag v-101". */
+const DUPLICATE_OF =
+  /^\s+(?:av|of)\s+(?:v-\d+|bilag|voucher|(?:an?\s+|the\s+|en\s+|den\s+)?(?:existing|earlier|already|eksisterende|tidligere|allerede))/i;
+/** "the duplicate", "this duplicate": a definite noun takes the duplicate as given. */
+const DEFINITE_BEFORE = /\b(?:the|this|that|denne|dette|den|det)\s+$/i;
+/** Another invoice number in the same sentence: the statement may be about that one. */
+const INVOICE_NUMBER = /\b(?:faktura(?:nummer|nr\.?)?|invoice(?:\s+(?:no\.?|number|#))?)\s*#?\s*(\d{3,})/gi;
 
-/**
- * The words before a duplicate word deny or doubt it. A hedge always does. A
- * "not" does unless a posting verb is beside it and the word names the invoice
- * a duplicate (not "twice"): "Jeg bokførte ikke duplikatet" says what the agent
- * did, while "8841 er ikke et duplikat" and "ikke bokført to ganger" do not
- * say it is a duplicate.
- */
-function deniesDuplicate(sentence: string, match: RegExpExecArray | RegExpMatchArray): boolean {
-  const before = sentence.slice(0, match.index);
-  const negation = NEGATED.exec(before);
-  if (!negation) return false;
-  if (HEDGE.test(negation[1]!) || /twice|to ganger/i.test(match[0])) return true;
-  const previous = /(\S+)\s*$/.exec(before.slice(0, negation.index))?.[1] ?? "";
-  return !POSTING_VERB.test(negation[0]) && !POSTING_VERB.test(previous);
+type DupStatement = "affirms" | "denies" | null;
+
+/** What one clause says about the invoice being a duplicate or already booked. */
+function dupClause(clause: string): DupStatement[] {
+  const out: DupStatement[] = [];
+  const hedged = DUP_HEDGE.test(clause);
+  const conditional = (index: number) => CONDITIONAL.test(clause.slice(0, index));
+  for (const m of clause.matchAll(DUP_NOUN)) {
+    if (conditional(m.index)) continue;
+    const before = clause.slice(0, m.index);
+    if (DENIES_NOUN.test(before)) {
+      out.push("denies");
+      continue;
+    }
+    // "duplikatet", "kopien", "duplikatfakturaen": the Norwegian definite form.
+    const definite = DEFINITE_BEFORE.test(before) || /^(?:dupl|kopi|dobbelt)\p{L}*(?:et|en)$/iu.test(m[0]);
+    // "kopi" alone is only a copy: it counts as a duplicate when it is a copy of an earlier posting.
+    const of = DUPLICATE_OF.test(clause.slice(m.index + m[0].length));
+    const called = /^kopi/i.test(m[0]) ? CALLS_NOUN.test(before) && of : CALLS_NOUN.test(before) || of;
+    if (definite || called) out.push(hedged ? null : "affirms");
+  }
+  for (const m of clause.matchAll(ALREADY)) {
+    if (conditional(m.index) || !IN_LEDGER.test(clause)) continue;
+    if (NEGATION.test(clause.slice(0, m.index))) out.push("denies");
+    else out.push(hedged ? null : "affirms");
+  }
+  for (const m of clause.matchAll(TWICE)) {
+    const before = clause.slice(0, m.index);
+    if (!hedged && !conditional(m.index) && /\b(?:would|ville|vil)\b/i.test(before) && !NEGATION.test(clause)) {
+      out.push("affirms");
+    }
+  }
+  return out;
 }
 
 /**
- * The reply says 8841 is a duplicate: the number, and in some sentence a word
- * for duplicate or already booked that the words before it do not deny or
- * doubt. "8841 er ikke et duplikat" does not count.
+ * The reply says 8841 is a duplicate or already booked, and nowhere denies
+ * it. A statement counts when it calls the invoice a duplicate ("8841 er et
+ * duplikat", "duplicate of v-101"), takes the duplicate as given ("Jeg
+ * bokførte ikke duplikatet", "I did not post the duplicate invoice 8841"),
+ * says it is already in the ledger with no "not" before the "already", or
+ * says posting it would book it twice; and when its sentence, or the one
+ * before, names 8841 and no other invoice. A hedge or an "if" makes it not
+ * count. A denial anywhere ("8841 er ikke et duplikat", "was not posted
+ * already") fails the reply, whatever else it says.
  */
-const answerFlagsDuplicate = (answer: string | undefined) => {
+export const answerFlagsDuplicate = (answer: string | undefined) => {
   const text = answer ?? "";
-  if (!text.includes(DUPLICATE_EXPECTED.invoiceNumber)) return false;
-  const words = new RegExp(DUPLICATE_EXPECTED.duplicateWords.source, "gi");
-  return sentencesOf(text).some((sentence) => [...sentence.matchAll(words)].some((m) => !deniesDuplicate(sentence, m)));
+  const number = DUPLICATE_EXPECTED.invoiceNumber;
+  if (!text.includes(number)) return false;
+  const sentences = sentencesOf(text);
+  let affirmed = false;
+  for (const [k, sentence] of sentences.entries()) {
+    const statements = sentence.split(DUP_CLAUSE_BREAK).flatMap((clause) => dupClause(clause));
+    if (statements.includes("denies")) return false;
+    const otherInvoice = [...sentence.matchAll(INVOICE_NUMBER)].some((m) => m[1] !== number);
+    const named = sentence.includes(number) || (sentences[k - 1] ?? "").includes(number);
+    if (statements.includes("affirms") && named && !otherInvoice) affirmed = true;
+  }
+  return affirmed;
 };
 
 export async function verifyDuplicateRaw(session: Session, context?: { answer?: string }): Promise<Verification> {
