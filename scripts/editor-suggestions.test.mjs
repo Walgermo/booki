@@ -75,6 +75,20 @@ test("keyboard undo restores a split, keeps editing focus, and redo recreates bo
     assert.equal(await blocks.first().inputValue(), "");
     await page.keyboard.type("Other");
     assert.equal(await page.getByRole("button", { name: "Redo" }).isDisabled(), true);
+    for (const [inputType, expected] of [
+      ["historyUndo", ""],
+      ["historyRedo", "Other"],
+    ]) {
+      const canceled = await blocks
+        .first()
+        .evaluate(
+          (el, type) =>
+            !el.dispatchEvent(new InputEvent("beforeinput", { inputType: type, bubbles: true, cancelable: true })),
+          inputType,
+        );
+      assert.ok(canceled, inputType);
+      assert.equal(await blocks.first().inputValue(), expected);
+    }
   } finally {
     await page.close();
   }
