@@ -14,12 +14,14 @@ const PARTS = ["booki.css", "agent.css"];
 // 62-name scope list. The build fails above these, so
 // it cannot grow back unnoticed. Set them to the measured size, rounded up to
 // the next 250 bytes, when a change makes base.css smaller or larger on purpose.
-const BASE_RAW_BUDGET = 43500;
+// BOOKI_STYLES_BASE_BUDGET lowers the raw budget, for the test that a build over it writes nothing.
+const BASE_RAW_BUDGET = Number(process.env.BOOKI_STYLES_BASE_BUDGET ?? 43500);
 const BASE_GZIP_BUDGET = 7250;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-rmSync(join(root, "dist"), { recursive: true, force: true });
-mkdirSync(join(root, "dist/controls"), { recursive: true });
+// Every output is made and checked first, and dist is replaced only when all of them pass:
+// a build that stops on a check leaves the last good dist as it was, so nothing that
+// compares timestamps mistakes a half-written dist for a fresh one.
 // Then one file per control in src/controls, in name order.
 const controls = readdirSync(join(root, "src/controls"))
   .filter((file) => file.endsWith(".css"))
@@ -77,10 +79,8 @@ const scoped = (text) => {
 const minify = (text, filename) => transform({ filename, code: Buffer.from(text), minify: true }).code.toString();
 css = minify(scoped(css), "booki.css");
 
-writeFileSync(join(root, "dist/booki.css"), css);
 // Only what a page uses: the tokens and base look, then one file per control.
 const base = minify(scoped(PARTS.map(read).join("\n")), "base.css");
-writeFileSync(join(root, "dist/base.css"), base);
 const baseGzip = gzipSync(base).length;
 // No base rule may reach a useBookiField root, by its own name or by a prefix that matches it.
 for (const kind of Object.keys(contract).filter((name) => PRODUCT_OWNED.test(name))) {
@@ -96,19 +96,21 @@ if (base.length > BASE_RAW_BUDGET || baseGzip > BASE_GZIP_BUDGET) {
     `dist/base.css is over its size budget: ${base.length} B raw (budget ${BASE_RAW_BUDGET}), ${baseGzip} B gzip (budget ${BASE_GZIP_BUDGET})`,
   );
 }
-for (const control of controls) {
-  writeFileSync(join(root, "dist", control), minify(scoped(read(control)), control));
-}
-// The same rules inside @layer booki, for apps whose own utilities (Tailwind's
-// @layer utilities) should win over Booki's defaults.
-// The order comes first: Tailwind 4's reset (base) below Booki, its utilities above.
-writeFileSync(
-  join(root, "dist/layered.css"),
-  `@layer theme, base, booki, components, utilities;\n@layer booki {\n${css}\n}\n`,
-);
-// TypeScript checks side-effect imports (TS2882): the CSS has no exports.
-writeFileSync(join(root, "dist/css.d.ts"), "export {};\n");
-writeFileSync(join(root, "dist/shadcn.css"), readFileSync(join(root, "src/shadcn.css"), "utf8"));
+const outputs = new Map([
+  ["booki.css", css],
+  ["base.css", base],
+  ...controls.map((control) => [control, minify(scoped(read(control)), control)]),
+  // The same rules inside @layer booki, for apps whose own utilities (Tailwind's
+  // @layer utilities) should win over Booki's defaults.
+  // The order comes first: Tailwind 4's reset (base) below Booki, its utilities above.
+  ["layered.css", `@layer theme, base, booki, components, utilities;\n@layer booki {\n${css}\n}\n`],
+  // TypeScript checks side-effect imports (TS2882): the CSS has no exports.
+  ["css.d.ts", "export {};\n"],
+  ["shadcn.css", readFileSync(join(root, "src/shadcn.css"), "utf8")],
+]);
+rmSync(join(root, "dist"), { recursive: true, force: true });
+mkdirSync(join(root, "dist/controls"), { recursive: true });
+for (const [file, text] of outputs) writeFileSync(join(root, "dist", file), text);
 console.log(
   `Built @booki-aui/styles → dist/booki.css (${Math.round(css.length / 1024)} KB), layered.css, base.css (${(base.length / 1024).toFixed(1)} KB raw, ${(baseGzip / 1024).toFixed(1)} KB gzip), controls/*.css, shadcn.css (${PARTS.join(" + ")} + ${controls.length} controls; ${generic} base rules scoped to ${prefixes.length} components)`,
 );
