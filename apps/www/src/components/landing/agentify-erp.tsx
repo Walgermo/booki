@@ -14,7 +14,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { cursor, setStepPolicy, whenCursorFree } from "@/agent";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
-import { ErpFrame } from "./erp-frame";
+import { ErpFrame, type FrameTab } from "./erp-frame";
 import { titleLanded } from "./hero-title";
 import { wait, type ActResult, type LandingAgent } from "./shared";
 
@@ -49,10 +49,12 @@ export function ErpWindow({
   agent,
   from,
   to,
+  tabs,
 }: {
   agent: LandingAgent;
   from: RefObject<HTMLElement | null>;
   to: RefObject<HTMLElement | null>;
+  tabs: FrameTab[];
 }) {
   const { t } = useLang();
   const [lines, setLines] = useState<VoucherLine[]>([]);
@@ -223,10 +225,7 @@ export function ErpWindow({
       </div>
       <ErpFrame
         label={t("Demo ERP", "Demo-ERP")}
-        tabs={[
-          { title: t("New voucher – Kvadruptex", "Nytt bilag – Kvadruptex"), active: true },
-          { title: t("Bank – Kvadruptex", "Bank – Kvadruptex") },
-        ]}
+        tabs={tabs}
         path="/analog-angst/bilag/ny"
         search={t("Search vouchers, suppliers …", "Søk i bilag, leverandører …")}
         nav={NAV}

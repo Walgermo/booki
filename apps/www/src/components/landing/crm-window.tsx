@@ -11,7 +11,7 @@ import { useRef, useState } from "react";
 import { whenCursorFree } from "@/agent";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
-import { ErpFrame } from "./erp-frame";
+import { ErpFrame, type FrameTab } from "./erp-frame";
 import { wait, type ActResult, type LandingAgent } from "./shared";
 
 /** Agent labels: unique on the landing page, so the agent's refs find these. */
@@ -28,7 +28,7 @@ const OWNERS = [
 type Phase = "idle" | "running" | "done";
 
 /** A sales pipeline in the same made-up suite: after a meeting, the agent updates the deal. */
-export function CrmWindow({ agent }: { agent: LandingAgent }) {
+export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab[] }) {
   const { t } = useLang();
   const stages: PipelineStage[] = [
     { id: "kvalifisering", name: t("Qualifying", "Kvalifisering"), probability: 10 },
@@ -114,10 +114,7 @@ export function CrmWindow({ agent }: { agent: LandingAgent }) {
       </div>
       <ErpFrame
         label={t("Demo CRM", "Demo-CRM")}
-        tabs={[
-          { title: t("Pipeline – Kvadruptex", "Salgsløp – Kvadruptex"), active: true },
-          { title: t("Customers – Kvadruptex", "Kunder – Kvadruptex") },
-        ]}
+        tabs={tabs}
         path="/analog-angst/salg"
         search={t("Search deals, customers …", "Søk i avtaler, kunder …")}
         nav={NAV}

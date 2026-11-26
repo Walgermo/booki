@@ -1,13 +1,21 @@
-import type { ReactNode } from "react";
+import { Button } from "@ui-sdk/react/button";
+import type { KeyboardEvent, ReactNode } from "react";
 
 import { useLang } from "@/lib/lang";
 
-type Tab = { title: string; active?: boolean };
+/** A browser tab in the demo window. Each one opens a demo, so the tabs are real. */
+export type FrameTab = {
+  id: string;
+  title: string;
+  active: boolean;
+  onSelect: () => void;
+  onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
+};
 
 /**
  * The demo app's window: a Chrome window on macOS around Kvadruptex, the made-up
- * business suite the landing demos run in. The browser chrome is decorative and
- * hidden from assistive tech; the app's own top bar, menu and main area are real.
+ * business suite the landing demos run in. The browser's tabs switch between the
+ * demos; the rest of the chrome is decorative and hidden from assistive tech.
  */
 export function ErpFrame({
   label,
@@ -20,7 +28,7 @@ export function ErpFrame({
   children,
 }: {
   label: string;
-  tabs: Tab[];
+  tabs: FrameTab[];
   path: string;
   search: string;
   nav: string[];
@@ -32,23 +40,41 @@ export function ErpFrame({
   return (
     <div className="erp-stage">
       <div className="erp-window" role="group" aria-label={label}>
-        <div className="erp-chrome" aria-hidden="true">
+        <div className="erp-chrome">
           <div className="erp-chrome__tabs">
-            <span className="erp-chrome__lights">
+            <span className="erp-chrome__lights" aria-hidden="true">
               <i data-light="close" />
               <i data-light="min" />
               <i data-light="max" />
             </span>
-            {tabs.map((tab) => (
-              <span key={tab.title} className="erp-chrome__tab" data-active={tab.active ? "" : undefined}>
-                <KvadruptexMark className="erp-chrome__favicon" muted={!tab.active} />
-                <span className="erp-chrome__title">{tab.title}</span>
-                <span className="erp-chrome__close">×</span>
-              </span>
-            ))}
-            <span className="erp-chrome__new">+</span>
+            <div className="erp-chrome__tablist" role="tablist" aria-label={t("Demos", "Demoer")}>
+              {tabs.map((tab) => (
+                <Button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  id={`demo-tab-${tab.id}`}
+                  aria-selected={tab.active}
+                  aria-controls={`demo-panel-${tab.id}`}
+                  tabIndex={tab.active ? 0 : -1}
+                  className="erp-chrome__tab"
+                  data-active={tab.active ? "" : undefined}
+                  onClick={tab.onSelect}
+                  onKeyDown={tab.onKeyDown}
+                >
+                  <KvadruptexMark className="erp-chrome__favicon" muted={!tab.active} />
+                  <span className="erp-chrome__title">{tab.title}</span>
+                  <span className="erp-chrome__close" aria-hidden="true">
+                    ×
+                  </span>
+                </Button>
+              ))}
+            </div>
+            <span className="erp-chrome__new" aria-hidden="true">
+              +
+            </span>
           </div>
-          <div className="erp-chrome__toolbar">
+          <div className="erp-chrome__toolbar" aria-hidden="true">
             <span className="erp-chrome__nav">
               <Icon d="M10 3 5 8l5 5" />
               <Icon d="m6 3 5 5-5 5" muted />
