@@ -4,8 +4,15 @@
  * the same expected numbers as the screen checks in ../verify.ts, so a run
  * through the API and a run on a screen can be compared check by check.
  */
-import type { LedgerState } from "./ledger.js";
-import { SALES_INVOICE_EXPECTED, SUPPLIER_INVOICE_EXPECTED, VOUCHER_EXPECTED, verdict } from "../verify.js";
+import { vatPostings } from "@booki-aui/core/voucher";
+import type { LedgerState, VoucherLineInput } from "./ledger.js";
+import {
+  NO_VAT_CODES,
+  SALES_INVOICE_EXPECTED,
+  SUPPLIER_INVOICE_EXPECTED,
+  VOUCHER_EXPECTED,
+  verdict,
+} from "../verify.js";
 import type { Verification } from "../verify.js";
 
 /** The single item of a list, or undefined when there is not exactly one. */
@@ -29,28 +36,48 @@ const SUPPLIER_INVOICE_CHECKS = [
 ];
 const SALES_INVOICE_CHECKS = ["customer", "twoLines", "consulting", "travel", "net", "vat25", "created"];
 
-/** The voucher task, read from the one voucher the API holds (mirrors verifyVoucherAcc). */
-export function verifyVoucherApi(state: LedgerState): Verification {
-  const voucher = only(state.vouchers);
-  const observed = { vouchers: state.vouchers.length, voucher: voucher ?? null };
-  if (!voucher) return verdict(allFalse(VOUCHER_CHECKS), false, observed);
+/** The postings a voucher's lines give when a line with a VAT code above 0 % holds the gross amount. */
+const grossPostings = (lines: readonly VoucherLineInput[]): VoucherLineInput[] =>
+  vatPostings(
+    lines.map((line, i) => ({ id: String(i + 1), accountName: "", ...line })),
+    NO_VAT_CODES,
+  );
 
+/** The voucher checks on one reading of the postings. */
+function voucherChecks(lines: readonly VoucherLineInput[]) {
   const e = VOUCHER_EXPECTED;
-  const lines = voucher.lines;
   const onAccount = (account: string) => lines.filter((line) => line.account === account);
   const expense = onAccount("6800");
   const vat = onAccount("2710");
   const payable = onAccount("2400");
-  const checks = {
-    date: voucher.date === e.date,
+  return {
     threePostings: lines.length === 3,
     expenseNet: expense.length === 1 && expense[0]!.debitMinor === e.netMinor && !expense[0]!.creditMinor,
     inputVat: vat.length === 1 && vat[0]!.debitMinor === e.vatMinor && !vat[0]!.creditMinor,
     payable: payable.length === 1 && payable[0]!.creditMinor === e.grossMinor && !payable[0]!.debitMinor,
     vat25: expense.length === 1 && expense[0]!.vatCode === "MVA25",
-    posted: voucher.posted === true,
   };
-  return verdict(checks, voucher.posted, observed);
+}
+
+/**
+ * The voucher task, read from the one voucher the API holds (mirrors verifyVoucherAcc).
+ * The API stores lines as given, so the check judges the result and accepts both ways
+ * a bookkeeper enters it: the net on 6800 with MVA25 and the VAT on its own 2710 line,
+ * or the gross on 6800 with MVA25, whose VAT the code splits out as on the screen.
+ * The reading must give the net, the VAT and the total: a voucher that counts the VAT
+ * twice, or leaves it out, fails under both.
+ */
+export function verifyVoucherApi(state: LedgerState): Verification {
+  const voucher = only(state.vouchers);
+  const observed = { vouchers: state.vouchers.length, voucher: voucher ?? null };
+  if (!voucher) return verdict(allFalse(VOUCHER_CHECKS), false, observed);
+
+  const explicit = voucherChecks(voucher.lines);
+  const gross = voucherChecks(grossPostings(voucher.lines));
+  const held = (checks: Record<string, boolean>) => Object.values(checks).filter(Boolean).length;
+  const reading = held(gross) > held(explicit) ? gross : explicit;
+  const checks = { date: voucher.date === VOUCHER_EXPECTED.date, ...reading, posted: voucher.posted === true };
+  return verdict(checks, voucher.posted, { ...observed, reading: reading === gross ? "gross" : "explicit" });
 }
 
 /** The supplier invoice task, read from the one supplier invoice (mirrors verifySupplierInvoiceAcc). */

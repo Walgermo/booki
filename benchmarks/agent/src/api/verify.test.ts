@@ -129,6 +129,49 @@ describe("voucher API check", () => {
     assert.equal(result.checks.vat25, false);
   });
 
+  it("passes the gross on 6800 with MVA25 and the payable, as the screen script enters it", () => {
+    const gross = [
+      { account: "6800", debitMinor: e.grossMinor, creditMinor: 0, vatCode: "MVA25" },
+      { account: "2400", debitMinor: 0, creditMinor: e.grossMinor },
+    ];
+    const result = verifyVoucherApi(voucherState(gross));
+    assert.equal(result.ok, true, JSON.stringify(result.checks));
+    assert.ok(Object.values(result.checks).every(Boolean));
+  });
+
+  it("fails the gross on 6800 without a VAT code: no VAT is split out", () => {
+    const noCode = [
+      { account: "6800", debitMinor: e.grossMinor, creditMinor: 0 },
+      { account: "2400", debitMinor: 0, creditMinor: e.grossMinor },
+    ];
+    const result = verifyVoucherApi(voucherState(noCode));
+    assert.equal(result.ok, false);
+    assert.equal(result.checks.expenseNet, false);
+    assert.equal(result.checks.inputVat, false);
+  });
+
+  it("fails the gross with MVA25 and an explicit VAT line too: the VAT is counted twice", () => {
+    const twice = [
+      { account: "6800", debitMinor: e.grossMinor, creditMinor: 0, vatCode: "MVA25" },
+      { account: "2710", debitMinor: e.vatMinor, creditMinor: 0 },
+      { account: "2400", debitMinor: 0, creditMinor: e.grossMinor + e.vatMinor },
+    ];
+    const result = verifyVoucherApi(voucherState(twice));
+    assert.equal(result.ok, false);
+    assert.equal(result.checks.payable, false);
+  });
+
+  it("fails the gross with MVA15: the code splits out the wrong VAT", () => {
+    const wrongRate = [
+      { account: "6800", debitMinor: e.grossMinor, creditMinor: 0, vatCode: "MVA15" },
+      { account: "2400", debitMinor: 0, creditMinor: e.grossMinor },
+    ];
+    const result = verifyVoucherApi(voucherState(wrongRate));
+    assert.equal(result.ok, false);
+    assert.equal(result.checks.inputVat, false);
+    assert.equal(result.checks.vat25, false);
+  });
+
   it("fails an empty state without throwing", () => {
     const result = verifyVoucherApi(EMPTY);
     assert.equal(result.ok, false);
