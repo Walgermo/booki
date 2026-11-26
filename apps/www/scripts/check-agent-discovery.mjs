@@ -88,7 +88,23 @@ try {
   assert.ok(result.snapshot.every((entry) => !entry.offPage && entry.component !== "amount-field"));
   assert.ok(result.dates.length >= 2);
   assert.deepEqual(result.old, []);
-  console.log("Agent discovery passed both country switches, WebMCP, live actions, and navigation.");
+
+  // A query with closed: true keeps what it read behind a collapsed section, such as a code
+  // example's Copy button; the default query stays on what is on screen.
+  await page.locator('nav:visible a[href="/docs/examples"]').click();
+  await page.waitForURL("**/docs/examples");
+  await page.locator('[data-slot="collapsible-trigger"]').first().waitFor();
+  const copy = await page.evaluate(async () => ({
+    open: await window.agent.query({ text: "Kopier" }),
+    closed: await window.agent.query({ text: "Kopier", closed: true }),
+  }));
+  assert.ok(copy.open.every((entry) => !entry.offPage));
+  assert.ok(
+    copy.closed.some((entry) => entry.offPage && entry.actions.length > 0),
+    "closed: true returns the Copy button behind a collapsed example",
+  );
+  assert.ok(copy.closed.every((entry) => !entry.offPage || entry.actions.length > 0));
+  console.log("Agent discovery passed both country switches, WebMCP, live actions, navigation, and closed sections.");
 } finally {
   await browser.close();
 }
