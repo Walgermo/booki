@@ -78,7 +78,9 @@ export function DealPanel({
       </header>
       {/* Keyed by the deal: when the server changes it (the agent set a value), the form starts from the new one. */}
       <ValueForm key={JSON.stringify(deal)} deal={deal} onSaveDeal={onSaveDeal} />
+      {/* One timeline per deal: a step aimed at this deal's timeline never lands on the next one's. */}
       <ActivityTimeline
+        key={deal.id}
         aria-label="Aktivitet"
         activities={activities}
         people={OWNERS}
@@ -92,9 +94,31 @@ export function DealPanel({
 
 /** A person's form for the deal's value: how much, in what currency, how sure, and from where. */
 function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) => void }) {
-  const [draft, setDraft] = useState(deal);
   // Undo starts the amount field over: text it refused is not the deal's, and it would block the next save.
   const [round, setRound] = useState(0);
+  const [figure, setFigure] = useState({ valueMinor: deal.valueMinor, currency: deal.currency });
+  // How sure and from where, once the person has set them. Until then they follow the figure: the deal's own
+  // for the deal's figure, and none for a new one, since the old source vouched for the old figure only.
+  const [evidence, setEvidence] = useState<{ valueStatus?: DealValueStatus; valueSource?: string | null }>({});
+  const sameFigure = figure.valueMinor === deal.valueMinor && figure.currency === deal.currency;
+  const draft: Deal = {
+    ...deal,
+    ...figure,
+    valueStatus: evidence.valueStatus ?? (sameFigure ? deal.valueStatus : "unknown"),
+    valueSource:
+      evidence.valueSource !== undefined
+        ? (evidence.valueSource ?? undefined)
+        : sameFigure
+          ? deal.valueSource
+          : undefined,
+  };
+  if (draft.valueSource === undefined) delete draft.valueSource;
+  const setDraft = (next: Deal) => {
+    setFigure({ valueMinor: next.valueMinor, currency: next.currency });
+    if (next.valueStatus !== draft.valueStatus) setEvidence((now) => ({ ...now, valueStatus: next.valueStatus }));
+    if (next.valueSource !== draft.valueSource)
+      setEvidence((now) => ({ ...now, valueSource: next.valueSource ?? null }));
+  };
   const changed = JSON.stringify(draft) !== JSON.stringify(deal);
   return (
     <form
@@ -148,7 +172,8 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
           data-variant="secondary"
           disabled={!changed}
           onClick={() => {
-            setDraft(deal);
+            setFigure({ valueMinor: deal.valueMinor, currency: deal.currency });
+            setEvidence({});
             setRound((count) => count + 1);
           }}
         >
