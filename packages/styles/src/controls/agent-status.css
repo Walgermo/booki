@@ -78,7 +78,7 @@
 }
 
 [data-slot="agent-status"] [data-slot="agent-status-icon"][data-leaving] {
-  animation: bk-agent-status-out 150ms ease-out both;
+  animation: bk-agent-status-out 110ms ease-out both;
 }
 
 /* Working: the badge's arc turns about its own centre, at a constant speed. */
@@ -88,8 +88,8 @@
   animation: bk-agent-status-turn 0.9s linear infinite;
 }
 
-/* Waiting for a person: a slow breath. */
-[data-slot="agent-status-icon"][data-state="waiting"] > svg {
+/* The waiting badge pulses while the pointer stays still. */
+[data-slot="agent-status-icon"][data-state="waiting"] [data-slot="agent-status-badge"] {
   animation: bk-agent-status-breathe 1.6s ease-in-out infinite alternate;
 }
 
@@ -100,6 +100,24 @@
   path {
   stroke-dasharray: 1;
   animation: bk-agent-status-draw 250ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+/* A single press at the tip when work begins. Only the badge continues moving. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="agent-status"][data-changed]
+    [data-slot="agent-status-icon"][data-state="working"]:not([data-leaving])
+    svg
+    > path {
+    transform-box: view-box;
+    transform-origin: 2.5px 2.5px;
+    animation: bk-agent-status-press 220ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@keyframes bk-agent-status-press {
+  45% {
+    transform: rotate(-6deg) scale(0.96);
+  }
 }
 
 @keyframes bk-agent-status-in {
@@ -129,7 +147,7 @@
 
 @keyframes bk-agent-status-breathe {
   to {
-    opacity: 0.5;
+    opacity: 0.72;
   }
 }
 
@@ -153,7 +171,7 @@
   }
 
   [data-slot="agent-status-icon"][data-state="working"] [data-slot="agent-status-badge"],
-  [data-slot="agent-status-icon"][data-state="waiting"] > svg,
+  [data-slot="agent-status-icon"][data-state="waiting"] [data-slot="agent-status-badge"],
   [data-slot="agent-status"][data-changed]
     [data-slot="agent-status-icon"][data-state="done"]:not([data-leaving])
     [data-slot="agent-status-badge"]

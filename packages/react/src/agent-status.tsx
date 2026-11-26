@@ -81,9 +81,9 @@ const LEAVE_MS = 170;
  * `data-agent-hidden` keeps it out of the agent's snapshot (the agent knows its
  * own state). Style it as `[data-slot="agent-status"][data-state="…"]`.
  *
- * Motion (with `@booki-aui/styles`) plays only when the state changes, never on
- * first render: the icons cross-fade, the check draws in once on `done`, the
- * badge turns while `working` and breathes while `waiting`.
+ * On a state change the icons cross-fade. The pointer presses once when work
+ * begins and the check draws once on completion. Only the badge keeps moving
+ * while working or waiting. Reduced motion leaves a short fade.
  */
 export function AgentStatus({ state, label, className, ...props }: AgentStatusProps) {
   const { profile } = useBookiLocaleOptional();
