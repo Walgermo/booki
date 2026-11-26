@@ -59,8 +59,9 @@ export type Report = {
   score: number;
   grade: "ready" | "partly ready" | "not ready" | "not measured";
   /**
-   * False when the bridge has no controls and the page has no fields or charts:
-   * the form may not be open yet, so
+   * False when the bridge has no controls or tools of the page's own, the page has
+   * no fields or charts, and nothing but the missing bridge was found: the form
+   * may not be open yet, so
    * `score` rests on almost nothing and `grade` is "not measured".
    */
   measured: boolean;
@@ -405,7 +406,9 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
         .locator(`aria-ref=${node.ref}`)
         .evaluate(BRIDGE_COVERAGE, entries, { timeout: 2_000 })
         .catch(() => null);
-      if (!coverage || coverage.inRoot || coverage.agentHidden || coverage.group?.covered) continue;
+      // A read-only field takes no input from a person either (a posted invoice's fields).
+      if (!coverage || coverage.inRoot || coverage.agentHidden || coverage.readOnly || coverage.group?.covered)
+        continue;
       const group = coverage.group;
       if (group) {
         if (seenGroups.has(norm(group.name))) continue;
@@ -569,8 +572,14 @@ export async function check(page: Page, url = page.url()): Promise<Report> {
 
   const title = await page.title();
   const result = score(findings);
-  // Nothing to judge: no bridge controls, and no fields or charts for the DOM checks.
-  const measured = bridge.components > 0 || fields.length > 0 || charts.length > 0;
+  // Nothing to judge: no bridge controls or tools of the page's own, no fields or charts for the
+  // DOM checks, and no finding beyond the missing bridge (a focusable cell, an ungated button).
+  const measured =
+    bridge.components > 0 ||
+    ownTools.length > 0 ||
+    fields.length > 0 ||
+    charts.length > 0 ||
+    findings.some((f) => f.rule !== "bridge-missing");
   return {
     tool: { name: "@booki-aui/readiness", version: VERSION },
     url,

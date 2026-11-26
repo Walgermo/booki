@@ -57,6 +57,42 @@ describe("readiness checks on fixture pages", () => {
     expect(report.score).toBeLessThan(100);
   });
 
+  it("does not compare fields with a WebMCP snapshot it cannot read as a list", async () => {
+    const report = await run("webmcp-text-snapshot");
+    expect(report.bridge.source).toBe("webmcp");
+    expect(tally(report)).toEqual({});
+    expect(report.score).toBe(100);
+  });
+
+  it("skips read-only fields when comparing with an empty bridge", async () => {
+    // Read-only input and textarea, a field in an aria-readonly grid: no one can change them.
+    // A read-only checkbox still toggles, and the plain Notat field is editable.
+    const report = await run("empty-bridge-readonly");
+    expect(tally(report)).toEqual({ "bridge-missing": 1, "field-not-on-bridge": 2 });
+    expect(
+      report.findings
+        .filter((f) => f.rule === "field-not-on-bridge")
+        .map((f) => f.element?.name)
+        .sort(),
+    ).toEqual(["Godkjent", "Notat"]);
+  });
+
+  it("measures a page with focusable cells and an ungated button but no fields", async () => {
+    const report = await run("grid-no-fields");
+    expect(report.metrics.fields).toBe(0);
+    expect(tally(report)).toEqual({ "bridge-missing": 1, "focusable-without-role": 2, "irreversible-ungated": 1 });
+    expect(report.measured).toBe(true);
+    expect(report.grade).not.toBe("not measured");
+  });
+
+  it("measures a page whose only bridge is WebMCP tools of its own", async () => {
+    const report = await run("webmcp-only-tools");
+    expect(report.findings).toEqual([]);
+    expect(report.measured).toBe(true);
+    expect(report.score).toBe(100);
+    expect(report.grade).toBe("ready");
+  });
+
   it("still scores a page with fields but no bridge", async () => {
     const report = await run("no-bridge");
     expect(report.measured).toBe(true);
@@ -195,6 +231,12 @@ describe("readiness checks on fixture pages", () => {
     expect(report.bridge.webmcpTools).toEqual(["snapshot", "act", "query", "post_voucher"]);
     expect(report.bridge).toMatchObject({ source: "webmcp", components: 1 });
     expect(report.findings).toEqual([]);
+  });
+
+  it("keeps a tool whose older registration's signal aborts after a newer one", async () => {
+    const report = await run("webmcp-reused-tool");
+    expect(report.bridge.webmcpTools).toEqual(["snapshot"]);
+    expect(report.bridge).toMatchObject({ source: "webmcp", components: 1 });
   });
 
   it("reports a large snapshot as a cost", async () => {

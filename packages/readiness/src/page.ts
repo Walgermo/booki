@@ -46,32 +46,39 @@ export function inPage<F extends (...args: never[]) => unknown>(fn: F): F {
  * browser has no WebMCP of its own.
  *
  * A tool is kept once by name, the latest registration winning, and leaves
- * when the signal it was registered with aborts. ui-sdk's registerTools
+ * when the signal of that registration aborts: an older registration's signal,
+ * even with the same tool object, leaves the newer one. ui-sdk's registerTools
  * unregisters by aborting, so React's development double effect (register,
  * clean up, register) and a hot reload register each tool again; without
  * this the report listed every tool twice.
  */
 export const INIT_SCRIPT = `(() => {
   const tools = [];
+  // The current registration of each name: an abort removes the tool only while its registration is current.
+  const current = new Map();
   Object.defineProperty(globalThis, "__readinessTools", { value: tools, configurable: true });
+  const remove = (name) => { const i = tools.findIndex((t) => t.name === name); if (i >= 0) tools.splice(i, 1); current.delete(name); };
   const add = (tool) => {
-    if (!tool || typeof tool !== "object") return;
+    if (!tool || typeof tool !== "object") return null;
     const i = tools.findIndex((t) => t.name === tool.name);
     if (i >= 0) tools.splice(i, 1, tool); else tools.push(tool);
+    const token = {};
+    current.set(tool.name, token);
+    return token;
   };
   const context = {
     registerTool(tool, options) {
       const signal = options && options.signal;
       if (signal && signal.aborted) return Promise.resolve();
-      add(tool);
-      if (signal && typeof signal.addEventListener === "function") {
-        signal.addEventListener("abort", () => { const i = tools.indexOf(tool); if (i >= 0) tools.splice(i, 1); }, { once: true });
+      const token = add(tool);
+      if (token && signal && typeof signal.addEventListener === "function") {
+        signal.addEventListener("abort", () => { if (current.get(tool.name) === token) remove(tool.name); }, { once: true });
       }
       return Promise.resolve();
     },
-    unregisterTool(name) { const i = tools.findIndex((t) => t.name === name); if (i >= 0) tools.splice(i, 1); return Promise.resolve(); },
-    provideContext(value) { tools.length = 0; for (const tool of (value && value.tools) || []) add(tool); return Promise.resolve(); },
-    clearContext() { tools.length = 0; return Promise.resolve(); },
+    unregisterTool(name) { remove(name); return Promise.resolve(); },
+    provideContext(value) { tools.length = 0; current.clear(); for (const tool of (value && value.tools) || []) add(tool); return Promise.resolve(); },
+    clearContext() { tools.length = 0; current.clear(); return Promise.resolve(); },
   };
   try { if (!document.modelContext) Object.defineProperty(document, "modelContext", { value: context, configurable: true }); } catch {}
   try { if (!navigator.modelContext) Object.defineProperty(navigator, "modelContext", { value: context, configurable: true }); } catch {}
@@ -290,7 +297,11 @@ export async function readBridge(): Promise<{
     offPage?: boolean;
   }>;
   tools: string[];
-  /** A snapshot was read (window.agent, or a WebMCP snapshot tool), even if it listed no controls. */
+  /**
+   * A snapshot was read (window.agent, or a WebMCP snapshot tool) as a list of controls, even an
+   * empty one. False when there is no snapshot, or it answered with something that is not a list
+   * (plain text, say): there is then nothing to compare the page's fields with.
+   */
   snapshotRead: boolean;
   error: string | null;
 }> {
@@ -300,7 +311,8 @@ export async function readBridge(): Promise<{
   };
   // Once each: a page may register a tool on both document and navigator, or again on a re-render.
   const tools = [...new Set((g.__readinessTools ?? []).map((tool) => String(tool.name)))];
-  const toList = (value: unknown): unknown[] => {
+  // The list of controls, or null when the answer holds none we can read.
+  const toList = (value: unknown): unknown[] | null => {
     if (Array.isArray(value)) return value;
     if (value && typeof value === "object") {
       const v = value as { components?: unknown; content?: Array<{ type: string; text?: string }> };
@@ -310,21 +322,27 @@ export async function readBridge(): Promise<{
         try {
           return toList(JSON.parse(text));
         } catch {
-          return [];
+          return null;
         }
       }
     }
-    return [];
+    return null;
   };
   try {
     if (typeof g.agent?.snapshot === "function") {
-      const components = toList(await g.agent.snapshot()) as never[];
-      return { source: "window.agent", components, tools, snapshotRead: true, error: null };
+      const list = toList(await g.agent.snapshot());
+      return {
+        source: "window.agent",
+        components: (list ?? []) as never[],
+        tools,
+        snapshotRead: list !== null,
+        error: null,
+      };
     }
     const snapshotTool = (g.__readinessTools ?? []).find((tool) => tool.name === "snapshot");
     if (snapshotTool?.execute) {
-      const components = toList(await snapshotTool.execute({})) as never[];
-      return { source: "webmcp", components, tools, snapshotRead: true, error: null };
+      const list = toList(await snapshotTool.execute({}));
+      return { source: "webmcp", components: (list ?? []) as never[], tools, snapshotRead: list !== null, error: null };
     }
     return { source: tools.length ? "webmcp" : null, components: [], tools, snapshotRead: false, error: null };
   } catch (error) {
@@ -338,6 +356,8 @@ export type BridgeCoverage = {
   inRoot: boolean;
   /** The field is inside data-agent-hidden: kept from the agent on purpose. */
   agentHidden: boolean;
+  /** Read-only (native readOnly, or aria-readonly on it or its row or grid): no one can change it. */
+  readOnly: boolean;
   /** For a radio: its group, named by aria-labelledby, aria-label or a legend. */
   group: { name: string; covered: boolean } | null;
 };
@@ -406,7 +426,21 @@ export function bridgeCoverage(element: Element, entries: Array<{ component: str
     const name = host ? nameOf(host) : "";
     if (host && name) group = { name, covered: allLabels.has(norm(name)) || inside(host) };
   }
-  return { inRoot: inside(element), agentHidden: element.closest("[data-agent-hidden]") !== null, group };
+  // Native readOnly binds only text-like inputs and textareas: a read-only checkbox still toggles.
+  const textLike =
+    element.tagName === "TEXTAREA" ||
+    (element.tagName === "INPUT" &&
+      !["checkbox", "radio", "file", "range", "color", "hidden", "button", "submit", "reset", "image"].includes(
+        (element as HTMLInputElement).type,
+      ));
+  const readOnly =
+    (textLike && (element as HTMLInputElement).readOnly === true) || element.closest("[aria-readonly=true]") !== null;
+  return {
+    inRoot: inside(element),
+    agentHidden: element.closest("[data-agent-hidden]") !== null,
+    readOnly,
+    group,
+  };
 }
 
 /**
