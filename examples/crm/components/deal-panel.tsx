@@ -93,7 +93,7 @@ export function DealPanel({
 }
 
 /** How sure and from where, as the person set them, and the figure they were set for. */
-type Evidence = { figure?: string; valueStatus?: DealValueStatus; valueSource?: string | null };
+type Evidence = { valueStatus?: DealValueStatus; valueSource?: string | null };
 
 const figureKey = ({ valueMinor, currency }: { valueMinor: number | null; currency: string }) =>
   `${currency}:${valueMinor ?? ""}`;
@@ -103,11 +103,12 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
   // Undo starts the amount field over: text it refused is not the deal's, and it would block the next save.
   const [round, setRound] = useState(0);
   const [figure, setFigure] = useState({ valueMinor: deal.valueMinor, currency: deal.currency });
-  // How sure and from where, once the person has set them, for the figure they set them for. Until then, and
-  // once the figure changes again, they follow the figure: the deal's own for the deal's figure, and none for
-  // a new one, since a source vouches for the figure it was given for and no other.
-  const [evidence, setEvidence] = useState<Evidence>({});
-  const held = evidence.figure === figureKey(figure) ? evidence : {};
+  // How sure and from where, as the person set them, kept per figure: a source vouches for the figure it was
+  // given for and no other. A figure the person gave none for follows the deal: the deal's own for the deal's
+  // figure, none for a new one. Kept per figure rather than dropped, because the amount field reports every
+  // valid keystroke and puts the amount back when it refuses an edit: back on a figure, its evidence is back.
+  const [evidence, setEvidence] = useState<Record<string, Evidence>>({});
+  const held = evidence[figureKey(figure)] ?? {};
   const sameFigure = figure.valueMinor === deal.valueMinor && figure.currency === deal.currency;
   const draft: Deal = {
     ...deal,
@@ -120,12 +121,15 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
   const setDraft = (next: Deal) => {
     const nextFigure = { valueMinor: next.valueMinor, currency: next.currency };
     const key = figureKey(nextFigure);
-    // A new figure starts without the evidence given for the one before.
-    const kept: Evidence = key === figureKey(figure) ? { ...held } : {};
+    if (key !== figureKey(figure)) {
+      // A new figure shows what was given for it, if anything; what was given for this one stays with it.
+      setFigure(nextFigure);
+      return;
+    }
+    const kept: Evidence = { ...held };
     if (next.valueStatus !== draft.valueStatus) kept.valueStatus = next.valueStatus;
     if (next.valueSource !== draft.valueSource) kept.valueSource = next.valueSource ?? null;
-    setFigure(nextFigure);
-    setEvidence({ ...kept, figure: key });
+    setEvidence((all) => ({ ...all, [key]: kept }));
   };
   const changed = JSON.stringify(draft) !== JSON.stringify(deal);
   return (
@@ -146,7 +150,7 @@ function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) 
           currency={draft.currency}
           allowEmpty
           value={draft.valueMinor}
-          onEmpty={() => setDraft({ ...draft, valueMinor: null, valueStatus: "unknown" })}
+          onEmpty={() => setDraft({ ...draft, valueMinor: null })}
           onValueChange={(minor) => setDraft({ ...draft, valueMinor: minor })}
         />
       </div>
