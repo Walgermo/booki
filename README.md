@@ -8,6 +8,9 @@
 
 <a href="https://github.com/Walgermo/booki/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Walgermo/booki/ci.yml?branch=main&label=CI&labelColor=0d1117" alt="CI"></a>
 <a href="https://github.com/Walgermo/booki/actions/workflows/ci.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FWalgermo%2Fbooki%2Fcoverage-badge%2Fcoverage.json&labelColor=0d1117" alt="Test coverage"></a>
+<a href="https://www.npmjs.com/package/@booki-aui/react"><img src="https://img.shields.io/npm/v/@booki-aui/react?label=npm&labelColor=0d1117&color=d4ee40" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/@booki-aui/react"><img src="https://img.shields.io/npm/dw/@booki-aui/react?labelColor=0d1117&color=d4ee40" alt="npm downloads per week"></a>
+<a href="https://github.com/Walgermo/booki/stargazers"><img src="https://img.shields.io/github/stars/Walgermo/booki?style=flat&labelColor=0d1117&color=d4ee40" alt="GitHub stars"></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-d4ee40?labelColor=0d1117" alt="License: MIT"></a>
 <img src="https://img.shields.io/badge/status-pre--1.0-d4ee40?labelColor=0d1117" alt="Status: pre-1.0">
 
