@@ -41,6 +41,7 @@
     "nb": "Dokumenter og bilag",
     "icons": [
       "document-lines",
+      "document-table",
       "receipt",
       "receipt-minus",
       "document-pen",
@@ -48,6 +49,7 @@
       "document-check",
       "list-rows",
       "paperclip",
+      "envelope-check",
       "scan",
       "camera",
       "inbox",
@@ -91,6 +93,7 @@
       "book",
       "folder",
       "table",
+      "rows-merge",
       "chart-line",
       "chart-line-down",
       "chart-bar",
@@ -111,6 +114,7 @@
       "calendar-dot",
       "calendar-range",
       "calendar-check",
+      "calendar-forward",
       "clock",
       "hourglass",
       "stopwatch",
@@ -155,7 +159,23 @@
       "sticky-note",
       "speech-bubble",
       "gavel",
+      "link-off",
       "sitemap"
+    ]
+  },
+  {
+    "id": "due-diligence",
+    "en": "Customer due diligence",
+    "nb": "Kundekontroll",
+    "icons": [
+      "shield",
+      "ownership-tree",
+      "podium",
+      "document-signature",
+      "copy-check",
+      "document-shield",
+      "radar",
+      "shield-alert"
     ]
   },
   {

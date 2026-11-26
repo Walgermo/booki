@@ -2,7 +2,7 @@
 
 # What the icons cover
 
-132 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
+145 icons for accounting and auditing UI, by theme. "Stands for" is what each icon means in
 Booki (its `data-aliases`), and what the search on booki.dev/docs/icons finds it by. Missing a use
 case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 
@@ -43,6 +43,7 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | Icon | Stands for |
 | --- | --- |
 | `document-lines` | voucher, voucher composer, voucher lines |
+| `document-table` | data file, accounting file, structured import, trial balance file, csv file, saft, saf t, regnskapsfil, filimport |
 | `receipt` | invoice, invoice editor |
 | `receipt-minus` | credit note, credit |
 | `document-pen` | quote, estimate, draft |
@@ -50,6 +51,7 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `document-check` | audit report, opinion, approved document |
 | `list-rows` | voucher lines |
 | `paperclip` | evidence, evidence list |
+| `envelope-check` | external confirmation, bank confirmation, supplier confirmation, balance confirmation, saldobekreftelse, leverandørbekreftelse, bankbekreftelse |
 | `scan` | ocr, scan, interpret |
 | `camera` | receipt photo, capture, scan receipt |
 | `inbox` | supplier invoice inbox, inbox |
@@ -94,6 +96,7 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `book` | ledger, ledger table |
 | `folder` | account, account picker |
 | `table` | data table, table |
+| `rows-merge` | account mapping, ledger mapping, chart of accounts mapping, rollup, kontomapping, kontokobling, kontoplanmapping |
 | `chart-line` | trend chart, trend |
 | `chart-line-down` | depreciation, decline |
 | `chart-bar` | bar chart |
@@ -112,6 +115,7 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `calendar-dot` | financial date, date, accounting date |
 | `calendar-range` | accrual, periodisation, date range |
 | `calendar-check` | month end, close, month end close |
+| `calendar-forward` | period rollover, year rollover, carry forward, roll forward, next period, rullering, årsrullering, videreføring, neste periode |
 | `clock` | pending, due, waiting, time |
 | `hourglass` | aged balances, aging |
 | `stopwatch` | stage duration, duration |
@@ -152,7 +156,21 @@ case? Draw the icon, add it to `categories.json`, and run `pnpm icons`.
 | `sticky-note` | review note, note, comment |
 | `speech-bubble` | client requests, requests, message |
 | `gavel` | compliance, regulation, legal |
+| `link-off` | auditor independence, independence review, conflict of interest, disconnected, unlink, uavhengighet, interessekonflikt |
 | `sitemap` | group, consolidation, entities, subsidiaries |
+
+## Customer due diligence
+
+| Icon | Stands for |
+| --- | --- |
+| `shield` | customer due diligence, know your customer, anti money laundering, kyc, aml, compliance, kundekontroll, hvitvasking, etterlevelse |
+| `ownership-tree` | beneficial owner, ultimate beneficial owner, ownership register, ownership structure, reell rettighetshaver, reelle rettighetshavere, eierstruktur |
+| `podium` | politically exposed person, political exposure, public office, pep, politisk eksponert person, politisk eksponerte personer |
+| `document-signature` | self declaration, signed declaration, signature form, customer declaration, egenerklæring, signerbar erklæring |
+| `copy-check` | control reuse, reuse controls, reuse verified evidence, prior check, kontrollgjenbruk, gjenbruk av kontroll |
+| `document-shield` | aml report, compliance report, due diligence report, aml rapport, etterlevelsesrapport, kundekontrollrapport |
+| `radar` | ongoing monitoring, continuous monitoring, customer monitoring, watchlist monitoring, overvåking, løpende oppfølging |
+| `shield-alert` | sanctions alert, sanctions match, watchlist hit, enhanced due diligence, sanksjonstreff, forsterkede kundetiltak |
 
 ## Sales
 

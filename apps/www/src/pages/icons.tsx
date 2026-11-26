@@ -33,6 +33,12 @@ const ANY_USAGE = `import { iconSvg } from "@booki-aui/icons"
 element.innerHTML = iconSvg("banknote")       // a complete <svg>, 16 px
 element.innerHTML = iconSvg("banknote", 20)`;
 
+const normalizeSearch = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[-\s]+/g, " ")
+    .trim();
+
 const importLine = (name: IconName) => `import { ${iconComponentName(name)} } from "@booki-aui/icons/react"`;
 
 /** What each icon can be found by: its name, its aliases, and the docs pages it marks, in both languages. */
@@ -41,7 +47,7 @@ const SEARCH_WORDS: Record<IconName, string> = Object.fromEntries(
     const pages = Object.entries(PAGE_ICON)
       .filter(([, icon]) => icon === name)
       .flatMap(([page]) => [page, plainName(page, "en") ?? "", plainName(page, "nb") ?? ""]);
-    return [name, [name, ...iconAliases[name], ...pages].join(" ").toLowerCase()];
+    return [name, normalizeSearch([name, ...iconAliases[name], ...pages].join(" "))];
   }),
 ) as Record<IconName, string>;
 
@@ -54,7 +60,7 @@ export function IconsPage() {
   const [copied, setCopied] = useState<{ name: IconName; ok: boolean } | null>(null);
 
   const groups = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = normalizeSearch(query);
     return iconCategories
       .map((group) => ({
         ...group,

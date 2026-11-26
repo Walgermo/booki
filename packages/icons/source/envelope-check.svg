@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="external-confirmation bank-confirmation supplier-confirmation balance-confirmation saldobekreftelse leverandørbekreftelse bankbekreftelse" data-waive-angle="the envelope flap follows the plain envelope icon; a 45-degree fold would hit the confirmation badge">
+  <path d="M11.25 17.75H4.25A1.5 1.5 0 0 1 2.75 16.25v-10a1.5 1.5 0 0 1 1.5-1.5h15.5a1.5 1.5 0 0 1 1.5 1.5v5.5"/>
+  <path d="M11.25 17.75H4.25A1.5 1.5 0 0 1 2.75 16.25v-10a1.5 1.5 0 0 1 1.5-1.5h15.5a1.5 1.5 0 0 1 1.5 1.5v5.5Z" data-role="silhouette"/>
+  <path d="M2.75 7.25l8.739 5.196a1 1 0 0 0 1.022 0l8.739-5.196" data-role="detail"/>
+  <path d="m14.75 17.75 2.5 2.5 4.5-4.5"/>
+</svg>

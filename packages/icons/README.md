@@ -6,6 +6,13 @@ colour of the text beside them, in the light and the dark theme alike.
 
 Browse and search them, and copy an import, at [booki.dev/docs/icons](https://booki.dev/docs/icons).
 
+## Customer due diligence
+
+Use `shield` for the AML/KYC overview, `risk-matrix` for the risk assessment, and
+`fingerprint` for identity verification. Find specific icons for ownership,
+political exposure, declarations, evidence reuse, AML reports, monitoring and
+sanctions in the [coverage catalog](./COVERAGE.md).
+
 ## React
 
 Import the icons you use by name; a bundler brings in only those.

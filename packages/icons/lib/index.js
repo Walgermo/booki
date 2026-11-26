@@ -54,6 +54,8 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><path d="m8.75 15.5 2.25 2.25 4.5-4.5"/>',
   "calendar-dot":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><circle cx="15.25" cy="15.75" r="1"/>',
+  "calendar-forward":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.25 21.25h-4a1.5 1.5 0 0 1-1.5-1.5V6.25a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v3.5H9.25Z"/></g><path d="M9.25 21.25h-4a1.5 1.5 0 0 1-1.5-1.5V6.25a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v3.5"/><path d="M8.25 2.75v3.5M15.75 2.75v3.5"/><path d="M12.75 17.25h8.5m-3.5-3.5 3.5 3.5-3.5 3.5"/><path d="M3.75 9.75h16.5"/>',
   "calendar-range":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><circle cx="8.25" cy="15.75" r="0.75"/><path d="M9 15.75h6"/><circle cx="15.75" cy="15.75" r="0.75"/>',
   camera:
@@ -92,6 +94,8 @@ export const icons = {
   coins:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.868 13.757A6 6 0 1 1 13.757 5.868A9.5 9.5 0 0 0 5.868 13.757Z"/><circle cx="15.25" cy="15.25" r="6"/></g><path d="M5.868 13.757A6 6 0 1 1 13.757 5.868"/><circle cx="15.25" cy="15.25" r="6"/><circle cx="15.25" cy="15.25" r="2.5"/>',
   copy: '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.5 8.75L18.75 8.75A1.5 1.5 0 0 1 20.25 10.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L10.25 20.25A1.5 1.5 0 0 1 8.75 18.75L8.75 10.25A1.5 1.5 0 0 1 10.25 8.75Z"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75H10.25A1.5 1.5 0 0 0 8.75 10.25Z"/></g><path d="M14.5 8.75L18.75 8.75A1.5 1.5 0 0 1 20.25 10.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L10.25 20.25A1.5 1.5 0 0 1 8.75 18.75L8.75 10.25A1.5 1.5 0 0 1 10.25 8.75Z"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75"/>',
+  "copy-check":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="8.75" y="8.75" width="12.5" height="12.5" rx="1.5"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75H10.25A1.5 1.5 0 0 0 8.75 10.25Z"/></g><rect x="8.75" y="8.75" width="12.5" height="12.5" rx="1.5"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75"/><path d="m12.25 14.75 2 2 3.5-3.5"/>',
   "credit-card":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><path d="M2.75 10.25h18.5"/><path d="M6.25 14.25h3"/>',
   database:
@@ -106,11 +110,19 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M8.25 12.75h7.5"/><path d="M8.25 16.75h5"/>',
   "document-pen":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25Z"/><path d="M15.293 20.75L15.836 20.75A1 1 0 0 0 16.543 20.457L20.043 16.957A1 1 0 0 0 20.043 15.543L18.957 14.457A1 1 0 0 0 17.543 14.457L14.043 17.957A1 1 0 0 0 13.75 18.664L13.75 19.75A1 1 0 0 0 14.75 20.75Z"/></g><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25"/><path d="M15.293 20.75L15.836 20.75A1 1 0 0 0 16.543 20.457L20.043 16.957A1 1 0 0 0 20.043 15.543L18.957 14.457A1 1 0 0 0 17.543 14.457L14.043 17.957A1 1 0 0 0 13.75 18.664L13.75 19.75A1 1 0 0 0 14.75 20.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M18 19l-2.5-2.5"/>',
+  "document-shield":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25Z"/><path d="M14.75 13.75h6a1 1 0 0 1 1 1v2.707a1.5 1.5 0 0 1-.439 1.061l-2.854 2.853a1 1 0 0 1-1.414 0l-2.854-2.853a1.5 1.5 0 0 1-.439-1.061V14.75a1 1 0 0 1 1-1Z"/></g><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25"/><path d="M14.75 13.75h6a1 1 0 0 1 1 1v2.707a1.5 1.5 0 0 1-.439 1.061l-2.854 2.853a1 1 0 0 1-1.414 0l-2.854-2.853a1.5 1.5 0 0 1-.439-1.061V14.75a1 1 0 0 1 1-1Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/>',
+  "document-signature":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M8.25 14.25l2.293-2.293a1 1 0 0 1 1.707.707v.172a1 1 0 0 0 1.707.707l1.793-1.793"/><path d="M8.25 17.75h7.5"/>',
+  "document-table":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><rect x="8.25" y="11.25" width="7.5" height="6.5" rx="1"/><path d="M12 11.25v6.5"/><path d="M8.25 14.5h7.5"/>',
   dots: '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></g><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
   download:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75Z"/></g><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75"/><path d="M12 3.75V15.25M8 11.25l4 4 4-4"/>',
   envelope:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><path d="M2.75 8.25L11.489 13.446A1 1 0 0 0 12.511 13.446L21.25 8.25"/>',
+  "envelope-check":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M11.25 17.75H4.25A1.5 1.5 0 0 1 2.75 16.25v-10a1.5 1.5 0 0 1 1.5-1.5h15.5a1.5 1.5 0 0 1 1.5 1.5v5.5Z"/></g><path d="M11.25 17.75H4.25A1.5 1.5 0 0 1 2.75 16.25v-10a1.5 1.5 0 0 1 1.5-1.5h15.5a1.5 1.5 0 0 1 1.5 1.5v5.5"/><path d="m14.75 17.75 2.5 2.5 4.5-4.5"/><path d="M2.75 7.25l8.739 5.196a1 1 0 0 0 1.022 0l8.739-5.196"/>',
   "external-link":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.75 6.75L5.25 6.75A1.5 1.5 0 0 0 3.75 8.25L3.75 18.75A1.5 1.5 0 0 0 5.25 20.25L15.75 20.25A1.5 1.5 0 0 0 17.25 18.75L17.25 13.25Z"/></g><path d="M10.75 6.75L5.25 6.75A1.5 1.5 0 0 0 3.75 8.25L3.75 18.75A1.5 1.5 0 0 0 5.25 20.25L15.75 20.25A1.5 1.5 0 0 0 17.25 18.75L17.25 13.25"/><path d="M14.25 3.75h6v6"/><path d="M10.75 13.25 20.25 3.75"/>',
   eye: '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z"/></g><path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/>',
@@ -147,6 +159,8 @@ export const icons = {
   layers:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 7.25L15.25 7.25A1.5 1.5 0 0 1 16.75 8.75L16.75 18.75A1.5 1.5 0 0 1 15.25 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 8.75A1.5 1.5 0 0 1 5.25 7.25Z"/><path d="M7.25 7.25V5.25A1.5 1.5 0 0 1 8.75 3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V15.25A1.5 1.5 0 0 1 18.75 16.75H16.75V8.75A1.5 1.5 0 0 0 15.25 7.25Z"/></g><path d="M10.25 7.25L15.25 7.25A1.5 1.5 0 0 1 16.75 8.75L16.75 18.75A1.5 1.5 0 0 1 15.25 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 8.75A1.5 1.5 0 0 1 5.25 7.25Z"/><path d="M7.25 7.25L7.25 5.25A1.5 1.5 0 0 1 8.75 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 15.25A1.5 1.5 0 0 1 18.75 16.75L16.75 16.75"/>',
   link: '<path d="M9.25 16.75H7.25A4.75 4.75 0 0 1 7.25 7.25H9.25"/><path d="M14.75 7.25H16.75A4.75 4.75 0 0 1 16.75 16.75H14.75"/><path d="M8.25 12h7.5"/>',
+  "link-off":
+    '<path d="M3.5 9a4.75 4.75 0 0 0 3.75 7.75h2.5"/><path d="M14.25 7.25h2.5a4.75 4.75 0 0 1 3.75 7.75"/><path d="M3.75 3.75l16.5 16.5"/>',
   "list-checks":
     '<path d="m2.75 5.25 2 2 4-4"/><path d="m2.75 11.25 2 2 4-4"/><path d="m2.75 17.25 2 2 4-4"/><path d="M12.25 5.25h9"/><path d="M12.25 11.25h9"/><path d="M12.25 17.25h9"/>',
   "list-rows":
@@ -161,6 +175,8 @@ export const icons = {
   map: '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.842 5.204L8.105 4.072A1.5 1.5 0 0 1 9.405 4.052L14.595 6.448A1.5 1.5 0 0 0 15.895 6.428L19.079 4.835A1.5 1.5 0 0 1 21.25 6.177L21.25 16.323A1.5 1.5 0 0 1 20.421 17.665L15.895 19.928A1.5 1.5 0 0 1 14.595 19.948L9.405 17.552A1.5 1.5 0 0 0 8.105 17.572L4.921 19.165A1.5 1.5 0 0 1 2.75 17.823L2.75 7.677A1.5 1.5 0 0 1 3.579 6.335Z"/></g><path d="M5.842 5.204L8.105 4.072A1.5 1.5 0 0 1 9.405 4.052L14.595 6.448A1.5 1.5 0 0 0 15.895 6.428L19.079 4.835A1.5 1.5 0 0 1 21.25 6.177L21.25 16.323A1.5 1.5 0 0 1 20.421 17.665L15.895 19.928A1.5 1.5 0 0 1 14.595 19.948L9.405 17.552A1.5 1.5 0 0 0 8.105 17.572L4.921 19.165A1.5 1.5 0 0 1 2.75 17.823L2.75 7.677A1.5 1.5 0 0 1 3.579 6.335Z"/><path d="M8.75 4V17.5"/><path d="M15.25 6.5V20"/>',
   "octagon-pause":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.25L15.129 3.25A1.5 1.5 0 0 1 16.189 3.689L20.311 7.811A1.5 1.5 0 0 1 20.75 8.871L20.75 15.129A1.5 1.5 0 0 1 20.311 16.189L16.189 20.311A1.5 1.5 0 0 1 15.129 20.75L8.871 20.75A1.5 1.5 0 0 1 7.811 20.311L3.689 16.189A1.5 1.5 0 0 1 3.25 15.129L3.25 8.871A1.5 1.5 0 0 1 3.689 7.811L7.811 3.689A1.5 1.5 0 0 1 8.871 3.25Z"/></g><path d="M12 3.25L15.129 3.25A1.5 1.5 0 0 1 16.189 3.689L20.311 7.811A1.5 1.5 0 0 1 20.75 8.871L20.75 15.129A1.5 1.5 0 0 1 20.311 16.189L16.189 20.311A1.5 1.5 0 0 1 15.129 20.75L8.871 20.75A1.5 1.5 0 0 1 7.811 20.311L3.689 16.189A1.5 1.5 0 0 1 3.25 15.129L3.25 8.871A1.5 1.5 0 0 1 3.689 7.811L7.811 3.689A1.5 1.5 0 0 1 8.871 3.25Z"/><path d="M9.75 9.25v5.5"/><path d="M14.25 9.25v5.5"/>',
+  "ownership-tree":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="2.75" y="8.75" width="6.5" height="6.5" rx="1"/><circle cx="18" cy="5.75" r="3.25"/><circle cx="18" cy="18.25" r="3.25"/></g><rect x="2.75" y="8.75" width="6.5" height="6.5" rx="1"/><circle cx="18" cy="5.75" r="3.25"/><circle cx="18" cy="18.25" r="3.25"/><path d="M9.25 12h3.75"/><path d="M14.75 5.75h-.25A1.5 1.5 0 0 0 13 7.25v9.5a1.5 1.5 0 0 0 1.5 1.5h.25"/>',
   package:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M9.75 3.75L9.75 9.25A1 1 0 0 0 10.75 10.25L13.25 10.25A1 1 0 0 0 14.25 9.25L14.25 3.75"/>',
   "paper-plane":
@@ -177,12 +193,16 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M3.75 7.25h16.5"/><path d="M9.75 13.75L9.75 15.576A1 1 0 0 0 11.224 16.456L14.615 14.63A1 1 0 0 0 14.615 12.87L11.224 11.044A1 1 0 0 0 9.75 11.924Z"/>',
   plug: '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/></g><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/><path d="M9.25 2.75v4.5"/><path d="M14.75 2.75v4.5"/><path d="M12 16.25v5"/>',
   plus: '<path d="M12 4.75v14.5M4.75 12h14.5"/>',
+  podium:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="5.25" y="8.75" width="13.5" height="5" rx="1"/></g><rect x="5.25" y="8.75" width="13.5" height="5" rx="1"/><path d="M9.25 8.75V7.621a1.5 1.5 0 0 1 .439-1.06l2.372-2.372a1.5 1.5 0 0 1 1.06-.439h1.63"/><path d="M12 13.75v6.5m-5.25 0h10.5"/>',
   printer:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M7.25 17.25H4.25A1.5 1.5 0 0 1 2.75 15.75V10.25A1.5 1.5 0 0 1 4.25 8.75H19.75A1.5 1.5 0 0 1 21.25 10.25V15.75A1.5 1.5 0 0 1 19.75 17.25H16.75V14.75A1 1 0 0 0 15.75 13.75H8.25A1 1 0 0 0 7.25 14.75Z"/><path d="M12 13.75L15.75 13.75A1 1 0 0 1 16.75 14.75L16.75 20.25A1 1 0 0 1 15.75 21.25L8.25 21.25A1 1 0 0 1 7.25 20.25L7.25 14.75A1 1 0 0 1 8.25 13.75Z"/></g><path d="M7.25 17.25H4.25A1.5 1.5 0 0 1 2.75 15.75V10.25A1.5 1.5 0 0 1 4.25 8.75H19.75A1.5 1.5 0 0 1 21.25 10.25V15.75A1.5 1.5 0 0 1 19.75 17.25H16.75"/><path d="M7.25 8.75V4.25A1 1 0 0 1 8.25 3.25H15.75A1 1 0 0 1 16.75 4.25V8.75"/><path d="M12 13.75L15.75 13.75A1 1 0 0 1 16.75 14.75L16.75 20.25A1 1 0 0 1 15.75 21.25L8.25 21.25A1 1 0 0 1 7.25 20.25L7.25 14.75A1 1 0 0 1 8.25 13.75Z"/>',
   prompt:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 16.75L19.5 16.75A1.75 1.75 0 0 1 21.25 18.5A1.75 1.75 0 0 1 19.5 20.25L4.5 20.25A1.75 1.75 0 0 1 2.75 18.5A1.75 1.75 0 0 1 4.5 16.75Z"/><path d="M9.5 4.25A5.57 5.57 0 0 0 13.75 8.5A5.57 5.57 0 0 0 9.5 12.75A5.57 5.57 0 0 0 5.25 8.5A5.57 5.57 0 0 0 9.5 4.25Z"/><path d="M18 3A2.294 2.294 0 0 0 19.75 4.75A2.294 2.294 0 0 0 18 6.5A2.294 2.294 0 0 0 16.25 4.75A2.294 2.294 0 0 0 18 3Z"/><path d="M18.75 10.5A1.638 1.638 0 0 0 20 11.75A1.638 1.638 0 0 0 18.75 13A1.638 1.638 0 0 0 17.5 11.75A1.638 1.638 0 0 0 18.75 10.5Z"/></g><path d="M12 16.75L19.5 16.75A1.75 1.75 0 0 1 21.25 18.5A1.75 1.75 0 0 1 19.5 20.25L4.5 20.25A1.75 1.75 0 0 1 2.75 18.5A1.75 1.75 0 0 1 4.5 16.75Z"/><path d="M9.5 4.25A5.57 5.57 0 0 0 13.75 8.5A5.57 5.57 0 0 0 9.5 12.75A5.57 5.57 0 0 0 5.25 8.5A5.57 5.57 0 0 0 9.5 4.25Z"/><path d="M18 3A2.294 2.294 0 0 0 19.75 4.75A2.294 2.294 0 0 0 18 6.5A2.294 2.294 0 0 0 16.25 4.75A2.294 2.294 0 0 0 18 3Z"/><path d="M18.75 10.5A1.638 1.638 0 0 0 20 11.75A1.638 1.638 0 0 0 18.75 13A1.638 1.638 0 0 0 17.5 11.75A1.638 1.638 0 0 0 18.75 10.5Z"/>',
   puzzle:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.25 7.75L6.646 7.75A1 1 0 0 0 7.604 6.464A2.5 2.5 0 1 1 12.396 6.464A1 1 0 0 0 13.354 7.75L14.75 7.75A1.5 1.5 0 0 1 16.25 9.25L16.25 10.646A1 1 0 0 0 17.536 11.604A2.5 2.5 0 1 1 17.536 16.396A1 1 0 0 0 16.25 17.354L16.25 18.75A1.5 1.5 0 0 1 14.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 9.25A1.5 1.5 0 0 1 5.25 7.75Z"/></g><path d="M5.25 7.75L6.646 7.75A1 1 0 0 0 7.604 6.464A2.5 2.5 0 1 1 12.396 6.464A1 1 0 0 0 13.354 7.75L14.75 7.75A1.5 1.5 0 0 1 16.25 9.25L16.25 10.646A1 1 0 0 0 17.536 11.604A2.5 2.5 0 1 1 17.536 16.396A1 1 0 0 0 16.25 17.354L16.25 18.75A1.5 1.5 0 0 1 14.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 9.25A1.5 1.5 0 0 1 5.25 7.75Z"/>',
+  radar:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 12V2.75a9.25 9.25 0 0 1 6.541 2.709Z"/></g><circle cx="12" cy="12" r="9.25"/><path d="M12 12l6.541-6.541"/><path d="M7.25 11.25h.5"/><path d="M14.75 16.75h.5"/>',
   receipt:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/></g><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/><path d="M8.5 9.25h7"/><path d="M8.5 13.25h4.5"/>',
   "receipt-minus":
@@ -195,6 +215,8 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 9.25V3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V9.25Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M9.25 3.75v16.5"/><path d="M14.75 3.75v16.5"/><path d="M3.75 9.25h16.5"/><path d="M3.75 14.75h16.5"/>',
   route:
     '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5.75" cy="18.25" r="3"/><circle cx="18.25" cy="5.75" r="3"/></g><circle cx="5.75" cy="18.25" r="3"/><circle cx="18.25" cy="5.75" r="3"/><path d="M8.75 18.25H16.75A1.5 1.5 0 0 0 18.25 16.75V8.75"/>',
+  "rows-merge":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><rect x="2.75" y="6.25" width="5.5" height="3.5" rx="1"/><rect x="2.75" y="14.25" width="5.5" height="3.5" rx="1"/><rect x="15.75" y="10" width="5.5" height="4" rx="1"/></g><rect x="2.75" y="6.25" width="5.5" height="3.5" rx="1"/><rect x="2.75" y="14.25" width="5.5" height="3.5" rx="1"/><rect x="15.75" y="10" width="5.5" height="4" rx="1"/><path d="M8.25 8l4 4h3.5"/><path d="M8.25 16l4-4"/>',
   sample:
     '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="4.75" r="2.75"/><circle cx="4.75" cy="19.25" r="2.75"/></g><path d="M4.75 4.75h0"/><circle cx="12" cy="4.75" r="2.75"/><path d="M19.25 4.75h0"/><path d="M4.75 12h0"/><path d="M12 12h0"/><path d="M19.25 12h0"/><circle cx="4.75" cy="19.25" r="2.75"/><path d="M12 19.25h0"/><path d="M19.25 19.25h0"/>',
   scale:
@@ -202,6 +224,10 @@ export const icons = {
   scan: '<path d="M3.75 8.25V5.25A1.5 1.5 0 0 1 5.25 3.75H8.25"/><path d="M15.75 3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V8.25"/><path d="M20.25 15.75V18.75A1.5 1.5 0 0 1 18.75 20.25H15.75"/><path d="M8.25 20.25H5.25A1.5 1.5 0 0 1 3.75 18.75V15.75"/><path d="M7.75 12h8.5"/>',
   shapes:
     '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="7" cy="7.25" r="3.25"/><path d="M15.311 7.247L16.113 5.706A1 1 0 0 1 17.887 5.706L19.49 8.789A1 1 0 0 1 18.603 10.25L15.397 10.25A1 1 0 0 1 14.51 8.789Z"/><path d="M17 13.75L19.25 13.75A1 1 0 0 1 20.25 14.75L20.25 19.25A1 1 0 0 1 19.25 20.25L14.75 20.25A1 1 0 0 1 13.75 19.25L13.75 14.75A1 1 0 0 1 14.75 13.75Z"/></g><circle cx="7" cy="7.25" r="3.25"/><path d="M15.311 7.247L16.113 5.706A1 1 0 0 1 17.887 5.706L19.49 8.789A1 1 0 0 1 18.603 10.25L15.397 10.25A1 1 0 0 1 14.51 8.789Z"/><path d="M17 13.75L19.25 13.75A1 1 0 0 1 20.25 14.75L20.25 19.25A1 1 0 0 1 19.25 20.25L14.75 20.25A1 1 0 0 1 13.75 19.25L13.75 14.75A1 1 0 0 1 14.75 13.75Z"/><path d="M7 14v6M4 17h6"/>',
+  shield:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/>',
+  "shield-alert":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/><path d="M12 7.25v4.5m0 3.75v.25"/>',
   "shield-check":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/><path d="m8.25 10.75 2.5 2.5 5-5"/>',
   sitemap:
@@ -277,6 +303,17 @@ export const iconAliases = {
   calendar: ["accounting-period", "financial-date", "period"],
   "calendar-check": ["month-end", "close", "month-end-close"],
   "calendar-dot": ["financial-date", "date", "accounting-date"],
+  "calendar-forward": [
+    "period-rollover",
+    "year-rollover",
+    "carry-forward",
+    "roll-forward",
+    "next-period",
+    "rullering",
+    "årsrullering",
+    "videreføring",
+    "neste-periode",
+  ],
   "calendar-range": ["accrual", "periodisation", "date-range"],
   camera: ["receipt-photo", "capture", "scan-receipt"],
   cart: ["purchase-order", "purchasing", "order"],
@@ -299,6 +336,14 @@ export const iconAliases = {
   code: ["examples"],
   coins: ["money-amount", "money", "coins"],
   copy: ["copy", "duplicate"],
+  "copy-check": [
+    "control-reuse",
+    "reuse-controls",
+    "reuse-verified-evidence",
+    "prior-check",
+    "kontrollgjenbruk",
+    "gjenbruk-av-kontroll",
+  ],
   "credit-card": ["card", "card-payment"],
   database: ["memory", "context", "knowledge", "data"],
   dialog: ["confirm-dialog", "dialog"],
@@ -306,9 +351,45 @@ export const iconAliases = {
   "document-check": ["audit-report", "opinion", "approved-document"],
   "document-lines": ["voucher", "voucher-composer", "voucher-lines"],
   "document-pen": ["quote", "estimate", "draft"],
+  "document-shield": [
+    "aml-report",
+    "compliance-report",
+    "due-diligence-report",
+    "aml-rapport",
+    "etterlevelsesrapport",
+    "kundekontrollrapport",
+  ],
+  "document-signature": [
+    "self-declaration",
+    "signed-declaration",
+    "signature-form",
+    "customer-declaration",
+    "egenerklæring",
+    "signerbar-erklæring",
+  ],
+  "document-table": [
+    "data-file",
+    "accounting-file",
+    "structured-import",
+    "trial-balance-file",
+    "csv-file",
+    "saft",
+    "saf-t",
+    "regnskapsfil",
+    "filimport",
+  ],
   dots: ["more", "menu", "actions", "more-actions"],
   download: ["download", "export", "csv"],
   envelope: ["email", "mail", "send-invoice", "dunning"],
+  "envelope-check": [
+    "external-confirmation",
+    "bank-confirmation",
+    "supplier-confirmation",
+    "balance-confirmation",
+    "saldobekreftelse",
+    "leverandørbekreftelse",
+    "bankbekreftelse",
+  ],
   "external-link": ["external", "open-new"],
   eye: ["snapshot", "observe", "visible", "read"],
   "eye-off": ["confidential", "redacted", "secret", "hidden"],
@@ -330,6 +411,15 @@ export const iconAliases = {
   key: ["api-key", "secret", "credential"],
   layers: ["sheet-stack", "sheets"],
   link: ["approval-chain", "chain"],
+  "link-off": [
+    "auditor-independence",
+    "independence-review",
+    "conflict-of-interest",
+    "disconnected",
+    "unlink",
+    "uavhengighet",
+    "interessekonflikt",
+  ],
   "list-checks": ["close-checklist", "checklist"],
   "list-rows": ["voucher-lines"],
   "loader-dots": ["loading", "typing", "thinking", "pending"],
@@ -338,6 +428,15 @@ export const iconAliases = {
   magnifier: ["audit-findings", "findings", "search"],
   map: ["overview", "introduction"],
   "octagon-pause": ["approval-gate", "gate", "hold"],
+  "ownership-tree": [
+    "beneficial-owner",
+    "ultimate-beneficial-owner",
+    "ownership-register",
+    "ownership-structure",
+    "reell-rettighetshaver",
+    "reelle-rettighetshavere",
+    "eierstruktur",
+  ],
   package: ["installation", "install"],
   "paper-plane": ["payment-confirm", "send"],
   paperclip: ["evidence", "evidence-list"],
@@ -347,19 +446,63 @@ export const iconAliases = {
   "play-window": ["demo"],
   plug: ["connector", "integration", "mcp"],
   plus: ["add", "new", "create", "new-line", "new-voucher"],
+  podium: [
+    "politically-exposed-person",
+    "political-exposure",
+    "public-office",
+    "pep",
+    "politisk-eksponert-person",
+    "politisk-eksponerte-personer",
+  ],
   printer: ["print"],
   prompt: ["ask", "instruction", "prompt-input"],
   puzzle: ["erp-teams", "integration", "integrate"],
+  radar: [
+    "ongoing-monitoring",
+    "continuous-monitoring",
+    "customer-monitoring",
+    "watchlist-monitoring",
+    "overvåking",
+    "løpende-oppfølging",
+  ],
   receipt: ["invoice", "invoice-editor"],
   "receipt-minus": ["credit-note", "credit"],
   refresh: ["refresh", "sync", "recalculate", "reload"],
   repeat: ["recurring-revenue", "recurring"],
   "risk-matrix": ["risk", "risk-assessment", "heat-map"],
   route: ["walkthrough", "process", "flow"],
+  "rows-merge": [
+    "account-mapping",
+    "ledger-mapping",
+    "chart-of-accounts-mapping",
+    "rollup",
+    "kontomapping",
+    "kontokobling",
+    "kontoplanmapping",
+  ],
   sample: ["sampling", "sample", "selection"],
   scale: ["bank-reconciliation", "reconcile"],
   scan: ["ocr", "scan", "interpret"],
   shapes: ["icons", "icon-set"],
+  shield: [
+    "customer-due-diligence",
+    "know-your-customer",
+    "anti-money-laundering",
+    "kyc",
+    "aml",
+    "compliance",
+    "kundekontroll",
+    "hvitvasking",
+    "etterlevelse",
+  ],
+  "shield-alert": [
+    "sanctions-alert",
+    "sanctions-match",
+    "watchlist-hit",
+    "enhanced-due-diligence",
+    "sanksjonstreff",
+    "forsterkede-kundetiltak",
+  ],
   "shield-check": ["sca", "sca-prompt"],
   sitemap: ["group", "consolidation", "entities", "subsidiaries"],
   sliders: ["filter", "filters", "adjust"],
@@ -434,6 +577,7 @@ export const iconCategories = [
     nb: "Dokumenter og bilag",
     icons: [
       "document-lines",
+      "document-table",
       "receipt",
       "receipt-minus",
       "document-pen",
@@ -441,6 +585,7 @@ export const iconCategories = [
       "document-check",
       "list-rows",
       "paperclip",
+      "envelope-check",
       "scan",
       "camera",
       "inbox",
@@ -484,6 +629,7 @@ export const iconCategories = [
       "book",
       "folder",
       "table",
+      "rows-merge",
       "chart-line",
       "chart-line-down",
       "chart-bar",
@@ -504,6 +650,7 @@ export const iconCategories = [
       "calendar-dot",
       "calendar-range",
       "calendar-check",
+      "calendar-forward",
       "clock",
       "hourglass",
       "stopwatch",
@@ -548,7 +695,23 @@ export const iconCategories = [
       "sticky-note",
       "speech-bubble",
       "gavel",
+      "link-off",
       "sitemap",
+    ],
+  },
+  {
+    id: "due-diligence",
+    en: "Customer due diligence",
+    nb: "Kundekontroll",
+    icons: [
+      "shield",
+      "ownership-tree",
+      "podium",
+      "document-signature",
+      "copy-check",
+      "document-shield",
+      "radar",
+      "shield-alert",
     ],
   },
   {

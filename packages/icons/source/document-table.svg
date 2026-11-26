@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="data-file accounting-file structured-import trial-balance-file csv-file saft saf-t regnskapsfil filimport" data-waive-heavy="the compact two-by-two grid distinguishes accounting data files from ordinary documents at 16 px">
+  <path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/>
+  <path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z" data-role="silhouette"/>
+  <path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5" data-role="detail"/>
+  <rect x="8.25" y="11.25" width="7.5" height="6.5" rx="1" data-role="detail"/>
+  <path d="M12 11.25v6.5" data-role="detail"/>
+  <path d="M8.25 14.5h7.5" data-role="detail"/>
+</svg>
