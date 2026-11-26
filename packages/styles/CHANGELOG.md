@@ -1,5 +1,11 @@
 # @booki/styles
 
+## 0.4.2
+
+### Patch Changes
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - The styles build checks every output before it replaces `dist`, so a build that stops on the `base.css` size budget leaves the last good build in place instead of a `dist` with two files that a later packaging step takes for a complete one.
+
 ## 0.4.1
 
 No changes in this release.

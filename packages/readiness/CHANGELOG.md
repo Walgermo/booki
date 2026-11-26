@@ -1,5 +1,21 @@
 # @booki/readiness
 
+## 0.2.4
+
+### Patch Changes
+
+- [#157](https://github.com/Walgermo/booki/pull/157) [`67b9c9b`](https://github.com/Walgermo/booki/commit/67b9c9bc2226a48de5729fd620aa3a921a2bf1a5) Thanks [@Walgermo](https://github.com/Walgermo)! - `snapshot-values` checks a value read from a document (`{ value, confidence }`, a supplier invoice's fields) by the amount or date it holds instead of rejecting the wrapper. Bridge coverage lets a grid cell with `aria-readonly="false"` override its read-only grid, so an editable cell the bridge leaves out is reported.
+
+- [#151](https://github.com/Walgermo/booki/pull/151) [`6d56262`](https://github.com/Walgermo/booki/commit/6d562622bbafec1c3b5a1d421c5ce1a6631b1e43) Thanks [@Walgermo](https://github.com/Walgermo)! - The audit and the conformance suite judge fewer things wrong:
+  
+  - A WebMCP snapshot tool that answers in plain text, not a list of controls, is no longer read as an empty list, so the page's fields are not each counted missing from it.
+  - A read-only field (native `readOnly` on a text input or textarea, or inside `aria-readonly="true"`) is not counted as missing from the bridge: no one can change it.
+  - A page with no fields or charts is measured when something else was found (a focusable cell, an ungated posting button) or when it registers WebMCP tools of its own, so `--fail-under` judges its score instead of "no score".
+  - A WebMCP tool registered again with the same object and a new signal stays when the older signal aborts.
+  - `approveUnderRule`, a canonical agent action, is not reported as a person-only action.
+  - `server-person-only` asks as an agent that holds the roles granting the permission, and checks that a person with the same roles is let through; a new `serverActor` option gives those roles (default `[permission]`). A permission it cannot verify is reported as such, not passed.
+  - `snapshot-secrets` no longer reads an amount in minor units as a bank account number; `snapshot-values` checks nested lists (a voucher's lines) and a date control's `value`; `recording-agent` accepts one attributed event per change.
+
 ## 0.2.3
 
 ### Patch Changes

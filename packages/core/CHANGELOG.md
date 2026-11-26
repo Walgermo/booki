@@ -1,5 +1,31 @@
 # @booki/core
 
+## 0.4.2
+
+### Patch Changes
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - `logActivity` takes an optional `today` (YYYY-MM-DD): an entry dated with no time is checked against the person's own date rather than the UTC one. ActivityTimeline passes the local date.
+
+- [#158](https://github.com/Walgermo/booki/pull/158) [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3) Thanks [@Walgermo](https://github.com/Walgermo)! - `timeline` and `lastTouch` take an optional `{ dayStart: "local" }`: an entry dated with no time then starts at the beginning of that day in the runtime's time zone instead of UTC midnight. The default stays UTC. ActivityTimeline passes it, so east of UTC a date-only contact no longer outranks a timed one made earlier that same local day.
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - InvoiceEditor price cells and AuditWorkpaper misstatement cells show an amount at its currency's own decimals (none for CLP or JPY, three for BHD), so editing the figure shown stores the same amount. A supplier invoice's currency correction refuses a three-letter code with no ISO minor unit, such as "UDS", instead of saving one that cannot be formatted.
+
+- [#158](https://github.com/Walgermo/booki/pull/158) [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3) Thanks [@Walgermo](https://github.com/Walgermo)! - Money: store the scale with the amount. An integer of minor units is only exact together with the number of decimals it counts, and ISO 4217 changes a currency's minor unit by amendment. 0.4.0 moved to the ISO list, so amounts saved earlier in currencies whose decimals changed (CLP and 15 others now 0, BHD and 5 others now 3, CLF and UYW 4; before, only JPY and KWD differed from 2) would be read at the wrong scale. Rather than a migration note alone, `@booki-aui/core/money` adds exact helpers, following how established money libraries keep the scale with the amount (a Dinero.js snapshot is `{ amount, currency, scale }`) and how payment APIs keep a legacy representation readable instead of silently reinterpreting it:
+  
+  - `toScaled(money)` gives `{ amount, currency, scale }` to store; `moneyFromScaled(scaled)` reads it back in the currency's current minor units.
+  - `rescaleMinor(minor, fromScale, currency)` converts exactly: adding decimals always works, dropping them is refused (`money.rescale-lossy`) unless the dropped digits are zeros, so no rounding happens without you choosing it.
+  - `legacyMinorDigitsFor(currency)` gives the decimals versions before 0.4.0 used, so an integer saved then without a scale is rescaled once with `rescaleMinor(saved, legacyMinorDigitsFor(currency), currency)`.
+  
+  See "Store the scale with the amount" in docs/drop-in.md. No floats are involved.
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - With `language: "nb"`, a failed check whose value is text containing ", not " keeps that text as it is and translates only the comparison; a field's text is never translated. The `setForeign` amount refusal says its example is for USD or NOK and that JPY and KWD use other decimals.
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - A person-only refusal names the roles that can do it even when the refused agent holds them too, instead of "none defined".
+
+- [#158](https://github.com/Walgermo/booki/pull/158) [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3) Thanks [@Walgermo](https://github.com/Walgermo)! - History from `createBookiHistory` gains `undoEntry(id)`: it undoes one entry only while it is still the latest applied change, checked when its turn runs rather than when it is asked for. A receipt's Undo uses it, so a change a person makes while an agent turn holds the undo back is kept and the undo is refused. Refusals `history.later-changes` and `history.no-entry` are in the catalogue (en and nb).
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - `forecastByPeriod` counts only deals closing within `from` to `to`, so totals no longer change when a quarter starts before the range. `timeInStage` takes the mean of the two middle stays for an even count, and counts the time that passed for a finished stay with times at both ends. `funnel` finds the biggest drop from exact shares, so a loss that rounds to 0.0 % still counts. `setDealValue` drops the old source when the figure changes and no new source is given, even with a status.
+
 ## 0.4.1
 
 ### Patch Changes
