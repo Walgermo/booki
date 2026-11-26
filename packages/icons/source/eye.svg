@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="snapshot observe visible read">
+  <path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z"/>
+  <path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z" data-role="silhouette"/>
+  <circle cx="12" cy="12" r="3.25" data-role="detail"/>
+</svg>

@@ -4,7 +4,7 @@ import { Input } from "@ui-sdk/react/input";
 import { useMemo, useState } from "react";
 
 import { InstallBlock } from "@/components/install-block";
-import { PAGE_ICON, plainName } from "@/docs-nav";
+import { NAV_SECTIONS, PAGE_ICON, plainName } from "@/docs-nav";
 import { Button } from "@/components/ui/button";
 import { useLang, usePageMeta } from "@/lib/lang";
 
@@ -38,6 +38,42 @@ const SEARCH_WORDS: Record<IconName, string> = Object.fromEntries(
   }),
 ) as Record<IconName, string>;
 
+/** The icons for AI and agent UI: shown first, since no docs page carries them. */
+const AI_ICONS: IconName[] = [
+  "sparkles",
+  "agent-cursor",
+  "bot",
+  "chat-sparkle",
+  "prompt",
+  "token",
+  "wrench",
+  "bolt",
+  "eye",
+  "database",
+  "key",
+  "plug",
+];
+
+/** Icons grouped the way the docs are: AI and agents, then one group per docs section, then the rest. */
+const GROUPS: { id: string; en: string; nb: string; icons: IconName[] }[] = (() => {
+  const placed = new Set<IconName>(AI_ICONS);
+  const groups = [{ id: "ai", en: "AI and agents", nb: "AI og agenter", icons: AI_ICONS }];
+  for (const section of NAV_SECTIONS) {
+    const icons: IconName[] = [];
+    for (const page of section.pages) {
+      const icon = PAGE_ICON[page];
+      if (icon && !placed.has(icon)) {
+        placed.add(icon);
+        icons.push(icon);
+      }
+    }
+    if (icons.length) groups.push({ id: section.id, en: section.en, nb: section.nb, icons });
+  }
+  const rest = iconNames.filter((name) => !placed.has(name));
+  if (rest.length) groups.push({ id: "other", en: "Other", nb: "Andre", icons: rest });
+  return groups;
+})();
+
 /** Every icon, searchable by its name or by what it stands for in Booki; a press copies the import. */
 export function IconsPage() {
   const { t } = useLang();
@@ -46,11 +82,14 @@ export function IconsPage() {
   // The last icon pressed, and whether the clipboard took its import (it can be blocked).
   const [copied, setCopied] = useState<{ name: IconName; ok: boolean } | null>(null);
 
-  const shown = useMemo(() => {
+  const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return iconNames;
-    return iconNames.filter((name) => SEARCH_WORDS[name].includes(q));
+    return GROUPS.map((group) => ({
+      ...group,
+      icons: q ? group.icons.filter((name) => SEARCH_WORDS[name].includes(q)) : group.icons,
+    })).filter((group) => group.icons.length);
   }, [query]);
+  const count = groups.reduce((sum, group) => sum + group.icons.length, 0);
 
   async function copy(name: IconName) {
     let ok = true;
@@ -71,8 +110,8 @@ export function IconsPage() {
         <h1 className="site-page-title m-0">{t("Icons", "Ikoner")}</h1>
         <p className="m-0 max-w-prose text-muted-foreground">
           {t(
-            `${iconNames.length} duotone icons for accounting UI, drawn for 16 and 20 px on one grid and stroke. They take the colour of the text beside them, in the light and the dark theme. Search by name or by what an icon stands for ("voucher", "KID"); press one to copy its import.`,
-            `${iconNames.length} duotone-ikoner for regnskaps-UI, tegnet for 16 og 20 px på samme rutenett og strek. De tar fargen fra teksten ved siden av, i lyst og mørkt tema. Søk på navn eller på hva et ikon står for («voucher», «KID»); trykk på et for å kopiere importen.`,
+            `${iconNames.length} duotone icons for accounting UI, drawn for 16 and 20 px on one grid and stroke. They take the colour of the text beside them, in the light and the dark theme. Search by name or by what an icon stands for ("voucher", "KID", "token"); press one to copy its import.`,
+            `${iconNames.length} duotone-ikoner for regnskaps-UI, tegnet for 16 og 20 px på samme rutenett og strek. De tar fargen fra teksten ved siden av, i lyst og mørkt tema. Søk på navn eller på hva et ikon står for («voucher», «KID», «token»); trykk på et for å kopiere importen.`,
           )}
         </p>
         <p className="site-callout m-0 max-w-prose text-sm">
@@ -103,7 +142,7 @@ export function IconsPage() {
         <p className="m-0 text-sm text-muted-foreground" role="status" aria-live="polite">
           {copied?.ok
             ? t(`Copied: ${importLine(copied.name)}`, `Kopiert: ${importLine(copied.name)}`)
-            : t(`${shown.length} of ${iconNames.length} icons`, `${shown.length} av ${iconNames.length} ikoner`)}
+            : t(`${count} of ${iconNames.length} icons`, `${count} av ${iconNames.length} ikoner`)}
         </p>
         {copied && !copied.ok ? (
           <p className="m-0 text-sm">
@@ -114,24 +153,29 @@ export function IconsPage() {
             <code className="site-code-name select-all">{importLine(copied.name)}</code>
           </p>
         ) : null}
-        {shown.length ? (
-          <ul className="site-icons-grid">
-            {shown.map((name) => (
-              <li key={name}>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="site-icons-tile"
-                  data-copied={copied?.name === name ? "" : undefined}
-                  aria-label={t(`${name}: copy the import`, `${name}: kopier importen`)}
-                  onClick={() => void copy(name)}
-                >
-                  <Icon name={name} size={20} />
-                  <span className="site-icons-name">{name}</span>
-                </Button>
-              </li>
-            ))}
-          </ul>
+        {count ? (
+          groups.map((group) => (
+            <div key={group.id} className="grid gap-2">
+              <h3 className="site-kicker m-0">{t(group.en, group.nb)}</h3>
+              <ul className="site-icons-grid">
+                {group.icons.map((name) => (
+                  <li key={name}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="site-icons-tile"
+                      data-copied={copied?.name === name ? "" : undefined}
+                      aria-label={t(`${name}: copy the import`, `${name}: kopier importen`)}
+                      onClick={() => void copy(name)}
+                    >
+                      <Icon name={name} size={20} />
+                      <span className="site-icons-name">{name}</span>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
         ) : (
           <p className="m-0 text-sm">
             {t(

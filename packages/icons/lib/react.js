@@ -31,6 +31,15 @@ export function Icon({ name, ...props }) {
   return inner === undefined ? null : render(name, inner, props);
 }
 
+/** The `agent-cursor` icon. */
+export function AgentCursorIcon(props) {
+  return render(
+    "agent-cursor",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/></g><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/>',
+    props,
+  );
+}
+
 /** The `arrows-exchange` icon. */
 export function ArrowsExchangeIcon(props) {
   return render(
@@ -76,11 +85,29 @@ export function BellIcon(props) {
   );
 }
 
+/** The `bolt` icon. */
+export function BoltIcon(props) {
+  return render(
+    "bolt",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M8.264 8.107L5.05 12.125A1 1 0 0 0 5.831 13.75L10.352 13.75A1 1 0 0 1 11.342 14.888L10.75 19.148A1 1 0 0 0 12.522 19.91L18.95 11.875A1 1 0 0 0 18.169 10.25L13.648 10.25A1 1 0 0 1 12.658 9.112L13.25 4.852A1 1 0 0 0 11.478 4.09Z"/></g><path d="M8.264 8.107L5.05 12.125A1 1 0 0 0 5.831 13.75L10.352 13.75A1 1 0 0 1 11.342 14.888L10.75 19.148A1 1 0 0 0 12.522 19.91L18.95 11.875A1 1 0 0 0 18.169 10.25L13.648 10.25A1 1 0 0 1 12.658 9.112L13.25 4.852A1 1 0 0 0 11.478 4.09Z"/>',
+    props,
+  );
+}
+
 /** The `book` icon. */
 export function BookIcon(props) {
   return render(
     "book",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12.905 6.095L13.811 5.189A1.5 1.5 0 0 1 14.871 4.75L19.75 4.75A1.5 1.5 0 0 1 21.25 6.25L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L14.871 17.75A1.5 1.5 0 0 0 13.811 18.189L12 20L10.189 18.189A1.5 1.5 0 0 0 9.129 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 6.25A1.5 1.5 0 0 1 4.25 4.75L9.129 4.75A1.5 1.5 0 0 1 10.189 5.189L12 7Z"/></g><path d="M12.905 6.095L13.811 5.189A1.5 1.5 0 0 1 14.871 4.75L19.75 4.75A1.5 1.5 0 0 1 21.25 6.25L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L14.871 17.75A1.5 1.5 0 0 0 13.811 18.189L12 20L10.189 18.189A1.5 1.5 0 0 0 9.129 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 6.25A1.5 1.5 0 0 1 4.25 4.75L9.129 4.75A1.5 1.5 0 0 1 10.189 5.189L12 7Z"/><path d="M12 7v13"/>',
+    props,
+  );
+}
+
+/** The `bot` icon. */
+export function BotIcon(props) {
+  return render(
+    "bot",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 9.25L18.25 9.25A1.5 1.5 0 0 1 19.75 10.75L19.75 19.75A1.5 1.5 0 0 1 18.25 21.25L5.75 21.25A1.5 1.5 0 0 1 4.25 19.75L4.25 10.75A1.5 1.5 0 0 1 5.75 9.25Z"/></g><path d="M12 9.25L18.25 9.25A1.5 1.5 0 0 1 19.75 10.75L19.75 19.75A1.5 1.5 0 0 1 18.25 21.25L5.75 21.25A1.5 1.5 0 0 1 4.25 19.75L4.25 10.75A1.5 1.5 0 0 1 5.75 9.25Z"/><path d="M12 9.25V5.5"/><circle cx="12" cy="4.25" r="1.25"/><path d="M9.25 14.25v1.5"/><path d="M14.75 14.25v1.5"/>',
     props,
   );
 }
@@ -175,6 +202,15 @@ export function ChartWaterfallIcon(props) {
   );
 }
 
+/** The `chat-sparkle` icon. */
+export function ChatSparkleIcon(props) {
+  return render(
+    "chat-sparkle",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M15.875 3.75L19.75 3.75A1.5 1.5 0 0 1 21.25 5.25L21.25 15.25A1.5 1.5 0 0 1 19.75 16.75L11.871 16.75A1.5 1.5 0 0 0 10.811 17.189L9.25 18.75A1.172 1.172 0 0 1 7.25 17.922A1.172 1.172 0 0 0 6.078 16.75L4.25 16.75A1.5 1.5 0 0 1 2.75 15.25L2.75 5.25A1.5 1.5 0 0 1 4.25 3.75L12 3.75Z"/></g><path d="M15.875 3.75L19.75 3.75A1.5 1.5 0 0 1 21.25 5.25L21.25 15.25A1.5 1.5 0 0 1 19.75 16.75L11.871 16.75A1.5 1.5 0 0 0 10.811 17.189L9.25 18.75A1.172 1.172 0 0 1 7.25 17.922A1.172 1.172 0 0 0 6.078 16.75L4.25 16.75A1.5 1.5 0 0 1 2.75 15.25L2.75 5.25A1.5 1.5 0 0 1 4.25 3.75L12 3.75Z"/><path d="M12 7.25A3.932 3.932 0 0 0 15 10.25A3.932 3.932 0 0 0 12 13.25A3.932 3.932 0 0 0 9 10.25A3.932 3.932 0 0 0 12 7.25Z"/>',
+    props,
+  );
+}
+
 /** The `circle-check` icon. */
 export function CircleCheckIcon(props) {
   return render(
@@ -211,6 +247,15 @@ export function CoinsIcon(props) {
   );
 }
 
+/** The `database` icon. */
+export function DatabaseIcon(props) {
+  return render(
+    "database",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M4.5 4.75A7.5 2.25 0 0 1 19.5 4.75V19.75A7.5 2.25 0 0 1 4.5 19.75Z"/></g><path d="M4.5 4.75V19.75A7.5 2.25 0 0 0 19.5 19.75V4.75"/><ellipse cx="12" cy="4.75" rx="7.5" ry="2.25"/><path d="M4.5 9.75A7.5 2.25 0 0 0 19.5 9.75"/><path d="M4.5 14.75A7.5 2.25 0 0 0 19.5 14.75"/>',
+    props,
+  );
+}
+
 /** The `dialog` icon. */
 export function DialogIcon(props) {
   return render(
@@ -225,6 +270,15 @@ export function DocumentLinesIcon(props) {
   return render(
     "document-lines",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M8.25 12.75h7.5"/><path d="M8.25 16.75h5"/>',
+    props,
+  );
+}
+
+/** The `eye` icon. */
+export function EyeIcon(props) {
+  return render(
+    "eye",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z"/></g><path d="M2.75 12A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 2.75 12Z"/><circle cx="12" cy="12" r="3.25"/>',
     props,
   );
 }
@@ -324,6 +378,15 @@ export function KanbanIcon(props) {
   return render(
     "kanban",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M7.75 7.75v8.5"/><path d="M12 7.75v4"/><path d="M16.25 7.75v6.5"/>',
+    props,
+  );
+}
+
+/** The `key` icon. */
+export function KeyIcon(props) {
+  return render(
+    "key",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="8" cy="16" r="5"/></g><circle cx="8" cy="16" r="5"/><path d="M11.536 12.464L19.043 4.957A1 1 0 0 1 20.457 4.957L22 6.5"/><path d="M15.75 8.25l2.25 2.25"/><path d="M8 16h.01"/>',
     props,
   );
 }
@@ -454,6 +517,24 @@ export function PlayWindowIcon(props) {
   );
 }
 
+/** The `plug` icon. */
+export function PlugIcon(props) {
+  return render(
+    "plug",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/></g><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/><path d="M9.25 2.75v4.5"/><path d="M14.75 2.75v4.5"/><path d="M12 16.25v5"/>',
+    props,
+  );
+}
+
+/** The `prompt` icon. */
+export function PromptIcon(props) {
+  return render(
+    "prompt",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M7.75 8.75L10.543 11.543A1 1 0 0 1 10.543 12.957L7.75 15.75"/><path d="M12.75 15.75h3.5"/>',
+    props,
+  );
+}
+
 /** The `puzzle` icon. */
 export function PuzzleIcon(props) {
   return render(
@@ -504,6 +585,15 @@ export function ShieldCheckIcon(props) {
   return render(
     "shield-check",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/><path d="m8.25 10.75 2.5 2.5 5-5"/>',
+    props,
+  );
+}
+
+/** The `sparkles` icon. */
+export function SparklesIcon(props) {
+  return render(
+    "sparkles",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 5.75A10.485 10.485 0 0 0 18.25 13.75A10.485 10.485 0 0 0 10.25 21.75A10.485 10.485 0 0 0 2.25 13.75A10.485 10.485 0 0 0 10.25 5.75Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/></g><path d="M10.25 5.75A10.485 10.485 0 0 0 18.25 13.75A10.485 10.485 0 0 0 10.25 21.75A10.485 10.485 0 0 0 2.25 13.75A10.485 10.485 0 0 0 10.25 5.75Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/>',
     props,
   );
 }
@@ -571,6 +661,15 @@ export function TimelineIcon(props) {
   );
 }
 
+/** The `token` icon. */
+export function TokenIcon(props) {
+  return render(
+    "token",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M16.114 4.875L19.477 6.817A1.5 1.5 0 0 1 20.227 8.116L20.227 15.884A1.5 1.5 0 0 1 19.477 17.183L12.75 21.067A1.5 1.5 0 0 1 11.25 21.067L4.523 17.183A1.5 1.5 0 0 1 3.773 15.884L3.773 8.116A1.5 1.5 0 0 1 4.523 6.817L11.25 2.933A1.5 1.5 0 0 1 12.75 2.933Z"/></g><path d="M16.114 4.875L19.477 6.817A1.5 1.5 0 0 1 20.227 8.116L20.227 15.884A1.5 1.5 0 0 1 19.477 17.183L12.75 21.067A1.5 1.5 0 0 1 11.25 21.067L4.523 17.183A1.5 1.5 0 0 1 3.773 15.884L3.773 8.116A1.5 1.5 0 0 1 4.523 6.817L11.25 2.933A1.5 1.5 0 0 1 12.75 2.933Z"/><circle cx="12" cy="12" r="1.25"/>',
+    props,
+  );
+}
+
 /** The `triangle-alert` icon. */
 export function TriangleAlertIcon(props) {
   return render(
@@ -585,6 +684,15 @@ export function WalletIcon(props) {
   return render(
     "wallet",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z"/></g><path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z"/><path d="M21.25 9.75H17.25A2.25 2.25 0 0 0 17.25 14.25H21.25"/>',
+    props,
+  );
+}
+
+/** The `wrench` icon. */
+export function WrenchIcon(props) {
+  return render(
+    "wrench",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12.8 13.674L6.234 20.24A1.75 1.75 0 0 1 3.76 20.24A1.75 1.75 0 0 1 3.76 17.766L10.326 11.2A5.5 5.5 0 0 1 17.7 3.826L14.72 6.805A1.75 1.75 0 0 0 14.72 9.28A1.75 1.75 0 0 0 17.195 9.28L20.174 6.3A5.5 5.5 0 0 1 12.8 13.674Z"/></g><path d="M12.8 13.674L6.234 20.24A1.75 1.75 0 0 1 3.76 20.24A1.75 1.75 0 0 1 3.76 17.766L10.326 11.2A5.5 5.5 0 0 1 17.7 3.826L14.72 6.805A1.75 1.75 0 0 0 14.72 9.28A1.75 1.75 0 0 0 17.195 9.28L20.174 6.3A5.5 5.5 0 0 1 12.8 13.674Z"/>',
     props,
   );
 }
