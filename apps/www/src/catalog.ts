@@ -544,7 +544,8 @@ export const catalog: CatalogItem[] = [
   {
     name: "agent-cursor",
     title: "AgentCursor",
-    description: "The agent's visible pointer: before each step it glides to the control, rings it and presses.",
+    description:
+      "The agent’s pointer rings a control when reading and presses it when editing. It follows the target as the page moves.",
     group: "React",
     install: installCmd("@booki-aui/react"),
   },

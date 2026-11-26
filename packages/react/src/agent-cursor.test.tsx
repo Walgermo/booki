@@ -1,13 +1,130 @@
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";
-import { AgentCursor, createAgentCursor, type AgentCursorPhase } from "./agent-cursor.js";
+import { AgentCursor, createAgentCursor, narrateNorwegian, type AgentCursorPhase } from "./agent-cursor.js";
+import { IbanInput } from "./iban-input.js";
 import { AmountField } from "./amount-field.js";
 import { BookiLocaleProvider } from "./locale.js";
 
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
+
+function amountStep() {
+  render(
+    <BookiLocaleProvider defaultCountry="US">
+      <AmountField aria-label="Amount" />
+    </BookiLocaleProvider>,
+  );
+  const field = createBookiAgent()
+    .snapshot()
+    .find((entry) => entry.component === "amount-field")!;
+  return { component: field.component, ref: field.ref, label: "Amount", action: "setMinor", args: [12500] };
+}
 
 describe("AgentCursor", () => {
+  it.each(["assertValid", "find", "findBlocks", "overdue"])(
+    "reads %s without pressing, then clears after linger",
+    async (action) => {
+      vi.useFakeTimers();
+      const step = amountStep();
+      const cursor = createAgentCursor({ travel: 0, linger: 20, scroll: false });
+      const phases: AgentCursorPhase[] = [];
+      cursor.subscribe((state) => phases.push(state.phase));
+      await cursor.lead({ ...step, action });
+      expect(cursor.state().phase).toBe("move");
+      cursor.settle(true);
+      await vi.advanceTimersByTimeAsync(21);
+      expect(phases).toEqual(["idle", "move", "done", "idle"]);
+      expect(cursor.state().point).toBeNull();
+    },
+  );
+
+  it("cancels decoration during travel immediately when disabled while keeping the underlying decision", async () => {
+    const step = amountStep();
+    const cursor = createAgentCursor({ travel: 10000, scroll: false });
+    const allow = vi.fn(() => true);
+    const pending = cursor.wrap(allow)(step, { signal: new AbortController().signal });
+    expect(cursor.state().phase).toBe("move");
+    cursor.setEnabled(false);
+    cursor.setEnabled(true);
+    expect(await pending).toBe(true);
+    expect(allow).toHaveBeenCalledOnce();
+    expect(cursor.state().phase).toBe("idle");
+  });
+
+  it("does not call the decision or resurrect the pointer after abort during travel", async () => {
+    const step = amountStep();
+    const cursor = createAgentCursor({ travel: 10000, scroll: false });
+    const allow = vi.fn(() => true);
+    const abort = new AbortController();
+    const pending = cursor.wrap(allow)(step, { signal: abort.signal });
+    abort.abort();
+    await expect(pending).rejects.toBe(abort.signal.reason);
+    expect(allow).not.toHaveBeenCalled();
+    expect(cursor.state().phase).toBe("idle");
+  });
+
+  it("keeps a newer target when an earlier decision returns or its signal aborts", async () => {
+    const step = amountStep();
+    const cursor = createAgentCursor({ travel: 0, press: 0, scroll: false });
+    let answer!: (decision: boolean) => void;
+    const abort = new AbortController();
+    const allow = vi.fn(
+      () =>
+        new Promise<boolean>((resolve) => {
+          answer = resolve;
+        }),
+    );
+    const pending = cursor.wrap(allow)(step, { signal: abort.signal });
+    await vi.waitFor(() => expect(allow).toHaveBeenCalledOnce());
+    cursor.rest(document.body, "Next target");
+    abort.abort();
+    answer(false);
+    await expect(pending).rejects.toBe(abort.signal.reason);
+    expect(cursor.state()).toMatchObject({ phase: "done", action: "Next target" });
+    cursor.setEnabled(false);
+  });
+
+  it("clears a missing or unmounted target and never puts secret input in narration", async () => {
+    const mounted = render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <IbanInput aria-label="IBAN" />
+      </BookiLocaleProvider>,
+    );
+    const field = createBookiAgent()
+      .snapshot()
+      .find((entry) => entry.component === "iban-input")!;
+    const cursor = createAgentCursor({ travel: 0, press: 0, scroll: false });
+    const step = { ref: field.ref, component: field.component, action: "setIban", args: ["private-test-value"] };
+    await cursor.lead(step);
+    expect(cursor.state().step?.args).toEqual([]);
+    expect(cursor.state().action).toBe("set iban");
+    mounted.unmount();
+    await vi.waitFor(() => expect(cursor.state().point).toBeNull());
+    cursor.rest(document.body);
+    const allow = vi.fn(() => true);
+    expect(await cursor.wrap(allow)({ ...step, ref: "missing" }, { signal: new AbortController().signal })).toBe(true);
+    expect(cursor.state().phase).toBe("idle");
+    cursor.setEnabled(false);
+  });
+
+  it("keeps unknown narrated actions readable and propagates permission errors", async () => {
+    const step = amountStep();
+    const cursor = createAgentCursor({ travel: 0, press: 0, scroll: false });
+    const failure = new Error("Unavailable");
+    const reject = cursor.wrap(() => {
+      throw failure;
+    });
+    await expect(
+      reject({ ...step, action: "customAction", args: ["entry"] }, { signal: new AbortController().signal }),
+    ).rejects.toBe(failure);
+    expect(cursor.state().phase).toBe("refused");
+    expect(narrateNorwegian(cursor.state())).toBe("custom action entry");
+    cursor.setEnabled(false);
+  });
+
   it("stops scrolling to its target once the person scrolls, and resumes after their next press", async () => {
     const cursor = createAgentCursor({ travel: 0, press: 0, linger: 10_000 });
     const agent = createBookiAgent({ agentId: "test", allow: cursor.wrap(() => true) });

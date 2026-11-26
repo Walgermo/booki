@@ -119,9 +119,13 @@ Few objects, a lot of air, sharp edges.
   square for harm done, a signal square for the agent stopping or succeeding.
 - A page may end with one `.site-band` (an ink closing panel with the next
   step). One per page, last before the footer.
-- `.site-signal` is a short status from the agent ("agent running",
-  "working", "idle"). Lime while working or done, outlined when idle. Only
-  for the agent's state.
+- Use `AgentStatus` for live agent status. Its cursor and localized label
+  show idle, working, waiting for a person, done, or refused. Working and done
+  use signal, waiting uses warning, refused uses danger, and idle is muted.
+  Put `data-bk-surface="ink"` on an ink panel so the status uses its ink colors.
+  `.site-signal` labels the agent in the static layers illustration.
+  See the [cursor interaction map](docs/agent-cursor-interactions.md) for transitions,
+  motion, interruption and keyboard behavior.
 - No stat tiles, decorative badges, icon grids, gradients or glows.
 
 ## Type

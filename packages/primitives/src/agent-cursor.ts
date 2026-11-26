@@ -3,7 +3,7 @@ import { isAllowed, type AgentDecision } from "./agent-policy.js";
 
 /**
  * A visible agent cursor: before each step the agent asks the bridge to run,
- * a pointer glides to the control, a ring settles on it, the pointer presses,
+ * a pointer glides to the control, rings it and presses for an edit,
  * and only then does the step run. People watch the agent work the screen the
  * way a colleague would, instead of seeing values change by themselves.
  *
@@ -11,6 +11,11 @@ import { isAllowed, type AgentDecision } from "./agent-policy.js";
  * return a Promise the bridge waits for. Nothing about the step changes: the
  * cursor leads, your own `allow` still decides.
  */
+
+/** The tip and the midpoints of the stem's ends lie on one line on the 24-unit icon grid. */
+export const AGENT_CURSOR_PATH = "M2.5 2.5V18.5L5.75 15.25L8.25 21.25L11.75 19.75L9.25 13.75H13.75Z";
+/** Crop used by the floating pointer to keep its tip at the target. */
+export const AGENT_CURSOR_VIEW_BOX = "0.5 0.5 20 22";
 
 /** The fields of a bridge step the cursor reads. */
 export type AgentCursorStep = {
@@ -43,6 +48,8 @@ export type AgentCursorState = {
    * ring should stick to it at once. False when it glides to a new target.
    */
   follow?: boolean;
+  /** Custom glide duration shared with the renderer, in milliseconds. */
+  travelMs?: number;
 };
 
 export type AgentCursorOptions = {
@@ -64,7 +71,7 @@ export type AgentCursorOptions = {
 type Allow<S, D> = (step: S, context: { signal: AbortSignal }) => D | Promise<D>;
 
 export type AgentCursorController = {
-  /** Move to the step's control and press. Resolves when the step may run. */
+  /** Ring a read target or press an edit target. Resolves when the step may run. */
   lead: (step: AgentCursorStep) => Promise<void>;
   /** Show the outcome: the step ran, or was refused. */
   settle: (ok: boolean) => void;
@@ -87,18 +94,27 @@ export type AgentCursorController = {
 
 const IDLE: AgentCursorState = { phase: "idle", box: null, point: null, action: "", target: "", step: null };
 
-const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+function wait(ms: number, signal: AbortSignal) {
+  if (signal.aborted || ms <= 0) return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    const finish = () => {
+      clearTimeout(timer);
+      signal.removeEventListener("abort", finish);
+      resolve();
+    };
+    const timer = setTimeout(finish, ms);
+    signal.addEventListener("abort", finish, { once: true });
+  });
+}
 
 const reduced = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
 /** Actions that only read or check, and touch no button or field. */
-const READING = /^(assert|explain|check|validate|verify|describe|preview|summari[sz]e)/;
+const READING = /^(assert|explain|check|validate|verify|describe|preview|summari[sz]e|find(?:Blocks)?$|overdue$)/;
 
 /** The part of a control the agent will actually touch. */
-function targetOf(step: AgentCursorStep): Element | null {
-  const root = elementOf(step.ref);
-  if (!root) return null;
+function targetOf(root: Element, step: AgentCursorStep): Element {
   if (step.action === "press" && typeof step.args?.[0] === "string") {
     const wanted = step.args[0].trim().toLowerCase();
     const buttons = [...root.querySelectorAll("button, [role=button], a[href]")];
@@ -128,16 +144,15 @@ function isCovered(el: Element, point: { x: number; y: number }): boolean {
   return false;
 }
 
-/** Plain words for an action, so the label reads like a person narrating. */
 /** The target's currency, from its `data-currency`, when it has one. */
-function currencyOf(step: AgentCursorStep): { currency?: string } {
-  const root = elementOf(step.ref);
-  const currency = (root?.closest("[data-currency]") ?? root?.querySelector("[data-currency]"))?.getAttribute(
+function currencyOf(root: Element): { currency?: string } {
+  const currency = (root.closest("[data-currency]") ?? root.querySelector("[data-currency]"))?.getAttribute(
     "data-currency",
   );
   return currency ? { currency } : {};
 }
 
+/** Plain words for an action, so the label reads like a person narrating. */
 function describe(step: AgentCursorStep): string {
   const verb = step.action.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
   const first = step.args?.[0];
@@ -157,6 +172,9 @@ export function cursorLabelRoom(x: number, width: number): { flip: boolean; room
   return { flip, room: Math.max(80, Math.floor(flip ? left : right)) };
 }
 
+/** The label normally starts 20px below the tip and occupies one line. */
+export const cursorLabelAbove = (y: number, height: number) => height - y < 50 && y > height / 2;
+
 export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursorController {
   const travel = options.travel ?? 420;
   const press = options.press ?? 160;
@@ -170,30 +188,40 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
 
   // The person's own scrolling takes the page back from the cursor.
   let theirs = false;
-  let watching = false;
+  let watching: AbortController | undefined;
+  let visual: AbortController | undefined;
   const SCROLL_KEYS = new Set(["PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End", " "]);
   const watch = () => {
     if (watching || typeof window === "undefined") return;
-    watching = true;
+    watching = new AbortController();
+    const { signal } = watching;
     const took = () => {
       theirs = true;
     };
     const gave = () => {
       theirs = false;
     };
-    window.addEventListener("wheel", took, { passive: true });
-    window.addEventListener("touchmove", took, { passive: true });
-    window.addEventListener("keydown", (e) => {
-      const field = e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable]");
-      if (!field && SCROLL_KEYS.has(e.key)) took();
-      else if (e.key === "Enter") gave();
-    });
+    window.addEventListener("wheel", took, { passive: true, signal });
+    window.addEventListener("touchmove", took, { passive: true, signal });
+    window.addEventListener(
+      "keydown",
+      (e) => {
+        const field = e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable]");
+        if (!field && SCROLL_KEYS.has(e.key)) took();
+        else if (e.key === "Enter") gave();
+      },
+      { signal },
+    );
     // A press in the page (Run, Replay, a control) hands it back.
-    window.addEventListener("pointerdown", (e) => {
-      // On the page itself is the scrollbar: that is scrolling, not a press.
-      if (e.target === document.documentElement) took();
-      else gave();
-    });
+    window.addEventListener(
+      "pointerdown",
+      (e) => {
+        // On the page itself is the scrollbar: that is scrolling, not a press.
+        if (e.target === document.documentElement) took();
+        else gave();
+      },
+      { signal },
+    );
   };
 
   const set = (next: Partial<AgentCursorState>) => {
@@ -213,6 +241,25 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
   // Follow the target while it is shown: scrolling, resizing and layout that
   // moves under it (a line added above, a row that grows) all move the ring.
   let frame = 0;
+  const clear = () => {
+    visual?.abort();
+    visual = undefined;
+    clearTimeout(idle);
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    current = null;
+  };
+  const hide = () => {
+    clear();
+    if (state.phase !== "idle") set({ ...IDLE, follow: false, travelMs: undefined });
+  };
+  const begin = () => {
+    clear();
+    visual = new AbortController();
+    return visual;
+  };
+  let viewportWidth = 0;
+  let viewportHeight = 0;
   const same = (a: AgentCursorState["box"], b: AgentCursorState["box"]) =>
     !!a &&
     !!b &&
@@ -224,22 +271,30 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
     frame = 0;
     if (!current || state.phase === "idle") return;
     if (!current.isConnected) {
-      current = null;
+      hide();
       return;
     }
     const next = measure(current);
-    if (!same(next.box, state.box)) set({ ...next, follow: true });
+    if (!same(next.box, state.box) || viewportWidth !== window.innerWidth || viewportHeight !== window.innerHeight) {
+      set({ ...next, follow: true });
+    }
+    viewportWidth = window.innerWidth;
+    viewportHeight = window.innerHeight;
     frame = requestAnimationFrame(track);
   };
   const startTracking = () => {
+    viewportWidth = window.innerWidth;
+    viewportHeight = window.innerHeight;
     if (!frame && typeof requestAnimationFrame !== "undefined") frame = requestAnimationFrame(track);
   };
 
-  const lead = async (step: AgentCursorStep) => {
-    if (!on) return;
-    const el = targetOf(step);
-    if (!el) return;
-    clearTimeout(idle);
+  const lead = async (step: AgentCursorStep, { signal }: AbortController) => {
+    const root = elementOf(step.ref);
+    if (!root?.isConnected) {
+      hide();
+      return;
+    }
+    const el = targetOf(root, step);
     const still = reduced();
     watch();
     if (scroll && !theirs) {
@@ -247,65 +302,82 @@ export function createAgentCursor(options: AgentCursorOptions = {}): AgentCursor
       const off = r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > window.innerWidth;
       if (off || isCovered(el, measure(el).point)) {
         el.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
-        await wait(still ? 0 : 320);
+        await wait(still ? 0 : 320, signal);
       }
     }
+    if (signal.aborted) return;
+    if (!el.isConnected) return hide();
+    const secret = root.closest("[data-agent-secret]") || root.querySelector("[data-agent-secret]");
+    const args = secret ? [] : (step.args ?? []);
     current = el;
     set({
+      travelMs: options.travel,
       follow: false,
       phase: "move",
-      action: describe(step),
+      action: describe({ ...step, args }),
       target: step.label ?? step.component,
-      step: { action: step.action, args: step.args ?? [], ...currencyOf(step) },
+      step: { action: step.action, args, ...currencyOf(root) },
       ...measure(el),
     });
     startTracking();
-    await wait(still ? 0 : travel);
+    await wait(still ? 0 : travel, signal);
+    if (signal.aborted || READING.test(step.action)) return;
+    if (!el.isConnected) return hide();
     set({ phase: "press" });
-    await wait(still ? 0 : press);
+    await wait(still ? 0 : press, signal);
   };
 
   const settle = (ok: boolean) => {
     if (!on || state.phase === "idle") return;
-    set({ phase: ok ? "done" : "refused" });
     clearTimeout(idle);
-    idle = setTimeout(() => {
-      current = null;
-      set({ ...IDLE });
-    }, linger);
+    idle = setTimeout(hide, linger);
+    set({ phase: ok ? "done" : "refused" });
   };
 
   const rest = (el: Element, action = "") => {
     if (!on) return;
-    clearTimeout(idle);
+    if (!el.isConnected) return hide();
+    begin();
     current = el;
-    set({ phase: "done", action, target: "", step: null, follow: false, ...measure(el) });
+    set({ travelMs: options.travel, phase: "done", action, target: "", step: null, follow: false, ...measure(el) });
     startTracking();
   };
 
   return {
-    lead,
+    lead: async (step) => {
+      if (on) await lead(step, begin());
+    },
     settle,
     rest,
     wrap: (allow) => async (step, context) => {
-      await lead(step);
+      const { signal } = context;
+      signal.throwIfAborted();
+      if (!on) return allow(step, context);
+      const owner = begin();
+      const cancel = () => {
+        if (visual === owner) hide();
+      };
+      signal.addEventListener("abort", cancel, { once: true });
       let ok = false;
       try {
+        await lead(step, owner);
+        signal.throwIfAborted();
         const decision = await allow(step, context);
+        signal.throwIfAborted();
         ok = isAllowed(decision);
         return decision;
       } finally {
-        settle(ok);
+        signal.removeEventListener("abort", cancel);
+        if (visual === owner) settle(ok);
       }
     },
     setEnabled: (next) => {
       on = next;
       if (!next) {
-        if (frame) cancelAnimationFrame(frame);
-        frame = 0;
-        clearTimeout(idle);
-        current = null;
-        set({ ...IDLE });
+        watching?.abort();
+        watching = undefined;
+        theirs = false;
+        hide();
       }
     },
     enabled: () => on,

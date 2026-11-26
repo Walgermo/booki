@@ -1429,14 +1429,6 @@ html[data-kpi-still] {
   box-shadow: 0 0 0 1px var(--bk-ink-border);
 }
 
-/* AgentStatus inside ink takes the ink colours, as under [data-bk-surface="ink"]. */
-.site-machine [data-slot="agent-status"] {
-  --agent-status-idle: var(--bk-ink-muted);
-  --agent-status-agent: var(--bk-signal);
-  --agent-status-waiting: var(--bk-ink-warning);
-  --agent-status-refused: var(--bk-ink-danger);
-}
-
 .site-machine .site-kicker,
 .site-machine .site-label {
   color: var(--bk-ink-muted);
@@ -2444,7 +2436,7 @@ html[data-kpi-still] {
   color: var(--bk-muted-fg);
 }
 
-/* The agent's state. Lime while it works or when it is done; quiet when idle. */
+/* The agent label in the Booki layers illustration. */
 .site-signal {
   display: inline-flex;
   align-items: center;
@@ -2456,47 +2448,6 @@ html[data-kpi-still] {
   font-family: var(--bk-mono);
   font-size: 0.75rem;
   font-weight: 500;
-}
-
-/* Idle is plain status, not a control: no box, a hollow dot and muted text. */
-.site-signal[data-state="idle"] {
-  padding-inline: 0.25rem;
-  background: transparent;
-  color: var(--bk-muted-fg);
-  font-weight: 400;
-}
-
-.site-machine .site-signal[data-state="idle"] {
-  color: var(--bk-ink-muted);
-}
-
-.site-signal[data-state="idle"]::before {
-  content: "";
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1.25px currentColor;
-}
-
-/* While the agent works, a cursor block blinks after the word. */
-.site-signal[data-state="working"]::after {
-  content: "";
-  width: 0.45em;
-  height: 0.9em;
-  background: currentColor;
-  animation: site-cursor 1s steps(1) infinite;
-}
-
-@keyframes site-cursor {
-  50% {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-signal[data-state="working"]::after {
-    animation: none;
-  }
 }
 
 /* The one object on the table: a sheet of paper holding a live form. */
