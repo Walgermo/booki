@@ -74,7 +74,21 @@ try {
   await page.getByRole("button", { name: "Norsk (EN)", exact: true }).click();
   const usd = await checkAmount("Amount (USD)", "USD", nok);
   await page.getByRole("button", { name: "Norsk (NO)", exact: true }).click();
-  await checkAmount("Beløp (NOK)", "NOK", usd);
+  const nokAgain = await checkAmount("Beløp (NOK)", "NOK", usd);
+
+  // A country picked by hand holds in its language only: switching away and back
+  // shows that language's own country again (English: US), not the old pick.
+  await page.getByRole("button", { name: "Norsk (EN)", exact: true }).click();
+  await page.locator('nav:visible a[href="/docs/country-toggle"]').click();
+  await page.waitForURL("**/docs/country-toggle");
+  await page.getByRole("button", { name: "NO Norway", exact: true }).click();
+  await page.getByRole("button", { name: "Norsk (NO)", exact: true }).click();
+  await page.getByRole("button", { name: "Norsk (EN)", exact: true }).click();
+  await page.locator('nav:visible a[href="/docs/amount-field"]').click();
+  await page.waitForURL("**/docs/amount-field");
+  const usdAgain = await checkAmount("Amount (USD)", "USD", nokAgain);
+  await page.getByRole("button", { name: "Norsk (NO)", exact: true }).click();
+  await checkAmount("Beløp (NOK)", "NOK", usdAgain);
 
   await page.locator('nav:visible a[href="/docs/financial-date-field"]').click();
   await page.waitForURL("**/docs/financial-date-field");

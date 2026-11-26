@@ -56,8 +56,10 @@ export function DocsShell() {
   // pages show (Norwegian: NO, kontonummer and MVA; English: US, ABA and sales tax).
   // Chosen during render, not in an effect, so the prerendered English HTML (and the
   // Markdown made from it) shows the same US controls as the live English page.
-  // A pick on the CountryToggle page holds until the language changes.
+  // A pick on the CountryToggle page holds until the language changes, and is
+  // dropped then: switching back to the first language shows its own country again.
   const [picked, setPicked] = useState<{ lang: string; country: CountryCode } | null>(null);
+  if (picked && picked.lang !== lang) setPicked(null);
   const country: CountryCode = picked?.lang === lang ? picked.country : lang === "nb" ? "NO" : "US";
   return (
     <div className="min-h-svh bg-background text-foreground">
