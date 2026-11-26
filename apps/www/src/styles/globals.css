@@ -2519,6 +2519,82 @@ html[data-kpi-still] {
   color: var(--bk-ink-fg);
 }
 
+/* CodePanel: every dark panel on the site, one shape. Inside it the paper tokens point at ink,
+   like .site-machine, so a ghost button reads on it. */
+.code-panel {
+  --bk-bg: var(--bk-ink);
+  --bk-card: var(--bk-ink-raised);
+  --bk-muted: var(--bk-ink-raised);
+  --bk-fg: var(--bk-ink-fg);
+  --bk-muted-fg: var(--bk-ink-muted);
+  --bk-border: var(--bk-ink-border);
+  --bk-border-strong: var(--bk-ink-border);
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-ink);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-fg);
+}
+
+.code-panel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border-bottom: 1px solid var(--bk-ink-border);
+}
+
+.code-panel__label {
+  min-width: 0;
+  font-family: var(--bk-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-caption);
+  text-transform: uppercase;
+  color: var(--bk-ink-muted);
+}
+
+.code-panel__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.code-panel__body {
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1rem 1.25rem;
+  font-family: var(--bk-mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-ink) transparent;
+}
+
+/* Code keeps its lines: it scrolls sideways rather than breaking mid-expression. */
+.code-panel__body pre {
+  margin: 0;
+  font: inherit;
+  white-space: pre;
+}
+
+.code-panel__body ::selection {
+  background: oklch(0.9 0.19 118 / 0.35);
+  color: var(--bk-ink-fg);
+}
+
+/* The Copy button on ink: quiet until hovered. */
+.code-panel__copy {
+  min-height: 2rem;
+  color: var(--bk-ink-muted);
+}
+
 /* A plain list separated by hairlines. */
 .site-rows {
   margin: 0;

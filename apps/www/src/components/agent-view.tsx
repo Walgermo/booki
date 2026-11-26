@@ -2,6 +2,7 @@ import { elementOf } from "@ui-sdk/react/observe";
 import { useEffect, useState, type RefObject } from "react";
 
 import { agent } from "@/agent";
+import { CodePanel } from "@/components/code-panel";
 import { useLang } from "@/lib/lang";
 
 export type Entry = {
@@ -76,11 +77,8 @@ export function AgentView({ scope }: { scope: RefObject<HTMLElement | null> }) {
       <h2 id="agent-view-title" className="site-kicker">
         {t("The agent reads", "Agenten leser")}
       </h2>
-      {/* A fixed box with its own scroll: the page below never moves while the demo runs. */}
-      <div
-        className="site-machine min-w-0 overflow-y-auto [overscroll-behavior:contain] [scrollbar-gutter:stable]"
-        style={{ height: "24rem" }}
-      >
+      {/* As tall as the snapshot, up to a cap with its own scroll. */}
+      <CodePanel label={t("Snapshot", "Øyeblikksbilde")} maxHeight="26rem">
         {entries === null ? (
           <p className="m-0 font-mono text-xs text-ink-muted">
             {t(
@@ -116,7 +114,7 @@ export function AgentView({ scope }: { scope: RefObject<HTMLElement | null> }) {
             ))}
           </ul>
         )}
-      </div>
+      </CodePanel>
     </section>
   );
 }
