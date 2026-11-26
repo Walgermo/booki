@@ -102,8 +102,8 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             </span>
             <span className="landing-hero__note">
               {t(
-                "The exact amount, checked. A person still approves.",
-                "Eksakt beløp, sjekket. En person godkjenner fortsatt.",
+                "The exact amount, checked. Posted by the agent, within your rules.",
+                "Eksakt beløp, sjekket. Bokført av agenten, innenfor reglene deres.",
               )}
             </span>
           </li>
