@@ -1,0 +1,53 @@
+/* ExceptionBanner: inline next to the work the agent stopped, not a floating
+   dialog. Warning means "needs attention" (DESIGN.md), shown as a small status
+   square. The reason is the fact, so it reads first; the context is quieter. */
+[data-slot="exception-banner"] {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-xs);
+}
+
+[data-slot="exception-banner-title"] {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: var(--bk-font-weight-semibold);
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="exception-banner-title"]::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 1px;
+  background: var(--bk-warning);
+}
+
+[data-slot="exception-banner-reason"] {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--bk-font-weight-medium);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--bk-fg);
+}
+
+[data-slot="exception-banner-context"] {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--bk-muted-fg);
+}
+
+[data-slot="exception-banner-actions"] {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
