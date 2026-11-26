@@ -4,6 +4,7 @@
   display: grid;
   gap: var(--bk-gap-lg);
   min-width: 0;
+  container-type: inline-size;
   font-family: var(--bk-font);
   color: var(--bk-fg);
 }
@@ -141,4 +142,16 @@
 
 [data-slot="funnel-chart-between"] {
   padding-left: 0.375rem;
+}
+
+/* Narrow (a phone, a side column): the label takes its own line so the bar keeps the width. */
+@container (max-width: 28rem) {
+  [data-slot="funnel-chart-row"] > button {
+    grid-template-columns: minmax(0, 1fr) auto 3.5rem;
+    row-gap: 0.25rem;
+  }
+
+  [data-slot="funnel-chart-label"] {
+    grid-column: 1 / -1;
+  }
 }

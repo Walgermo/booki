@@ -1532,10 +1532,13 @@ html[data-kpi-still] {
    control and the code share the left column and the agent's column stays in view beside them. */
 .doc-layout {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
 }
 
-@media (min-width: 1024px) {
+/* Two columns only once the control keeps a useful width beside the agent (the sidebar
+   takes ~16rem). Every rule is scoped to the grid, so no area leaks into another layout. */
+@media (min-width: 1280px) {
   .doc-layout {
     grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
     grid-template-areas:
@@ -1544,19 +1547,46 @@ html[data-kpi-still] {
     align-items: start;
   }
 
-  .doc-layout__preview {
+  /* A wide control (two tables, a funnel) takes the full row; the agent sits beside the code. */
+  .doc-layout[data-wide] {
+    grid-template-areas:
+      "preview preview"
+      "code agent";
+  }
+
+  .doc-layout[data-solo] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "preview"
+      "code";
+  }
+
+  .doc-layout > .doc-layout__preview {
     grid-area: preview;
   }
 
-  .doc-layout__code {
+  .doc-layout > .doc-layout__code {
     grid-area: code;
   }
 
   .doc-layout > .doc-agent {
     grid-area: agent;
+  }
+}
+
+/* The agent's column follows the reader only when the whole column fits on screen;
+   a sticky column taller than the window would hide its own end. */
+@media (min-width: 1280px) and (min-height: 880px) {
+  .doc-layout > .doc-agent {
     position: sticky;
     top: 5.5rem;
   }
+}
+
+/* Inside a panel that already scrolls, the snapshot's JSON must not scroll on its own. */
+.code-panel .site-readers__json {
+  max-height: none;
+  overflow-y: visible;
 }
 
 /* Anchored headings land below the sticky header. */
