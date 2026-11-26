@@ -12,8 +12,8 @@ import { BookiLocaleProvider } from "@booki-aui/react";
 import { App } from "./App";
 import { LangProvider, SITE_META, renderedPageMeta, type PageMeta } from "./lib/lang";
 
-/** The setup prompt the homepage copies, also served as /prompt.md for agents. */
-export { AGENT_PROMPT } from "./components/landing/shared";
+/** The setup prompts: the one-screen trial the homepage copies (/prompt.md) and the whole-app one (/prompt-full.md). */
+export { AGENT_PROMPT, AGENT_PROMPT_FULL } from "./components/landing/shared";
 
 export async function render(url: string): Promise<{ html: string; meta: PageMeta }> {
   (globalThis as { __BOOKI_PRERENDER__?: boolean }).__BOOKI_PRERENDER__ = true;
