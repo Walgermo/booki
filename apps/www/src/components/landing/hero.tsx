@@ -29,8 +29,8 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         />
         <p className="landing-hero__hook">
           {t(
-            "UI components that people and AI agents both use.",
-            "UI-komponenter som både mennesker og AI-agenter bruker.",
+            "UI components that let Claude, ChatGPT, Gemini or Grok work in your app, next to your people.",
+            "UI-komponenter som lar Claude, ChatGPT, Gemini eller Grok jobbe i appen deres, side om side med folkene deres.",
           )}
         </p>
         <ol

@@ -308,7 +308,9 @@ function llmsTxt(pages) {
   ].join("\n");
 }
 
-const { render, AGENT_PROMPT, AGENT_PROMPT_FULL } = await import(pathToFileURL(join(here, "../dist-server/entry-server.js")).href);
+const { render, AGENT_PROMPT, AGENT_PROMPT_FULL } = await import(
+  pathToFileURL(join(here, "../dist-server/entry-server.js")).href
+);
 const template = readFileSync(join(dist, "index.html"), "utf8");
 const urls = [...readFileSync(join(here, "../public/sitemap.xml"), "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) =>
   m[1].replace(site, ""),
