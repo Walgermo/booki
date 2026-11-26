@@ -175,6 +175,8 @@ Form props: AmountField, the selects, the bank / reference / organization / IBAN
 | TextLink | Display only. `icon="docs" \| "github"` or your own element; `asChild` gives a router link the look. `DocsIcon`, `GitHubIcon` |
 | VoucherLines | Read-only table (prefer VoucherComposer) |
 | AuditTrail | Presentational; feed via `attachAudit` |
+| AgentLog | `@booki-aui/react/agent-log`. Not an agent target (`data-agent-hidden`, no actions): a live list for people of what an agent did. `<AgentLog agent={agent} />` with an agent from `createBookiAgent` lists each `act` step (`label · action(args)`, a secret control's args `[redacted]`) as running, waiting for a person (while `allow` asks), done, or refused with the reason; a plain `createAgent` bridge shows its changes through `attachAudit`. `rows` for a list you keep (`useAgentLog(agent, { limit })`), `maxHeight` (default `16rem`), `heading`, `emptyLabel`. Newest last, follows new rows unless the person scrolled up, `role="log"` |
+| AgentSnapshot | `@booki-aui/react/agent-snapshot`. Not an agent target: shows people what the agent reads inside `scope` (a ref; default the whole page): each control's label, its actions and its state as JSON, straight from `agent.snapshot()`, so a redacted value stays `"[redacted]"`. Updates on `subscribe` and when controls mount or leave. `maxHeight` (default `24rem`), `heading`, `emptyLabel` |
 | ApprovalGate | `data-agent-confirm` — person must approve |
 | PaymentConfirm | Typed APPROVE + confirm |
 | ScaPrompt | BankID/Passkey mock + confirm |

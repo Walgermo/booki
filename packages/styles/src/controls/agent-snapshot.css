@@ -1,0 +1,93 @@
+/* ── Agent snapshot: what the agent reads for a part of the page (AgentSnapshot) ── */
+
+/* Machine output sits on ink. It sizes to its entries; the list caps its height and scrolls. */
+[data-slot="agent-snapshot"] {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+  border-radius: var(--bk-radius-lg);
+  background: var(--bk-ink);
+  box-shadow: 0 0 0 1px var(--bk-ink-border);
+  color: var(--bk-ink-fg);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-heading"] {
+  margin: 0;
+  color: var(--bk-ink-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-scroll"] {
+  min-height: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bk-ink-border) transparent;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-empty"] {
+  margin: 0;
+  color: var(--bk-ink-muted);
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-entries"] {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-entry"] {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--bk-ink-border);
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-entry"]:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-label"] {
+  margin: 0;
+  color: var(--bk-ink-fg);
+  font-family: var(--bk-font);
+  font-size: 0.875rem;
+  font-weight: var(--bk-font-weight-medium);
+  overflow-wrap: anywhere;
+}
+
+/* The actions an agent may call: the agent's own colour. */
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-actions"] {
+  margin: 0;
+  color: var(--bk-signal);
+  overflow-wrap: anywhere;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-actions"][data-empty] {
+  color: var(--bk-ink-muted);
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-confirm"] {
+  margin: 0;
+  color: var(--bk-ink-muted);
+  overflow-wrap: anywhere;
+}
+
+:where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-state"] {
+  margin: 0;
+  overflow-x: auto;
+  color: var(--bk-ink-fg);
+  font: inherit;
+  white-space: pre;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bk-ink-border) transparent;
+}

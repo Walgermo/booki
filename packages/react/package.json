@@ -69,6 +69,14 @@
       "types": "./dist/agent-presence.d.ts",
       "default": "./dist/agent-presence.js"
     },
+    "./agent-log": {
+      "types": "./dist/agent-log.d.ts",
+      "default": "./dist/agent-log.js"
+    },
+    "./agent-snapshot": {
+      "types": "./dist/agent-snapshot.d.ts",
+      "default": "./dist/agent-snapshot.js"
+    },
     "./bank-account-input": {
       "types": "./dist/bank-account-input.d.ts",
       "default": "./dist/bank-account-input.js"

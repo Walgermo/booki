@@ -744,4 +744,15 @@ export const EN = {
   "bridge.steps-stay-done": "The steps before this one stay done.",
   "bridge.send-again-one": "Send it again with the step after it, {total} steps in one call.",
   "bridge.send-again-many": "Send it again with the {rest} steps after it, {total} steps in one call.",
+  "agent-log.heading": "Agent calls",
+  "agent-log.empty": "No agent calls yet. Each call the agent makes and its answer will be listed here.",
+  "agent-log.refused-count": "{count} refused",
+  "agent-log.running": "running",
+  "agent-log.waiting": "waiting for a person",
+  "agent-log.refused": "refused",
+  "agent-snapshot.heading": "What the agent reads",
+  "agent-snapshot.empty":
+    "Nothing here is in the agent's snapshot. It only displays, so an agent has nothing to read or call on it.",
+  "agent-snapshot.no-actions": "no actions: it is read, not operated",
+  "agent-snapshot.confirm": "Asks a person first: {confirm}",
 } as const;

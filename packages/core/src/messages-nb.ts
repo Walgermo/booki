@@ -786,4 +786,15 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "bridge.steps-stay-done": "Stegene før dette er utført.",
   "bridge.send-again-one": "Send det på nytt med steget etter det, {total} steg i ett kall.",
   "bridge.send-again-many": "Send det på nytt med de {rest} stegene etter det, {total} steg i ett kall.",
+  "agent-log.heading": "Agentens kall",
+  "agent-log.empty": "Ingen kall fra agenten ennå. Hvert kall agenten gjør og svaret på det listes her.",
+  "agent-log.refused-count": "{count} avvist",
+  "agent-log.running": "kjører",
+  "agent-log.waiting": "venter på en person",
+  "agent-log.refused": "avvist",
+  "agent-snapshot.heading": "Det agenten leser",
+  "agent-snapshot.empty":
+    "Ingenting her er i agentens øyeblikksbilde. Det bare viser, så en agent har ingenting å lese eller kalle på det.",
+  "agent-snapshot.no-actions": "ingen handlinger: den leses, den styres ikke",
+  "agent-snapshot.confirm": "Spør en person først: {confirm}",
 };
