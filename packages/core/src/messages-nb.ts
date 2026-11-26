@@ -50,7 +50,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "period.not-a-status": '"{status}" er ikke en periodestatus. Bruk open, soft-closed eller hard-closed.',
   "period.hard-closed-reopen": "Perioden {code} er endelig lukket og kan ikke åpnes igjen.",
   "batch.no-payments": "Betalingsoppdraget har ingen betalinger.",
-  "batch.value-date-format": 'Betalingsdatoen må skrives ÅÅÅÅ-MM-DD, ikke "{value}".',
+  "batch.value-date-format": 'Betalingsdatoen må være en gyldig dato på formen ÅÅÅÅ-MM-DD, fikk "{value}".',
   "batch.no-debit-account": "Betalingsoppdraget mangler konto det skal betales fra.",
   "batch.duplicate-id": 'Betalings-id-en "{id}" står to ganger.',
   "batch.amount-format": 'Betaling "{id}": beløpet er et heltall i minste myntenhet over null, ikke {value}.',
@@ -184,6 +184,8 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "invoice.what.quantity": "antallet (i tusendeler)",
   "invoice.what.unit-price": "enhetsprisen (minste myntenhet)",
   "invoice.what.discount": "rabatten (basispunkter)",
+  "invoice.invalid-tax-rate":
+    "Avgiftssatsen i basispunkter må være endelig, ikke-negativ og innenfor det sikre tallområdet. Fikk {value}.",
   "invoice.what.tax-rate": "mva-satsen (basispunkter)",
   "invoice.line-whole": 'Linje "{id}": {what} er et heltall på minst {min}, ikke {value}.',
   "invoice.discount-too-high": 'Linje "{id}": rabatten kan ikke være mer enn 10000 basispunkter (100 %).',

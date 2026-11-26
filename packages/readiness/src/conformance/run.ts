@@ -68,15 +68,17 @@ export async function runConformance(target: ConformanceTarget): Promise<Conform
   const passed = checks.filter((c) => c.status === "pass").length;
   const failed = checks.filter((c) => c.status === "fail").length;
   const skipped = checks.filter((c) => c.status === "skip").length;
-  const conforms = !checks.some((c) => c.level === "MUST" && c.status === "fail");
+  const measured = checks.find((c) => c.id === "bridge-shape")?.status === "pass";
+  const conforms = measured && !checks.some((c) => c.level === "MUST" && c.status === "fail");
   return { contract: "0.1", checks, passed, failed, skipped, conforms };
 }
 
 export function formatConformance(report: ConformanceReport): string {
   const lines = report.checks.map((c) => `${c.status.toUpperCase()}  §${c.section}  ${c.id}  ${c.message}`);
-  const verdict = report.conforms ? "Conforms" : "Does not conform";
+  const empty = report.checks.some((c) => c.id === "bridge-shape" && c.status === "skip");
+  const verdict = empty ? "Incomplete conformance check for" : report.conforms ? "Conforms to" : "Does not conform to";
   lines.push(
-    `${verdict} to the Agent Contract ${report.contract}: ${report.passed} passed, ${report.failed} failed, ${report.skipped} skipped.`,
+    `${verdict} the Agent Contract ${report.contract}: ${report.passed} passed, ${report.failed} failed, ${report.skipped} skipped.`,
   );
   return lines.join("\n");
 }

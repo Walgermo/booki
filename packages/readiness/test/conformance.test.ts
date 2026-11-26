@@ -58,6 +58,14 @@ describe("conformance: the reference", () => {
     expect(report.checks.find((c) => c.id === "person-only-not-offered")?.message).toContain("skipped");
   });
 
+  it("returns an incomplete result until the screen has mounted controls", async () => {
+    const { ref } = referenceTarget();
+    const report = await runConformance({ bridge: broken(ref, { snapshot: () => [] }) });
+    expect(report.conforms).toBe(false);
+    expect(statusOf(report, "bridge-shape")).toBe("skip");
+    expect(formatConformance(report)).toMatch(/Incomplete conformance check/);
+  });
+
   it("formats one line per check and a summary with the skipped count", async () => {
     const { target } = referenceTarget();
     const text = formatConformance(await runConformance({ bridge: target.bridge }));

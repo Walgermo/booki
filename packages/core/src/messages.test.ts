@@ -206,7 +206,7 @@ describe("localize", () => {
       caught(() => approveBatch(bad, "kari", AT)),
       /^Betalingsoppdraget kan ikke godkjennes ennå: /,
     );
-    expect(text).toContain('Betalingsdatoen må skrives ÅÅÅÅ-MM-DD, ikke "1. feb".');
+    expect(text).toContain('Betalingsdatoen må være en gyldig dato på formen ÅÅÅÅ-MM-DD, fikk "1. feb".');
     expect(text).toContain("Betalingsoppdraget mangler konto det skal betales fra.");
     expect(text).toContain('Betaling "p1": beløpet er et heltall i minste myntenhet over null, ikke 0.');
     expect(text).toContain("Betalingene p2 og p3 ser ut til å være samme betaling");

@@ -441,6 +441,8 @@ export const documentEditor = definePrimitive({
       const block = findBlock(doc(), menu.blockId);
       const end = menu.start + 1 + menu.query.length;
       const bare = block.text.slice(0, menu.start) + block.text.slice(end);
+      const list = context.element("menu");
+      if (list && list.ownerDocument.activeElement === list) context.element("block", block.id)?.focus();
       closeMenu();
       if (menu.kind === "mention") {
         const item = (context.options().mentions ?? []).find((mention) => mention.id === id);
@@ -495,6 +497,31 @@ export const documentEditor = definePrimitive({
       context.options().onCommand?.(found.id, { blockId: block.id });
       audit({ action: "command", actor, blockId: block.id, detail: found.id }, doc());
       return true;
+    };
+
+    const left = (id: string, nextFocus?: EventTarget | null) => {
+      if (nextFocus && nextFocus === context.element("menu")) return;
+      const before = editing.get(id);
+      editing.delete(id);
+      const block = doc().blocks.find((item) => item.id === id);
+      if (before !== undefined && block && block.text !== before) {
+        audit(
+          {
+            action: "edit-text",
+            actor: String(context.options().actor ?? ""),
+            blockId: id,
+            detail: `${id}: "${short(before)}" → "${short(block.text)}"`,
+          },
+          doc(),
+        );
+      }
+      if (context.store.get().menu?.blockId === id) closeMenu();
+    };
+    const moveOption = (menu: Menu, index: number) => {
+      const items = context.store.get().items;
+      const active = (index + items.length) % items.length;
+      context.store.set({ menu: { ...menu, active } });
+      context.element("option", items[active]!.id)?.scrollIntoView?.({ block: "nearest" });
     };
 
     return {
@@ -668,24 +695,7 @@ export const documentEditor = definePrimitive({
           const menu: Menu = { ...trigger, blockId: block.id, active: 0 };
           context.store.set({ menu, items: menuItems(menu, context.options()) });
         }),
-      /** Person: the block lost focus. One audit row per edit, not per keystroke. */
-      left: (id: string) => {
-        const before = editing.get(id);
-        editing.delete(id);
-        const block = doc().blocks.find((item) => item.id === id);
-        if (before !== undefined && block && block.text !== before) {
-          audit(
-            {
-              action: "edit-text",
-              actor: String(context.options().actor ?? ""),
-              blockId: id,
-              detail: `${id}: "${short(before)}" → "${short(block.text)}"`,
-            },
-            doc(),
-          );
-        }
-        if (context.store.get().menu?.blockId === id) closeMenu();
-      },
+      left,
       /** Person: a key in a block. Returns true when the editor handled it. */
       key: (id: string, event: KeyboardEvent) =>
         shown(() => {
@@ -693,12 +703,16 @@ export const documentEditor = definePrimitive({
           const menu = context.store.get().menu;
           const items = context.store.get().items;
           if (menu && menu.blockId === id && items.length) {
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-              const step = event.key === "ArrowDown" ? 1 : -1;
-              context.store.set({ menu: { ...menu, active: (menu.active + step + items.length) % items.length } });
+            if (event.altKey && event.key === "ArrowDown") {
+              context.element("menu")?.focus();
               return true;
             }
-            if (event.key === "Enter" || event.key === "Tab") {
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              const step = event.key === "ArrowDown" ? 1 : -1;
+              moveOption(menu, menu.active + step);
+              return true;
+            }
+            if (event.key === "Enter" || (event.key === "Tab" && !event.shiftKey)) {
               pickMenu(items[menu.active]!.id, event);
               return true;
             }
@@ -781,6 +795,43 @@ export const documentEditor = definePrimitive({
           }
           return false;
         }),
+      menuKey: (event: KeyboardEvent) =>
+        shown(() => {
+          const { menu, items } = context.store.get();
+          if (!menu || !items.length) return;
+          switch (event.key) {
+            case "ArrowDown":
+              moveOption(menu, menu.active + 1);
+              break;
+            case "ArrowUp":
+              moveOption(menu, menu.active - 1);
+              break;
+            case "Home":
+              moveOption(menu, 0);
+              break;
+            case "End":
+              moveOption(menu, items.length - 1);
+              break;
+            case "Enter":
+            case " ":
+              pickMenu(items[menu.active]!.id, event);
+              break;
+            case "Escape":
+              context.element("block", menu.blockId)?.focus();
+              closeMenu();
+              break;
+            default:
+              return;
+          }
+          event.preventDefault();
+        }),
+      menuLeft: (nextFocus: EventTarget | null) => {
+        const menu = context.store.get().menu;
+        if (menu && nextFocus !== context.element("block", menu.blockId)) {
+          // End the same edit session whether focus leaves the text area or its popup.
+          left(menu.blockId);
+        }
+      },
       /** Person: pick an item from the open menu. */
       pick: (id: string, event?: Event) => shown(() => pickMenu(String(id), event)),
       /** Person: tick or untick a to-do. */
@@ -848,7 +899,8 @@ export const documentEditor = definePrimitive({
           "data-type": block?.type,
           "data-level": block?.level ? String(block.level) : undefined,
           "aria-autocomplete": "list",
-          "aria-expanded": open ? "true" : "false",
+          "aria-haspopup": "listbox",
+          "aria-keyshortcuts": open ? "Alt+ArrowDown" : undefined,
           "aria-controls": open ? menuId(state.document.id, id) : undefined,
           "aria-activedescendant": open
             ? optionId(state.document.id, id, state.items[state.menu!.active]?.id ?? "")
@@ -871,7 +923,7 @@ export const documentEditor = definePrimitive({
             /* shown in the control */
           }
         },
-        blur: (_event, { api, key }) => api.left(String(key)),
+        blur: (event, { api, key }) => api.left(String(key), (event as FocusEvent).relatedTarget),
       },
       // Grow with the text where `field-sizing` is missing.
       bind: (el) => {
@@ -909,16 +961,34 @@ export const documentEditor = definePrimitive({
     }),
     menu: slot({
       role: "listbox",
-      keys: { none: "The block's text keeps focus and handles them." },
+      keys: ["ArrowDown", "ArrowUp", "Home", "End", "Enter", " ", "Escape"],
       present: (state) => Boolean(state.menu && state.items.length),
-      attrs: (state) => ({ "data-kind": state.menu?.kind }),
+      attrs: (state) => ({
+        tabindex: "0",
+        "data-kind": state.menu?.kind,
+        "aria-activedescendant":
+          state.menu && state.items.length
+            ? optionId(state.document.id, state.menu.blockId, state.items[state.menu.active]!.id)
+            : undefined,
+      }),
+      on: {
+        keydown: (event, { api }) => {
+          try {
+            api.menuKey(event as KeyboardEvent);
+          } catch {
+            // The control displays the refusal and keeps the list open.
+            event.preventDefault();
+          }
+        },
+        blur: (event, { api }) => api.menuLeft((event as FocusEvent).relatedTarget),
+      },
     }),
     // `value` is the command or mention id.
     option: slot<{ value: string }>({
       props: { value: "string" },
       role: "option",
-      focus: { none: "The block's text keeps focus; arrows move the active option." },
-      keys: { none: "The block's text handles the keys." },
+      focus: { none: "The text area or listbox holds focus and identifies the active option." },
+      keys: { none: "The text area and listbox handle navigation." },
       attrs: (state, part) => {
         const active = state.items[state.menu?.active ?? -1]?.id === String(part.key);
         return { "aria-selected": active ? "true" : "false", "data-active": active ? "" : undefined };

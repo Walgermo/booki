@@ -92,6 +92,8 @@ const COPY = {
       divider: "Divider",
     } as Record<string, string>,
     blocksGroup: "Blocks",
+    commandList: "Commands",
+    mentionList: "Mentions",
   },
   NO: {
     label: "Dokument",
@@ -137,6 +139,8 @@ const COPY = {
       divider: "Skillelinje",
     } as Record<string, string>,
     blocksGroup: "Blokker",
+    commandList: "Kommandoer",
+    mentionList: "Omtaler",
   },
 } as const;
 
@@ -378,35 +382,35 @@ function DocumentEditor({
                           ))}
                         </span>
                       ) : null}
-                      {open ? (
-                        <DocumentEditorMenu
-                          id={menuId(doc.id, block.id)}
-                          aria-label={state.menu?.kind === "slash" ? "/" : "@"}
-                        >
-                          {state.items.map((item, i) => {
-                            const group = item.group && item.group !== state.items[i - 1]?.group ? item.group : null;
-                            return (
-                              <Fragment key={item.id}>
-                                {group ? (
-                                  <p data-slot="document-editor-group" aria-hidden="true">
-                                    {group}
-                                  </p>
-                                ) : null}
-                                <DocumentEditorOption id={optionId(doc.id, block.id, item.id)} value={item.id}>
-                                  <span data-slot="document-editor-option-label">{item.label}</span>
-                                  {item.kind ? (
-                                    <span data-slot="document-editor-option-kind">
-                                      {copy.kind[item.kind as Mention["kind"]] ?? item.kind}
-                                    </span>
-                                  ) : null}
-                                  {item.hint ? <span data-slot="document-editor-option-hint">{item.hint}</span> : null}
-                                </DocumentEditorOption>
-                              </Fragment>
-                            );
-                          })}
-                        </DocumentEditorMenu>
-                      ) : null}
                     </div>
+                    {open ? (
+                      <DocumentEditorMenu
+                        id={menuId(doc.id, block.id)}
+                        aria-label={state.menu?.kind === "slash" ? copy.commandList : copy.mentionList}
+                      >
+                        {state.items.map((item, i) => {
+                          const group = item.group && item.group !== state.items[i - 1]?.group ? item.group : null;
+                          return (
+                            <Fragment key={item.id}>
+                              {group ? (
+                                <p data-slot="document-editor-group" aria-hidden="true">
+                                  {group}
+                                </p>
+                              ) : null}
+                              <DocumentEditorOption id={optionId(doc.id, block.id, item.id)} value={item.id}>
+                                <span data-slot="document-editor-option-label">{item.label}</span>
+                                {item.kind ? (
+                                  <span data-slot="document-editor-option-kind">
+                                    {copy.kind[item.kind as Mention["kind"]] ?? item.kind}
+                                  </span>
+                                ) : null}
+                                {item.hint ? <span data-slot="document-editor-option-hint">{item.hint}</span> : null}
+                              </DocumentEditorOption>
+                            </Fragment>
+                          );
+                        })}
+                      </DocumentEditorMenu>
+                    ) : null}
                     {proposal ? (
                       <div data-slot="document-editor-proposal" data-op={proposal.op} data-proposal={proposal.id}>
                         <p data-slot="document-editor-proposal-head">

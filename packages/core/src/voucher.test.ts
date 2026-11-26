@@ -40,6 +40,12 @@ describe("buildBalancedSalesVoucher", () => {
     expect(assertBalanced(lines).balanced).toBe(true);
   });
 
+  it("rounds the tax once for fractional basis points", () => {
+    const lines = buildBalancedSalesVoucher(accounts, { amountMinor: 312_500, taxPercent: 8.875 });
+    expect(lines[2]?.creditMinor).toBe(27_734);
+    expect(sumVoucher(lines)).toMatchObject({ balanced: true, debitMinor: 340_234 });
+  });
+
   it("rejects non-integer amounts", () => {
     expect(() =>
       buildBalancedSalesVoucher(accounts, {

@@ -49,10 +49,21 @@ describe("document blocks from and to HTML", () => {
   it("writes back what it read: attributes, mentions and embeds unchanged", () => {
     const html = toHtml(fromHtml(PAGE, options), options);
     expect(html).toContain('<h2 data-origin="{&quot;type&quot;:&quot;person&quot;}" data-node-id="01A">Revenue</h2>');
-    expect(html).toContain('<ul data-node-id="01C"><li><p>One</p></li><li><p>Two</p></li></ul>');
+    expect(html).toContain('<ul data-node-id="01C"><li><p>One</p></li><li data-node-id="b4"><p>Two</p></li></ul>');
     expect(html).toContain('See <span data-attachment-id="77" data-file-name="sample.xlsx">sample.xlsx</span> here');
     expect(html).toContain('<table data-node-id="01E"><tbody><tr><td>1500</td><td>12 000</td></tr></tbody></table>');
     expect(fromHtml(html, options)).toEqual(fromHtml(PAGE, options));
+  });
+
+  it.each(["bullet", "numbered", "todo"] as const)("preserves editable callouts and %s item identities", (type) => {
+    const items = ["e-a", "e-b", "e-c"].map((id, i) => ({
+      id,
+      type,
+      text: id,
+      ...(type === "todo" ? { checked: i === 1 } : {}),
+    }));
+    const blocks = [{ id: "scope", type: "callout" as const, text: "Review" }, ...items];
+    expect(fromHtml(toHtml(blocks, options), options)).toEqual(blocks);
   });
 
   it("keeps bold, italics, code and links through an edit, as inline markdown", () => {
@@ -77,10 +88,15 @@ describe("document blocks from and to HTML", () => {
     expect(() =>
       proposeEdit(doc, embed.id, { ...embed, type: "paragraph", text: "x" }, { by: "agent", at: "t" }),
     ).toThrow(/changed where it comes from/);
-    const { document } = proposeEdit(doc, "01B", { ...doc.blocks[1]!, text: "New" }, { by: "agent:drafter", at: "t" });
-    expect(acceptProposal(document, "p1").blocks[1]).toMatchObject({
+    const { document, proposal } = proposeEdit(
+      doc,
+      "01B",
+      { ...doc.blocks[1]!, text: "New" },
+      { by: "agent:drafter", at: "t" },
+    );
+    expect(acceptProposal(document, proposal.id).blocks[1]).toMatchObject({
       text: "New",
-      origin: { by: "agent:drafter", proposal: "p1" },
+      origin: { by: "agent:drafter", proposal: proposal.id },
     });
   });
 });

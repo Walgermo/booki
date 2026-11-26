@@ -1,3 +1,4 @@
+import { safeMinorTotal } from "./money.js";
 import { BookiError, msg } from "./msg.js";
 
 export type OpenItemKind = "receivable" | "payable";
@@ -138,6 +139,8 @@ function checkItems(items: OpenItem[], kind: OpenItemKind | undefined): { kind: 
   return { kind, items: items.filter((item) => item.kind === kind) };
 }
 
+const sumMinor = (amounts: bigint[]) => amounts.reduce((total, amount) => total + amount, 0n);
+
 /**
  * The aging table: per party, what is open in each bucket on the as-of date.
  * A credit lands in the bucket of its own due date and reduces the party's
@@ -152,9 +155,8 @@ export function ageItems(
   const columns = agingBuckets(buckets);
   const today = utcDay(asOf, msg("aging.what.as-of"));
   const checked = checkItems(items, kind);
-  const byParty = new Map<string, AgingRow>();
-  const totalsMinor = columns.map(() => 0);
-  let grandTotalMinor = 0;
+  const byParty = new Map<string, { partyId: string; partyName: string; amountsMinor: bigint[]; itemCount: number }>();
+  const totalsMinor = columns.map(() => 0n);
   for (const item of checked.items) {
     const days = today - utcDay(item.dueDate, msg("aging.what.item-due-date", { id: String(item.id) }));
     const column = bucketIndex(days, buckets);
@@ -163,23 +165,34 @@ export function ageItems(
       row = {
         partyId: item.partyId,
         partyName: item.partyName,
-        amountsMinor: columns.map(() => 0),
-        totalMinor: 0,
+        amountsMinor: columns.map(() => 0n),
         itemCount: 0,
       };
       byParty.set(item.partyId, row);
     }
-    row.amountsMinor[column]! += item.amountMinor;
-    row.totalMinor += item.amountMinor;
+    const amount = BigInt(item.amountMinor);
+    row.amountsMinor[column]! += amount;
     row.itemCount += 1;
-    totalsMinor[column]! += item.amountMinor;
-    grandTotalMinor += item.amountMinor;
+    totalsMinor[column]! += amount;
   }
-  const rows = [...byParty.values()].sort(
-    (a, b) =>
-      a.partyName.localeCompare(b.partyName, "en") || (a.partyId < b.partyId ? -1 : a.partyId > b.partyId ? 1 : 0),
-  );
-  return { kind: checked.kind, asOf, buckets: columns, rows, totalsMinor, grandTotalMinor };
+  const rows = [...byParty.values()]
+    .map((row) => ({
+      ...row,
+      amountsMinor: row.amountsMinor.map(safeMinorTotal),
+      totalMinor: safeMinorTotal(sumMinor(row.amountsMinor)),
+    }))
+    .sort(
+      (a, b) =>
+        a.partyName.localeCompare(b.partyName, "en") || (a.partyId < b.partyId ? -1 : a.partyId > b.partyId ? 1 : 0),
+    );
+  return {
+    kind: checked.kind,
+    asOf,
+    buckets: columns,
+    rows,
+    totalsMinor: totalsMinor.map(safeMinorTotal),
+    grandTotalMinor: safeMinorTotal(sumMinor(totalsMinor)),
+  };
 }
 
 /**
@@ -233,23 +246,24 @@ export function overdueParties(items: OpenItem[], asOf: string, minDays = 1, kin
   }
   const today = utcDay(asOf, msg("aging.what.as-of"));
   const checked = checkItems(items, kind);
-  const byParty = new Map<string, OverdueParty>();
+  const byParty = new Map<string, Omit<OverdueParty, "overdueMinor"> & { overdueMinor: bigint }>();
   for (const item of checked.items) {
     const days = today - utcDay(item.dueDate, msg("aging.what.item-due-date", { id: String(item.id) }));
     if (days < minDays) continue;
     const party = byParty.get(item.partyId) ?? {
       partyId: item.partyId,
       partyName: item.partyName,
-      overdueMinor: 0,
+      overdueMinor: 0n,
       oldestDays: 0,
       itemCount: 0,
     };
-    party.overdueMinor += item.amountMinor;
+    party.overdueMinor += BigInt(item.amountMinor);
     party.oldestDays = Math.max(party.oldestDays, days);
     party.itemCount += 1;
     byParty.set(item.partyId, party);
   }
   return [...byParty.values()]
-    .filter((party) => party.overdueMinor > 0)
+    .filter((party) => party.overdueMinor > 0n)
+    .map((party) => ({ ...party, overdueMinor: safeMinorTotal(party.overdueMinor) }))
     .sort((a, b) => b.overdueMinor - a.overdueMinor || (a.partyId < b.partyId ? -1 : 1));
 }

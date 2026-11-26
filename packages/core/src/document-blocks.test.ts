@@ -31,29 +31,46 @@ describe("document blocks", () => {
   it("an insert waits, then lands where it was proposed", () => {
     const { document, proposal } = proposeInsert(doc, { after: "b1", block: { type: "paragraph", text: "Scope" } }, by);
     expect(document.blocks).toHaveLength(3);
-    expect(proposal).toMatchObject({ id: "p1", op: "insert", blockId: "b4", after: "b1" });
-    const accepted = acceptProposal(document, "p1");
+    expect(proposal).toMatchObject({ op: "insert", blockId: "b4", after: "b1" });
+    const accepted = acceptProposal(document, proposal.id);
     expect(accepted.blocks.map((block) => block.id)).toEqual(["b1", "b4", "b2", "b3"]);
     expect(accepted.version).toBe(4);
     expect(accepted.proposals).toEqual([]);
   });
 
   it("an edit is refused when a person changed the block after it was proposed", () => {
-    const { document } = proposeEdit(doc, "b2", { ...doc.blocks[1]!, text: "Revenue on delivery." }, by);
+    const { document, proposal } = proposeEdit(doc, "b2", { ...doc.blocks[1]!, text: "Revenue on delivery." }, by);
     const changed = setBlocks(
       document,
       document.blocks.map((block) => (block.id === "b2" ? { ...block, text: "A person wrote this." } : block)),
     );
-    expect(() => acceptProposal(changed, "p1")).toThrow(/changed after proposal p1/);
-    expect(dropProposal(changed, "p1").proposals).toEqual([]);
+    expect(() => acceptProposal(changed, proposal.id)).toThrow(/changed after proposal/);
+    expect(dropProposal(changed, proposal.id).proposals).toEqual([]);
   });
 
   it("moves, removes, and refuses a second proposal on one block", () => {
     const moved = proposeMove(doc, "b3", null, by);
-    expect(acceptProposal(moved.document, "p1").blocks.map((block) => block.id)).toEqual(["b3", "b1", "b2"]);
-    expect(() => proposeRemove(moved.document, "b3", by)).toThrow(/already has proposal p1/);
+    expect(acceptProposal(moved.document, moved.proposal.id).blocks.map((block) => block.id)).toEqual([
+      "b3",
+      "b1",
+      "b2",
+    ]);
+    expect(() => proposeRemove(moved.document, "b3", by)).toThrow(/already has proposal/);
     const removed = proposeRemove(doc, "b2", by);
-    expect(acceptProposal(removed.document, "p1").blocks.map((block) => block.id)).toEqual(["b1", "b3"]);
+    expect(acceptProposal(removed.document, removed.proposal.id).blocks.map((block) => block.id)).toEqual(["b1", "b3"]);
+  });
+
+  it("keeps proposal identities unique across decisions, reloads and concurrent drafts", () => {
+    const insert = (page: EditorDocument) => proposeInsert(page, { block: { type: "paragraph", text: "Scope" } }, by);
+    const first = insert(doc);
+    const concurrent = insert(doc);
+    const accepted = acceptProposal(first.document, first.proposal.id);
+    const second = insert(JSON.parse(JSON.stringify(accepted)));
+    const dropped = dropProposal(second.document, second.proposal.id);
+    const third = insert(dropped);
+    expect(new Set([first, concurrent, second, third].map((result) => result.proposal.id)).size).toBe(4);
+    expect(accepted.blocks[0]?.origin?.proposal).toBe(first.proposal.id);
+    expect(() => acceptProposal(third.document, second.proposal.id)).toThrow(/No proposal/);
   });
 
   it("one pending proposal per page when asked", () => {

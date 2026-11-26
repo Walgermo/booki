@@ -1,3 +1,4 @@
+import { plainDecimal } from "./decimal-digits.js";
 import { isoMinorUnits } from "./currency-minor-units.js";
 import { moneyMessages } from "./msg-money.js";
 
@@ -18,37 +19,30 @@ export function minorDigitsFor(currency: BookiCurrencyCode): number {
   return digits;
 }
 
+/** Convert an exact accumulated sum back to the public minor-unit representation. */
+export function safeMinorTotal(value: bigint): number {
+  const result = Number(value);
+  if (!Number.isSafeInteger(result)) throw moneyMessages.error("money.not-safe-integer", { value: String(value) });
+  return result;
+}
+
+/** Sum minor units exactly, even if offsetting entries take an intermediate sum outside the safe range. */
+export function sumMinorUnits<Row>(rows: readonly Row[], amountOf: (row: Row) => number): number {
+  let total = 0n;
+  for (const row of rows) {
+    const amount = amountOf(row);
+    if (!Number.isSafeInteger(amount)) throw moneyMessages.error("money.not-safe-integer", { value: String(amount) });
+    total += BigInt(amount);
+  }
+  return safeMinorTotal(total);
+}
+
 export function money(minor: number, currency: BookiCurrencyCode): Money {
   if (!Number.isSafeInteger(minor)) {
     throw moneyMessages.error("money.not-safe-integer", { value: String(minor) });
   }
   // -0 is 0: it would print as "-NOK 0.00".
   return { minor: minor === 0 ? 0 : minor, currency: currency.toUpperCase() };
-}
-
-/**
- * Plain decimal digits for a finite number, using its shortest round-trip
- * text (so 1.005 reads as "1.005", not 1.00499999…). Expands exponents.
- */
-function plainDecimal(value: number): { negative: boolean; int: string; frac: string } {
-  const text = String(Math.abs(value)).toLowerCase();
-  const [mantissa = "0", exponentText] = text.split("e");
-  const exponent = exponentText === undefined ? 0 : Number(exponentText);
-  const [intPart = "0", fracPart = ""] = mantissa.split(".");
-  let digits = intPart + fracPart;
-  let point = intPart.length + exponent;
-  if (point < 0) {
-    digits = "0".repeat(-point) + digits;
-    point = 0;
-  }
-  if (point > digits.length) {
-    digits = digits + "0".repeat(point - digits.length);
-  }
-  return {
-    negative: value < 0,
-    int: digits.slice(0, point).replace(/^0+(?=\d)/, "") || "0",
-    frac: digits.slice(point),
-  };
 }
 
 /**
