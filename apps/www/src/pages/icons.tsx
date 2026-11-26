@@ -1,5 +1,6 @@
 import { iconAliases, iconCategories, iconComponentName, iconNames, type IconName } from "@booki-aui/icons";
-import { Icon } from "@booki-aui/icons/react";
+import { DownloadIcon, Icon, PencilIcon, TrashIcon } from "@booki-aui/icons/react";
+import { IconButton } from "@booki-aui/react";
 import { Input } from "@ui-sdk/react/input";
 import { useMemo, useState } from "react";
 
@@ -20,6 +21,12 @@ const REACT_USAGE = `import { BanknoteIcon, BankIcon } from "@booki-aui/icons/re
 
 <BanknoteIcon />                                        // 16 px, decorative
 <BankIcon size={20} aria-label="Bank account" role="img" /> // names a control`;
+
+const BUTTON_USAGE = `import { IconButton } from "@booki-aui/react"
+import { TrashIcon } from "@booki-aui/icons/react"
+
+<IconButton label="Delete line 2" icon={<TrashIcon />} data-agent-confirm="Deleting needs a person" />
+// An agent presses it by its label: { ref: "Delete line 2", action: "press" }`;
 
 const ANY_USAGE = `import { iconSvg } from "@booki-aui/icons"
 
@@ -165,6 +172,31 @@ export function IconsPage() {
             'De rene filene ligger på @booki-aui/icons/svg/<navn>.svg. <Icon name="…" /> tar navnet som data, men tar med alle ikonene i bundlen.',
           )}
         </p>
+      </section>
+      <section className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2" aria-labelledby="icons-buttons">
+        <h2 id="icons-buttons" className="m-0 text-xl font-semibold">
+          {t("Icon buttons an agent can read", "Ikonknapper en agent kan lese")}
+        </h2>
+        <p className="m-0 max-w-prose text-muted-foreground">
+          {t(
+            'A button with only an icon has no name, so an agent sees "button" and has to guess. IconButton from @booki-aui/react needs a label: it is the button\'s name and tooltip, the icon is hidden, and the agent presses it by those words. The readiness check flags icon-only buttons without one.',
+            "En knapp med bare et ikon har ikke noe navn, så en agent ser «knapp» og må gjette. IconButton fra @booki-aui/react krever en etikett: den er knappens navn og verktøytips, ikonet er skjult, og agenten trykker på den med de ordene. Readiness-sjekken flagger ikonknapper uten.",
+          )}
+        </p>
+        <div
+          className="site-icons-buttons"
+          role="group"
+          aria-label={t("Example icon buttons", "Eksempel på ikonknapper")}
+        >
+          <IconButton label={t("Edit line 2", "Rediger linje 2")} icon={<PencilIcon />} />
+          <IconButton
+            label={t("Delete line 2", "Slett linje 2")}
+            icon={<TrashIcon />}
+            data-agent-confirm={t("Deleting a line needs a person", "Å slette en linje krever en person")}
+          />
+          <IconButton label={t("Export CSV", "Eksporter CSV")} icon={<DownloadIcon />} showLabel />
+        </div>
+        <InstallBlock label="React" language="jsx" command={BUTTON_USAGE} />
       </section>
     </article>
   );

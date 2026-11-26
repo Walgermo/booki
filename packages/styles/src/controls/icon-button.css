@@ -1,0 +1,44 @@
+/* ── Icon button: an icon, named by its label (IconButton) ────────────── */
+
+/* Square, so a row of them lines up; the icon takes the text colour. */
+[data-slot="button"][data-icon-button] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bk-gap);
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--bk-radius-sm);
+  background: transparent;
+  color: var(--bk-fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+:where([data-slot="button"][data-icon-button]):hover {
+  background: var(--bk-muted);
+}
+
+:where([data-slot="button"][data-icon-button]):focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 1px;
+}
+
+:where([data-slot="button"][data-icon-button])[aria-disabled="true"],
+:where([data-slot="button"][data-icon-button]):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where([data-slot="button"][data-icon-button]) [data-slot="icon-button-icon"] {
+  display: inline-flex;
+  flex: none;
+}
+
+:where([data-slot="button"][data-icon-button]) [data-slot="icon-button-icon"] > svg {
+  display: block;
+}

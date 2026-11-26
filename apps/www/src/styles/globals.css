@@ -1219,6 +1219,15 @@ html[data-kpi-still] {
   outline-offset: 1px;
 }
 
+.site-icons-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+}
+
 .site-icons-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
