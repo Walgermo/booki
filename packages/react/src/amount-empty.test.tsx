@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AmountField, type AmountFieldProps } from "./amount-field.js";
-import { createBookiAgent } from "./booki-agent.js";
+import { createBookiAgent, createBookiHistory } from "./booki-agent.js";
 import { BookiLocaleProvider } from "./locale.js";
 
 afterEach(() => cleanup());
@@ -77,6 +77,33 @@ describe("onValueChange with allowEmpty", () => {
     });
     await agent.act({ steps: [{ ref: entry().ref, action: "clear" }] });
     expect(calls).toEqual([null]);
+  });
+
+  it("a controlled field whose owner does not take the change keeps its amount and its emptiness", async () => {
+    const held = setup({ allowEmpty: true, value: 5_000, name: "amount", onValueChange: () => {}, onEmpty: () => {} });
+    await held.agent.act({ steps: [{ ref: held.entry().ref, action: "clear" }] });
+    expect(held.entry()).toMatchObject({ empty: false, value: 5_000, minor: 5_000 });
+    expect(held.input().value).toBe("50,00");
+    expect((document.querySelector("input[name=amount]") as HTMLInputElement).value).toBe("5000");
+    cleanup();
+    const blank = setup({ allowEmpty: true, value: null, name: "amount", onValueChange: () => {} });
+    await blank.agent.act({ steps: [{ ref: blank.entry().ref, action: "setMinor", args: [5_000] }] });
+    expect(blank.entry()).toMatchObject({ empty: true, value: null, minor: null });
+    expect(blank.input().value).toBe("");
+    expect((document.querySelector("input[name=amount]") as HTMLInputElement).value).toBe("");
+  });
+});
+
+describe("history and an emptied amount", () => {
+  it("undo puts back the amount an agent cleared", async () => {
+    const { agent, entry, input } = setup({ allowEmpty: true, defaultValue: 12_500 });
+    const history = createBookiHistory(agent);
+    await agent.act({ steps: [{ ref: entry().ref, action: "setMinor", args: [null] }] });
+    expect(entry()).toMatchObject({ empty: true, minor: null });
+    expect(history.entries()).toHaveLength(1);
+    expect(await history.undoSource("agent")).toEqual([]);
+    expect(entry()).toMatchObject({ empty: false, minor: 12_500 });
+    expect(input().value).toBe("125,00");
   });
 
   it("is typed with null only when allowEmpty is set", () => {
