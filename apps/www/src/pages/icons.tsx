@@ -1,10 +1,10 @@
-import { iconAliases, iconComponentName, iconNames, type IconName } from "@booki-aui/icons";
+import { iconAliases, iconCategories, iconComponentName, iconNames, type IconName } from "@booki-aui/icons";
 import { Icon } from "@booki-aui/icons/react";
 import { Input } from "@ui-sdk/react/input";
 import { useMemo, useState } from "react";
 
 import { InstallBlock } from "@/components/install-block";
-import { NAV_SECTIONS, PAGE_ICON, plainName } from "@/docs-nav";
+import { PAGE_ICON, plainName } from "@/docs-nav";
 import { Button } from "@/components/ui/button";
 import { useLang, usePageMeta } from "@/lib/lang";
 
@@ -38,42 +38,6 @@ const SEARCH_WORDS: Record<IconName, string> = Object.fromEntries(
   }),
 ) as Record<IconName, string>;
 
-/** The icons for AI and agent UI: shown first, since no docs page carries them. */
-const AI_ICONS: IconName[] = [
-  "sparkles",
-  "agent-cursor",
-  "bot",
-  "chat-sparkle",
-  "prompt",
-  "token",
-  "wrench",
-  "bolt",
-  "eye",
-  "database",
-  "key",
-  "plug",
-];
-
-/** Icons grouped the way the docs are: AI and agents, then one group per docs section, then the rest. */
-const GROUPS: { id: string; en: string; nb: string; icons: IconName[] }[] = (() => {
-  const placed = new Set<IconName>(AI_ICONS);
-  const groups = [{ id: "ai", en: "AI and agents", nb: "AI og agenter", icons: AI_ICONS }];
-  for (const section of NAV_SECTIONS) {
-    const icons: IconName[] = [];
-    for (const page of section.pages) {
-      const icon = PAGE_ICON[page];
-      if (icon && !placed.has(icon)) {
-        placed.add(icon);
-        icons.push(icon);
-      }
-    }
-    if (icons.length) groups.push({ id: section.id, en: section.en, nb: section.nb, icons });
-  }
-  const rest = iconNames.filter((name) => !placed.has(name));
-  if (rest.length) groups.push({ id: "other", en: "Other", nb: "Andre", icons: rest });
-  return groups;
-})();
-
 /** Every icon, searchable by its name or by what it stands for in Booki; a press copies the import. */
 export function IconsPage() {
   const { t } = useLang();
@@ -84,10 +48,12 @@ export function IconsPage() {
 
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return GROUPS.map((group) => ({
-      ...group,
-      icons: q ? group.icons.filter((name) => SEARCH_WORDS[name].includes(q)) : group.icons,
-    })).filter((group) => group.icons.length);
+    return iconCategories
+      .map((group) => ({
+        ...group,
+        icons: q ? group.icons.filter((name) => SEARCH_WORDS[name].includes(q)) : group.icons,
+      }))
+      .filter((group) => group.icons.length);
   }, [query]);
   const count = groups.reduce((sum, group) => sum + group.icons.length, 0);
 

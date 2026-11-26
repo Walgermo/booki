@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="walkthrough process flow">
+  <circle cx="5.75" cy="18.25" r="3"/>
+  <circle cx="5.75" cy="18.25" r="3" data-role="silhouette"/>
+  <circle cx="18.25" cy="5.75" r="3"/>
+  <circle cx="18.25" cy="5.75" r="3" data-role="silhouette"/>
+  <path d="M8.75 18.25H16.75A1.5 1.5 0 0 0 18.25 16.75V8.75"/>
+</svg>

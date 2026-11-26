@@ -40,11 +40,43 @@ export function AgentCursorIcon(props) {
   );
 }
 
+/** The `archive` icon. */
+export function ArchiveIcon(props) {
+  return render(
+    "archive",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L20.25 3.75A1 1 0 0 1 21.25 4.75L21.25 7.25A1 1 0 0 1 20.25 8.25L3.75 8.25A1 1 0 0 1 2.75 7.25L2.75 4.75A1 1 0 0 1 3.75 3.75Z"/><path d="M4.25 8.25V18.75A1.5 1.5 0 0 0 5.75 20.25H18.25A1.5 1.5 0 0 0 19.75 18.75V8.25Z"/></g><path d="M12 3.75L20.25 3.75A1 1 0 0 1 21.25 4.75L21.25 7.25A1 1 0 0 1 20.25 8.25L3.75 8.25A1 1 0 0 1 2.75 7.25L2.75 4.75A1 1 0 0 1 3.75 3.75Z"/><path d="M4.25 8.25V18.75A1.5 1.5 0 0 0 5.75 20.25H18.25A1.5 1.5 0 0 0 19.75 18.75V8.25"/><path d="M9.75 12.25h4.5"/>',
+    props,
+  );
+}
+
+/** The `arrow-right` icon. */
+export function ArrowRightIcon(props) {
+  return render("arrow-right", '<path d="M4.75 12.75h14.5m-6-6 6 6-6 6"/>', props);
+}
+
+/** The `arrow-uturn` icon. */
+export function ArrowUturnIcon(props) {
+  return render(
+    "arrow-uturn",
+    '<path d="M8.25 4.25L3.75 8.75L8.25 13.25"/><path d="M3.75 8.75H14.25A5.5 5.5 0 0 1 14.25 19.75H10.75"/>',
+    props,
+  );
+}
+
 /** The `arrows-exchange` icon. */
 export function ArrowsExchangeIcon(props) {
   return render(
     "arrows-exchange",
     '<path d="M3.75 8.25h16.5m-4-4 4 4-4 4"/><path d="M20.25 15.75H3.75m4-4-4 4 4 4"/>',
+    props,
+  );
+}
+
+/** The `badge-check` icon. */
+export function BadgeCheckIcon(props) {
+  return render(
+    "badge-check",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M20.331 13.922L19.689 14.564A1.5 1.5 0 0 0 19.25 15.624L19.25 17.75A1.5 1.5 0 0 1 17.75 19.25L15.624 19.25A1.5 1.5 0 0 0 14.564 19.689L13.28 20.973A1.811 1.811 0 0 1 10.72 20.973L9.436 19.689A1.5 1.5 0 0 0 8.376 19.25L6.25 19.25A1.5 1.5 0 0 1 4.75 17.75L4.75 15.624A1.5 1.5 0 0 0 4.311 14.564L3.027 13.28A1.811 1.811 0 0 1 3.027 10.72L4.311 9.436A1.5 1.5 0 0 0 4.75 8.376L4.75 6.25A1.5 1.5 0 0 1 6.25 4.75L8.376 4.75A1.5 1.5 0 0 0 9.436 4.311L10.72 3.027A1.811 1.811 0 0 1 13.28 3.027L14.564 4.311A1.5 1.5 0 0 0 15.624 4.75L17.75 4.75A1.5 1.5 0 0 1 19.25 6.25L19.25 8.376A1.5 1.5 0 0 0 19.689 9.436L20.973 10.72A1.811 1.811 0 0 1 20.973 13.28Z"/></g><path d="M20.331 13.922L19.689 14.564A1.5 1.5 0 0 0 19.25 15.624L19.25 17.75A1.5 1.5 0 0 1 17.75 19.25L15.624 19.25A1.5 1.5 0 0 0 14.564 19.689L13.28 20.973A1.811 1.811 0 0 1 10.72 20.973L9.436 19.689A1.5 1.5 0 0 0 8.376 19.25L6.25 19.25A1.5 1.5 0 0 1 4.75 17.75L4.75 15.624A1.5 1.5 0 0 0 4.311 14.564L3.027 13.28A1.811 1.811 0 0 1 3.027 10.72L4.311 9.436A1.5 1.5 0 0 0 4.75 8.376L4.75 6.25A1.5 1.5 0 0 1 6.25 4.75L8.376 4.75A1.5 1.5 0 0 0 9.436 4.311L10.72 3.027A1.811 1.811 0 0 1 13.28 3.027L14.564 4.311A1.5 1.5 0 0 0 15.624 4.75L17.75 4.75A1.5 1.5 0 0 1 19.25 6.25L19.25 8.376A1.5 1.5 0 0 0 19.689 9.436L20.973 10.72A1.811 1.811 0 0 1 20.973 13.28Z"/><path d="m9 12.25 2 2 4-4"/>',
     props,
   );
 }
@@ -112,6 +144,15 @@ export function BotIcon(props) {
   );
 }
 
+/** The `briefcase` icon. */
+export function BriefcaseIcon(props) {
+  return render(
+    "briefcase",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 7.25L19.75 7.25A1.5 1.5 0 0 1 21.25 8.75L21.25 18.75A1.5 1.5 0 0 1 19.75 20.25L4.25 20.25A1.5 1.5 0 0 1 2.75 18.75L2.75 8.75A1.5 1.5 0 0 1 4.25 7.25Z"/></g><path d="M12 7.25L19.75 7.25A1.5 1.5 0 0 1 21.25 8.75L21.25 18.75A1.5 1.5 0 0 1 19.75 20.25L4.25 20.25A1.5 1.5 0 0 1 2.75 18.75L2.75 8.75A1.5 1.5 0 0 1 4.25 7.25Z"/><path d="M8.75 7.25L8.75 4.75A1 1 0 0 1 9.75 3.75L14.25 3.75A1 1 0 0 1 15.25 4.75L15.25 7.25"/><path d="M2.75 12.75h18.5"/>',
+    props,
+  );
+}
+
 /** The `building` icon. */
 export function BuildingIcon(props) {
   return render(
@@ -157,6 +198,33 @@ export function CalendarDotIcon(props) {
   );
 }
 
+/** The `calendar-range` icon. */
+export function CalendarRangeIcon(props) {
+  return render(
+    "calendar-range",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><circle cx="8.25" cy="15.75" r="0.75"/><path d="M9 15.75h6"/><circle cx="15.75" cy="15.75" r="0.75"/>',
+    props,
+  );
+}
+
+/** The `camera` icon. */
+export function CameraIcon(props) {
+  return render(
+    "camera",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.043 7.25L5.836 7.25A1 1 0 0 0 6.543 6.957L8.457 5.043A1 1 0 0 1 9.164 4.75L14.836 4.75A1 1 0 0 1 15.543 5.043L17.457 6.957A1 1 0 0 0 18.164 7.25L19.75 7.25A1.5 1.5 0 0 1 21.25 8.75L21.25 18.25A1.5 1.5 0 0 1 19.75 19.75L4.25 19.75A1.5 1.5 0 0 1 2.75 18.25L2.75 8.75A1.5 1.5 0 0 1 4.25 7.25Z"/></g><path d="M5.043 7.25L5.836 7.25A1 1 0 0 0 6.543 6.957L8.457 5.043A1 1 0 0 1 9.164 4.75L14.836 4.75A1 1 0 0 1 15.543 5.043L17.457 6.957A1 1 0 0 0 18.164 7.25L19.75 7.25A1.5 1.5 0 0 1 21.25 8.75L21.25 18.25A1.5 1.5 0 0 1 19.75 19.75L4.25 19.75A1.5 1.5 0 0 1 2.75 18.25L2.75 8.75A1.5 1.5 0 0 1 4.25 7.25Z"/><circle cx="12" cy="13.5" r="2.75"/>',
+    props,
+  );
+}
+
+/** The `cart` icon. */
+export function CartIcon(props) {
+  return render(
+    "cart",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M13.259 7.25L19.469 7.25A1 1 0 0 1 20.439 8.493L18.939 14.493A1 1 0 0 1 17.969 15.25L8.091 15.25A1 1 0 0 1 7.106 14.421L6.063 8.421A1 1 0 0 1 7.048 7.25Z"/></g><path d="M2.75 3.75L4.409 3.75A1 1 0 0 1 5.394 4.579L6.063 8.421"/><path d="M13.259 7.25L19.469 7.25A1 1 0 0 1 20.439 8.493L18.939 14.493A1 1 0 0 1 17.969 15.25L8.091 15.25A1 1 0 0 1 7.106 14.421L6.063 8.421A1 1 0 0 1 7.048 7.25Z"/><circle cx="8.75" cy="19.75" r="0.75"/><circle cx="17.25" cy="19.75" r="0.75"/>',
+    props,
+  );
+}
+
 /** The `chart-bar` icon. */
 export function ChartBarIcon(props) {
   return render(
@@ -193,6 +261,24 @@ export function ChartLineIcon(props) {
   );
 }
 
+/** The `chart-line-down` icon. */
+export function ChartLineDownIcon(props) {
+  return render(
+    "chart-line-down",
+    '<path d="M2.25 20.25h19.5"/><path d="M3.75 6.25L12.043 14.543A1 1 0 0 0 13.457 14.543L15.543 12.457A1 1 0 0 1 16.957 12.457L20.25 15.75"/>',
+    props,
+  );
+}
+
+/** The `chart-pie` icon. */
+export function ChartPieIcon(props) {
+  return render(
+    "chart-pie",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 6.25V12.75A1 1 0 0 0 11.25 13.75H17.75A7.5 7.5 0 1 1 10.25 6.25Z"/><path d="M13.75 2.75A7.5 7.5 0 0 1 21.25 10.25H14.75A1 1 0 0 1 13.75 9.25Z"/></g><path d="M10.25 6.25V12.75A1 1 0 0 0 11.25 13.75H17.75A7.5 7.5 0 1 1 10.25 6.25Z"/><path d="M13.75 2.75A7.5 7.5 0 0 1 21.25 10.25H14.75A1 1 0 0 1 13.75 9.25Z"/>',
+    props,
+  );
+}
+
 /** The `chart-waterfall` icon. */
 export function ChartWaterfallIcon(props) {
   return render(
@@ -211,6 +297,21 @@ export function ChatSparkleIcon(props) {
   );
 }
 
+/** The `check` icon. */
+export function CheckIcon(props) {
+  return render("check", '<path d="M4.25 12.75L8.293 16.793A1 1 0 0 0 9.707 16.793L19.75 6.75"/>', props);
+}
+
+/** The `chevron-down` icon. */
+export function ChevronDownIcon(props) {
+  return render("chevron-down", '<path d="M5.75 9L11.293 14.543A1 1 0 0 0 12.707 14.543L18.25 9"/>', props);
+}
+
+/** The `chevron-right` icon. */
+export function ChevronRightIcon(props) {
+  return render("chevron-right", '<path d="M9 5.75L14.543 11.293A1 1 0 0 1 14.543 12.707L9 18.25"/>', props);
+}
+
 /** The `circle-check` icon. */
 export function CircleCheckIcon(props) {
   return render(
@@ -220,11 +321,38 @@ export function CircleCheckIcon(props) {
   );
 }
 
+/** The `circle-info` icon. */
+export function CircleInfoIcon(props) {
+  return render(
+    "circle-info",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M12 7.75h.01"/><path d="M12 11.25v5"/>',
+    props,
+  );
+}
+
+/** The `circle-x` icon. */
+export function CircleXIcon(props) {
+  return render(
+    "circle-x",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M9.25 9.25l5.5 5.5M14.75 9.25l-5.5 5.5"/>',
+    props,
+  );
+}
+
 /** The `clipboard` icon. */
 export function ClipboardIcon(props) {
   return render(
     "clipboard",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L17.75 4.75A1.5 1.5 0 0 1 19.25 6.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 6.25A1.5 1.5 0 0 1 6.25 4.75Z"/></g><path d="M15.25 4.75H17.75A1.5 1.5 0 0 1 19.25 6.25V19.75A1.5 1.5 0 0 1 17.75 21.25H6.25A1.5 1.5 0 0 1 4.75 19.75V6.25A1.5 1.5 0 0 1 6.25 4.75H8.75"/><path d="M12 2.75L14.25 2.75A1 1 0 0 1 15.25 3.75L15.25 5.25A1 1 0 0 1 14.25 6.25L9.75 6.25A1 1 0 0 1 8.75 5.25L8.75 3.75A1 1 0 0 1 9.75 2.75Z"/><path d="M8.25 11.25h7.5"/><path d="M8.25 15.75h5"/>',
+    props,
+  );
+}
+
+/** The `clock` icon. */
+export function ClockIcon(props) {
+  return render(
+    "clock",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M12 7.75V11.25A1 1 0 0 0 13 12.25H15.25"/>',
     props,
   );
 }
@@ -247,6 +375,24 @@ export function CoinsIcon(props) {
   );
 }
 
+/** The `copy` icon. */
+export function CopyIcon(props) {
+  return render(
+    "copy",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.5 8.75L18.75 8.75A1.5 1.5 0 0 1 20.25 10.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L10.25 20.25A1.5 1.5 0 0 1 8.75 18.75L8.75 10.25A1.5 1.5 0 0 1 10.25 8.75Z"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75H10.25A1.5 1.5 0 0 0 8.75 10.25Z"/></g><path d="M14.5 8.75L18.75 8.75A1.5 1.5 0 0 1 20.25 10.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L10.25 20.25A1.5 1.5 0 0 1 8.75 18.75L8.75 10.25A1.5 1.5 0 0 1 10.25 8.75Z"/><path d="M8.75 15.25H5.25A1.5 1.5 0 0 1 3.75 13.75V5.25A1.5 1.5 0 0 1 5.25 3.75H13.75A1.5 1.5 0 0 1 15.25 5.25V8.75"/>',
+    props,
+  );
+}
+
+/** The `credit-card` icon. */
+export function CreditCardIcon(props) {
+  return render(
+    "credit-card",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><path d="M2.75 10.25h18.5"/><path d="M6.25 14.25h3"/>',
+    props,
+  );
+}
+
 /** The `database` icon. */
 export function DatabaseIcon(props) {
   return render(
@@ -265,11 +411,74 @@ export function DialogIcon(props) {
   );
 }
 
+/** The `document-banknote` icon. */
+export function DocumentBanknoteIcon(props) {
+  return render(
+    "document-banknote",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M12 11.25L14.75 11.25A1 1 0 0 1 15.75 12.25L15.75 16.75A1 1 0 0 1 14.75 17.75L9.25 17.75A1 1 0 0 1 8.25 16.75L8.25 12.25A1 1 0 0 1 9.25 11.25Z"/><path d="M12 14.5h.01"/>',
+    props,
+  );
+}
+
+/** The `document-check` icon. */
+export function DocumentCheckIcon(props) {
+  return render(
+    "document-check",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="m8.25 14.75 2.5 2.5 5-5"/>',
+    props,
+  );
+}
+
 /** The `document-lines` icon. */
 export function DocumentLinesIcon(props) {
   return render(
     "document-lines",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M9.939 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M8.25 12.75h7.5"/><path d="M8.25 16.75h5"/>',
+    props,
+  );
+}
+
+/** The `document-pen` icon. */
+export function DocumentPenIcon(props) {
+  return render(
+    "document-pen",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25Z"/><path d="M15.293 20.75L15.836 20.75A1 1 0 0 0 16.543 20.457L20.043 16.957A1 1 0 0 0 20.043 15.543L18.957 14.457A1 1 0 0 0 17.543 14.457L14.043 17.957A1 1 0 0 0 13.75 18.664L13.75 19.75A1 1 0 0 0 14.75 20.75Z"/></g><path d="M10.25 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L13.629 2.75A1.5 1.5 0 0 1 14.689 3.189L18.811 7.311A1.5 1.5 0 0 1 19.25 8.371L19.25 10.25"/><path d="M15.293 20.75L15.836 20.75A1 1 0 0 0 16.543 20.457L20.043 16.957A1 1 0 0 0 20.043 15.543L18.957 14.457A1 1 0 0 0 17.543 14.457L14.043 17.957A1 1 0 0 0 13.75 18.664L13.75 19.75A1 1 0 0 0 14.75 20.75Z"/><path d="M14.25 2.75v3.5a1.5 1.5 0 0 0 1.5 1.5h3.5"/><path d="M18 19l-2.5-2.5"/>',
+    props,
+  );
+}
+
+/** The `dots` icon. */
+export function DotsIcon(props) {
+  return render(
+    "dots",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></g><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    props,
+  );
+}
+
+/** The `download` icon. */
+export function DownloadIcon(props) {
+  return render(
+    "download",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75Z"/></g><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75"/><path d="M12 3.75V15.25M8 11.25l4 4 4-4"/>',
+    props,
+  );
+}
+
+/** The `envelope` icon. */
+export function EnvelopeIcon(props) {
+  return render(
+    "envelope",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/></g><path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/><path d="M2.75 8.25L11.489 13.446A1 1 0 0 0 12.511 13.446L21.25 8.25"/>',
+    props,
+  );
+}
+
+/** The `external-link` icon. */
+export function ExternalLinkIcon(props) {
+  return render(
+    "external-link",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.75 6.75L5.25 6.75A1.5 1.5 0 0 0 3.75 8.25L3.75 18.75A1.5 1.5 0 0 0 5.25 20.25L15.75 20.25A1.5 1.5 0 0 0 17.25 18.75L17.25 13.25Z"/></g><path d="M10.75 6.75L5.25 6.75A1.5 1.5 0 0 0 3.75 8.25L3.75 18.75A1.5 1.5 0 0 0 5.25 20.25L15.75 20.25A1.5 1.5 0 0 0 17.25 18.75L17.25 13.25"/><path d="M14.25 3.75h6v6"/><path d="M10.75 13.25 20.25 3.75"/>',
     props,
   );
 }
@@ -283,11 +492,38 @@ export function EyeIcon(props) {
   );
 }
 
+/** The `eye-off` icon. */
+export function EyeOffIcon(props) {
+  return render(
+    "eye-off",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.343 5.393A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 19.79 14.84Z"/><path d="M13.657 18.607A9.713 9.713 0 0 1 2.75 12A9.713 9.713 0 0 1 4.21 9.16Z"/></g><path d="M10.343 5.393A9.713 9.713 0 0 1 21.25 12A9.713 9.713 0 0 1 19.79 14.84"/><path d="M13.657 18.607A9.713 9.713 0 0 1 2.75 12A9.713 9.713 0 0 1 4.21 9.16"/><path d="M3.25 3.25L20.75 20.75"/>',
+    props,
+  );
+}
+
+/** The `fingerprint` icon. */
+export function FingerprintIcon(props) {
+  return render(
+    "fingerprint",
+    '<path d="M3.75 15.25V11.75A8.25 8.25 0 0 1 16.125 4.605"/><path d="M19.145 7.625A8.25 8.25 0 0 1 20.25 11.75V17.25"/><path d="M7.25 17.75V11.75A4.75 4.75 0 0 1 16.75 11.75V20.25"/><path d="M12 11.75V19.25"/>',
+    props,
+  );
+}
+
 /** The `flag` icon. */
 export function FlagIcon(props) {
   return render(
     "flag",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.25 4.25L17.75 4.25A1.5 1.5 0 0 1 19.25 5.75L19.25 12.25A1.5 1.5 0 0 1 17.75 13.75L5.25 13.75Z"/></g><path d="M5.25 4.25L17.75 4.25A1.5 1.5 0 0 1 19.25 5.75L19.25 12.25A1.5 1.5 0 0 1 17.75 13.75L5.25 13.75"/><path d="M5.25 2.75V21.25"/>',
+    props,
+  );
+}
+
+/** The `flask` icon. */
+export function FlaskIcon(props) {
+  return render(
+    "flask",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 5.823L9.75 8.896A1.5 1.5 0 0 1 9.592 9.567L5.335 18.079A1.5 1.5 0 0 0 6.677 20.25L17.323 20.25A1.5 1.5 0 0 0 18.665 18.079L14.408 9.567A1.5 1.5 0 0 1 14.25 8.896L14.25 2.75L9.75 2.75Z"/></g><path d="M9.75 2.75L9.75 8.896A1.5 1.5 0 0 1 9.592 9.567L5.335 18.079A1.5 1.5 0 0 0 6.677 20.25L17.323 20.25A1.5 1.5 0 0 0 18.665 18.079L14.408 9.567A1.5 1.5 0 0 1 14.25 8.896L14.25 2.75"/><path d="M8.25 2.75h7.5"/><path d="M6.75 15.25h10.5"/>',
     props,
   );
 }
@@ -315,6 +551,24 @@ export function GaugeIcon(props) {
   return render(
     "gauge",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M4.397 16.75A1.5 1.5 0 0 1 2.925 14.96A9.25 9.25 0 0 1 21.075 14.96A1.5 1.5 0 0 1 19.603 16.75Z"/></g><path d="M4.397 16.75A1.5 1.5 0 0 1 2.925 14.96A9.25 9.25 0 0 1 21.075 14.96A1.5 1.5 0 0 1 19.603 16.75Z"/><path d="M12 16.75l3.75-3.75"/>',
+    props,
+  );
+}
+
+/** The `gavel` icon. */
+export function GavelIcon(props) {
+  return render(
+    "gavel",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M18.054 12.018L19.115 10.957A1 1 0 0 0 19.115 9.543L13.457 3.885A1 1 0 0 0 12.043 3.885L9.921 6.007A1 1 0 0 0 9.921 7.421L15.579 13.079A1 1 0 0 0 16.993 13.079Z"/><path d="M16.75 17.25L19.75 17.25A1 1 0 0 1 20.75 18.25L20.75 19.75A1 1 0 0 1 19.75 20.75L13.75 20.75A1 1 0 0 1 12.75 19.75L12.75 18.25A1 1 0 0 1 13.75 17.25Z"/></g><path d="M18.054 12.018L19.115 10.957A1 1 0 0 0 19.115 9.543L13.457 3.885A1 1 0 0 0 12.043 3.885L9.921 6.007A1 1 0 0 0 9.921 7.421L15.579 13.079A1 1 0 0 0 16.993 13.079Z"/><path d="M12.75 10.25L4.25 18.75"/><path d="M16.75 17.25L19.75 17.25A1 1 0 0 1 20.75 18.25L20.75 19.75A1 1 0 0 1 19.75 20.75L13.75 20.75A1 1 0 0 1 12.75 19.75L12.75 18.25A1 1 0 0 1 13.75 17.25Z"/>',
+    props,
+  );
+}
+
+/** The `gear` icon. */
+export function GearIcon(props) {
+  return render(
+    "gear",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.04 5.541A1 1 0 0 0 10.75 4.584L10.75 3.75A1 1 0 0 1 11.75 2.75L12.25 2.75A1 1 0 0 1 13.25 3.75L13.25 4.584A1 1 0 0 0 13.96 5.541A6.75 6.75 0 0 1 15.182 6.047A1 1 0 0 0 16.36 5.872L16.95 5.282A1 1 0 0 1 18.364 5.282L18.718 5.636A1 1 0 0 1 18.718 7.05L18.128 7.64A1 1 0 0 0 17.953 8.818A6.75 6.75 0 0 1 18.459 10.04A1 1 0 0 0 19.416 10.75L20.25 10.75A1 1 0 0 1 21.25 11.75L21.25 12.25A1 1 0 0 1 20.25 13.25L19.416 13.25A1 1 0 0 0 18.459 13.96A6.75 6.75 0 0 1 17.953 15.182A1 1 0 0 0 18.128 16.36L18.718 16.95A1 1 0 0 1 18.718 18.364L18.364 18.718A1 1 0 0 1 16.95 18.718L16.36 18.128A1 1 0 0 0 15.182 17.953A6.75 6.75 0 0 1 13.96 18.459A1 1 0 0 0 13.25 19.416L13.25 20.25A1 1 0 0 1 12.25 21.25L11.75 21.25A1 1 0 0 1 10.75 20.25L10.75 19.416A1 1 0 0 0 10.04 18.459A6.75 6.75 0 0 1 8.818 17.953A1 1 0 0 0 7.64 18.128L7.05 18.718A1 1 0 0 1 5.636 18.718L5.282 18.364A1 1 0 0 1 5.282 16.95L5.872 16.36A1 1 0 0 0 6.047 15.182A6.75 6.75 0 0 1 5.541 13.96A1 1 0 0 0 4.584 13.25L3.75 13.25A1 1 0 0 1 2.75 12.25L2.75 11.75A1 1 0 0 1 3.75 10.75L4.584 10.75A1 1 0 0 0 5.541 10.04A6.75 6.75 0 0 1 6.047 8.818A1 1 0 0 0 5.872 7.64L5.282 7.05A1 1 0 0 1 5.282 5.636L5.636 5.282A1 1 0 0 1 7.05 5.282L7.64 5.872A1 1 0 0 0 8.818 6.047A6.75 6.75 0 0 1 10.04 5.541Z"/></g><path d="M10.04 5.541A1 1 0 0 0 10.75 4.584L10.75 3.75A1 1 0 0 1 11.75 2.75L12.25 2.75A1 1 0 0 1 13.25 3.75L13.25 4.584A1 1 0 0 0 13.96 5.541A6.75 6.75 0 0 1 15.182 6.047A1 1 0 0 0 16.36 5.872L16.95 5.282A1 1 0 0 1 18.364 5.282L18.718 5.636A1 1 0 0 1 18.718 7.05L18.128 7.64A1 1 0 0 0 17.953 8.818A6.75 6.75 0 0 1 18.459 10.04A1 1 0 0 0 19.416 10.75L20.25 10.75A1 1 0 0 1 21.25 11.75L21.25 12.25A1 1 0 0 1 20.25 13.25L19.416 13.25A1 1 0 0 0 18.459 13.96A6.75 6.75 0 0 1 17.953 15.182A1 1 0 0 0 18.128 16.36L18.718 16.95A1 1 0 0 1 18.718 18.364L18.364 18.718A1 1 0 0 1 16.95 18.718L16.36 18.128A1 1 0 0 0 15.182 17.953A6.75 6.75 0 0 1 13.96 18.459A1 1 0 0 0 13.25 19.416L13.25 20.25A1 1 0 0 1 12.25 21.25L11.75 21.25A1 1 0 0 1 10.75 20.25L10.75 19.416A1 1 0 0 0 10.04 18.459A6.75 6.75 0 0 1 8.818 17.953A1 1 0 0 0 7.64 18.128L7.05 18.718A1 1 0 0 1 5.636 18.718L5.282 18.364A1 1 0 0 1 5.282 16.95L5.872 16.36A1 1 0 0 0 6.047 15.182A6.75 6.75 0 0 1 5.541 13.96A1 1 0 0 0 4.584 13.25L3.75 13.25A1 1 0 0 1 2.75 12.25L2.75 11.75A1 1 0 0 1 3.75 10.75L4.584 10.75A1 1 0 0 0 5.541 10.04A6.75 6.75 0 0 1 6.047 8.818A1 1 0 0 0 5.872 7.64L5.282 7.05A1 1 0 0 1 5.282 5.636L5.636 5.282A1 1 0 0 1 7.05 5.282L7.64 5.872A1 1 0 0 0 8.818 6.047A6.75 6.75 0 0 1 10.04 5.541Z"/><circle cx="12" cy="12" r="2.75"/>',
     props,
   );
 }
@@ -436,6 +690,15 @@ export function LockIcon(props) {
   );
 }
 
+/** The `lock-open` icon. */
+export function LockOpenIcon(props) {
+  return render(
+    "lock-open",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/></g><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/><path d="M7.75 10.75V7.75A4.25 4.25 0 0 1 15.852 5.954"/><path d="M12 15.25v1.5"/>',
+    props,
+  );
+}
+
 /** The `magnifier` icon. */
 export function MagnifierIcon(props) {
   return render(
@@ -499,6 +762,15 @@ export function PenNibIcon(props) {
   );
 }
 
+/** The `pencil` icon. */
+export function PencilIcon(props) {
+  return render(
+    "pencil",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.75 18.061L3.75 16.871A1.5 1.5 0 0 1 4.189 15.811L15.469 4.531A1.811 1.811 0 0 1 18.031 4.531L19.469 5.969A1.811 1.811 0 0 1 19.469 8.531L8.189 19.811A1.5 1.5 0 0 1 7.129 20.25L4.75 20.25A1 1 0 0 1 3.75 19.25Z"/></g><path d="M3.75 18.061L3.75 16.871A1.5 1.5 0 0 1 4.189 15.811L15.469 4.531A1.811 1.811 0 0 1 18.031 4.531L19.469 5.969A1.811 1.811 0 0 1 19.469 8.531L8.189 19.811A1.5 1.5 0 0 1 7.129 20.25L4.75 20.25A1 1 0 0 1 3.75 19.25Z"/><path d="M13.75 6.25l4 4"/>',
+    props,
+  );
+}
+
 /** The `percent` icon. */
 export function PercentIcon(props) {
   return render(
@@ -522,6 +794,20 @@ export function PlugIcon(props) {
   return render(
     "plug",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/></g><path d="M12 7.25L16.75 7.25A1.5 1.5 0 0 1 18.25 8.75L18.25 12.129A1.5 1.5 0 0 1 17.811 13.189L15.189 15.811A1.5 1.5 0 0 1 14.129 16.25L9.871 16.25A1.5 1.5 0 0 1 8.811 15.811L6.189 13.189A1.5 1.5 0 0 1 5.75 12.129L5.75 8.75A1.5 1.5 0 0 1 7.25 7.25Z"/><path d="M9.25 2.75v4.5"/><path d="M14.75 2.75v4.5"/><path d="M12 16.25v5"/>',
+    props,
+  );
+}
+
+/** The `plus` icon. */
+export function PlusIcon(props) {
+  return render("plus", '<path d="M12 4.75v14.5M4.75 12h14.5"/>', props);
+}
+
+/** The `printer` icon. */
+export function PrinterIcon(props) {
+  return render(
+    "printer",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M7.25 17.25H4.25A1.5 1.5 0 0 1 2.75 15.75V10.25A1.5 1.5 0 0 1 4.25 8.75H19.75A1.5 1.5 0 0 1 21.25 10.25V15.75A1.5 1.5 0 0 1 19.75 17.25H16.75V14.75A1 1 0 0 0 15.75 13.75H8.25A1 1 0 0 0 7.25 14.75Z"/><path d="M12 13.75L15.75 13.75A1 1 0 0 1 16.75 14.75L16.75 20.25A1 1 0 0 1 15.75 21.25L8.25 21.25A1 1 0 0 1 7.25 20.25L7.25 14.75A1 1 0 0 1 8.25 13.75Z"/></g><path d="M7.25 17.25H4.25A1.5 1.5 0 0 1 2.75 15.75V10.25A1.5 1.5 0 0 1 4.25 8.75H19.75A1.5 1.5 0 0 1 21.25 10.25V15.75A1.5 1.5 0 0 1 19.75 17.25H16.75"/><path d="M7.25 8.75V4.25A1 1 0 0 1 8.25 3.25H15.75A1 1 0 0 1 16.75 4.25V8.75"/><path d="M12 13.75L15.75 13.75A1 1 0 0 1 16.75 14.75L16.75 20.25A1 1 0 0 1 15.75 21.25L8.25 21.25A1 1 0 0 1 7.25 20.25L7.25 14.75A1 1 0 0 1 8.25 13.75Z"/>',
     props,
   );
 }
@@ -553,6 +839,24 @@ export function ReceiptIcon(props) {
   );
 }
 
+/** The `receipt-minus` icon. */
+export function ReceiptMinusIcon(props) {
+  return render(
+    "receipt-minus",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/></g><path d="M14.75 2.75L17.5 2.75A1.5 1.5 0 0 1 19 4.25L19 21.25L17.25 19.5L15.5 21.25L13.75 19.5L12 21.25L10.25 19.5L8.5 21.25L6.75 19.5L5 21.25L5 4.25A1.5 1.5 0 0 1 6.5 2.75L12 2.75Z"/><path d="M8.5 11.25h7"/>',
+    props,
+  );
+}
+
+/** The `refresh` icon. */
+export function RefreshIcon(props) {
+  return render(
+    "refresh",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M21.192 12A9.192 9.192 0 1 1 18.5 5.5Z"/></g><path d="M21.192 12A9.192 9.192 0 1 1 12 2.808A9.192 9.192 0 0 1 18.5 5.5L20.75 7.75"/><path d="M20.75 3.75V7.75H16.75"/>',
+    props,
+  );
+}
+
 /** The `repeat` icon. */
 export function RepeatIcon(props) {
   return render(
@@ -562,11 +866,47 @@ export function RepeatIcon(props) {
   );
 }
 
+/** The `risk-matrix` icon. */
+export function RiskMatrixIcon(props) {
+  return render(
+    "risk-matrix",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.75 9.25V3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V9.25Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 18.75A1.5 1.5 0 0 1 18.75 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M9.25 3.75v16.5"/><path d="M14.75 3.75v16.5"/><path d="M3.75 9.25h16.5"/><path d="M3.75 14.75h16.5"/>',
+    props,
+  );
+}
+
+/** The `route` icon. */
+export function RouteIcon(props) {
+  return render(
+    "route",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5.75" cy="18.25" r="3"/><circle cx="18.25" cy="5.75" r="3"/></g><circle cx="5.75" cy="18.25" r="3"/><circle cx="18.25" cy="5.75" r="3"/><path d="M8.75 18.25H16.75A1.5 1.5 0 0 0 18.25 16.75V8.75"/>',
+    props,
+  );
+}
+
+/** The `sample` icon. */
+export function SampleIcon(props) {
+  return render(
+    "sample",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="4.75" r="2.75"/><circle cx="4.75" cy="19.25" r="2.75"/></g><path d="M4.75 4.75h0"/><circle cx="12" cy="4.75" r="2.75"/><path d="M19.25 4.75h0"/><path d="M4.75 12h0"/><path d="M12 12h0"/><path d="M19.25 12h0"/><circle cx="4.75" cy="19.25" r="2.75"/><path d="M12 19.25h0"/><path d="M19.25 19.25h0"/>',
+    props,
+  );
+}
+
 /** The `scale` icon. */
 export function ScaleIcon(props) {
   return render(
     "scale",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.5 6.25L8.25 13.25A3.5 3.5 0 0 1 2.75 13.25Z"/><path d="M18.5 6.25L21.25 13.25A3.5 3.5 0 0 1 15.75 13.25Z"/></g><path d="M12 3.25v17"/><path d="M7.75 20.25h8.5"/><path d="M5.5 6.25h13"/><path d="M5.5 6.25L8.25 13.25A3.5 3.5 0 0 1 2.75 13.25Z"/><path d="M18.5 6.25L21.25 13.25A3.5 3.5 0 0 1 15.75 13.25Z"/>',
+    props,
+  );
+}
+
+/** The `scan` icon. */
+export function ScanIcon(props) {
+  return render(
+    "scan",
+    '<path d="M3.75 8.25V5.25A1.5 1.5 0 0 1 5.25 3.75H8.25"/><path d="M15.75 3.75H18.75A1.5 1.5 0 0 1 20.25 5.25V8.25"/><path d="M20.25 15.75V18.75A1.5 1.5 0 0 1 18.75 20.25H15.75"/><path d="M8.25 20.25H5.25A1.5 1.5 0 0 1 3.75 18.75V15.75"/><path d="M7.75 12h8.5"/>',
     props,
   );
 }
@@ -585,6 +925,24 @@ export function ShieldCheckIcon(props) {
   return render(
     "shield-check",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/><path d="m8.25 10.75 2.5 2.5 5-5"/>',
+    props,
+  );
+}
+
+/** The `sitemap` icon. */
+export function SitemapIcon(props) {
+  return render(
+    "sitemap",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 2.75L14.25 2.75A1 1 0 0 1 15.25 3.75L15.25 7.25A1 1 0 0 1 14.25 8.25L9.75 8.25A1 1 0 0 1 8.75 7.25L8.75 3.75A1 1 0 0 1 9.75 2.75Z"/><path d="M5.75 15.75L7.75 15.75A1 1 0 0 1 8.75 16.75L8.75 20.25A1 1 0 0 1 7.75 21.25L3.75 21.25A1 1 0 0 1 2.75 20.25L2.75 16.75A1 1 0 0 1 3.75 15.75Z"/><path d="M18.25 15.75L20.25 15.75A1 1 0 0 1 21.25 16.75L21.25 20.25A1 1 0 0 1 20.25 21.25L16.25 21.25A1 1 0 0 1 15.25 20.25L15.25 16.75A1 1 0 0 1 16.25 15.75Z"/></g><path d="M12 2.75L14.25 2.75A1 1 0 0 1 15.25 3.75L15.25 7.25A1 1 0 0 1 14.25 8.25L9.75 8.25A1 1 0 0 1 8.75 7.25L8.75 3.75A1 1 0 0 1 9.75 2.75Z"/><path d="M5.75 15.75L7.75 15.75A1 1 0 0 1 8.75 16.75L8.75 20.25A1 1 0 0 1 7.75 21.25L3.75 21.25A1 1 0 0 1 2.75 20.25L2.75 16.75A1 1 0 0 1 3.75 15.75Z"/><path d="M18.25 15.75L20.25 15.75A1 1 0 0 1 21.25 16.75L21.25 20.25A1 1 0 0 1 20.25 21.25L16.25 21.25A1 1 0 0 1 15.25 20.25L15.25 16.75A1 1 0 0 1 16.25 15.75Z"/><path d="M12 8.25V12.25"/><path d="M5.75 15.75V13.75A1.5 1.5 0 0 1 7.25 12.25H16.75A1.5 1.5 0 0 1 18.25 13.75V15.75"/>',
+    props,
+  );
+}
+
+/** The `sliders` icon. */
+export function SlidersIcon(props) {
+  return render(
+    "sliders",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="15.25" cy="5.25" r="2.25"/><circle cx="8.75" cy="12" r="2.25"/><circle cx="13.75" cy="18.75" r="2.25"/></g><path d="M3.75 5.25h9M17.5 5.25h2.75"/><circle cx="15.25" cy="5.25" r="2.25"/><path d="M3.75 12h2.75M11 12h9.25"/><circle cx="8.75" cy="12" r="2.25"/><path d="M3.75 18.75h7.75M16 18.75h4.25"/><circle cx="13.75" cy="18.75" r="2.25"/>',
     props,
   );
 }
@@ -625,11 +983,29 @@ export function StampIcon(props) {
   );
 }
 
+/** The `sticky-note` icon. */
+export function StickyNoteIcon(props) {
+  return render(
+    "sticky-note",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M14.75 20.25v-4a1.5 1.5 0 0 1 1.5-1.5h4"/><path d="M8.25 8.25h7.5"/><path d="M8.25 12.25h4.5"/>',
+    props,
+  );
+}
+
 /** The `stopwatch` icon. */
 export function StopwatchIcon(props) {
   return render(
     "stopwatch",
     '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="13.75" r="7.5"/></g><circle cx="12" cy="13.75" r="7.5"/><path d="M9.75 2.75h4.5"/><path d="M12 2.75v3.5"/><path d="M12 13.75l2.75-2.75"/>',
+    props,
+  );
+}
+
+/** The `store` icon. */
+export function StoreIcon(props) {
+  return render(
+    "store",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 8.75V6.25L5.25 3.75H18.75L21.25 6.25V8.75A3.5 3.5 0 0 1 15.083 8.75A3.5 3.5 0 0 1 8.917 8.75A3.5 3.5 0 0 1 2.75 8.75Z"/><path d="M4.75 10.422V19.75A1.5 1.5 0 0 0 6.25 21.25H17.75A1.5 1.5 0 0 0 19.25 19.75V10.422A3.5 3.5 0 0 1 15.083 8.75A3.5 3.5 0 0 1 8.917 8.75A3.5 3.5 0 0 1 4.75 10.422Z"/></g><path d="M2.75 8.75V6.25L5.25 3.75H18.75L21.25 6.25V8.75A3.5 3.5 0 0 1 15.083 8.75A3.5 3.5 0 0 1 8.917 8.75A3.5 3.5 0 0 1 2.75 8.75Z"/><path d="M4.75 10.422V19.75A1.5 1.5 0 0 0 6.25 21.25H17.75A1.5 1.5 0 0 0 19.25 19.75V10.422"/><path d="M10.25 21.25V17.25A1 1 0 0 1 11.25 16.25H12.75A1 1 0 0 1 13.75 17.25V21.25"/>',
     props,
   );
 }
@@ -652,6 +1028,15 @@ export function TagIcon(props) {
   );
 }
 
+/** The `target` icon. */
+export function TargetIcon(props) {
+  return render(
+    "target",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><circle cx="12" cy="12" r="5"/><path d="M12 12h.01"/>',
+    props,
+  );
+}
+
 /** The `timeline` icon. */
 export function TimelineIcon(props) {
   return render(
@@ -670,11 +1055,38 @@ export function TokenIcon(props) {
   );
 }
 
+/** The `trash` icon. */
+export function TrashIcon(props) {
+  return render(
+    "trash",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.75 6.25H18.25V19.75A1.5 1.5 0 0 1 16.75 21.25H7.25A1.5 1.5 0 0 1 5.75 19.75Z"/></g><path d="M5.75 6.25V19.75A1.5 1.5 0 0 0 7.25 21.25H16.75A1.5 1.5 0 0 0 18.25 19.75V6.25"/><path d="M3.75 6.25h16.5"/><path d="M9.25 6.25V3.75A1 1 0 0 1 10.25 2.75H13.75A1 1 0 0 1 14.75 3.75V6.25"/><path d="M9.75 10.25v7"/><path d="M14.25 10.25v7"/>',
+    props,
+  );
+}
+
 /** The `triangle-alert` icon. */
 export function TriangleAlertIcon(props) {
   return render(
     "triangle-alert",
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M16.907 11.75L20.516 18A1.5 1.5 0 0 1 19.217 20.25L4.783 20.25A1.5 1.5 0 0 1 3.484 18L10.701 5.5A1.5 1.5 0 0 1 13.299 5.5Z"/></g><path d="M16.907 11.75L20.516 18A1.5 1.5 0 0 1 19.217 20.25L4.783 20.25A1.5 1.5 0 0 1 3.484 18L10.701 5.5A1.5 1.5 0 0 1 13.299 5.5Z"/><path d="M12 10.25v3"/><path d="M12 16.75h.01"/>',
+    props,
+  );
+}
+
+/** The `truck` icon. */
+export function TruckIcon(props) {
+  return render(
+    "truck",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M2.75 11.25L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25L12.75 5.25A1.5 1.5 0 0 1 14.25 6.75L14.25 8.25A1 1 0 0 0 15.25 9.25L17.836 9.25A1 1 0 0 1 18.543 9.543L20.957 11.957A1 1 0 0 1 21.25 12.664L21.25 16.25A1 1 0 0 1 20.25 17.25L4.25 17.25A1.5 1.5 0 0 1 2.75 15.75Z"/></g><path d="M5.25 17.25L4.25 17.25A1.5 1.5 0 0 1 2.75 15.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25L12.75 5.25A1.5 1.5 0 0 1 14.25 6.75L14.25 8.25A1 1 0 0 0 15.25 9.25L17.836 9.25A1 1 0 0 1 18.543 9.543L20.957 11.957A1 1 0 0 1 21.25 12.664L21.25 16.25A1 1 0 0 1 20.25 17.25L19.25 17.25"/><path d="M9.25 17.25h6"/><circle cx="7.25" cy="17.25" r="2"/><circle cx="17.25" cy="17.25" r="2"/>',
+    props,
+  );
+}
+
+/** The `upload` icon. */
+export function UploadIcon(props) {
+  return render(
+    "upload",
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75Z"/></g><path d="M3.75 14.75V18.75A1.5 1.5 0 0 0 5.25 20.25H18.75A1.5 1.5 0 0 0 20.25 18.75V14.75"/><path d="M12 15.25V3.75M8 7.75l4-4 4 4"/>',
     props,
   );
 }
@@ -695,4 +1107,9 @@ export function WrenchIcon(props) {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12.8 13.674L6.234 20.24A1.75 1.75 0 0 1 3.76 20.24A1.75 1.75 0 0 1 3.76 17.766L10.326 11.2A5.5 5.5 0 0 1 17.7 3.826L14.72 6.805A1.75 1.75 0 0 0 14.72 9.28A1.75 1.75 0 0 0 17.195 9.28L20.174 6.3A5.5 5.5 0 0 1 12.8 13.674Z"/></g><path d="M12.8 13.674L6.234 20.24A1.75 1.75 0 0 1 3.76 20.24A1.75 1.75 0 0 1 3.76 17.766L10.326 11.2A5.5 5.5 0 0 1 17.7 3.826L14.72 6.805A1.75 1.75 0 0 0 14.72 9.28A1.75 1.75 0 0 0 17.195 9.28L20.174 6.3A5.5 5.5 0 0 1 12.8 13.674Z"/>',
     props,
   );
+}
+
+/** The `x` icon. */
+export function XIcon(props) {
+  return render("x", '<path d="M17.75 6.25 6.25 17.75M6.25 6.25l11.5 11.5"/>', props);
 }

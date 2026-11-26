@@ -25,6 +25,7 @@
     "*.svg",
     "lib",
     "README.md",
+    "COVERAGE.md",
     "CHANGELOG.md"
   ],
   "exports": {

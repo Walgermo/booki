@@ -1,0 +1,181 @@
+[
+  {
+    "id": "ai",
+    "en": "AI and agents",
+    "nb": "AI og agenter",
+    "icons": [
+      "sparkles",
+      "agent-cursor",
+      "bot",
+      "chat-sparkle",
+      "prompt",
+      "token",
+      "wrench",
+      "bolt",
+      "eye",
+      "eye-off",
+      "database",
+      "key",
+      "plug"
+    ]
+  },
+  {
+    "id": "documents",
+    "en": "Documents and vouchers",
+    "nb": "Dokumenter og bilag",
+    "icons": [
+      "document-lines",
+      "receipt",
+      "receipt-minus",
+      "document-pen",
+      "document-banknote",
+      "document-check",
+      "list-rows",
+      "paperclip",
+      "scan",
+      "camera",
+      "inbox",
+      "stamp"
+    ]
+  },
+  {
+    "id": "money",
+    "en": "Money and payments",
+    "nb": "Penger og betaling",
+    "icons": [
+      "banknote",
+      "coins",
+      "wallet",
+      "credit-card",
+      "calculator",
+      "percent",
+      "arrows-exchange",
+      "input-field",
+      "tag",
+      "hash",
+      "bank",
+      "globe",
+      "paper-plane",
+      "arrow-uturn",
+      "stack",
+      "scale"
+    ]
+  },
+  {
+    "id": "trade",
+    "en": "Customers, suppliers and assets",
+    "nb": "Kunder, leverandører og eiendeler",
+    "icons": ["store", "truck", "cart", "building", "package", "barcode"]
+  },
+  {
+    "id": "ledger",
+    "en": "Ledger and reports",
+    "nb": "Hovedbok og rapporter",
+    "icons": [
+      "book",
+      "folder",
+      "table",
+      "chart-line",
+      "chart-line-down",
+      "chart-bar",
+      "chart-bar-stacked",
+      "chart-waterfall",
+      "chart-forecast",
+      "chart-pie",
+      "gauge",
+      "target"
+    ]
+  },
+  {
+    "id": "periods",
+    "en": "Dates and periods",
+    "nb": "Datoer og perioder",
+    "icons": [
+      "calendar",
+      "calendar-dot",
+      "calendar-range",
+      "calendar-check",
+      "clock",
+      "hourglass",
+      "stopwatch",
+      "history",
+      "lock",
+      "lock-open",
+      "archive"
+    ]
+  },
+  {
+    "id": "approvals",
+    "en": "Approvals and status",
+    "nb": "Godkjenning og status",
+    "icons": [
+      "circle-check",
+      "circle-x",
+      "circle-info",
+      "triangle-alert",
+      "octagon-pause",
+      "shield-check",
+      "badge-check",
+      "pen-nib",
+      "link",
+      "list-checks",
+      "check",
+      "bell"
+    ]
+  },
+  {
+    "id": "audit",
+    "en": "Audit",
+    "nb": "Revisjon",
+    "icons": [
+      "briefcase",
+      "clipboard",
+      "magnifier",
+      "sample",
+      "risk-matrix",
+      "flask",
+      "route",
+      "fingerprint",
+      "sticky-note",
+      "speech-bubble",
+      "gavel",
+      "sitemap"
+    ]
+  },
+  {
+    "id": "sales",
+    "en": "Sales",
+    "nb": "Salg",
+    "icons": ["funnel", "kanban", "timeline", "repeat"]
+  },
+  {
+    "id": "actions",
+    "en": "App actions",
+    "nb": "Handlinger i appen",
+    "icons": [
+      "plus",
+      "pencil",
+      "trash",
+      "copy",
+      "download",
+      "upload",
+      "printer",
+      "envelope",
+      "gear",
+      "sliders",
+      "dots",
+      "x",
+      "chevron-down",
+      "chevron-right",
+      "arrow-right",
+      "external-link",
+      "refresh"
+    ]
+  },
+  {
+    "id": "app",
+    "en": "Pages and layout",
+    "nb": "Sider og oppsett",
+    "icons": ["map", "code", "play-window", "puzzle", "flag", "dialog", "layers", "shapes"]
+  }
+]

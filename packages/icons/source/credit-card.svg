@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="card card-payment">
+  <path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z"/>
+  <path d="M12 6.25L19.75 6.25A1.5 1.5 0 0 1 21.25 7.75L21.25 16.25A1.5 1.5 0 0 1 19.75 17.75L4.25 17.75A1.5 1.5 0 0 1 2.75 16.25L2.75 7.75A1.5 1.5 0 0 1 4.25 6.25Z" data-role="silhouette"/>
+  <path d="M2.75 10.25h18.5" data-role="detail"/>
+  <path d="M6.25 14.25h3" data-role="detail"/>
+</svg>

@@ -16,8 +16,16 @@ export type IconProps = Omit<SVGProps<SVGSVGElement>, "children" | "dangerouslyS
 export declare function Icon(props: IconProps & { name: IconName }): JSX.Element | null;
 /** The `agent-cursor` icon. */
 export declare function AgentCursorIcon(props: IconProps): JSX.Element;
+/** The `archive` icon. */
+export declare function ArchiveIcon(props: IconProps): JSX.Element;
+/** The `arrow-right` icon. */
+export declare function ArrowRightIcon(props: IconProps): JSX.Element;
+/** The `arrow-uturn` icon. */
+export declare function ArrowUturnIcon(props: IconProps): JSX.Element;
 /** The `arrows-exchange` icon. */
 export declare function ArrowsExchangeIcon(props: IconProps): JSX.Element;
+/** The `badge-check` icon. */
+export declare function BadgeCheckIcon(props: IconProps): JSX.Element;
 /** The `bank` icon. */
 export declare function BankIcon(props: IconProps): JSX.Element;
 /** The `banknote` icon. */
@@ -32,6 +40,8 @@ export declare function BoltIcon(props: IconProps): JSX.Element;
 export declare function BookIcon(props: IconProps): JSX.Element;
 /** The `bot` icon. */
 export declare function BotIcon(props: IconProps): JSX.Element;
+/** The `briefcase` icon. */
+export declare function BriefcaseIcon(props: IconProps): JSX.Element;
 /** The `building` icon. */
 export declare function BuildingIcon(props: IconProps): JSX.Element;
 /** The `calculator` icon. */
@@ -42,6 +52,12 @@ export declare function CalendarIcon(props: IconProps): JSX.Element;
 export declare function CalendarCheckIcon(props: IconProps): JSX.Element;
 /** The `calendar-dot` icon. */
 export declare function CalendarDotIcon(props: IconProps): JSX.Element;
+/** The `calendar-range` icon. */
+export declare function CalendarRangeIcon(props: IconProps): JSX.Element;
+/** The `camera` icon. */
+export declare function CameraIcon(props: IconProps): JSX.Element;
+/** The `cart` icon. */
+export declare function CartIcon(props: IconProps): JSX.Element;
 /** The `chart-bar` icon. */
 export declare function ChartBarIcon(props: IconProps): JSX.Element;
 /** The `chart-bar-stacked` icon. */
@@ -50,34 +66,78 @@ export declare function ChartBarStackedIcon(props: IconProps): JSX.Element;
 export declare function ChartForecastIcon(props: IconProps): JSX.Element;
 /** The `chart-line` icon. */
 export declare function ChartLineIcon(props: IconProps): JSX.Element;
+/** The `chart-line-down` icon. */
+export declare function ChartLineDownIcon(props: IconProps): JSX.Element;
+/** The `chart-pie` icon. */
+export declare function ChartPieIcon(props: IconProps): JSX.Element;
 /** The `chart-waterfall` icon. */
 export declare function ChartWaterfallIcon(props: IconProps): JSX.Element;
 /** The `chat-sparkle` icon. */
 export declare function ChatSparkleIcon(props: IconProps): JSX.Element;
+/** The `check` icon. */
+export declare function CheckIcon(props: IconProps): JSX.Element;
+/** The `chevron-down` icon. */
+export declare function ChevronDownIcon(props: IconProps): JSX.Element;
+/** The `chevron-right` icon. */
+export declare function ChevronRightIcon(props: IconProps): JSX.Element;
 /** The `circle-check` icon. */
 export declare function CircleCheckIcon(props: IconProps): JSX.Element;
+/** The `circle-info` icon. */
+export declare function CircleInfoIcon(props: IconProps): JSX.Element;
+/** The `circle-x` icon. */
+export declare function CircleXIcon(props: IconProps): JSX.Element;
 /** The `clipboard` icon. */
 export declare function ClipboardIcon(props: IconProps): JSX.Element;
+/** The `clock` icon. */
+export declare function ClockIcon(props: IconProps): JSX.Element;
 /** The `code` icon. */
 export declare function CodeIcon(props: IconProps): JSX.Element;
 /** The `coins` icon. */
 export declare function CoinsIcon(props: IconProps): JSX.Element;
+/** The `copy` icon. */
+export declare function CopyIcon(props: IconProps): JSX.Element;
+/** The `credit-card` icon. */
+export declare function CreditCardIcon(props: IconProps): JSX.Element;
 /** The `database` icon. */
 export declare function DatabaseIcon(props: IconProps): JSX.Element;
 /** The `dialog` icon. */
 export declare function DialogIcon(props: IconProps): JSX.Element;
+/** The `document-banknote` icon. */
+export declare function DocumentBanknoteIcon(props: IconProps): JSX.Element;
+/** The `document-check` icon. */
+export declare function DocumentCheckIcon(props: IconProps): JSX.Element;
 /** The `document-lines` icon. */
 export declare function DocumentLinesIcon(props: IconProps): JSX.Element;
+/** The `document-pen` icon. */
+export declare function DocumentPenIcon(props: IconProps): JSX.Element;
+/** The `dots` icon. */
+export declare function DotsIcon(props: IconProps): JSX.Element;
+/** The `download` icon. */
+export declare function DownloadIcon(props: IconProps): JSX.Element;
+/** The `envelope` icon. */
+export declare function EnvelopeIcon(props: IconProps): JSX.Element;
+/** The `external-link` icon. */
+export declare function ExternalLinkIcon(props: IconProps): JSX.Element;
 /** The `eye` icon. */
 export declare function EyeIcon(props: IconProps): JSX.Element;
+/** The `eye-off` icon. */
+export declare function EyeOffIcon(props: IconProps): JSX.Element;
+/** The `fingerprint` icon. */
+export declare function FingerprintIcon(props: IconProps): JSX.Element;
 /** The `flag` icon. */
 export declare function FlagIcon(props: IconProps): JSX.Element;
+/** The `flask` icon. */
+export declare function FlaskIcon(props: IconProps): JSX.Element;
 /** The `folder` icon. */
 export declare function FolderIcon(props: IconProps): JSX.Element;
 /** The `funnel` icon. */
 export declare function FunnelIcon(props: IconProps): JSX.Element;
 /** The `gauge` icon. */
 export declare function GaugeIcon(props: IconProps): JSX.Element;
+/** The `gavel` icon. */
+export declare function GavelIcon(props: IconProps): JSX.Element;
+/** The `gear` icon. */
+export declare function GearIcon(props: IconProps): JSX.Element;
 /** The `globe` icon. */
 export declare function GlobeIcon(props: IconProps): JSX.Element;
 /** The `hash` icon. */
@@ -104,6 +164,8 @@ export declare function ListChecksIcon(props: IconProps): JSX.Element;
 export declare function ListRowsIcon(props: IconProps): JSX.Element;
 /** The `lock` icon. */
 export declare function LockIcon(props: IconProps): JSX.Element;
+/** The `lock-open` icon. */
+export declare function LockOpenIcon(props: IconProps): JSX.Element;
 /** The `magnifier` icon. */
 export declare function MagnifierIcon(props: IconProps): JSX.Element;
 /** The `map` icon. */
@@ -118,26 +180,48 @@ export declare function PaperPlaneIcon(props: IconProps): JSX.Element;
 export declare function PaperclipIcon(props: IconProps): JSX.Element;
 /** The `pen-nib` icon. */
 export declare function PenNibIcon(props: IconProps): JSX.Element;
+/** The `pencil` icon. */
+export declare function PencilIcon(props: IconProps): JSX.Element;
 /** The `percent` icon. */
 export declare function PercentIcon(props: IconProps): JSX.Element;
 /** The `play-window` icon. */
 export declare function PlayWindowIcon(props: IconProps): JSX.Element;
 /** The `plug` icon. */
 export declare function PlugIcon(props: IconProps): JSX.Element;
+/** The `plus` icon. */
+export declare function PlusIcon(props: IconProps): JSX.Element;
+/** The `printer` icon. */
+export declare function PrinterIcon(props: IconProps): JSX.Element;
 /** The `prompt` icon. */
 export declare function PromptIcon(props: IconProps): JSX.Element;
 /** The `puzzle` icon. */
 export declare function PuzzleIcon(props: IconProps): JSX.Element;
 /** The `receipt` icon. */
 export declare function ReceiptIcon(props: IconProps): JSX.Element;
+/** The `receipt-minus` icon. */
+export declare function ReceiptMinusIcon(props: IconProps): JSX.Element;
+/** The `refresh` icon. */
+export declare function RefreshIcon(props: IconProps): JSX.Element;
 /** The `repeat` icon. */
 export declare function RepeatIcon(props: IconProps): JSX.Element;
+/** The `risk-matrix` icon. */
+export declare function RiskMatrixIcon(props: IconProps): JSX.Element;
+/** The `route` icon. */
+export declare function RouteIcon(props: IconProps): JSX.Element;
+/** The `sample` icon. */
+export declare function SampleIcon(props: IconProps): JSX.Element;
 /** The `scale` icon. */
 export declare function ScaleIcon(props: IconProps): JSX.Element;
+/** The `scan` icon. */
+export declare function ScanIcon(props: IconProps): JSX.Element;
 /** The `shapes` icon. */
 export declare function ShapesIcon(props: IconProps): JSX.Element;
 /** The `shield-check` icon. */
 export declare function ShieldCheckIcon(props: IconProps): JSX.Element;
+/** The `sitemap` icon. */
+export declare function SitemapIcon(props: IconProps): JSX.Element;
+/** The `sliders` icon. */
+export declare function SlidersIcon(props: IconProps): JSX.Element;
 /** The `sparkles` icon. */
 export declare function SparklesIcon(props: IconProps): JSX.Element;
 /** The `speech-bubble` icon. */
@@ -146,19 +230,33 @@ export declare function SpeechBubbleIcon(props: IconProps): JSX.Element;
 export declare function StackIcon(props: IconProps): JSX.Element;
 /** The `stamp` icon. */
 export declare function StampIcon(props: IconProps): JSX.Element;
+/** The `sticky-note` icon. */
+export declare function StickyNoteIcon(props: IconProps): JSX.Element;
 /** The `stopwatch` icon. */
 export declare function StopwatchIcon(props: IconProps): JSX.Element;
+/** The `store` icon. */
+export declare function StoreIcon(props: IconProps): JSX.Element;
 /** The `table` icon. */
 export declare function TableIcon(props: IconProps): JSX.Element;
 /** The `tag` icon. */
 export declare function TagIcon(props: IconProps): JSX.Element;
+/** The `target` icon. */
+export declare function TargetIcon(props: IconProps): JSX.Element;
 /** The `timeline` icon. */
 export declare function TimelineIcon(props: IconProps): JSX.Element;
 /** The `token` icon. */
 export declare function TokenIcon(props: IconProps): JSX.Element;
+/** The `trash` icon. */
+export declare function TrashIcon(props: IconProps): JSX.Element;
 /** The `triangle-alert` icon. */
 export declare function TriangleAlertIcon(props: IconProps): JSX.Element;
+/** The `truck` icon. */
+export declare function TruckIcon(props: IconProps): JSX.Element;
+/** The `upload` icon. */
+export declare function UploadIcon(props: IconProps): JSX.Element;
 /** The `wallet` icon. */
 export declare function WalletIcon(props: IconProps): JSX.Element;
 /** The `wrench` icon. */
 export declare function WrenchIcon(props: IconProps): JSX.Element;
+/** The `x` icon. */
+export declare function XIcon(props: IconProps): JSX.Element;
