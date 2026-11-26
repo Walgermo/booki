@@ -46,34 +46,91 @@ function isSecret(entry: Entry | undefined): boolean {
   return false;
 }
 
-/** The control a step names: by its ref, its label, or its component, as the bridge reads a step. */
-function entryFor(agent: AgentBridge, ref: string): Entry | undefined {
+/** Text folded as the bridge folds a ref: case, accents and ß do not matter. */
+const fold = (text: string) => text.replace(/[ßẞ]/g, "ss").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().trim();
+const wordsOf = (text: string) => ` ${fold(text)} `.replace(/[^\p{L}\p{N}]+/gu, " ");
+
+/**
+ * The controls a step's ref could name, read the way the bridge reads one: its
+ * ref, then its label or row by folded text or whole words (the last part of
+ * `Section > Label` too), then an item it offers, then its kind. Every match is
+ * kept, so a secret among them is never missed.
+ */
+function candidatesFor(agent: AgentBridge, ref: string): Entry[] {
   let entries: Entry[];
   try {
-    entries = agent.snapshot() as unknown as Entry[];
+    entries = (agent.snapshot() as unknown as Entry[]).filter((entry) => !entry.offPage);
   } catch {
-    return undefined;
+    return [];
   }
-  return (
-    entries.find((entry) => entry.ref === ref) ??
-    entries.find((entry) => entry.label === ref) ??
-    entries.find((entry) => entry.component === ref)
-  );
+  const exact = entries.filter((entry) => entry.ref === ref);
+  if (exact.length) return exact;
+  const names = [ref, ref.split(">").at(-1) ?? ref].filter((name) => fold(name));
+  const matches = (entry: Entry) =>
+    names.some((name) => {
+      const needle = fold(name);
+      const words = wordsOf(name);
+      const label = typeof entry.label === "string" ? entry.label : "";
+      const row = typeof entry.row === "string" ? entry.row : "";
+      const items = Array.isArray(entry.items) ? (entry.items as { label?: unknown }[]) : [];
+      const kind = fold(entry.component);
+      return (
+        (label && fold(label) === needle) ||
+        (words.trim() && wordsOf(`${label} ${row}`).includes(words)) ||
+        items.some((item) => typeof item?.label === "string" && fold(item.label) === needle) ||
+        kind === needle ||
+        kind.endsWith(`-${needle}`)
+      );
+    });
+  return entries.filter(matches);
 }
 
 function short(text: string, max: number): string {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 }
 
-function callText(step: AgentCallStep, entry: Entry | undefined): string {
-  const name = entry?.label ?? entry?.component ?? step.ref;
-  const args = isSecret(entry)
+/**
+ * A sentence about a secret control with every value in it taken out: quoted
+ * text and runs of digits (an account number with or without its spaces).
+ */
+function scrub(text: string): string {
+  return text
+    .replace(/"[^"]*"|«[^»]*»|“[^”]*”|'[^']*'/g, '"[redacted]"')
+    .replace(/\d[\d\s.-]{2,}\d|\d{2,}/g, "[redacted]");
+}
+
+type Target = { name: string; ref?: string; secret: boolean };
+
+/**
+ * Which control a step is on, for the log. When it cannot be told for certain
+ * which control the ref names, or any control it could name is secret, the
+ * step counts as secret: its values are never shown (it fails closed).
+ */
+function targetOf(agent: AgentBridge, step: AgentCallStep): Target {
+  const found = candidatesFor(agent, step.ref);
+  const one = found.length === 1 ? found[0] : undefined;
+  return {
+    name: one?.label ?? one?.component ?? step.ref,
+    ref: one?.ref,
+    secret: !one || found.some((entry) => isSecret(entry)),
+  };
+}
+
+function callText(step: AgentCallStep, target: Target): string {
+  const args = target.secret
     ? (step.args ?? []).map(() => '"[redacted]"').join(", ")
     : (step.args ?? []).map((arg) => JSON.stringify(arg) ?? "undefined").join(", ");
+  const name = target.secret ? scrub(target.name) : target.name;
   return `${short(name, 48)} · ${step.action}(${short(args, 60)})`;
 }
 
-type Tracked = AgentLogRow & { call_: number; ref?: string };
+type Tracked = AgentLogRow & {
+  call_: number;
+  /** The step's place in its call, as the bridge counts it, kept when older rows are dropped. */
+  index_: number;
+  ref?: string;
+  secret?: boolean;
+};
 
 /**
  * The live list behind `AgentLog`: each step an agent made with
@@ -96,6 +153,7 @@ export function useAgentLog(agent: AgentBridge | undefined, options: UseAgentLog
         const row: Tracked = {
           id: `change-${seq}`,
           call_: 0,
+          index_: 0,
           call: `${short(event.target, 48)} · ${event.action}`,
           status: "done",
           detail: event.detail,
@@ -108,16 +166,18 @@ export function useAgentLog(agent: AgentBridge | undefined, options: UseAgentLog
       if (event.type === "start") {
         const added: Tracked[] = event.steps.length
           ? event.steps.map((step, index) => {
-              const entry = entryFor(agent, step.ref);
+              const target = targetOf(agent, step);
               return {
                 id: `${event.id}-${index}`,
                 call_: event.id,
-                ref: entry?.ref,
-                call: callText(step, entry),
+                index_: index,
+                ref: target.ref,
+                secret: target.secret,
+                call: callText(step, target),
                 status: "running",
               };
             })
-          : [{ id: `${event.id}-0`, call_: event.id, call: "act()", status: "running" }];
+          : [{ id: `${event.id}-0`, call_: event.id, index_: 0, call: "act()", status: "running" }];
         setRows((all) => keep([...all, ...added]));
         return;
       }
@@ -127,7 +187,9 @@ export function useAgentLog(agent: AgentBridge | undefined, options: UseAgentLog
           const row = mine.find((item) => item.ref === event.ref) ?? mine[0];
           if (!row) return all;
           return all.map((item) =>
-            item === row ? { ...item, status: "waiting" as const, detail: event.confirm } : item,
+            item === row
+              ? { ...item, status: "waiting" as const, detail: item.secret ? scrub(event.confirm) : event.confirm }
+              : item,
           );
         });
         return;
@@ -135,26 +197,27 @@ export function useAgentLog(agent: AgentBridge | undefined, options: UseAgentLog
       const { result } = event;
       setRows((all) => {
         const failed = result.ok ? undefined : (result.error?.step ?? 0);
+        // Steps the bridge ran and answered. A call refused for its shape ran none, whatever step it names.
+        const ran = Array.isArray(result.steps) ? result.steps.length : 0;
         const out: Tracked[] = [];
-        let index = 0;
         for (const row of all) {
           if (row.call_ !== event.id) {
             out.push(row);
             continue;
           }
-          const at = index;
-          index += 1;
-          // Steps after a refused one never ran: the bridge stops the call there.
-          if (failed !== undefined && at > failed) continue;
+          const at = row.index_;
+          const clean = (text: string | undefined) => (text !== undefined && row.secret ? scrub(text) : text);
           if (failed !== undefined && at === failed) {
-            out.push({ ...row, status: "refused", detail: result.error?.message });
+            out.push({ ...row, status: "refused", detail: clean(result.error?.message) });
             continue;
           }
+          // A step the bridge did not run (after the refused one, or in a call it refused whole) is not listed as done.
+          if (failed !== undefined && at >= ran) continue;
           const said = (result.steps?.[at] as { result?: unknown } | undefined)?.result;
           out.push({
             ...row,
             status: "done",
-            detail: typeof said === "string" && said !== "pending" ? said : undefined,
+            detail: clean(typeof said === "string" && said !== "pending" ? said : undefined),
           });
         }
         return out;
@@ -163,7 +226,10 @@ export function useAgentLog(agent: AgentBridge | undefined, options: UseAgentLog
   }, [agent, limit]);
 
   const clear = useCallback(() => setRows([]), []);
-  const shown = useMemo(() => rows.map(({ call_: _call, ref: _ref, ...row }): AgentLogRow => row), [rows]);
+  const shown = useMemo(
+    () => rows.map(({ call_: _call, index_: _index, ref: _ref, secret: _secret, ...row }): AgentLogRow => row),
+    [rows],
+  );
   return { rows: shown, clear };
 }
 

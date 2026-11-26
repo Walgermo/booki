@@ -44,7 +44,12 @@ function stateOf(entry: AgentSnapshotEntry): string {
 /** In the order the bridge first saw them (c1, c2, …), so a control that appears later joins at the end. */
 const order = (entry: AgentSnapshotEntry) => Number(entry.ref.replace(/\D/g, "")) || 0;
 
+/**
+ * `scope` is `undefined` for the whole page. A scope given but not on the page
+ * (its ref empty, or its element detached) shows nothing, never the whole page.
+ */
 function read(agent: AgentBridge, scope: HTMLElement | null | undefined, own: HTMLElement | null) {
+  if (scope === null || (scope && !scope.isConnected)) return [];
   let entries: AgentSnapshotEntry[];
   try {
     entries = agent.snapshot() as unknown as AgentSnapshotEntry[];
@@ -102,15 +107,33 @@ export function AgentSnapshot({
     };
     later();
     const unsubscribe = agent.subscribe(later);
-    // A control that mounts or leaves reports no change: watch the DOM for it, but not this list itself.
-    const target = (scope ? scope.current : undefined) ?? (typeof document !== "undefined" ? document.body : null);
+    // A control that mounts or leaves, or a scope that is replaced or removed, reports no change:
+    // watch the whole document for it (the scope is read again each time), but not this list itself.
+    // Attributes too, for a confirm sentence or a name that changes on a control already there.
+    const target = typeof document !== "undefined" ? document.body : null;
     const observer =
       target && typeof MutationObserver !== "undefined"
         ? new MutationObserver((records) => {
             if (records.some((record) => !root.current?.contains(record.target))) later();
           })
         : null;
-    if (target) observer?.observe(target, { childList: true, subtree: true });
+    if (target) {
+      observer?.observe(target, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          "data-agent-confirm",
+          "data-agent-secret",
+          "data-agent-hidden",
+          "aria-label",
+          "aria-labelledby",
+          "disabled",
+          "aria-disabled",
+          "aria-readonly",
+        ],
+      });
+    }
     return () => {
       clearTimeout(timer);
       unsubscribe();

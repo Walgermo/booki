@@ -99,6 +99,64 @@ describe("AgentSnapshot", () => {
     expect(onPage(agent).map((control) => control.label)).toEqual(["Outside"]);
   });
 
+  it("shows nothing once its scope leaves the page, and never falls back to the whole page", async () => {
+    const agent = createBookiAgent();
+    function Toggle({ open }: { open: boolean }) {
+      const scope = useRef<HTMLDivElement | null>(null);
+      return (
+        <>
+          {open ? (
+            <div ref={scope}>
+              <AmountField defaultValue={100} aria-label="Total" />
+            </div>
+          ) : null}
+          <AmountField defaultValue={1} aria-label="Outside" />
+          <AgentSnapshot agent={agent} scope={scope} />
+        </>
+      );
+    }
+    const view = en(<Toggle open />);
+    await waitFor(() =>
+      expect(document.querySelector('[data-slot="agent-snapshot-label"]')?.textContent).toBe("Total"),
+    );
+    view.rerender(
+      <BookiLocaleProvider defaultCountry="US">
+        <Toggle open={false} />
+      </BookiLocaleProvider>,
+    );
+    await waitFor(() => expect(document.querySelector('[data-slot="agent-snapshot-entry"]')).toBeNull());
+    // A change elsewhere still lists nothing: the scope is empty, not the whole page.
+    await act(async () => {
+      await agent.act({ steps: [{ ref: "Outside", action: "setMinor", args: [5] }] });
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    });
+    expect(document.querySelector('[data-slot="agent-snapshot-entry"]')).toBeNull();
+    expect(document.querySelector('[data-slot="agent-snapshot"]')?.textContent).not.toContain("Outside");
+  });
+
+  it("picks up an attribute-only change, like a new confirm sentence", async () => {
+    const agent = createBookiAgent();
+    const page = (confirm: string) => (
+      <BookiLocaleProvider defaultCountry="US">
+        <Scoped agent={agent}>
+          <IconButton label="Post" icon={<Icon />} data-agent-confirm={confirm} />
+        </Scoped>
+      </BookiLocaleProvider>
+    );
+    const view = render(page("Posting needs a person"));
+    await waitFor(() =>
+      expect(document.querySelector('[data-slot="agent-snapshot-confirm"]')?.textContent).toBe(
+        "Asks a person first: Posting needs a person",
+      ),
+    );
+    view.rerender(page("Posting over 5000 needs a person"));
+    await waitFor(() =>
+      expect(document.querySelector('[data-slot="agent-snapshot-confirm"]')?.textContent).toBe(
+        "Asks a person first: Posting over 5000 needs a person",
+      ),
+    );
+  });
+
   it("writes its words in Norwegian for a Norwegian page", async () => {
     const agent = createBookiAgent();
     en(

@@ -167,7 +167,65 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   const agent = { ...bridge, act } as AgentBridge;
   bridges.set(agent, bridge);
   markReporting(agent);
+  // A browser agent's `act` through `registerTools` with a gate of its own runs on the
+  // bridge underneath, not through `act` above: it is reported here instead.
+  toolReporters.set(agent, async (input, execute) => {
+    const id = nextCallId();
+    emitCall(agent, { type: "start", id, steps: stepsOf(input) });
+    try {
+      const result = await execute();
+      emitCall(agent, { type: "end", id, result: result as AgentCallResult });
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      emitCall(agent, { type: "end", id, result: { ok: false, error: { step: 0, message } } });
+      throw error;
+    }
+  });
   return agent;
+}
+
+/** How each Booki agent reports a call that does not go through its own `act`. */
+const toolReporters = new WeakMap<
+  AgentBridge,
+  (input: ActInput, execute: () => Promise<unknown>) => Promise<unknown>
+>();
+
+type ToolDefinition = { name?: string; execute?: (input: unknown, call?: unknown) => unknown };
+
+/**
+ * Runs `register` with the browser's `registerTool` wrapped, so the `act` tool
+ * it registers reports each call to `AgentLog`. Put back right after: the
+ * registration is synchronous.
+ */
+function withReportedTools(agent: AgentBridge, register: () => () => void): () => void {
+  const report = toolReporters.get(agent);
+  const context = (globalThis as { document?: { modelContext?: Record<string, unknown> } }).document?.modelContext;
+  const original = context?.registerTool;
+  if (!report || !context || typeof original !== "function") return register();
+  const own = Object.hasOwn(context, "registerTool");
+  try {
+    context.registerTool = function (this: unknown, tool: ToolDefinition, options: unknown) {
+      const execute = tool?.execute;
+      const wrapped =
+        tool?.name === "act" && typeof execute === "function"
+          ? {
+              ...tool,
+              execute: (input: unknown, call?: unknown) => report(input as ActInput, async () => execute(input, call)),
+            }
+          : tool;
+      return (original as (tool: unknown, options: unknown) => unknown).call(this, wrapped, options);
+    };
+  } catch {
+    // A browser that does not let it be wrapped: the tools work, unlisted.
+    return register();
+  }
+  try {
+    return register();
+  } finally {
+    if (own) context.registerTool = original;
+    else delete context.registerTool;
+  }
 }
 
 /** A call's steps as `AgentLog` reads them; anything that is not a step is left out. */
@@ -287,7 +345,7 @@ const registerWithGate = bookiRegisterTools<AgentBridge>((agent, options) =>
 function registerTools(agent: AgentBridge, options: RegisterToolsOptions): () => void {
   if (options?.allow !== "bridge") {
     if (options?.prefix) throw new Error('registerTools: a prefix needs allow: "bridge".');
-    return registerWithGate(agent, options as never);
+    return withReportedTools(agent, () => registerWithGate(agent, options as never));
   }
   const prefix = options.prefix ? `${String(options.prefix).replace(/[^A-Za-z0-9_-]/g, "")}_` : "";
   const context = (globalThis as { document?: { modelContext?: ModelContext } }).document?.modelContext;

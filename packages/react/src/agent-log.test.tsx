@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { AgentLog, useAgentLog } from "./agent-log.js";
 import { AmountField } from "./amount-field.js";
 import { BankAccountInput } from "./bank-account-input.js";
-import { createBookiAgent } from "./booki-agent.js";
+import { createBookiAgent, registerTools } from "./booki-agent.js";
 import { IconButton } from "./icon-button.js";
 import { BookiLocaleProvider } from "./locale.js";
 
@@ -135,6 +135,118 @@ describe("AgentLog", () => {
     const text = document.querySelector('[data-slot="agent-log"]')?.textContent ?? "";
     expect(text).toContain("[redacted]");
     expect(text).not.toContain("86011117947");
+  });
+
+  it("fails closed: a ref it cannot tie to one control, like another casing of a secret field's name, shows no arguments", async () => {
+    const agent = createBookiAgent();
+    en(
+      <BookiLocaleProvider defaultCountry="NO">
+        <BankAccountInput />
+        <AgentLog agent={agent} />
+      </BookiLocaleProvider>,
+    );
+    const bank = onPage(agent).find((control) => control.component === "bank-account")!;
+    const action = bank.actions.find((name) => name.startsWith("set")) ?? bank.actions[0]!;
+    const alias = String(bank.label ?? bank.component).toUpperCase();
+    await act(async () => {
+      await agent.act({ steps: [{ ref: alias, action, args: ["86011117947"] }] } as never);
+      await agent.act({ steps: [{ ref: "nowhere on the page", action: "setValue", args: ["12345678903"] }] } as never);
+    });
+    const text = document.querySelector('[data-slot="agent-log"]')?.textContent ?? "";
+    expect(rows()).toHaveLength(2);
+    expect(text).not.toContain("86011117947");
+    expect(text).not.toContain("12345678903");
+  });
+
+  it("takes a secret value out of a refusal that echoes it", async () => {
+    const agent = createBookiAgent();
+    en(
+      <BookiLocaleProvider defaultCountry="NO">
+        <BankAccountInput />
+        <AgentLog agent={agent} />
+      </BookiLocaleProvider>,
+    );
+    const bank = onPage(agent).find((control) => control.component === "bank-account")!;
+    await act(async () => {
+      const result = (await agent.act({
+        steps: [{ ref: bank.ref, action: "expect", args: ["86011117947"] }],
+      } as never)) as Result;
+      expect(result.ok).toBe(false);
+    });
+    expect(rows()[0]?.getAttribute("data-status")).toBe("refused");
+    const text = document.querySelector('[data-slot="agent-log"]')?.textContent ?? "";
+    expect(text).not.toContain("86011117947");
+    expect(text).not.toContain("8601 11 17947");
+  });
+
+  it("places a refusal by the step's own index when older rows were dropped", async () => {
+    const agent = createBookiAgent();
+    en(
+      <>
+        <Page agent={agent} />
+        <AgentLog agent={agent} limit={2} className="capped" />
+      </>,
+    );
+    await act(async () => {
+      const result = (await agent.act({
+        steps: [
+          { ref: "Total", action: "setMinor", args: [200] },
+          { ref: "Post voucher", action: "press", args: [] },
+          { ref: "Total", action: "setMinor", args: [300] },
+        ],
+      } as never)) as Result;
+      expect(result.error?.step).toBe(1);
+    });
+    const capped = [...document.querySelectorAll('.capped [data-slot="agent-log-row"]')];
+    // The first step's row was dropped by the limit; the third never ran.
+    expect(capped).toHaveLength(1);
+    expect(capped[0]?.querySelector('[data-slot="agent-log-call"]')?.textContent).toBe("Post voucher · press()");
+    expect(capped[0]?.getAttribute("data-status")).toBe("refused");
+  });
+
+  it("marks no step done when the bridge refuses the whole call for its shape", async () => {
+    const agent = createBookiAgent();
+    en(<Page agent={agent} />);
+    let result: Result = { ok: true };
+    await act(async () => {
+      result = (await agent.act({
+        steps: [
+          { ref: "Total", action: "setMinor", args: [200] },
+          { ref: "Total", action: "setMinor", args: "300" },
+        ],
+      } as never)) as Result;
+    });
+    expect(result.ok).toBe(false);
+    expect(rows().some((row) => row.getAttribute("data-status") === "done")).toBe(false);
+    expect(rows().filter((row) => row.getAttribute("data-status") === "refused")).toHaveLength(1);
+  });
+
+  it("lists the browser agent's calls through registerTools with a gate of its own", async () => {
+    const tools: { name: string; execute: (input: unknown) => Promise<unknown> }[] = [];
+    const doc = document as unknown as { modelContext?: unknown };
+    doc.modelContext = {
+      registerTool: (tool: { name: string; execute: (input: unknown) => Promise<unknown> }) => {
+        tools.push(tool);
+        return Promise.resolve();
+      },
+    };
+    try {
+      const agent = createBookiAgent();
+      en(<Page agent={agent} />);
+      const stop = registerTools(agent, { allow: () => true });
+      const actTool = tools.find((tool) => tool.name === "act")!;
+      expect(actTool).toBeDefined();
+      await act(async () => {
+        await actTool.execute({ steps: [{ ref: "Total", action: "setMinor", args: [700] }] });
+      });
+      expect(rows()[0]?.querySelector('[data-slot="agent-log-call"]')?.textContent).toBe("Total · setMinor(700)");
+      expect(rows()[0]?.getAttribute("data-status")).toBe("done");
+      // The browser's own registerTool is left as it was.
+      expect(Object.hasOwn(doc.modelContext as object, "registerTool")).toBe(true);
+      stop();
+    } finally {
+      delete doc.modelContext;
+    }
   });
 
   it("follows a plain bridge's changes through attachAudit", async () => {
