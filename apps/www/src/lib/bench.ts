@@ -184,7 +184,14 @@ const REAL: RealSide[] = (((data as { real?: { sides: RealSide[] } }).real?.side
 /** Every real-model result still counted, for a task. */
 export const realOf = (task: string): RealSide[] => REAL.filter((side) => side.task === task);
 
-/** The real-model result for a task, model (by prefix, e.g. "anthropic/") and screen, if it was run. */
+/**
+ * The model the main figures name ("Claude Opus 5.5"), by its exact published id.
+ * Never a provider prefix: bench.json also holds Sonnet and Haiku, and a partial
+ * export can put them first.
+ */
+export const OPUS = "anthropic/claude-opus-5.5";
+
+/** The real-model result for a task, model (by id, or a prefix of one) and screen, if it was run. */
 export function realFor(task: BenchTask, model: string, key: string): RealSide | undefined {
   return REAL.find((side) => side.task === task && side.model.startsWith(model) && side.key === key);
 }
@@ -195,7 +202,7 @@ const REAL_RUNS: RealRun[] = (((data as { real?: { runs: RealRun[] } }).real?.ru
 );
 
 /** The cheapest model run on a task, by list price for input, other than the one the main figures use. */
-export function cheapModel(task: BenchTask, except = "anthropic/claude-opus"): string | undefined {
+export function cheapModel(task: BenchTask, except = OPUS): string | undefined {
   return REAL_RUNS.filter((run) => run.task === task && !run.model.startsWith(except) && run.prices).sort(
     (a, b) => a.prices!.input - b.prices!.input,
   )[0]?.model;
@@ -214,7 +221,7 @@ export function modelName(id: string): string {
 /** How many times cheaper a model's input is than Opus 5.5's, from the run's list prices. */
 export function cheaperThanOpus(task: BenchTask, model: string): number | undefined {
   const price = (id: string) => REAL_RUNS.find((run) => run.task === task && run.model.startsWith(id))?.prices?.input;
-  const opus = price("anthropic/claude-opus");
+  const opus = price(OPUS);
   const other = price(model);
   return opus && other ? Math.round(opus / other) : undefined;
 }

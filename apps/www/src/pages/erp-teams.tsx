@@ -6,7 +6,7 @@ import { Section } from "@/components/section";
 import { CodeDisclosure } from "@/components/two-readers";
 import { Button } from "@/components/ui/button";
 import { ServerRules } from "@/components/server-rules";
-import { RUNS, billed, cheapModel, fairCost, modelName, realFor, formatters, versus } from "@/lib/bench";
+import { OPUS, RUNS, billed, cheapModel, fairCost, modelName, realFor, formatters, versus } from "@/lib/bench";
 import { useLang, type Lang } from "@/lib/lang";
 
 const REPO_URL = "https://github.com/Walgermo/booki";
@@ -167,8 +167,8 @@ const PILOT = (t: T): { step: string; detail: string }[] => [
 /** The three numbers a leader asks for first, from the benchmark run itself (src/data/bench.json). */
 const VOUCHER = versus("voucher");
 /** Measured with real models (pnpm proof); the scripted estimate where a task has no real runs. */
-const REAL_RAW = realFor("supplier-invoice", "anthropic/", "tripletex");
-const REAL_ACC = realFor("supplier-invoice", "anthropic/", "acc");
+const REAL_RAW = realFor("supplier-invoice", OPUS, "tripletex");
+const REAL_ACC = realFor("supplier-invoice", OPUS, "acc");
 const CHEAP = cheapModel("supplier-invoice");
 const CHEAP_ACC = CHEAP ? realFor("supplier-invoice", CHEAP, "acc") : undefined;
 const CHEAP_RAW = CHEAP ? realFor("supplier-invoice", CHEAP, "tripletex") : undefined;

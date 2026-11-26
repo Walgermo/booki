@@ -14,6 +14,7 @@ import {
   cheapModel,
   cheaperThanOpus,
   modelName,
+  OPUS,
   realFor,
   realSides,
   type RealSide,
@@ -135,8 +136,8 @@ const at = (values: number[], t: number) => {
 
 function Figures({ task, t, max }: { task: BenchTask; t: number; max: number }) {
   const { t: tr } = useLang();
-  const opusRaw = realFor(task, "anthropic/", "tripletex");
-  const opusAcc = realFor(task, "anthropic/", "acc");
+  const opusRaw = realFor(task, OPUS, "tripletex");
+  const opusAcc = realFor(task, OPUS, "acc");
   if (opusRaw && opusAcc) {
     return (
       <div className="grid gap-3">
