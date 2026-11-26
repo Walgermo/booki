@@ -73,8 +73,8 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             </span>
             <span className="landing-hero__note">
               {t(
-                "AI agents start using computers by reading screenshots.",
-                "AI-agenter begynner å bruke datamaskiner ved å lese skjermbilder.",
+                "AI agents start using apps by reading screenshots and DOM snapshots.",
+                "AI-agenter begynner å bruke apper ved å lese skjermbilder og DOM-snapshots.",
               )}
             </span>
           </li>
