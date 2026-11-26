@@ -1201,6 +1201,66 @@ html[data-kpi-still] {
   opacity: 1;
 }
 
+/* The icons page: a note, the search field and a grid of tiles that copy the import. */
+.site-callout {
+  padding: 0.75rem 1rem;
+  border-left: 2px solid var(--bk-border-strong);
+  background: var(--bk-muted);
+  border-radius: 0 var(--bk-radius-sm) var(--bk-radius-sm) 0;
+}
+
+.site-icons-search {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--bk-fg);
+  background: var(--bk-card);
+  border: 1px solid var(--bk-border-strong);
+  border-radius: var(--bk-radius-sm);
+}
+
+.site-icons-search:focus-visible {
+  outline: 2px solid var(--bk-ring);
+  outline-offset: 1px;
+}
+
+.site-icons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-icons-tile {
+  display: grid;
+  justify-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  min-height: 6rem;
+  padding: 1rem 0.5rem 0.75rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+}
+
+.site-icons-tile[data-copied] {
+  border-color: var(--bk-fg);
+}
+
+.site-icons-name {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--bk-muted-fg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .site-code-name {
   font-family: var(--bk-mono);
   font-size: 0.875rem;

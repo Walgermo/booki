@@ -4,7 +4,8 @@ import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { iconNames, icons, iconSvg } from "../lib/index.js";
+import { iconComponentName, iconNames, icons, iconSvg } from "../lib/index.js";
+import * as react from "../lib/react.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const sources = readdirSync(join(root, "source"))
@@ -33,4 +34,11 @@ test("each icon draws in the text colour, with no colour of its own", () => {
 test("iconSvg sizes the icon and lists the names when one is unknown", () => {
   assert.match(iconSvg(iconNames[0], 20), /width="20" height="20"/);
   assert.throws(() => iconSvg("nope"), /No icon "nope"\. Icons: /);
+});
+
+test("every icon has its own React component, and no two share a name", () => {
+  const components = iconNames.map(iconComponentName);
+  assert.equal(new Set(components).size, components.length);
+  for (const component of components) assert.equal(typeof react[component], "function", component);
+  assert.equal(typeof react.Icon, "function");
 });

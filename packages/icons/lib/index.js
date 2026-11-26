@@ -25,16 +25,16 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 2.75L16.75 2.75A1.5 1.5 0 0 1 18.25 4.25L18.25 19.75A1.5 1.5 0 0 1 16.75 21.25L7.25 21.25A1.5 1.5 0 0 1 5.75 19.75L5.75 4.25A1.5 1.5 0 0 1 7.25 2.75Z"/></g><path d="M12 2.75L16.75 2.75A1.5 1.5 0 0 1 18.25 4.25L18.25 19.75A1.5 1.5 0 0 1 16.75 21.25L7.25 21.25A1.5 1.5 0 0 1 5.75 19.75L5.75 4.25A1.5 1.5 0 0 1 7.25 2.75Z"/><path d="M9.25 7.25h0"/><path d="M14.75 7.25h0"/><path d="M9.25 11.75h0"/><path d="M14.75 11.75h0"/><path d="M10.25 21.25L10.25 18.25A1 1 0 0 1 11.25 17.25L12.75 17.25A1 1 0 0 1 13.75 18.25L13.75 21.25"/>',
   calculator:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/></g><path d="M12 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75Z"/><path d="M12 6.25L14.75 6.25A1 1 0 0 1 15.75 7.25L15.75 8.75A1 1 0 0 1 14.75 9.75L9.25 9.75A1 1 0 0 1 8.25 8.75L8.25 7.25A1 1 0 0 1 9.25 6.25Z"/><path d="M8.25 13.25h.01M12 13.25h.01M15.75 13.25h.01M8.25 17.25h.01M12 17.25h.01M15.75 17.25h.01"/>',
+  calendar:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/>',
   "calendar-check":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><path d="m8.75 15.5 2.25 2.25 4.5-4.5"/>',
   "calendar-dot":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/><circle cx="15.25" cy="15.75" r="1"/>',
-  calendar:
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/></g><path d="M12 4.75L18.75 4.75A1.5 1.5 0 0 1 20.25 6.25L20.25 19.75A1.5 1.5 0 0 1 18.75 21.25L5.25 21.25A1.5 1.5 0 0 1 3.75 19.75L3.75 6.25A1.5 1.5 0 0 1 5.25 4.75Z"/><path d="M8.25 2.75v3.5"/><path d="M15.75 2.75v3.5"/><path d="M3.75 9.75h16.5"/>',
-  "chart-bar-stacked":
-    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.25 15.25H6.75V20.25H3.25Z"/><path d="M10.25 12.25H13.75V20.25H10.25Z"/><path d="M17.25 16.75H20.75V20.25H17.25Z"/></g><path d="M2.25 20.25h19.5"/><path d="M3.25 20.25V10.75A1 1 0 0 1 4.25 9.75H5.75A1 1 0 0 1 6.75 10.75V20.25"/><path d="M10.25 20.25V5.75A1 1 0 0 1 11.25 4.75H12.75A1 1 0 0 1 13.75 5.75V20.25"/><path d="M17.25 20.25V13.75A1 1 0 0 1 18.25 12.75H19.75A1 1 0 0 1 20.75 13.75V20.25"/><path d="M3.25 15.25h3.5"/><path d="M10.25 12.25h3.5"/><path d="M17.25 16.75h3.5"/>',
   "chart-bar":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.25 20.25V12.75A1 1 0 0 1 4.25 11.75H5.75A1 1 0 0 1 6.75 12.75V20.25Z"/><path d="M10.25 20.25V5.75A1 1 0 0 1 11.25 4.75H12.75A1 1 0 0 1 13.75 5.75V20.25Z"/><path d="M17.25 20.25V9.75A1 1 0 0 1 18.25 8.75H19.75A1 1 0 0 1 20.75 9.75V20.25Z"/></g><path d="M2.25 20.25h19.5"/><path d="M3.25 20.25V12.75A1 1 0 0 1 4.25 11.75H5.75A1 1 0 0 1 6.75 12.75V20.25"/><path d="M10.25 20.25V5.75A1 1 0 0 1 11.25 4.75H12.75A1 1 0 0 1 13.75 5.75V20.25"/><path d="M17.25 20.25V9.75A1 1 0 0 1 18.25 8.75H19.75A1 1 0 0 1 20.75 9.75V20.25"/>',
+  "chart-bar-stacked":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M3.25 15.25H6.75V20.25H3.25Z"/><path d="M10.25 12.25H13.75V20.25H10.25Z"/><path d="M17.25 16.75H20.75V20.25H17.25Z"/></g><path d="M2.25 20.25h19.5"/><path d="M3.25 20.25V10.75A1 1 0 0 1 4.25 9.75H5.75A1 1 0 0 1 6.75 10.75V20.25"/><path d="M10.25 20.25V5.75A1 1 0 0 1 11.25 4.75H12.75A1 1 0 0 1 13.75 5.75V20.25"/><path d="M17.25 20.25V13.75A1 1 0 0 1 18.25 12.75H19.75A1 1 0 0 1 20.75 13.75V20.25"/><path d="M3.25 15.25h3.5"/><path d="M10.25 12.25h3.5"/><path d="M17.25 16.75h3.5"/>',
   "chart-forecast":
     '<path d="M2.25 20.25h19.5"/><path d="M3.75 15.75L7.043 12.457A1 1 0 0 1 8.457 12.457L10.543 14.543A1 1 0 0 0 11.957 14.543L12.25 14.25"/><path d="M14.75 11.75l1.5-1.5"/><path d="M18.75 7.75l1.5-1.5"/>',
   "chart-line":
@@ -105,6 +105,8 @@ export const icons = {
     '<path d="M5.722 8.375A7.25 7.25 0 0 1 19.25 12"/><path d="M16.75 9.5 19.25 12 21.75 9.5"/><path d="M18.278 15.625A7.25 7.25 0 0 1 4.75 12"/><path d="M2.25 14.5 4.75 12 7.25 14.5"/>',
   scale:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M5.5 6.25L8.25 13.25A3.5 3.5 0 0 1 2.75 13.25Z"/><path d="M18.5 6.25L21.25 13.25A3.5 3.5 0 0 1 15.75 13.25Z"/></g><path d="M12 3.25v17"/><path d="M7.75 20.25h8.5"/><path d="M5.5 6.25h13"/><path d="M5.5 6.25L8.25 13.25A3.5 3.5 0 0 1 2.75 13.25Z"/><path d="M18.5 6.25L21.25 13.25A3.5 3.5 0 0 1 15.75 13.25Z"/>',
+  shapes:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="7" cy="7.25" r="3.25"/><path d="M15.311 7.247L16.113 5.706A1 1 0 0 1 17.887 5.706L19.49 8.789A1 1 0 0 1 18.603 10.25L15.397 10.25A1 1 0 0 1 14.51 8.789Z"/><path d="M17 13.75L19.25 13.75A1 1 0 0 1 20.25 14.75L20.25 19.25A1 1 0 0 1 19.25 20.25L14.75 20.25A1 1 0 0 1 13.75 19.25L13.75 14.75A1 1 0 0 1 14.75 13.75Z"/></g><circle cx="7" cy="7.25" r="3.25"/><path d="M15.311 7.247L16.113 5.706A1 1 0 0 1 17.887 5.706L19.49 8.789A1 1 0 0 1 18.603 10.25L15.397 10.25A1 1 0 0 1 14.51 8.789Z"/><path d="M17 13.75L19.25 13.75A1 1 0 0 1 20.25 14.75L20.25 19.25A1 1 0 0 1 19.25 20.25L14.75 20.25A1 1 0 0 1 13.75 19.25L13.75 14.75A1 1 0 0 1 14.75 13.75Z"/><path d="M7 14v6M4 17h6"/>',
   "shield-check":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/></g><path d="M14.875 2.75L17.75 2.75A1.5 1.5 0 0 1 19.25 4.25L19.25 11.015A6 6 0 0 1 17.493 15.257L12.707 20.043A1 1 0 0 1 11.293 20.043L6.507 15.257A6 6 0 0 1 4.75 11.015L4.75 4.25A1.5 1.5 0 0 1 6.25 2.75L12 2.75Z"/><path d="m8.25 10.75 2.5 2.5 5-5"/>',
   "speech-bubble":
@@ -126,8 +128,79 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z"/></g><path d="M12 5.25L19.75 5.25A1.5 1.5 0 0 1 21.25 6.75L21.25 17.75A1.5 1.5 0 0 1 19.75 19.25L4.25 19.25A1.5 1.5 0 0 1 2.75 17.75L2.75 6.75A1.5 1.5 0 0 1 4.25 5.25Z"/><path d="M21.25 9.75H17.25A2.25 2.25 0 0 0 17.25 14.25H21.25"/>',
 };
 
+/** The words each icon stands for in Booki (its pages and controls), for search. */
+export const iconAliases = {
+  "arrows-exchange": ["currency", "currency-select"],
+  bank: ["bank", "bank-account", "bank-reconciliation"],
+  banknote: ["amount", "money", "amount-field", "money-amount"],
+  barcode: ["fixed-asset-register", "asset"],
+  bell: ["toasts", "notifications"],
+  book: ["ledger", "ledger-table"],
+  building: ["organization-number", "company", "organisation"],
+  calculator: ["money", "helpers", "money-helpers"],
+  calendar: ["accounting-period", "financial-date", "period"],
+  "calendar-check": ["month-end", "close", "month-end-close"],
+  "calendar-dot": ["financial-date", "date", "accounting-date"],
+  "chart-bar": ["bar-chart"],
+  "chart-bar-stacked": ["aging-chart", "aging"],
+  "chart-forecast": ["forecast", "forecast-chart"],
+  "chart-line": ["trend-chart", "trend"],
+  "chart-waterfall": ["cashflow-waterfall", "cashflow"],
+  "circle-check": ["approval", "attestation", "approval-chain"],
+  clipboard: ["audit-workpaper", "workpaper"],
+  code: ["examples"],
+  coins: ["money-amount", "money", "coins"],
+  dialog: ["confirm-dialog", "dialog"],
+  "document-lines": ["voucher", "voucher-composer", "voucher-lines"],
+  flag: ["country", "country-toggle"],
+  folder: ["account", "account-picker"],
+  funnel: ["sales-funnel", "funnel-chart"],
+  gauge: ["kpi", "kpi-stat"],
+  globe: ["iban", "international"],
+  hash: ["invoice-number", "number"],
+  history: ["audit-trail", "history"],
+  hourglass: ["aged-balances", "aging"],
+  inbox: ["supplier-invoice-inbox", "inbox"],
+  "input-field": ["amount-input", "text-field"],
+  kanban: ["deal-pipeline", "pipeline"],
+  layers: ["sheet-stack", "sheets"],
+  link: ["approval-chain", "chain"],
+  "list-checks": ["close-checklist", "checklist"],
+  "list-rows": ["voucher-lines"],
+  lock: ["period-lock", "lock", "locked"],
+  magnifier: ["audit-findings", "findings", "search"],
+  map: ["overview", "introduction"],
+  "octagon-pause": ["approval-gate", "gate", "hold"],
+  package: ["installation", "install"],
+  "paper-plane": ["payment-confirm", "send"],
+  paperclip: ["evidence", "evidence-list"],
+  "pen-nib": ["document-signoff", "signoff", "sign"],
+  percent: ["tax-code", "tax-code-select", "vat"],
+  "play-window": ["demo"],
+  puzzle: ["erp-teams", "integration", "integrate"],
+  receipt: ["invoice", "invoice-editor"],
+  repeat: ["recurring-revenue", "recurring"],
+  scale: ["bank-reconciliation", "reconcile"],
+  shapes: ["icons", "icon-set"],
+  "shield-check": ["sca", "sca-prompt"],
+  "speech-bubble": ["client-requests", "requests", "message"],
+  stack: ["payment-batch", "batch"],
+  stamp: ["vat-return", "filing"],
+  stopwatch: ["stage-duration", "duration"],
+  table: ["data-table", "table"],
+  tag: ["payment-reference", "kid"],
+  timeline: ["activity-timeline", "activity"],
+  "triangle-alert": ["exception-banner", "warning"],
+  wallet: ["expense", "expense-claim"],
+};
+
 /** Every icon name. */
 export const iconNames = Object.keys(icons);
+
+/** The React component for an icon: `chart-bar` → `ChartBarIcon`, from "@booki-aui/icons/react". */
+export function iconComponentName(name) {
+  return `${name.replace(/(^|-)([a-z0-9])/g, (_, __, c) => c.toUpperCase())}Icon`;
+}
 
 /** One icon as a complete SVG string, at a size in px (16 and 20 are the sizes it is drawn for). */
 export function iconSvg(name, size = 16) {

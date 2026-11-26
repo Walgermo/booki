@@ -19,6 +19,11 @@ const NB: Record<string, { title?: string; description: string }> = {
     description:
       "Én faktura på et vanlig skjema og på Booki, kontrollene i ulike oppsett, og en kontroll dere lager selv.",
   },
+  icons: {
+    title: "Ikoner",
+    description:
+      "Duotone-ikoner for regnskaps-UI: søk i dem, kopier importen, bruk dem i React eller et annet rammeverk.",
+  },
   demo: {
     title: "Demo",
     description:

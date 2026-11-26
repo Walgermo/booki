@@ -40,7 +40,8 @@
   },
   "scripts": {
     "generate": "node ./scripts/generate.mjs",
-    "test": "node --test scripts/*.test.mjs"
+    "rebuild": "node ./scripts/rebuild.mjs",
+    "test": "node ./scripts/generate.mjs --check && node --test scripts/*.test.mjs"
   },
   "peerDependencies": {
     "react": ">=19"
@@ -52,5 +53,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "react": "^19.2.0"
   }
 }

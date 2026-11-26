@@ -104,7 +104,7 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "blocks",
     en: "Building blocks",
     nb: "Byggeklosser",
-    pages: ["data-table", "confirm-dialog", "toasts", "sheet-stack", "exception-banner"],
+    pages: ["data-table", "confirm-dialog", "toasts", "sheet-stack", "exception-banner", "icons"],
   },
 ];
 
@@ -165,6 +165,7 @@ const PLAIN: Record<string, { en: string; nb: string }> = {
   toasts: { en: "Notifications", nb: "Varsler" },
   "sheet-stack": { en: "Sheet stack", nb: "Arkstabel" },
   "exception-banner": { en: "Exception banner", nb: "Avviksbanner" },
+  icons: { en: "Icons", nb: "Ikoner" },
 };
 
 /** A page's plain name in the site's language, or `undefined` for pages that use their title. */
@@ -241,4 +242,5 @@ export const PAGE_ICON: Record<string, IconName> = {
   toasts: "bell",
   "sheet-stack": "layers",
   "exception-banner": "triangle-alert",
+  icons: "shapes",
 };

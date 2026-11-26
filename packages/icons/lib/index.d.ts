@@ -9,11 +9,11 @@ export type IconName =
   | "book"
   | "building"
   | "calculator"
+  | "calendar"
   | "calendar-check"
   | "calendar-dot"
-  | "calendar"
-  | "chart-bar-stacked"
   | "chart-bar"
+  | "chart-bar-stacked"
   | "chart-forecast"
   | "chart-line"
   | "chart-waterfall"
@@ -52,6 +52,7 @@ export type IconName =
   | "receipt"
   | "repeat"
   | "scale"
+  | "shapes"
   | "shield-check"
   | "speech-bubble"
   | "stack"
@@ -62,7 +63,15 @@ export type IconName =
   | "timeline"
   | "triangle-alert"
   | "wallet";
-export declare const iconAttributes: Record<string, string>;
-export declare const icons: Record<IconName, string>;
-export declare const iconNames: IconName[];
+/** The attributes every icon's root <svg> carries. */
+export declare const iconAttributes: Readonly<Record<string, string>>;
+/** Each icon's inner markup, by name. */
+export declare const icons: Readonly<Record<IconName, string>>;
+/** The words each icon stands for in Booki (its pages and controls), for search. */
+export declare const iconAliases: Readonly<Record<IconName, readonly string[]>>;
+/** Every icon name. */
+export declare const iconNames: readonly IconName[];
+/** The React component for an icon: `chart-bar` → `ChartBarIcon`. */
+export declare function iconComponentName(name: IconName): string;
+/** One icon as a complete SVG string. Throws on an unknown name, listing the names. */
 export declare function iconSvg(name: IconName, size?: 16 | 20): string;

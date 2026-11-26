@@ -11,7 +11,7 @@
     "typecheck": "node scripts/ensure-built.mjs && pnpm --filter @booki-aui/core typecheck && pnpm --filter @booki-aui/primitives typecheck && pnpm --filter @booki-aui/react typecheck && pnpm --filter @booki-aui/www typecheck && pnpm --filter @booki-aui/web --filter @booki-aui/vue --filter @booki-aui/svelte --filter @booki-aui/solid typecheck && pnpm --filter @booki-aui/readiness typecheck && pnpm --filter @booki-aui/example-ap-flow typecheck && pnpm --filter @booki-aui/example-crm typecheck",
     "check:bundle-size": "node scripts/check-bundle-size.mjs",
     "coverage": "node scripts/ensure-built.mjs && pnpm --filter @booki-aui/core test:coverage && pnpm --filter @booki-aui/primitives test:coverage && pnpm --filter @booki-aui/react test:coverage",
-    "test": "node scripts/ensure-built.mjs && pnpm test:scripts && pnpm --filter @booki-aui/core test && pnpm --filter @booki-aui/primitives test && pnpm --filter @booki-aui/react test && pnpm --filter @booki-aui/styles test && pnpm --filter @booki-aui/web test && pnpm --filter @booki-aui/readiness test && pnpm --filter @booki-aui/example-ap-flow test && pnpm --filter @booki-aui/example-crm test && pnpm --filter agent-benchmark test && pnpm --filter @booki-aui/www test",
+    "test": "node scripts/ensure-built.mjs && pnpm test:scripts && pnpm --filter @booki-aui/core test && pnpm --filter @booki-aui/primitives test && pnpm --filter @booki-aui/react test && pnpm --filter @booki-aui/styles test && pnpm --filter @booki-aui/icons test && pnpm --filter @booki-aui/web test && pnpm --filter @booki-aui/readiness test && pnpm --filter @booki-aui/example-ap-flow test && pnpm --filter @booki-aui/example-crm test && pnpm --filter agent-benchmark test && pnpm --filter @booki-aui/www test",
     "test:scripts": "node --test scripts/*.test.mjs",
     "proof": "pnpm --filter agent-benchmark proof",
     "readiness": "pnpm --filter @booki-aui/readiness check",
@@ -26,7 +26,8 @@
     "version-packages": "changeset version && pnpm generate:frameworks && pnpm format",
     "release": "pnpm build:packages && node scripts/publish.mjs",
     "release:plan": "changeset publish-plan",
-    "pack:local": "node scripts/pack-local.mjs"
+    "pack:local": "node scripts/pack-local.mjs",
+    "icons": "node packages/icons/scripts/rebuild.mjs"
   },
   "engines": {
     "node": ">=26.0.0"
