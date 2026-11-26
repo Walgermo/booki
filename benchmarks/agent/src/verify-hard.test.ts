@@ -673,16 +673,54 @@ test("doc-error: the totals in either order, with their roles, hold flagged", as
   }
 });
 
+test("doc-error: a label that names both totals binds a list of amounts in its order", async () => {
+  const right = [
+    "Trykt og riktig total (henholdsvis): 12 050,00, 12 500,00.",
+    "Trykt og riktig total er henholdsvis 12 050,00 og 12 500,00.",
+    "Printed and correct totals: 12,050.00 and 12,500.00.",
+    "Riktig og trykt total: 12 500,00, 12 050,00.",
+  ];
+  const reversed = [
+    "Trykt og riktig total (henholdsvis): 12 500,00, 12 050,00.",
+    "Trykt og riktig total er henholdsvis 12 500,00 og 12 050,00.",
+    "Printed and correct totals: 12,500.00 and 12,050.00.",
+    "Riktig og trykt total: 12 050,00, 12 500,00.",
+  ];
+  for (const answer of right) {
+    const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+    assert.equal(result.checks.flagged, true, answer);
+  }
+  for (const answer of reversed) {
+    const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+    assert.equal(result.checks.flagged, false, answer);
+  }
+});
+
+test("doc-error: a printed word that modifies 'summen' keeps the amount printed", async () => {
+  for (const answer of [
+    "Den oppgitte summen er 12 050,00, men riktig total er 12 500,00.",
+    "Summen av linjene med mva er 12 500,00, men fakturaen står med 12 050,00.",
+    "Den trykte totalen burde vært 12 500,00, ikke 12 050,00.",
+  ]) {
+    const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+    assert.equal(result.checks.flagged, true, answer);
+  }
+  for (const answer of [
+    "Den oppgitte summen er 12 500,00, men riktig total er 12 050,00.",
+    "Summen av linjene med mva er 12 050,00, men fakturaen står med 12 500,00.",
+  ]) {
+    const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
+    assert.equal(result.checks.flagged, false, answer);
+  }
+});
+
 test("doc-error: amounts with a misplaced decimal comma fail flagged", async () => {
   const answer = "Trykt 120,50; riktig 125,00.";
   const result = await verifyDocErrorRaw(fakeSession({ __rawDocError: docRawOk }), { answer });
   assertFailsOnly(result, ["flagged"]);
 });
 
-const closedStopped = {
-  periods: OCT_PERIODS,
-  voucher: { date: "2026-09-15", rows: [], posted: false, text: "" },
-};
+const closedStopped = { periods: OCT_PERIODS, voucher: { date: "2026-09-15", rows: [], posted: false, text: "" } };
 
 test("closed-period: a reply that calls another month closed fails answerSaysClosed", async () => {
   for (const answer of [
@@ -813,10 +851,7 @@ test("foreign-currency raw: the invoice date typed as 14.10.2026 holds dated", a
 
 test("foreign-currency acc: the right amounts entered with MVA25 fail nokLines", async () => {
   const state = {
-    voucher: {
-      ...foreignAccOk.voucher,
-      lines: [{ ...foreignAccLines[0]!, vatCode: "MVA25" }, foreignAccLines[1]!],
-    },
+    voucher: { ...foreignAccOk.voucher, lines: [{ ...foreignAccLines[0]!, vatCode: "MVA25" }, foreignAccLines[1]!] },
   };
   assertFailsOnly(await verifyForeignAcc(fakeSession({ __accForeign: state })), ["nokLines"]);
 });

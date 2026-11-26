@@ -112,7 +112,12 @@ export const DOC_ERROR_EXPECTED = {
   printedWords: /trykt|oppgitt|påført|står|fakturert|printed|stated|shown|invoiced|says/gi,
   /** Words that call an amount the right one, worked out from the lines. */
   correctWords:
-    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|summen|correct|should|calculated|computed|actual|adds up|comes to/gi,
+    /riktig|korrekt|skal være|skulle vært|burde|beregnet|utregnet|gir|blir|correct|should|calculated|computed|actual|adds up|comes to/gi,
+  /**
+   * A generic noun for a total. It calls an amount the worked-out one ("summen
+   * av linjene") unless a printed word modifies it ("den oppgitte summen").
+   */
+  genericWords: /summen/gi,
   /** At least ten characters of a real reason when the page is returned. */
   minReasonLength: 10,
 } as const;
@@ -134,22 +139,78 @@ type AccDocErrorState = {
 /** Not posted: neither the invoice status nor a voucher says it was. */
 const docErrorNotPosted = (status: string, posted: boolean) => status !== "posted" && !posted;
 
+type DocRole = "printed" | "correct";
+
 /**
- * What the words before an amount, in its own clause, call it: the printed
- * total, the correct one, or nothing. The clause runs back to the amount
- * before it, or to a full stop, a semicolon or a "but".
+ * The words before an amount in its own clause. The clause runs back to the
+ * amount before it, or to a full stop, a semicolon or a "but". A colon ends it
+ * too, unless nothing but the amount follows the colon: then the label before
+ * the colon names it ("Trykt total: 12 050").
  */
-function roleBefore(answer: string, start: number, previousEnd: number): "printed" | "correct" | null {
+function clauseBefore(answer: string, start: number, previousEnd: number): string {
   const clause =
     answer
       .slice(previousEnd, start)
-      .split(/[.;:!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
+      .split(/[.;!?]\s|\bmen\b|\bbut\b|\bwhile\b|\bmens\b/i)
       .pop() ?? "";
-  const last = (words: RegExp) => [...clause.matchAll(words)].pop()?.index ?? -1;
-  const printed = last(DOC_ERROR_EXPECTED.printedWords);
-  const correct = last(DOC_ERROR_EXPECTED.correctWords);
-  if (printed === -1 && correct === -1) return null;
-  return printed > correct ? "printed" : "correct";
+  const parts = clause.split(/:\s/);
+  const after = parts.pop() ?? "";
+  return /\p{L}/u.test(after) || parts.length === 0 ? after : (parts.pop() ?? "");
+}
+
+/** Where a clause calls something printed or correct, in order. */
+function roleWordsIn(clause: string): { role: DocRole; index: number }[] {
+  const e = DOC_ERROR_EXPECTED;
+  const printed = [...clause.matchAll(e.printedWords)].map((m) => ({ role: "printed" as const, index: m.index }));
+  const correct = [...clause.matchAll(e.correctWords)].map((m) => ({ role: "correct" as const, index: m.index }));
+  // "den oppgitte summen": a printed word within two words before the noun keeps the noun printed.
+  const modified = new RegExp(`(${e.printedWords.source})\\S*(\\s+\\S+)?\\s+$`, "i");
+  const generic = [...clause.matchAll(e.genericWords)]
+    .filter((m) => !modified.test(clause.slice(0, m.index)))
+    .map((m) => ({ role: "correct" as const, index: m.index }));
+  return [...printed, ...correct, ...generic].sort((a, b) => a.index - b.index);
+}
+
+/** Between two amounts of one list: a comma, "og" or "and", with a currency at most. */
+const LIST_GAP = /^\s*(kr\.?|nok)?\s*(,|og|and|&)?\s*(kr\.?|nok)?\s*$/i;
+
+/**
+ * The order a label names both roles in ("Trykt og riktig total", "printed and
+ * correct totals"): the two words joined by "og", "and", "&", "/" or a comma.
+ * Null when the clause is not such a label, as in "den trykte totalen burde vært".
+ */
+function labelOrder(clause: string, words: { role: DocRole; index: number }[]): DocRole[] | null {
+  const first = words[0];
+  const second = words.find((w) => w.role !== first?.role);
+  if (!first || !second) return null;
+  const between = clause.slice(first.index, second.index).replace(/^\p{L}+/u, "");
+  return /^\s*(og|and|&|\/|,)\s*$/i.test(between) ? [first.role, second.role] : null;
+}
+
+/**
+ * The role the answer gives each amount, or null. One role word before an
+ * amount names it, the last one when there are several. A label that names
+ * both, followed by a list of amounts, names them in its order: "Trykt og
+ * riktig total: 12 050, 12 500" gives the first printed and the second correct.
+ */
+function docRoles(text: string, amounts: { start: number; end: number }[]): (DocRole | null)[] {
+  const roles: (DocRole | null)[] = [];
+  let i = 0;
+  while (i < amounts.length) {
+    const clause = clauseBefore(text, amounts[i]!.start, i === 0 ? 0 : amounts[i - 1]!.end);
+    const words = roleWordsIn(clause);
+    const order = labelOrder(clause, words);
+    let end = i + 1;
+    while (end < amounts.length && LIST_GAP.test(text.slice(amounts[end - 1]!.end, amounts[end]!.start))) end += 1;
+    if (order && end - i >= 2) {
+      for (let k = i; k < end; k += 1) roles.push(order[k - i] ?? null);
+      i = end;
+      continue;
+    }
+    roles.push(words.at(-1)?.role ?? null);
+    i += 1;
+  }
+  return roles;
 }
 
 /**
@@ -164,10 +225,10 @@ const docErrorFlagged = (answer: string | undefined) => {
   if (!amounts.some((a) => a.minor === e.printedGrossMinor) || !amounts.some((a) => a.minor === e.correctGrossMinor)) {
     return false;
   }
+  const roles = docRoles(text, amounts);
   return amounts.every((amount, i) => {
-    const role = roleBefore(text, amount.start, i === 0 ? 0 : amounts[i - 1]!.end);
-    if (amount.minor === e.printedGrossMinor) return role !== "correct";
-    if (amount.minor === e.correctGrossMinor) return role !== "printed";
+    if (amount.minor === e.printedGrossMinor) return roles[i] !== "correct";
+    if (amount.minor === e.correctGrossMinor) return roles[i] !== "printed";
     return true;
   });
 };
