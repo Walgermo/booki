@@ -1,4 +1,5 @@
 import type { Activity } from "@booki-aui/core/activity";
+import { localToday } from "@booki-aui/core/financial-date";
 import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
 import { mount } from "@ui-sdk/core/testing";
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
@@ -160,7 +161,8 @@ describe("DealPipeline", () => {
   });
 });
 
-const NOW_DAY = new Date().toISOString().slice(0, 10);
+// The person's own date: a date with no time is checked against it, not the UTC one.
+const NOW_DAY = localToday();
 const activities: Activity[] = [
   { id: "A-1", kind: "meeting", subject: "Demo", at: "2026-11-10T13:00:00Z", by: "kari", evidence: "cal:991" },
   { id: "A-2", kind: "call", subject: "Check-in", at: "2026-11-20T09:00:00Z", by: "kari" },

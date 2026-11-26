@@ -98,9 +98,11 @@ function tidy<T extends Record<string, unknown>>(value: T): T {
 
 /**
  * Log something that happened. `now` is the current ISO time: an entry dated
- * after it is refused, since what is still to come is a task.
+ * after it is refused, since what is still to come is a task. An entry with a
+ * date and no time is checked against `today`, the person's own calendar date
+ * as YYYY-MM-DD; without it, against the UTC date of `now`.
  */
-export function logActivity(input: NewLoggedActivity, by: string, now: string): Activity {
+export function logActivity(input: NewLoggedActivity, by: string, now: string, today?: string): Activity {
   const id = String(input?.id ?? "").trim();
   if (id === "") throw new BookiError("activity.id-required");
   if (!LOGGED_KINDS.includes(input.kind)) {
@@ -108,7 +110,7 @@ export function logActivity(input: NewLoggedActivity, by: string, now: string): 
   }
   const at = String(input.at ?? "").trim();
   if (!realTime(at)) throw new BookiError("activity.at-format", { id, value: at });
-  const future = at.length === 10 ? at > now.slice(0, 10) : Date.parse(at) > Date.parse(now);
+  const future = at.length === 10 ? at > (today ?? now.slice(0, 10)) : Date.parse(at) > Date.parse(now);
   if (future) throw new BookiError("activity.in-future", { id, at });
   return tidy({
     id,

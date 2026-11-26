@@ -32,6 +32,19 @@ describe("activity rules", () => {
     expect(() => logActivity({ id: "A-3", kind: "call", subject: "x", at: "2026-11-25" }, "kari", NOW)).toThrow(
       /has not happened yet/,
     );
+    // A date with no time is the person's day: 25 Nov is already today east of UTC, and
+    // still tomorrow west of it when UTC has reached 25 Nov.
+    expect(logActivity({ id: "A-3", kind: "call", subject: "x", at: "2026-11-25" }, "kari", NOW, "2026-11-25").at).toBe(
+      "2026-11-25",
+    );
+    expect(() =>
+      logActivity(
+        { id: "A-3", kind: "call", subject: "x", at: "2026-11-25" },
+        "kari",
+        "2026-11-25T01:00:00Z",
+        "2026-11-24",
+      ),
+    ).toThrow(/has not happened yet/);
     expect(() => logActivity({ id: "A-3", kind: "call", subject: "x", at: "20.11.2026" }, "kari", NOW)).toThrow(
       /YYYY-MM-DD or as an ISO time/,
     );

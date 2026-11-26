@@ -186,7 +186,8 @@ export const activityTimeline = definePrimitive({
           const activities = context.store.get().activities;
           const id = nextId(activities, "A");
           const stamp = now();
-          const activity = logActivity({ ...fields, id, at: fields.at ?? stamp }, agent(), stamp);
+          // A date with no time is the person's day, not the UTC one.
+          const activity = logActivity({ ...fields, id, at: fields.at ?? stamp }, agent(), stamp, localToday());
           return commit([...activities, activity], "log-activity") ? { id } : false;
         }),
       /** Agent: a task for later, with a due date. Returns its id. */
