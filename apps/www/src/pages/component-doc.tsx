@@ -105,39 +105,11 @@ export function ComponentDocPage() {
     ...Object.keys(GAP_PREVIEWS),
   ].includes(name ?? "");
 
-  return (
-    <article>
-      <SiteAgentCursor />
-      <p className="site-kicker">{section ? (lang === "nb" ? section.nb : section.en) : groupName(item.group, lang)}</p>
-      <h1 className="site-page-title mt-1 mb-0">{plain ?? catalogText(item, lang).title}</h1>
-      {plain && plain !== catalogText(item, lang).title ? (
-        <p className="mt-2 mb-0">
-          <code className="site-code-name">{catalogText(item, lang).title}</code>
-        </p>
-      ) : null}
-      <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
-      <div
-        className={
-          stacked || name === "money"
-            ? "mt-8 grid gap-8"
-            : "mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] xl:items-start"
-        }
-      >
-        <Preview
-          sheetRef={sheet}
-          reserve={PREVIEW_RESERVE[name]}
-          above={
-            name !== "money" ? <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} /> : undefined
-          }
-        >
-          <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
-        </Preview>
-        {name !== "money" && <AgentView key={`${name}-${country}-${run}`} scope={sheet} />}
-      </div>
-      {item.install ? (
-        <InstallBlock label={t("Install", "Installer")} command={item.install} className="mt-10 mb-0 max-w-prose" />
-      ) : null}
-      <section className="control-example mt-8 max-w-prose" aria-labelledby="example-title">
+  // Install, a usage example and the import note: under the preview, beside the agent's column.
+  const docCode = (
+    <div className="grid min-w-0 gap-8">
+      {item.install ? <InstallBlock label={t("Install", "Installer")} command={item.install} className="my-0" /> : null}
+      <section className="control-example" aria-labelledby="example-title">
         <h2 id="example-title" className="text-lg font-medium">
           {bridgeExample ? t("Try the bridge", "Prøv agentbroen") : t("Usage example", "Brukseksempel")}
         </h2>
@@ -157,13 +129,47 @@ export function ComponentDocPage() {
         <p className="mt-2 text-sm text-muted-foreground">{example.result[lang]}</p>
       </section>
       {item.group === "React" && (
-        <p className="mt-4 mb-0 max-w-prose text-sm text-muted-foreground">
+        <p className="m-0 text-sm text-muted-foreground">
           {t("Import from ", "Importer fra ")}
           <code>@booki-aui/react</code>.{" "}
           {t("For Booki's default styling, add ", "For Bookis standardutseende, legg til ")}
           <code>import &quot;@booki-aui/styles&quot;</code>.
         </p>
       )}
+    </div>
+  );
+
+  return (
+    <article>
+      <SiteAgentCursor />
+      <p className="site-kicker">{section ? (lang === "nb" ? section.nb : section.en) : groupName(item.group, lang)}</p>
+      <h1 className="site-page-title mt-1 mb-0">{plain ?? catalogText(item, lang).title}</h1>
+      {plain && plain !== catalogText(item, lang).title ? (
+        <p className="mt-2 mb-0">
+          <code className="site-code-name">{catalogText(item, lang).title}</code>
+        </p>
+      ) : null}
+      <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
+      <div className={stacked || name === "money" ? "mt-8 grid gap-10" : "doc-layout mt-8"}>
+        <div className="doc-layout__preview min-w-0">
+          <Preview sheetRef={sheet} reserve={PREVIEW_RESERVE[name]}>
+            <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
+          </Preview>
+        </div>
+        {/* The agent's side, in its own column: run it, see its calls, see what it reads. It stays
+            in view beside the code; on a phone it comes right after the control. */}
+        {name !== "money" && (
+          <aside className="doc-agent grid min-w-0 content-start gap-6" aria-label={t("The agent", "Agenten")}>
+            <section className="grid min-w-0 content-start gap-2">
+              <p className="site-kicker">{t("The agent acts", "Agenten handler")}</p>
+              <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} />
+            </section>
+            <AgentView key={`${name}-${country}-${run}`} scope={sheet} />
+          </aside>
+        )}
+        {stacked || name === "money" ? null : <div className="doc-layout__code min-w-0">{docCode}</div>}
+      </div>
+      {stacked || name === "money" ? docCode : null}
     </article>
   );
 }

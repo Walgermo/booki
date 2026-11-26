@@ -299,7 +299,8 @@ function llmsTxt(pages) {
     "",
     "## For coding agents",
     "",
-    `- [Setup prompt](${site}/prompt.md): the prompt the homepage copies for your coding agent to integrate Booki across your app`,
+    `- [Setup prompt](${site}/prompt.md): the prompt the homepage copies, for your coding agent to try Booki on one screen and ask before it changes anything`,
+    `- [Whole-app prompt](${site}/prompt-full.md): for your coding agent to adapt every workflow in your app; takes hours`,
     `- [Booki skill](${site}/skills/booki/SKILL.md): how to install and wire Booki in an app`,
     "- [Control catalogue](https://raw.githubusercontent.com/Walgermo/booki/main/packages/react/docs/llms.txt): every control and its agent actions",
     "- [Agent Contract](https://raw.githubusercontent.com/Walgermo/booki/main/spec/agent-contract.md): the draft specification (one implementation so far)",
@@ -307,7 +308,9 @@ function llmsTxt(pages) {
   ].join("\n");
 }
 
-const { render, AGENT_PROMPT } = await import(pathToFileURL(join(here, "../dist-server/entry-server.js")).href);
+const { render, AGENT_PROMPT, AGENT_PROMPT_FULL } = await import(
+  pathToFileURL(join(here, "../dist-server/entry-server.js")).href
+);
 const template = readFileSync(join(dist, "index.html"), "utf8");
 const urls = [...readFileSync(join(here, "../public/sitemap.xml"), "utf8").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) =>
   m[1].replace(site, ""),
@@ -381,6 +384,7 @@ if (failures.length) {
   process.exit(1);
 }
 writeFileSync(join(dist, "prompt.md"), `${AGENT_PROMPT.trim()}\n`);
+writeFileSync(join(dist, "prompt-full.md"), `${AGENT_PROMPT_FULL.trim()}\n`);
 // The skill the setup prompt links to, from skills/booki: one copy, so the site never serves an old one.
 mkdirSync(join(dist, "skills", "booki"), { recursive: true });
 copyFileSync(join(here, "../../../skills/booki/SKILL.md"), join(dist, "skills", "booki", "SKILL.md"));

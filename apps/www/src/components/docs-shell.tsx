@@ -65,7 +65,7 @@ export function DocsShell() {
   return (
     <div className="min-h-svh bg-background text-foreground">
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
-        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
+        <header className="docs-header flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
           <Link to="/" className="site-mark" aria-label={t("Booki, home", "Booki, forsiden")}>
             <BookiLogo />
           </Link>
@@ -78,10 +78,7 @@ export function DocsShell() {
           </div>
         </header>
 
-        <div
-          className="grid gap-x-12 lg:grid-cols-[13rem_minmax(0,1fr)]"
-          style={{ borderTop: "var(--hairline) solid var(--bk-border-strong)" }}
-        >
+        <div className="grid gap-x-12 lg:grid-cols-[13rem_minmax(0,1fr)]">
           {/* Phones: the page list is long, so it waits behind a disclosure. */}
           <details className="landing-details border-b border-border lg:hidden">
             <summary>{t("Browse the docs", "Bla i dokumentasjonen")}</summary>
@@ -91,7 +88,7 @@ export function DocsShell() {
           </details>
           <nav
             aria-label={t("Docs", "Dokumentasjon")}
-            className="hidden lg:sticky lg:top-0 lg:block lg:max-h-svh lg:self-start lg:overflow-y-auto lg:py-10"
+            className="docs-sidebar hidden lg:block lg:self-start lg:overflow-y-auto lg:py-10"
           >
             <NavGroups />
           </nav>

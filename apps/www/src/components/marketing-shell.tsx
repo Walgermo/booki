@@ -29,10 +29,7 @@ export function MarketingShell() {
             <Link to={ANNOUNCEMENT_PATH} className="site-news">
               <span className="site-news__tag">{t("New", "Nyhet")}</span>
               <span className="site-news__text">
-                {t(
-                  `Booki v${__BOOKI_VERSION__} is out: UI for people and agents`,
-                  `Booki v${__BOOKI_VERSION__} lansert: UI for mennesker og agenter`,
-                )}
+                {t("Booki is live: Agentic UI 🎉", "Booki er lansert: Agentisk UI 🎉")}
               </span>
               <span className="site-news__more">
                 {t("Read more", "Les mer")}
@@ -55,6 +52,12 @@ export function MarketingShell() {
                 Stian Walgermo
               </a>
               .
+            </p>
+            <p className="m-0">
+              {t(
+                "Claude, ChatGPT, Gemini and Grok Bot are trademarks of their owners. Booki is not affiliated with them.",
+                "Claude, ChatGPT, Gemini og Grok Bot er varemerker som tilhører eierne sine. Booki er ikke tilknyttet dem.",
+              )}
             </p>
             <p className="m-0">
               {t(
