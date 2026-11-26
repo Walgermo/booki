@@ -247,6 +247,11 @@
   right: -6px;
 }
 
+[data-slot="agent-cursor-pointer"][data-above] [data-slot="agent-cursor-label"] {
+  top: auto;
+  bottom: 4px;
+}
+
 [data-slot="agent-cursor-action"] {
   font-weight: 400;
   opacity: 0.85;

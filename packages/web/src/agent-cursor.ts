@@ -2,6 +2,7 @@ import {
   AGENT_CURSOR_PATH,
   AGENT_CURSOR_VIEW_BOX,
   createAgentCursor,
+  cursorLabelAbove,
   cursorLabelRoom,
   type AgentCursorController,
   type AgentCursorState,
@@ -93,13 +94,21 @@ export class BookiAgentCursorElement extends ElementBase {
     this.#stop?.();
     this.#stop = null;
     this.#cursor = next;
+    this.#seen = false;
     if (next && this.isConnected) this.#stop = next.subscribe((state) => this.#render(state));
+    if (!next) {
+      this.#root.dataset.phase = "idle";
+      this.#pointer.hidden = this.#ring.hidden = true;
+      this.#action.textContent = "";
+    }
   }
 
   #render(state: AgentCursorState) {
     const first = state.phase !== "idle" && !this.#seen;
     this.#seen = state.phase !== "idle";
     this.#root.dataset.phase = state.phase;
+    if (state.travelMs === undefined) this.#root.style.removeProperty("--agent-cursor-travel");
+    else this.#root.style.setProperty("--agent-cursor-travel", `${state.travelMs}ms`);
     if (state.follow) this.#root.dataset.follow = "";
     else delete this.#root.dataset.follow;
     if (first) this.#root.dataset.first = "";
@@ -117,6 +126,7 @@ export class BookiAgentCursorElement extends ElementBase {
       // Near the right edge the label goes left of the pointer, and it never runs out of the window.
       const fit = cursorLabelRoom(point.x, window.innerWidth);
       this.#pointer.toggleAttribute("data-flip", fit.flip);
+      this.#pointer.toggleAttribute("data-above", cursorLabelAbove(point.y, window.innerHeight));
       this.#pointer.style.setProperty("--agent-cursor-room", `${fit.room}px`);
     }
     const said = this.narrate ? this.narrate(state) : state.action;

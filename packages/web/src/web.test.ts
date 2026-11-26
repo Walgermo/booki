@@ -98,6 +98,24 @@ describe("@booki-aui/web", () => {
     expect(document.querySelector('[data-slot="agent-cursor-label"]')?.textContent).toMatch(/Agent · set minor 12500/);
   });
 
+  it("places the label above a low target and clears the overlay when its controller is removed", () => {
+    document.body.innerHTML = '<button>Target</button><booki-agent-cursor></booki-agent-cursor>';
+    const target = document.querySelector("button")!;
+    target.getBoundingClientRect = () => new DOMRect(window.innerWidth - 50, window.innerHeight - 20, 44, 20);
+    const el = document.querySelector("booki-agent-cursor") as BookiAgentCursorElement;
+    const cursor = createAgentCursor({ travel: 125 });
+    cursor.rest(target);
+    el.cursor = cursor;
+    const pointer = el.querySelector<HTMLElement>('[data-slot="agent-cursor-pointer"]')!;
+    expect(pointer.hasAttribute("data-above")).toBe(true);
+    expect(pointer.hasAttribute("data-flip")).toBe(true);
+    expect(el.querySelector<HTMLElement>('[data-slot="agent-cursor"]')!.style.getPropertyValue("--agent-cursor-travel")).toBe("125ms");
+    el.cursor = null;
+    expect(pointer.hidden).toBe(true);
+    expect(el.querySelector('[data-slot="agent-cursor"]')?.getAttribute("data-phase")).toBe("idle");
+    cursor.setEnabled(false);
+  });
+
   it("imports no React anywhere", () => {
     const src = path.dirname(new URL(import.meta.url).pathname);
     for (const file of readdirSync(src).filter((f) => f.endsWith(".ts"))) {

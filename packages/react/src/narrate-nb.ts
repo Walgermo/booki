@@ -65,7 +65,8 @@ const VERBS_NB: [RegExp, string][] = [
 export function narrateNorwegian(state: AgentCursorState): string {
   const step = state.step;
   if (!step) return state.action;
-  const verb = VERBS_NB.find(([pattern]) => pattern.test(step.action))?.[1] ?? state.action;
+  const verb = VERBS_NB.find(([pattern]) => pattern.test(step.action))?.[1];
+  if (!verb) return state.action;
   const first = step.args[0];
   if (step.action === "setMinor" && typeof first === "number" && Number.isSafeInteger(first) && step.currency) {
     return `${verb} ${formatMoney(first, { currency: step.currency, locale: "nb-NO", withCurrency: false })}`;

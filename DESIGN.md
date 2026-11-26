@@ -124,6 +124,8 @@ Few objects, a lot of air, sharp edges.
   use signal, waiting uses warning, refused uses danger, and idle is muted.
   Put `data-bk-surface="ink"` on an ink panel so the status uses its ink colors.
   `.site-signal` labels the agent in the static layers illustration.
+  See the [cursor interaction map](docs/agent-cursor-interactions.md) for transitions,
+  motion, interruption and keyboard behavior.
 - No stat tiles, decorative badges, icon grids, gradients or glows.
 
 ## Type

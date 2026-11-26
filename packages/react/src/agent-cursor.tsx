@@ -1,6 +1,11 @@
 import { AgentCursorGlyph } from "./agent-cursor-glyph.js";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { cursorLabelRoom, type AgentCursorController, type AgentCursorState } from "@booki-aui/primitives/agent-cursor";
+import {
+  cursorLabelAbove,
+  cursorLabelRoom,
+  type AgentCursorController,
+  type AgentCursorState,
+} from "@booki-aui/primitives/agent-cursor";
 import { useBookiLocaleOptional } from "./locale.js";
 import { narrateNorwegian } from "./narrate-nb.js";
 
@@ -56,6 +61,9 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
     <div
       data-slot="agent-cursor"
       data-phase={state.phase}
+      style={
+        state.travelMs === undefined ? undefined : ({ "--agent-cursor-travel": `${state.travelMs}ms` } as CSSProperties)
+      }
       data-first={first ? "" : undefined}
       data-follow={state.follow ? "" : undefined}
       aria-hidden="true"
@@ -74,6 +82,7 @@ export function AgentCursor({ cursor, label = "Agent", narrate = true }: AgentCu
         <span
           data-slot="agent-cursor-pointer"
           data-flip={fit?.flip ? "" : undefined}
+          data-above={fit && cursorLabelAbove(point.y, window.innerHeight) ? "" : undefined}
           style={
             {
               transform: `translate(${point.x}px, ${point.y}px)`,

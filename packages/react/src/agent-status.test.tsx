@@ -73,6 +73,25 @@ describe("AgentStatus", () => {
     expect(JSON.stringify(await agent.snapshot())).toBe(before);
   });
 
+  it("covers every state pair and changes the label immediately, including during an unfinished fade", () => {
+    vi.useFakeTimers();
+    for (const [from] of STATES) {
+      for (const [to, words] of STATES) {
+        const { rerender, unmount } = render(en(<AgentStatus state={from} />));
+        const initialGlyph = icons()[0];
+        rerender(en(<AgentStatus state={to} />));
+        expect(screen.getByRole("status").textContent).toBe(words);
+        expect(icons().map((icon) => icon.dataset.state)).toEqual(from === to ? [to] : [from, to]);
+        if (from === to) expect(icons()[0]).toBe(initialGlyph);
+        rerender(en(<AgentStatus state="idle" label="Ready again" />));
+        act(() => vi.advanceTimersByTime(200));
+        expect(icons().map((icon) => icon.dataset.state)).toEqual(["idle"]);
+        expect(screen.getByRole("status").textContent).toBe("Ready again");
+        unmount();
+      }
+    }
+  });
+
   it("plays no transition and no draw on first render, even when it starts done", () => {
     render(<AgentStatus state="done" />);
     expect(root().hasAttribute("data-changed")).toBe(false);
