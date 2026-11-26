@@ -376,56 +376,7 @@
   text-wrap: balance;
 }
 
-/* What Booki is, in three parts: what you add, what the agent does, what people keep.
-   Plain text between hairlines, not tiles. */
-.landing-hero__points {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 54rem;
-  margin: 1.75rem 0 0;
-  text-align: left;
-}
-
-.landing-hero__points > div {
-  padding: 0 1.25rem;
-  border-left: var(--hairline) solid var(--bk-border-strong);
-}
-
-.landing-hero__points > div:first-child {
-  border-left: 0;
-}
-
-.landing-hero__points dt {
-  margin: 0 0 0.375rem;
-  font-family: var(--bk-mono);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: var(--tracking-caption);
-  text-transform: uppercase;
-  color: var(--bk-fg);
-}
-
-.landing-hero__points dd {
-  margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.45;
-  color: var(--bk-muted-fg);
-}
-
-@media (max-width: 720px) {
-  .landing-hero__points {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-    max-width: 26rem;
-  }
-
-  .landing-hero__points > div {
-    padding: 0;
-    border-left: 0;
-  }
-}
-
-/* "What does the prompt do?": both prompts in full, behind a disclosure. */
+/* "See the prompt": both prompts in full, behind a disclosure. */
 .landing-hero__prompt {
   width: 100%;
   max-width: 44rem;
@@ -434,11 +385,11 @@
 
 .landing-hero__prompt summary {
   cursor: pointer;
-  min-height: 2.75rem;
+  min-height: 2.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--text-ui);
+  font-size: 0.8125rem;
   color: var(--bk-muted-fg);
   text-decoration: underline;
   text-underline-offset: 0.2em;

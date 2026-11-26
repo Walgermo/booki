@@ -29,49 +29,20 @@ export function Hero({ agent }: { agent: LandingAgent }) {
         />
         <p className="landing-hero__hook">
           {t(
-            "Booki is a set of UI components for your app (fields, tables and buttons) that people and AI agents both use. The agent fills them in by name, under your rules; approvals and other decisions stay with a person.",
-            "Booki er et sett med UI-komponenter til appen deres (felt, tabeller og knapper) som både mennesker og AI-agenter bruker. Agenten fyller dem ut ved navn, etter reglene deres; godkjenninger og andre beslutninger blir hos en person.",
+            "UI components that people and AI agents both use. The agent acts by name; decisions stay with a person.",
+            "UI-komponenter som både mennesker og AI-agenter bruker. Agenten handler ved navn; beslutninger blir hos en person.",
           )}
         </p>
-        <dl className="landing-hero__points">
-          <div>
-            <dt>{t("You add", "Dere legger til")}</dt>
-            <dd>
-              {t(
-                "Components for your app's forms, tables and buttons, in your framework.",
-                "Komponenter til skjemaene, tabellene og knappene i appen, i rammeverket dere bruker.",
-              )}
-            </dd>
-          </div>
-          <div>
-            <dt>{t("The agent", "Agenten")}</dt>
-            <dd>
-              {t(
-                "Reads the screen as data and acts by name, with a visible cursor and an audit trail.",
-                "Leser skjermen som data og handler ved navn, med synlig markør og revisjonsspor.",
-              )}
-            </dd>
-          </div>
-          <div>
-            <dt>{t("People keep", "Mennesker beholder")}</dt>
-            <dd>
-              {t(
-                "Approvals, sign-offs and every step you mark as theirs.",
-                "Godkjenninger, signering og hvert steg dere merker som deres.",
-              )}
-            </dd>
-          </div>
-        </dl>
         <div className="mt-6 grid justify-items-center gap-2">
           <PromptButton prompt={AGENT_PROMPT} />
-          <p className="m-0 max-w-[46ch] text-sm text-muted-foreground">
+          <p className="m-0 text-sm text-muted-foreground">
             {t(
-              "Paste it into your coding agent. It explains Booki, suggests one screen, and asks before it changes anything. About 30 minutes.",
-              "Lim den inn i kodeagenten deres. Den forklarer Booki, foreslår ett skjermbilde og spør før den endrer noe. Rundt 30 minutter.",
+              "Your agent explains Booki and asks before changing anything. About 30 min.",
+              "Agenten forklarer Booki og spør før den endrer noe. Rundt 30 min.",
             )}
           </p>
           <details className="landing-hero__prompt">
-            <summary>{t("What does the prompt do?", "Hva gjør prompten?")}</summary>
+            <summary>{t("See the prompt", "Se prompten")}</summary>
             <InstallBlock
               label={t("One screen (the button above)", "Ett skjermbilde (knappen over)")}
               command={AGENT_PROMPT}
