@@ -60,13 +60,13 @@ approving each version on npm. pnpm's `trustPolicy: no-downgrade` can refuse tha
 `trustPolicyExclude` entry for exactly those versions, on your branch only. Never add one yourself.
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/react@0.1.0-beta.18
 ```
 
 With npm, the same packages after `npm install`. Booki is before 1.0: read the release
 notes (the GitHub Releases, or each package's CHANGELOG) before moving to a new minor.
 
-The command adds the two `@ui-sdk` packages at exactly `0.1.0-beta.17` as direct dependencies of
+The command adds the two `@ui-sdk` packages at exactly `0.1.0-beta.18` as direct dependencies of
 the app. The bridge and controls come from them, and the guide imports `Button` from
 `@ui-sdk/react/button`, which `@booki-aui/react` does not re-export. Keep all five in one command:
 adding only `@ui-sdk/react` has made pnpm drop `@ui-sdk/core` from the lockfile.

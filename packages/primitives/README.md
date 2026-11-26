@@ -15,6 +15,6 @@ const { Root, Input } = createParts(amountField, { root: "div", input: "input" }
 - A decision that needs a person (approve, sign off, release) is marked with `personOnly`, and the agent bridge refuses it whatever the app's `allow` says.
 - Bank accounts, IBANs and payment references read as `[redacted]` to an agent.
 
-Peer dependency: `@ui-sdk/core` 0.1.0-beta.17. Rules and money live in `@booki-aui/core`.
+Peer dependency: `@ui-sdk/core` 0.1.0-beta.18. Rules and money live in `@booki-aui/core`.
 
 Docs and source: https://github.com/Walgermo/booki

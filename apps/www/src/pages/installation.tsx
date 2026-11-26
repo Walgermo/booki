@@ -29,8 +29,8 @@ const NEEDS = [
 
 const PACKAGES = [
   "@booki-aui/core @booki-aui/react",
-  "@booki-aui/styles @ui-sdk/core@0.1.0-beta.17",
-  "@ui-sdk/react@0.1.0-beta.17",
+  "@booki-aui/styles @ui-sdk/core@0.1.0-beta.18",
+  "@ui-sdk/react@0.1.0-beta.18",
 ].join(" ");
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"

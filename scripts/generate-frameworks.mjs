@@ -22,7 +22,9 @@ function writeIfChanged(file, content) {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const reactSrc = path.join(root, "packages/react/src");
-const VERSION = "0.1.0-beta.17";
+const VERSION = JSON.parse(readFileSync(path.join(root, "packages/primitives/package.json"), "utf8")).peerDependencies[
+  "@ui-sdk/core"
+];
 
 const FRAMEWORKS = [
   {

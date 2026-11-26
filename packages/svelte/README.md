@@ -9,11 +9,11 @@ actions as `@booki-aui/react`, generated from the same framework-free definition
 in `@booki-aui/primitives`.
 
 ```bash
-pnpm add @booki-aui/svelte @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/svelte@0.1.0-beta.17
+pnpm add @booki-aui/svelte @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/svelte@0.1.0-beta.18
 ```
 
 Each control is a namespace of parts, like `AmountField.Root` and
 `AmountField.Input`. Create the agent bridge once with `createBookiAgent`.
-Peer dependencies: `@ui-sdk/core` and `@ui-sdk/svelte` 0.1.0-beta.17.
+Peer dependencies: `@ui-sdk/core` and `@ui-sdk/svelte` 0.1.0-beta.18.
 
 Load it through Vite with the Svelte plugin (SvelteKit has it), as with any Svelte component library.

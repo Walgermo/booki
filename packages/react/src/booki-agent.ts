@@ -104,20 +104,34 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   const language = options.language && options.language !== "en" ? options.language : undefined;
 
   /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
-  const run = (input: ActInput, actOptions: ActOptions | undefined, id: number) =>
-    inTurn(bridge, async () => {
-      // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
-      const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
-      if (lone) currentStep.set(bridge, lone.action);
-      runningCall = id;
-      emitCall(agent, { type: "start", id, steps: stepsOf(input) });
-      try {
-        return await bridge.act(input as never, actOptions);
-      } finally {
-        runningCall = undefined;
-        if (lone) currentStep.delete(bridge);
-      }
+  const run = (input: ActInput, actOptions: ActOptions | undefined, id: number) => {
+    const signal = actOptions?.signal;
+    const start = () => emitCall(agent, { type: "start", id, steps: stepsOf(input) });
+    const execute = () => bridge.act(input as never, actOptions);
+    return new Promise<Awaited<ReturnType<typeof execute>>>((resolve, reject) => {
+      // Hand an already-aborted call to ui-sdk immediately for its normal cancellation result.
+      const cancel = () => {
+        start();
+        resolve(execute());
+      };
+      if (signal?.aborted) return cancel();
+      signal?.addEventListener("abort", cancel, { once: true });
+      inTurn(bridge, async () => {
+        signal?.removeEventListener("abort", cancel);
+        if (signal?.aborted) return;
+        const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
+        if (lone) currentStep.set(bridge, lone.action);
+        runningCall = id;
+        start();
+        try {
+          resolve(await execute());
+        } finally {
+          runningCall = undefined;
+          if (lone) currentStep.delete(bridge);
+        }
+      }).catch(reject);
     });
+  };
 
   /** Each call is reported to `AgentLog`: when it starts, when a step waits for a person, and its result. */
   const act = async (input: ActInput, actOptions?: ActOptions) => {
@@ -141,7 +155,7 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
     // the page even if an earlier step in it made the button appear.
     const failed = result.ok ? undefined : result.error;
     const step = failed && Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
-    const person = step ? personOnlyPress(bridge, step) : null;
+    const person = step && !actOptions?.signal?.aborted ? personOnlyPress(bridge, step) : null;
     const refusal = failed && step && person ? personOnlyRow(person) : undefined;
     if (failed && person && refusal) {
       if (options.audit) {

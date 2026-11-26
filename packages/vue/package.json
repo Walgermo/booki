@@ -44,13 +44,13 @@
     "@booki-aui/primitives": "workspace:*"
   },
   "peerDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.17",
-    "@ui-sdk/vue": "0.1.0-beta.17",
+    "@ui-sdk/core": "0.1.0-beta.18",
+    "@ui-sdk/vue": "0.1.0-beta.18",
     "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@ui-sdk/core": "0.1.0-beta.17",
-    "@ui-sdk/vue": "0.1.0-beta.17",
+    "@ui-sdk/core": "0.1.0-beta.18",
+    "@ui-sdk/vue": "0.1.0-beta.18",
     "vue": "^3.5.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.3"

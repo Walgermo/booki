@@ -49,7 +49,7 @@ npx skills add Walgermo/booki --skill booki
 **By hand**, in a React 19 app:
 
 ```bash
-pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/react@0.1.0-beta.17
+pnpm add @booki-aui/core @booki-aui/react @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/react@0.1.0-beta.18
 ```
 
 Then follow the [installation guide](https://booki.dev/docs/installation), or

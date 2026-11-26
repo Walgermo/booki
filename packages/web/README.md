@@ -9,7 +9,7 @@ agent actions as `@booki-aui/react`, for any framework or none. Use it in Angula
 in pages rendered on the server, or in plain HTML.
 
 ```bash
-pnpm add @booki-aui/web @booki-aui/styles @ui-sdk/core@0.1.0-beta.17 @ui-sdk/web@0.1.0-beta.17
+pnpm add @booki-aui/web @booki-aui/styles @ui-sdk/core@0.1.0-beta.18 @ui-sdk/web@0.1.0-beta.18
 ```
 
 ```html
@@ -81,4 +81,4 @@ Every control is `booki-<control>` with one tag per part, such as
 `<input>`, `<select>` or `<button>` you write inside them. `entries.json` lists
 the controls; each has its own entry, so a page loads only what it uses.
 
-Peer dependencies: `@ui-sdk/core` and `@ui-sdk/web` 0.1.0-beta.17.
+Peer dependencies: `@ui-sdk/core` and `@ui-sdk/web` 0.1.0-beta.18.

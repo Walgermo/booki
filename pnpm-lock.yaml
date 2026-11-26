@@ -57,11 +57,11 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/react':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -124,8 +124,8 @@ importers:
         specifier: 0.0.84
         version: 0.0.84
       '@ui-sdk/react':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       playwright-core:
         specifier: ^1.56.0
         version: 1.65.1
@@ -155,11 +155,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/styles
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/react':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       next:
         specifier: 16.4.6
         version: 16.4.6(@babel/core@7.29.13)(@opentelemetry/api@1.10.0)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -219,11 +219,11 @@ importers:
         specifier: workspace:*
         version: link:../../packages/styles
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/react':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       ai:
         specifier: ^7.0.181
         version: 7.0.181(zod@4.6.7)
@@ -296,8 +296,8 @@ importers:
         version: link:../core
     devDependencies:
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@vitest/coverage-v8':
         specifier: 3.2.7
         version: 3.2.7(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(jsdom@31.0.1)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -333,11 +333,11 @@ importers:
         specifier: ^19.2.3
         version: 19.3.0(@types/react@19.3.0)
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/react':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@vitest/coverage-v8':
         specifier: 3.2.7
         version: 3.2.7(vitest@3.2.7(@types/node@22.20.5)(jiti@2.7.0)(jsdom@31.0.1)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -395,11 +395,11 @@ importers:
         specifier: ^2.0.0
         version: 2.0.3(solid-js@2.0.3)
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/solid':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@solidjs/web@2.0.3(solid-js@2.0.3))(@ui-sdk/core@0.1.0-beta.17)(solid-js@2.0.3)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@solidjs/web@2.0.3(solid-js@2.0.3))(@ui-sdk/core@0.1.0-beta.18)(solid-js@2.0.3)
       solid-js:
         specifier: ^2.0.0
         version: 2.0.3
@@ -426,11 +426,11 @@ importers:
         version: link:../primitives
     devDependencies:
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/svelte':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)(svelte@5.58.1)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)(svelte@5.58.1)
       svelte:
         specifier: ^5.33.0
         version: 5.58.1
@@ -451,11 +451,11 @@ importers:
         version: link:../primitives
     devDependencies:
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/vue':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)(vue@3.5.46(typescript@5.9.3))
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)(vue@3.5.46(typescript@5.9.3))
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.33)(tsx@4.23.15)(typescript@5.9.3)(yaml@2.9.1)
@@ -476,11 +476,11 @@ importers:
         version: link:../primitives
     devDependencies:
       '@ui-sdk/core':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18
       '@ui-sdk/web':
-        specifier: 0.1.0-beta.17
-        version: 0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)
+        specifier: 0.1.0-beta.18
+        version: 0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)
       jsdom:
         specifier: ^31.0.1
         version: 31.0.1
@@ -1864,39 +1864,39 @@ packages:
   '@types/react@19.3.0':
     resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
 
-  '@ui-sdk/core@0.1.0-beta.17':
-    resolution: {integrity: sha512-wBWNqT0Qf1sE6fqD1XuBnSGBFcY6+cek1z7rKl/r4j2bsv2or9i7z44PLy0J9hmflm3IJ5MLW0P4ur2H9BCIvg==}
+  '@ui-sdk/core@0.1.0-beta.18':
+    resolution: {integrity: sha512-y5S6komEjZ2dtD/rrW0ulkP67zNZpfbTBmtynuw4oLvhazXoEQI7Yk1/jMuOVOJvj0RUk8tLY/iyckbzaI+CrA==}
 
-  '@ui-sdk/react@0.1.0-beta.17':
-    resolution: {integrity: sha512-oAJu+/e8woA5gboO28nm3aiO2qZbjccGc8hukCijSz3biX71AYBw8mo14HkMAZUuPlbSnzVAuNYQMaW0z8vsrw==}
+  '@ui-sdk/react@0.1.0-beta.18':
+    resolution: {integrity: sha512-iTL1slJ0PFJXPGLrNMQCuQq4cQjUlzsOAlLRsuz/aMCFtDJhvhH7E6euBwdak8mHYxGwSwVHprTfnFhkyQi44Q==}
     peerDependencies:
       '@types/react': '>=19.2.10'
-      '@ui-sdk/core': ^0.1.0-beta.17
+      '@ui-sdk/core': ^0.1.0-beta.18
       react: '>=19'
       react-dom: '>=19'
     peerDependenciesMeta:
       '@types/react':
         optional: true
 
-  '@ui-sdk/solid@0.1.0-beta.17':
-    resolution: {integrity: sha512-jdvIex6YOCbCCmMLXp5TzeiBUtyGZOHCE/PdF+DdL3KTJrNJTym+2jIvlJkmpvdkrY4CB6o1zz2DuGJDsdonaA==}
+  '@ui-sdk/solid@0.1.0-beta.18':
+    resolution: {integrity: sha512-n9N0zVjoZf2y/wC/a9BgwJb88L3ScLX39VLyiPbzEtQYD4P1NX6V5Yeq5Rh0W7755HLpZ1VyLUnvV7kmU4DwSA==}
     peerDependencies:
       '@solidjs/web': ^2.0.0
-      '@ui-sdk/core': ^0.1.0-beta.17
+      '@ui-sdk/core': ^0.1.0-beta.18
       solid-js: ^2.0.0
 
-  '@ui-sdk/svelte@0.1.0-beta.17':
-    resolution: {integrity: sha512-iqtDoSGFt3jUa/38Y2cNVm6Tbi3gtpl1FPs4+QXK5e6dkDzI8UvY68xtEADD/D8xsrZReizD9yQOsWbVZ/VLNw==}
+  '@ui-sdk/svelte@0.1.0-beta.18':
+    resolution: {integrity: sha512-sD0wRq/krocdbWr+lM1Eu25IfhNNGrHoEVuVL+IeW49SgsIx0GAkiTOCgKhcz+LKTBp2tpxkpRTyJzbgXDOR+Q==}
     peerDependencies:
-      '@ui-sdk/core': ^0.1.0-beta.17
+      '@ui-sdk/core': ^0.1.0-beta.18
       svelte: '>=5.33'
 
-  '@ui-sdk/vue@0.1.0-beta.17':
-    resolution: {integrity: sha512-4wx8xdVwXLp++/XEnf0MEMeshHb0UDdotTatfIObbQ2D+QQUG3OMLD0thjQWayMFY5phdYBM9t+YlIJdzYAq5Q==}
+  '@ui-sdk/vue@0.1.0-beta.18':
+    resolution: {integrity: sha512-3SBe3tbrr59fCmogQorw1D4zYWt1ecQeRn+FxxkONR3jfV64j6qhSaKbgi9JphAdP0sF3LMae4TuzK9sB+bkBA==}
     peerDependencies:
       '@nuxt/kit': ^4.0.0 || ^5.0.0-0
       '@nuxt/schema': ^4.0.0 || ^5.0.0-0
-      '@ui-sdk/core': ^0.1.0-beta.17
+      '@ui-sdk/core': ^0.1.0-beta.18
       nuxt: ^4.0.0 || ^5.0.0-0
       vue: '>=3.5'
     peerDependenciesMeta:
@@ -1907,10 +1907,10 @@ packages:
       nuxt:
         optional: true
 
-  '@ui-sdk/web@0.1.0-beta.17':
-    resolution: {integrity: sha512-O9mcpOGp5Jf3QdYB8ffRF1c2fXikknwi7+5SzdgyBSL5M9xzrnpEVLctcihbKu8HcHUaZgKmMepP3Gfur/TIrg==}
+  '@ui-sdk/web@0.1.0-beta.18':
+    resolution: {integrity: sha512-0od0yekFVVdE+3aMmHotcOHPt+iEOsJ+8KscQlDicmBC1vZTi9NBy6a2ZqJ/e0DXkZcGl1KUn/b68+/Mi3t6FQ==}
     peerDependencies:
-      '@ui-sdk/core': ^0.1.0-beta.17
+      '@ui-sdk/core': ^0.1.0-beta.18
 
   '@vercel/oidc@3.2.0':
     resolution: {integrity: sha512-UycprH3T6n3jH0k44NHMa7pnFHGu/N05MjojYr+Mc6I7obkoLIJujSWwin1pCvdy/eOxrI/l3uDLQsmcrOb4ug==}
@@ -4565,35 +4565,35 @@ snapshots:
     dependencies:
       csstype: 3.2.4
 
-  '@ui-sdk/core@0.1.0-beta.17': {}
+  '@ui-sdk/core@0.1.0-beta.18': {}
 
-  '@ui-sdk/react@0.1.0-beta.17(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.17)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@ui-sdk/react@0.1.0-beta.18(@types/react@19.3.0)(@ui-sdk/core@0.1.0-beta.18)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@ui-sdk/core': 0.1.0-beta.17
+      '@ui-sdk/core': 0.1.0-beta.18
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
     optionalDependencies:
       '@types/react': 19.3.0
 
-  '@ui-sdk/solid@0.1.0-beta.17(@solidjs/web@2.0.3(solid-js@2.0.3))(@ui-sdk/core@0.1.0-beta.17)(solid-js@2.0.3)':
+  '@ui-sdk/solid@0.1.0-beta.18(@solidjs/web@2.0.3(solid-js@2.0.3))(@ui-sdk/core@0.1.0-beta.18)(solid-js@2.0.3)':
     dependencies:
       '@solidjs/web': 2.0.3(solid-js@2.0.3)
-      '@ui-sdk/core': 0.1.0-beta.17
+      '@ui-sdk/core': 0.1.0-beta.18
       solid-js: 2.0.3
 
-  '@ui-sdk/svelte@0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)(svelte@5.58.1)':
+  '@ui-sdk/svelte@0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)(svelte@5.58.1)':
     dependencies:
-      '@ui-sdk/core': 0.1.0-beta.17
+      '@ui-sdk/core': 0.1.0-beta.18
       svelte: 5.58.1
 
-  '@ui-sdk/vue@0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)(vue@3.5.46(typescript@5.9.3))':
+  '@ui-sdk/vue@0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)(vue@3.5.46(typescript@5.9.3))':
     dependencies:
-      '@ui-sdk/core': 0.1.0-beta.17
+      '@ui-sdk/core': 0.1.0-beta.18
       vue: 3.5.46(typescript@5.9.3)
 
-  '@ui-sdk/web@0.1.0-beta.17(@ui-sdk/core@0.1.0-beta.17)':
+  '@ui-sdk/web@0.1.0-beta.18(@ui-sdk/core@0.1.0-beta.18)':
     dependencies:
-      '@ui-sdk/core': 0.1.0-beta.17
+      '@ui-sdk/core': 0.1.0-beta.18
 
   '@vercel/oidc@3.2.0': {}
 

@@ -370,7 +370,7 @@ describe("status words and closing stops (pilot 7)", () => {
 });
 
 describe("ui-sdk's own step sentences in Norwegian", () => {
-  // The exact text ui-sdk 0.1.0-beta.17 writes in page/agent/agent.js.
+  // The exact text ui-sdk 0.1.0-beta.18 writes in page/agent/agent.js.
   const cases: Array<[string, string]> = [
     ["field-account c4 has nothing to press now.", "field-account c4 har ingenting å trykke på nå."],
     [

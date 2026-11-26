@@ -3,7 +3,7 @@ import { Button } from "@ui-sdk/react/button";
 import { definePrimitive } from "@ui-sdk/core";
 import { createParts } from "@ui-sdk/react/primitive";
 import { VoucherComposer } from "./voucher-composer.js";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { actAndRecord, type AgentDecisionRow } from "@booki-aui/primitives/agent-policy";
 import { AmountField } from "./amount-field.js";
@@ -73,6 +73,25 @@ describe("a press on a button that is a person's decision", () => {
         detail: "client-requests.press: Sending to the client needs a person",
       },
     ]);
+  });
+
+  it("keeps a cancelled press out of the audit of person-only refusals", async () => {
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({ audit: (row) => rows.push(row) });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <ClientRequests actor="kari" />
+      </BookiLocaleProvider>,
+    );
+    await agent.act({ steps: [{ ref: "Client requests", action: "draftRequest", args: [draft] }] });
+    const controller = new AbortController();
+    controller.abort();
+    const result = await agent.act(
+      { steps: [{ ref: "Client requests", action: "press", args: ["Send"] }] },
+      { signal: controller.signal },
+    );
+    expect(result.error?.message).toMatch(/cancel/i);
+    expect(rows).toEqual([]);
   });
 
   it("is said in the agent's language, and recorded once through actAndRecord", async () => {
@@ -217,6 +236,40 @@ describe("attachAudit on a list of records", () => {
     expect(row.detail).toMatch(/^moveDeal: D-2: stageId="?quote"? \(was "?lead"?\), stageChangedAt=/);
     expect(row.detail).not.toMatch(/D-1/);
   });
+});
+
+it("cancels a queued call while the person is still deciding the previous one", async () => {
+  let answer: ((yes: boolean) => void) | undefined;
+  const presses: string[] = [];
+  const agent = createBookiAgent({
+    allow: () =>
+      new Promise<boolean>((resolve) => {
+        answer = resolve;
+      }),
+  });
+  render(
+    <Button data-agent-confirm="Ask first" onClick={() => presses.push("posted")}>
+      Post voucher
+    </Button>,
+  );
+  const input = { steps: [{ ref: "Post voucher", action: "press" }] };
+  const pending = agent.act(input);
+  await waitFor(() => expect(answer).toBeTypeOf("function"));
+  const controller = new AbortController();
+  let cancelled: Result | undefined;
+  const queued = agent.act(input, { signal: controller.signal }).then((result) => {
+    cancelled = result as Result;
+  });
+  controller.abort();
+  try {
+    await waitFor(() => expect(cancelled?.error?.message).toMatch(/cancel/i));
+    expect(presses).toEqual([]);
+  } finally {
+    answer!(true);
+    await pending;
+    await queued;
+  }
+  expect(presses).toEqual(["posted"]);
 });
 
 describe("expect, the bridge's check", () => {
