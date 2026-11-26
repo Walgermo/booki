@@ -1,5 +1,31 @@
 # @booki/primitives
 
+## 0.4.2
+
+### Patch Changes
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - `logActivity` takes an optional `today` (YYYY-MM-DD): an entry dated with no time is checked against the person's own date rather than the UTC one. ActivityTimeline passes the local date.
+
+- [#158](https://github.com/Walgermo/booki/pull/158) [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3) Thanks [@Walgermo](https://github.com/Walgermo)! - `timeline` and `lastTouch` take an optional `{ dayStart: "local" }`: an entry dated with no time then starts at the beginning of that day in the runtime's time zone instead of UTC midnight. The default stays UTC. ActivityTimeline passes it, so east of UTC a date-only contact no longer outranks a timed one made earlier that same local day.
+
+- [#158](https://github.com/Walgermo/booki/pull/158) [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3) Thanks [@Walgermo](https://github.com/Walgermo)! - AmountField: deleting the text of a controlled amount whose owner keeps its value reports the clear once (`onValueChange(null)` and `onEmpty`), not again on blur. Deleting it again later is reported again.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - AmountField: emptying an amount (`clear`, `setMinor(null)`, deleting the text) is now reported on `minor` as well as `empty`, so history can undo it and put the amount back. A controlled field whose owner does not pass the new `value` back keeps both its amount and its emptiness, instead of reading empty (or filled) while it still holds the old value.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - Audit rows for agent refusals are written once, by whichever side has an `audit`. A press on a person's decision through `registerTools(agent, { allow: "bridge", audit })`, on an agent without its own `audit`, now writes its `agent.person-only` row with the registration's actor; a step `allow` refused on such an agent is written by `actAndRecord` instead of being skipped. A refusal for a control the agent named by its label in another case or without its accents is no longer written twice.
+
+- [#152](https://github.com/Walgermo/booki/pull/152) [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d) Thanks [@Walgermo](https://github.com/Walgermo)! - InvoiceEditor price cells and AuditWorkpaper misstatement cells show an amount at its currency's own decimals (none for CLP or JPY, three for BHD), so editing the figure shown stores the same amount. A supplier invoice's currency correction refuses a three-letter code with no ISO minor unit, such as "UDS", instead of saving one that cannot be formatted.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - The Norwegian agent cursor says an amount in the field's own currency: `setMinor(125000)` on a yen field reads "setter beløp 125 000", not "1 250,00". AmountField's root carries `data-currency`, which the cursor reads; where no currency is known it shows the minor units as given rather than guessing kroner.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - PaymentBatch: a reference that is a KID (digits with a valid mod-10 or mod-11 check digit) reads "[redacted]" to an agent even when the batch is shown under a profile whose references are memos, like the US one. Turning on `secretReference` after the batch is on the page now hides `payments` as well as the list's rows.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - An agent's press on Release or Approve in PaymentBatch, Sign off in CloseChecklist, Approve, Reject or Escalate in ApprovalChain, or Finalize in InvoiceEditor is now refused by name ("This is a person's decision …") with an `agent.person-only` audit row, instead of "nothing to press". The buttons carry `data-person-only`, which names the decision without marking the component's other agent actions the way `data-agent-confirm` on its own button would.
+
+- [#153](https://github.com/Walgermo/booki/pull/153) [`db02f38`](https://github.com/Walgermo/booki/commit/db02f385f4366b3a7811aaa033bf70ef0c82a561) Thanks [@Walgermo](https://github.com/Walgermo)! - BankReconciliation: a layout of your own built on `BankReconciliationRoot` gets the unmatched bank lines and posts with their payment references again (`unmatchedBankLines`, `unmatchedPosts`), as its types say. The agent's snapshot still reads only the references' tags.
+- Updated dependencies [[`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d), [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3), [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d), [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3), [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d), [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d), [`1b151e4`](https://github.com/Walgermo/booki/commit/1b151e4385f9c826ebcc453458917b62a6c2f0c3), [`c0d5491`](https://github.com/Walgermo/booki/commit/c0d5491d32c8d815626a182dbc2a76b967df7c7d)]:
+  - @booki-aui/core@0.4.2
+
 ## 0.4.1
 
 ### Patch Changes
