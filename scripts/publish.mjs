@@ -7,7 +7,11 @@
  * released version, and `npm publish` uploads the tarball with provenance. For
  * each published version it writes a git-tag event to the file changesets/action
  * names in CHANGESETS_OUTPUT; the action reads it to push the tag and create the
- * GitHub Release.
+ * GitHub Release. The dist-tag comes from release-plan.mjs: a version older than
+ * the one npm already serves never moves `latest` or `next` back. The action
+ * cannot create a release that is not GitHub's Latest, so for an older stable
+ * version this script creates the tag and release itself (`gh release create
+ * --latest=false`) and writes no event.
  *
  *   node scripts/publish.mjs           publish what npm lacks
  *   node scripts/publish.mjs --check   only say whether anything is unpublished
@@ -22,6 +26,7 @@ import { execFileSync } from "node:child_process";
 import { appendFileSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { changelogEntry, planRelease } from "./release-plan.mjs";
 
 const root = join(import.meta.dirname, "..");
 const check = process.argv.includes("--check");
@@ -44,19 +49,34 @@ function known(name, version) {
   }
 }
 
-/** True when `a` is a lower release (X.Y.Z) than `b`. */
-function older(a, b) {
-  const [x, y] = [a, b].map((v) => v.split(".").map(Number));
-  for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] < y[i];
-  return false;
+/** npm's dist-tags for a package ({ latest, next, … }), or {} for one npm has never seen. */
+function distTags(name) {
+  try {
+    return JSON.parse(run("npm", ["view", name, "dist-tags", "--json"]) || "{}");
+  } catch {
+    return {};
+  }
 }
 
-/** The version npm's `latest` dist-tag points at, or null for a package npm has never seen. */
-function latest(name) {
+/**
+ * Tags and releases an older stable version on GitHub without making it Latest. A
+ * failure only warns: the version is on npm, and stopping would leave the packages
+ * after it unpublished.
+ */
+function releaseNotLatest(dir, tag, version) {
+  let notes = "";
   try {
-    return run("npm", ["view", name, "dist-tags.latest"]) || null;
+    notes = changelogEntry(readFileSync(join(dir, "CHANGELOG.md"), "utf8"), version) ?? "";
   } catch {
-    return null;
+    // No CHANGELOG: an empty release body.
+  }
+  const args = ["release", "create", tag, "--title", tag, "--notes", notes, "--latest=false"];
+  if (process.env.GITHUB_SHA) args.push("--target", process.env.GITHUB_SHA);
+  if (process.env.GITHUB_REPOSITORY) args.push("--repo", process.env.GITHUB_REPOSITORY);
+  try {
+    run("gh", args, { stdio: ["ignore", "inherit", "inherit"] });
+  } catch (error) {
+    console.log(`::warning::Could not create the GitHub Release ${tag}: ${error.message}`);
   }
 }
 
@@ -87,23 +107,21 @@ for (const { dir, manifest } of pending) {
   run("pnpm", ["pack", "--pack-destination", out], { cwd: dir });
   const tarball = readdirSync(out).find((file) => !before.has(file));
   if (!tarball) throw new Error(`pnpm pack wrote no tarball for ${name}`);
-  // A prerelease (0.3.0-next.1) goes to the `next` dist-tag, never to `latest`. Releases
-  // queue oldest first, but GitHub does not promise the start order: a release older than
-  // npm's `latest` goes to `previous`, so `latest` never moves backwards.
-  const current = version.includes("-") ? null : latest(name);
-  const distTag = version.includes("-")
-    ? ["--tag", "next"]
-    : current && !current.includes("-") && older(version, current)
-      ? ["--tag", "previous"]
-      : [];
+  // Releases queue oldest first, but GitHub does not promise the start order: a version
+  // older than the one npm serves goes to `previous` / `previous-next` (release-plan.mjs).
+  const plan = planRelease(version, distTags(name));
+  const distTag = plan.tag === "latest" ? [] : ["--tag", plan.tag];
   const command = stage ? ["stage", "publish"] : ["publish"];
   run("npm", [...command, join(out, tarball), "--access", "public", "--provenance", ...distTag], {
     stdio: ["ignore", "inherit", "inherit"],
   });
   const tag = `${name}@${version}`;
-  // One JSON line per release, the format changesets/action v2 reads.
   if (process.env.CHANGESETS_OUTPUT) {
-    appendFileSync(process.env.CHANGESETS_OUTPUT, `${JSON.stringify({ type: "git-tag", tag, packageName: name })}\n`);
+    // changesets/action would make an older stable release GitHub's Latest.
+    if (!plan.prerelease && !plan.githubLatest) releaseNotLatest(dir, tag, version);
+    // One JSON line per release, the format changesets/action v2 reads.
+    else
+      appendFileSync(process.env.CHANGESETS_OUTPUT, `${JSON.stringify({ type: "git-tag", tag, packageName: name })}\n`);
   }
   console.log(`${stage ? "Staged" : "Published"} ${tag}`);
 }
