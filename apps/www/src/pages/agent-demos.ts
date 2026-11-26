@@ -648,6 +648,16 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     act("stage-duration", "drill", ["tilbud"], b("Drilled into Tilbud sendt.", "Boret seg ned i Tilbud sendt.")),
     refused("stage-duration", "drill", ["vunnet"]),
   ],
+  button: () => [
+    read(undefined, (_e, all) =>
+      b(
+        `Reads ${all.length} buttons by their words: ${all.map((entry) => `"${String(entry.label)}"`).join(", ")}.`,
+        `Leser ${all.length} knapper etter ordene sine: ${all.map((entry) => `«${String(entry.label)}»`).join(", ")}.`,
+      ),
+    ),
+    act("button", "press", [], b("Pressed Save draft.", "Trykket Lagre utkast."), { nth: 0 }),
+    refused("button", "press", [], { nth: 1 }),
+  ],
   "confirm-dialog": () => [
     act("alert-dialog", "setOpen", [true], b("Opened the question.", "Åpnet spørsmålet.")),
     read("alert-dialog", (e) =>
@@ -908,6 +918,7 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   "forecast-chart": [640, 600],
   "recurring-revenue": [560, 520],
   "stage-duration": [520, 480],
+  button: [184, 176],
   "confirm-dialog": [88, 96],
   toasts: [88, 96],
   "document-signoff": [592, 336],

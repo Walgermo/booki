@@ -11,6 +11,7 @@ import {
   AuditTrail,
   BankReconciliation,
   BankAccountInput,
+  Button,
   CountryToggle,
   CurrencySelect,
   ExceptionBanner,
@@ -368,12 +369,55 @@ function renderPreview(
       );
     case "country-toggle":
       return <CountryToggle />;
+    case "button":
+      return <ButtonPreview t={t} />;
     default: {
       const Gap = GAP_PREVIEWS[name];
       if (Gap) return <Gap key={country} />;
       return <p className="text-sm text-muted-foreground">{t("No preview.", "Ingen forhåndsvisning.")}</p>;
     }
   }
+}
+
+/** The three variants at both sizes, and one step that waits for a person. */
+function ButtonPreview({ t }: { t: ReturnType<typeof useLang>["t"] }) {
+  const [pressed, setPressed] = useState<string | null>(null);
+  const press = (label: string) => () => setPressed(label);
+  const saveDraft = t("Save draft", "Lagre utkast");
+  const sendPayment = t("Send payment", "Send betaling");
+  const reset = t("Reset", "Tilbakestill");
+  const addLine = t("Add line", "Legg til linje");
+  const copy = t("Copy", "Kopier");
+  return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button onClick={press(saveDraft)}>{saveDraft}</Button>
+        <Button
+          variant="secondary"
+          onClick={press(sendPayment)}
+          data-agent-confirm={t("Sending a payment needs a person", "En betaling må sendes av en person")}
+        >
+          {sendPayment}
+        </Button>
+        <Button variant="ghost" onClick={press(reset)}>
+          {reset}
+        </Button>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button size="sm" variant="secondary" onClick={press(addLine)}>
+          {addLine}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={press(copy)}>
+          {copy}
+        </Button>
+      </div>
+      <p className="m-0 text-sm text-muted-foreground" aria-live="polite">
+        {pressed
+          ? t(`Pressed: ${pressed}`, `Trykket: ${pressed}`)
+          : t("Nothing pressed yet.", "Ingenting trykket ennå.")}
+      </p>
+    </div>
+  );
 }
 
 function AmountFieldPreview() {

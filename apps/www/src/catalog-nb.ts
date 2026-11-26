@@ -136,6 +136,10 @@ const NB: Record<string, { title?: string; description: string }> = {
     description:
       "Hvor lenge avtaler blir i hver fase: median og lengste opphold, et mål per fase, og avtalene som er over det.",
   },
+  button: {
+    description:
+      "En vanlig knapp i tre tyngder: primary for den ene handlingen som betyr mest i en seksjon, secondary for de andre valgene, ghost for en stille handling inne i en annen flate. En agent trykker den etter ordene; data-agent-confirm holder et steg for personen.",
+  },
   "confirm-dialog": {
     description:
       "Et spørsmål en person svarer på før noe skjer: bokføre, betale, frigi. En agent kan lese det og avbryte, aldri si ja; bekreftelsesord og asynkront arbeid er innebygd.",

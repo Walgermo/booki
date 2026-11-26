@@ -266,6 +266,7 @@ export * from "./audit-findings.js";
 export * from "./document-signoff.js";
 export * from "./sheet-stack.js";
 export * from "./confirm-dialog.js";
+export { Button, type ButtonProps, type ButtonSize, type ButtonVariant } from "./button.js";
 export { IconButton, type IconButtonProps } from "./icon-button.js";
 export * from "./toasts.js";
 export * from "./client-requests.js";

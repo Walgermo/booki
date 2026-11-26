@@ -104,7 +104,7 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "blocks",
     en: "Building blocks",
     nb: "Byggeklosser",
-    pages: ["data-table", "confirm-dialog", "toasts", "sheet-stack", "exception-banner", "icons"],
+    pages: ["button", "data-table", "confirm-dialog", "toasts", "sheet-stack", "exception-banner", "icons"],
   },
 ];
 
@@ -160,6 +160,7 @@ const PLAIN: Record<string, { en: string; nb: string }> = {
   "forecast-chart": { en: "Forecast", nb: "Prognose" },
   "recurring-revenue": { en: "Recurring revenue", nb: "Gjentakende inntekt" },
   "stage-duration": { en: "Time in stage", nb: "Tid per steg" },
+  button: { en: "Button", nb: "Knapp" },
   "data-table": { en: "Data table", nb: "Datatabell" },
   "confirm-dialog": { en: "Confirm dialog", nb: "Bekreftelsesdialog" },
   toasts: { en: "Notifications", nb: "Varsler" },
@@ -237,6 +238,7 @@ export const PAGE_ICON: Record<string, IconName> = {
   "forecast-chart": "chart-forecast",
   "recurring-revenue": "repeat",
   "stage-duration": "stopwatch",
+  button: "bolt",
   "data-table": "table",
   "confirm-dialog": "dialog",
   toasts: "bell",

@@ -329,6 +329,14 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki-aui/react"),
   },
   {
+    name: "button",
+    title: "Button",
+    description:
+      "A plain button in three weights: primary for the one action that matters in a section, secondary for the other choices, ghost for a quiet action inside another surface. An agent presses it by its words; data-agent-confirm keeps a person's step for the person.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
     name: "confirm-dialog",
     title: "ConfirmDialog",
     description:
