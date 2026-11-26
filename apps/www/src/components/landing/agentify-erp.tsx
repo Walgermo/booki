@@ -14,7 +14,7 @@ import { useEffect, useRef, useState, type RefObject } from "react";
 import { cursor, setStepPolicy, whenCursorFree } from "@/agent";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
-import { ErpFrame, type FrameTab } from "./erp-frame";
+import { ErpFrame, type FrameTab, type OtherDemo } from "./erp-frame";
 import { titleLanded } from "./hero-title";
 import { wait, type ActResult, type LandingAgent } from "./shared";
 
@@ -50,11 +50,16 @@ export function ErpWindow({
   from,
   to,
   tabs,
+  other,
+  autoRun = false,
 }: {
   agent: LandingAgent;
   from: RefObject<HTMLElement | null>;
   to: RefObject<HTMLElement | null>;
   tabs: FrameTab[];
+  other: OtherDemo;
+  /** Run as soon as it is shown: the visitor pressed this demo's button on the other one. */
+  autoRun?: boolean;
 }) {
   const { t } = useLang();
   const [lines, setLines] = useState<VoucherLine[]>([]);
@@ -115,6 +120,12 @@ export function ErpWindow({
       }),
     [],
   );
+
+  // Opened from the other demo's button: run once, as if this demo's own button was pressed.
+  useEffect(() => {
+    if (autoRun) void run();
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- on mount only
+  }, []);
 
   // The countdown for a screen reader: the cursor's label is decorative and hidden from it.
   const [notice, setNotice] = useState("");
@@ -215,13 +226,18 @@ export function ErpWindow({
             )}
           </p>
         </div>
-        <Button variant="outline" size="lg" disabled={phase === "running"} onClick={() => void run()}>
-          {phase === "running"
-            ? t("Agent working…", "Agenten jobber …")
-            : phase === "idle"
-              ? t("Run invoice demo", "Kjør fakturademoen")
-              : t("Run again", "Kjør på nytt")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="lg" disabled={phase === "running"} onClick={() => void run()}>
+            {phase === "running"
+              ? t("Agent working…", "Agenten jobber …")
+              : phase === "idle"
+                ? t("Run invoice demo", "Kjør fakturademoen")
+                : t("Run again", "Kjør på nytt")}
+          </Button>
+          <Button variant="outline" size="lg" disabled={phase === "running"} onClick={other.onRun}>
+            {other.label}
+          </Button>
+        </div>
       </div>
       <ErpFrame
         brand="kvadruptex"

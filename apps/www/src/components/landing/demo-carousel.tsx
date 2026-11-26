@@ -26,6 +26,8 @@ export function DemoCarousel({
 }) {
   const { t } = useLang();
   const [slide, setSlide] = useState<Slide>("invoice");
+  // Set when the visitor runs the other demo from a demo's header: it runs once it is shown.
+  const [autoRun, setAutoRun] = useState<Slide | null>(null);
   // The window remounts on a switch, so the new tab takes the focus once it is there.
   const refocus = useRef(false);
 
@@ -35,9 +37,10 @@ export function DemoCarousel({
     document.getElementById(`demo-tab-${slide}`)?.focus();
   }, [slide]);
 
-  function go(next: Slide) {
+  function go(next: Slide, run = false) {
     if (next === slide) return;
     refocus.current = true;
+    setAutoRun(run ? next : null);
     setSlide(next);
   }
 
@@ -73,9 +76,21 @@ export function DemoCarousel({
       className="demo-carousel__panel"
     >
       {slide === "invoice" ? (
-        <ErpWindow agent={agent} from={from} to={to} tabs={tabs} />
+        <ErpWindow
+          agent={agent}
+          from={from}
+          to={to}
+          tabs={tabs}
+          autoRun={autoRun === "invoice"}
+          other={{ label: t("Run CRM demo", "Kjør CRM-demo"), onRun: () => go("crm", true) }}
+        />
       ) : (
-        <CrmWindow agent={agent} tabs={tabs} />
+        <CrmWindow
+          agent={agent}
+          tabs={tabs}
+          autoRun={autoRun === "crm"}
+          other={{ label: t("Run invoice demo", "Kjør fakturademo"), onRun: () => go("invoice", true) }}
+        />
       )}
     </div>
   );

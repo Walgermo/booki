@@ -13,6 +13,9 @@ const BRANDS: Record<Brand, { head: string; tail: string; host: string }> = {
   acrm: { head: "A-", tail: "CRM", host: "a-crm.example" },
 };
 
+/** The button beside a demo's own Run button that opens the other demo and runs it. */
+export type OtherDemo = { label: string; onRun: () => void };
+
 /** A browser tab in the demo window. Each one opens a demo, so the tabs are real. */
 export type FrameTab = {
   id: string;

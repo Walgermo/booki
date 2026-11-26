@@ -6,12 +6,12 @@ import {
   type Deal,
   type PipelineStage,
 } from "@booki-aui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { whenCursorFree } from "@/agent";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
-import { ErpFrame, type FrameTab } from "./erp-frame";
+import { ErpFrame, type FrameTab, type OtherDemo } from "./erp-frame";
 import { wait, type ActResult, type LandingAgent } from "./shared";
 
 /** Agent labels: unique on the landing page, so the agent's refs find these. */
@@ -28,7 +28,18 @@ const OWNERS = [
 type Phase = "idle" | "running" | "done";
 
 /** A sales pipeline in A-CRM, a made-up agentic CRM: after a meeting, the agent updates the deal. */
-export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab[] }) {
+export function CrmWindow({
+  agent,
+  tabs,
+  other,
+  autoRun = false,
+}: {
+  agent: LandingAgent;
+  tabs: FrameTab[];
+  other: OtherDemo;
+  /** Run as soon as it is shown: the visitor pressed this demo's button on the other one. */
+  autoRun?: boolean;
+}) {
   const { t } = useLang();
   const stages: PipelineStage[] = [
     { id: "kvalifisering", name: t("Qualifying", "Kvalifisering"), probability: 10 },
@@ -83,6 +94,12 @@ export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab
     active.current = false;
   }
 
+  // Opened from the other demo's button: run once, as if this demo's own button was pressed.
+  useEffect(() => {
+    if (autoRun) void run();
+    // oxlint-disable-next-line react-hooks/exhaustive-deps -- on mount only
+  }, []);
+
   const status =
     phase === "running"
       ? t("Agent working", "Agenten jobber")
@@ -104,13 +121,18 @@ export function CrmWindow({ agent, tabs }: { agent: LandingAgent; tabs: FrameTab
             )}
           </p>
         </div>
-        <Button variant="outline" size="lg" disabled={phase === "running"} onClick={() => void run()}>
-          {phase === "running"
-            ? t("Agent working…", "Agenten jobber …")
-            : phase === "idle"
-              ? t("Run CRM demo", "Kjør CRM-demoen")
-              : t("Run again", "Kjør på nytt")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="lg" disabled={phase === "running"} onClick={other.onRun}>
+            {other.label}
+          </Button>
+          <Button variant="outline" size="lg" disabled={phase === "running"} onClick={() => void run()}>
+            {phase === "running"
+              ? t("Agent working…", "Agenten jobber …")
+              : phase === "idle"
+                ? t("Run CRM demo", "Kjør CRM-demoen")
+                : t("Run again", "Kjør på nytt")}
+          </Button>
+        </div>
       </div>
       <ErpFrame
         brand="acrm"
