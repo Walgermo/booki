@@ -244,12 +244,12 @@
 /* Near the right edge the label sits left of the pointer. */
 [data-slot="agent-cursor-pointer"][data-flip] [data-slot="agent-cursor-label"] {
   left: auto;
-  right: -6px;
+  right: calc(100% + 6px);
 }
 
 [data-slot="agent-cursor-pointer"][data-above] [data-slot="agent-cursor-label"] {
   top: auto;
-  bottom: 4px;
+  bottom: calc(100% + 4px);
 }
 
 [data-slot="agent-cursor-action"] {
