@@ -254,8 +254,10 @@ export const bankReconciliation = definePrimitive({
       attrs: (state) => ({ "data-reconciled": state.reconciled ? "true" : "false" }),
       state: (state) => ({
         matches: state.matches,
-        unmatchedBankLines: state.unmatchedBankLines,
-        unmatchedPosts: state.unmatchedPosts,
+        // A layout of the app's own is for the person: the rows with their references.
+        // The agent reads the tagged ones, from the store.
+        unmatchedBankLines: state.openBankLines,
+        unmatchedPosts: state.openPostsLeft,
         openBankLines: state.openBankLines,
         openPostsLeft: state.openPostsLeft,
         summary: summarize(state.bankLines, state.matches),
