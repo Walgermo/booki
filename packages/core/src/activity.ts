@@ -156,9 +156,26 @@ export function rescheduleTask(activity: Activity, date: string): Activity {
   return { ...activity, dueDate: dueDate(activity.id, date) };
 }
 
+/** How a day-only `at` is placed among timed entries. */
+export type TimelineOptions = {
+  /**
+   * Whose day a YYYY-MM-DD entry starts: "utc" (the default, the same everywhere)
+   * or "local", the start of that day in this runtime's time zone, to match a
+   * date the person entered as their own day.
+   */
+  dayStart?: "utc" | "local";
+};
+
+function startOf(day: string, dayStart: TimelineOptions["dayStart"]): number {
+  if (dayStart !== "local") return Date.parse(`${day}T00:00:00Z`);
+  const [year, month, date] = day.split("-").map(Number) as [number, number, number];
+  return new Date(year, month - 1, date).getTime();
+}
+
 /** Newest first: by `at`, a day-only entry counting as the start of its day. */
-export function timeline(activities: readonly Activity[]): Activity[] {
-  const time = (activity: Activity) => Date.parse(activity.at.length === 10 ? `${activity.at}T00:00:00Z` : activity.at);
+export function timeline(activities: readonly Activity[], options: TimelineOptions = {}): Activity[] {
+  const time = (activity: Activity) =>
+    activity.at.length === 10 ? startOf(activity.at, options.dayStart) : Date.parse(activity.at);
   return [...activities].sort((a, b) => time(b) - time(a));
 }
 
@@ -177,8 +194,8 @@ export function overdueTasks(activities: readonly Activity[], today: string): st
 }
 
 /** The last call, email or meeting, or undefined when there has been none. */
-export function lastTouch(activities: readonly Activity[]): Activity | undefined {
-  return timeline(activities).find((activity) => TOUCHES.includes(activity.kind));
+export function lastTouch(activities: readonly Activity[], options: TimelineOptions = {}): Activity | undefined {
+  return timeline(activities, options).find((activity) => TOUCHES.includes(activity.kind));
 }
 
 /** What a person should know about an entry, as sentences. Warnings, never refusals. */
