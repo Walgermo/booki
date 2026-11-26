@@ -92,32 +92,40 @@ export function DealPanel({
   );
 }
 
+/** How sure and from where, as the person set them, and the figure they were set for. */
+type Evidence = { figure?: string; valueStatus?: DealValueStatus; valueSource?: string | null };
+
+const figureKey = ({ valueMinor, currency }: { valueMinor: number | null; currency: string }) =>
+  `${currency}:${valueMinor ?? ""}`;
+
 /** A person's form for the deal's value: how much, in what currency, how sure, and from where. */
 function ValueForm({ deal, onSaveDeal }: { deal: Deal; onSaveDeal: (next: Deal) => void }) {
   // Undo starts the amount field over: text it refused is not the deal's, and it would block the next save.
   const [round, setRound] = useState(0);
   const [figure, setFigure] = useState({ valueMinor: deal.valueMinor, currency: deal.currency });
-  // How sure and from where, once the person has set them. Until then they follow the figure: the deal's own
-  // for the deal's figure, and none for a new one, since the old source vouched for the old figure only.
-  const [evidence, setEvidence] = useState<{ valueStatus?: DealValueStatus; valueSource?: string | null }>({});
+  // How sure and from where, once the person has set them, for the figure they set them for. Until then, and
+  // once the figure changes again, they follow the figure: the deal's own for the deal's figure, and none for
+  // a new one, since a source vouches for the figure it was given for and no other.
+  const [evidence, setEvidence] = useState<Evidence>({});
+  const held = evidence.figure === figureKey(figure) ? evidence : {};
   const sameFigure = figure.valueMinor === deal.valueMinor && figure.currency === deal.currency;
   const draft: Deal = {
     ...deal,
     ...figure,
-    valueStatus: evidence.valueStatus ?? (sameFigure ? deal.valueStatus : "unknown"),
+    valueStatus: held.valueStatus ?? (sameFigure ? deal.valueStatus : "unknown"),
     valueSource:
-      evidence.valueSource !== undefined
-        ? (evidence.valueSource ?? undefined)
-        : sameFigure
-          ? deal.valueSource
-          : undefined,
+      held.valueSource !== undefined ? (held.valueSource ?? undefined) : sameFigure ? deal.valueSource : undefined,
   };
   if (draft.valueSource === undefined) delete draft.valueSource;
   const setDraft = (next: Deal) => {
-    setFigure({ valueMinor: next.valueMinor, currency: next.currency });
-    if (next.valueStatus !== draft.valueStatus) setEvidence((now) => ({ ...now, valueStatus: next.valueStatus }));
-    if (next.valueSource !== draft.valueSource)
-      setEvidence((now) => ({ ...now, valueSource: next.valueSource ?? null }));
+    const nextFigure = { valueMinor: next.valueMinor, currency: next.currency };
+    const key = figureKey(nextFigure);
+    // A new figure starts without the evidence given for the one before.
+    const kept: Evidence = key === figureKey(figure) ? { ...held } : {};
+    if (next.valueStatus !== draft.valueStatus) kept.valueStatus = next.valueStatus;
+    if (next.valueSource !== draft.valueSource) kept.valueSource = next.valueSource ?? null;
+    setFigure(nextFigure);
+    setEvidence({ ...kept, figure: key });
   };
   const changed = JSON.stringify(draft) !== JSON.stringify(deal);
   return (
