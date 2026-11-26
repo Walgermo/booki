@@ -1,5 +1,14 @@
 # @booki/vue
 
+## 0.5.1
+
+### Patch Changes
+
+- [#192](https://github.com/Walgermo/booki/pull/192) [`b841d36`](https://github.com/Walgermo/booki/commit/b841d36fbb0e44899abd400fd00442e6ceaf08a9) Thanks [@Walgermo](https://github.com/Walgermo)! - Add Undo and Redo to the document editor for a person's typing and block edits, with keyboard shortcuts and audit events.
+- Updated dependencies [[`9dd5417`](https://github.com/Walgermo/booki/commit/9dd5417908ed11c3d44a4bd7c4925c1cb1873781), [`b841d36`](https://github.com/Walgermo/booki/commit/b841d36fbb0e44899abd400fd00442e6ceaf08a9)]:
+  - @booki-aui/core@0.5.1
+  - @booki-aui/primitives@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes

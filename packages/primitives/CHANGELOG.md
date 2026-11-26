@@ -1,5 +1,15 @@
 # @booki/primitives
 
+## 0.5.1
+
+### Patch Changes
+
+- [#193](https://github.com/Walgermo/booki/pull/193) [`9dd5417`](https://github.com/Walgermo/booki/commit/9dd5417908ed11c3d44a4bd7c4925c1cb1873781) Thanks [@Walgermo](https://github.com/Walgermo)! - Show file-type icons beside files and attached evidence in the document editor’s mention menu. File suggestions can supply a file name and MIME type separately from their display label.
+
+- [#192](https://github.com/Walgermo/booki/pull/192) [`b841d36`](https://github.com/Walgermo/booki/commit/b841d36fbb0e44899abd400fd00442e6ceaf08a9) Thanks [@Walgermo](https://github.com/Walgermo)! - Add Undo and Redo to the document editor for a person's typing and block edits, with keyboard shortcuts and audit events.
+- Updated dependencies [[`9dd5417`](https://github.com/Walgermo/booki/commit/9dd5417908ed11c3d44a4bd7c4925c1cb1873781)]:
+  - @booki-aui/core@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes

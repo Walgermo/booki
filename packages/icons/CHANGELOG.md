@@ -1,5 +1,11 @@
 # @booki-aui/icons
 
+## 0.5.1
+
+### Patch Changes
+
+- [#193](https://github.com/Walgermo/booki/pull/193) [`9dd5417`](https://github.com/Walgermo/booki/commit/9dd5417908ed11c3d44a4bd7c4925c1cb1873781) Thanks [@Walgermo](https://github.com/Walgermo)! - Add eight file icons and reuse the text document and spreadsheet glyphs in a ten-family set. Use FileIcon in React or getFileIconName from the file entry point to choose an attachment icon from its extension or MIME type.
+
 ## 0.5.0
 
 ### Patch Changes
