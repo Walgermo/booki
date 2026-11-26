@@ -33,22 +33,33 @@ export function Hero({ agent }: { agent: LandingAgent }) {
             "UI-komponenter som både mennesker og AI-agenter bruker. Agenten handler ved navn; beslutninger blir hos en person.",
           )}
         </p>
-        <dl className="landing-hero__points">
-          <div>
-            <dt>{t("You add", "Dere legger til")}</dt>
-            <dd>
-              {t("Components for your forms, tables and buttons.", "Komponenter til skjemaer, tabeller og knapper.")}
-            </dd>
-          </div>
-          <div>
-            <dt>{t("The agent", "Agenten")}</dt>
-            <dd>{t("Acts by name, with a visible cursor.", "Handler ved navn, med synlig markør.")}</dd>
-          </div>
-          <div>
-            <dt>{t("People keep", "Mennesker beholder")}</dt>
-            <dd>{t("Approvals and sign-offs.", "Godkjenninger og signering.")}</dd>
-          </div>
-        </dl>
+        <ol className="landing-hero__timeline" aria-label={t("How UI has changed", "Hvordan UI har endret seg")}>
+          <li>
+            <span className="landing-hero__era">{t("Then", "Før")}</span>
+            <strong>{t("UI for people", "UI for mennesker")}</strong>
+            <span>{t("Forms and buttons, made to be clicked.", "Skjemaer og knapper, laget for å klikkes.")}</span>
+          </li>
+          <li>
+            <span className="landing-hero__era">{t("Now", "Nå")}</span>
+            <strong>{t("Agents guess", "Agenter gjetter")}</strong>
+            <span>
+              {t(
+                "They read the screen and click where it looks right.",
+                "De leser skjermen og klikker der det ser riktig ut.",
+              )}
+            </span>
+          </li>
+          <li data-current="">
+            <span className="landing-hero__era">{t("With Booki", "Med Booki")}</span>
+            <strong>{t("One UI for both", "Ett UI for begge")}</strong>
+            <span>
+              {t(
+                "The agent acts by name; people keep the decisions.",
+                "Agenten handler ved navn; mennesker beholder beslutningene.",
+              )}
+            </span>
+          </li>
+        </ol>
         <div className="mt-6 grid justify-items-center gap-2">
           <PromptButton prompt={AGENT_PROMPT} />
           <p className="m-0 text-sm text-muted-foreground">
