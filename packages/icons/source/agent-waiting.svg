@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-aliases="agent-status waiting needs-person paused hold">
-  <path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z"/>
-  <path d="M2.5 2.5V18L6 14.5L10 18.5L12.5 16L9.75 13.25H13.25Z" data-role="silhouette"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-waive-angle="The cursor stem follows the arrowhead centreline, between the vertical and diagonal edges." data-aliases="agent-status waiting needs-person paused hold">
+  <path d="M2.5 2.5V18.5L5.75 15.25L8.25 21.25L11.75 19.75L9.25 13.75H13.75Z"/>
+  <path d="M2.5 2.5V18.5L5.75 15.25L8.25 21.25L11.75 19.75L9.25 13.75H13.75Z" data-role="silhouette"/>
   <path d="M17.25 15.75v6.5"/>
   <path d="M20.75 15.75v6.5"/>
 </svg>

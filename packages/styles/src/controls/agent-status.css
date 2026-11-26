@@ -8,7 +8,7 @@
 [data-slot="agent-status"] {
   --agent-status-idle: var(--bk-muted-fg);
   --agent-status-agent: var(--bk-signal-ink);
-  --agent-status-waiting: var(--bk-warning);
+  --agent-status-waiting: color-mix(in oklch, var(--bk-warning) 75%, var(--bk-fg));
   --agent-status-refused: var(--bk-danger);
   display: inline-flex;
   align-items: center;
