@@ -152,8 +152,8 @@ function Figures({ task, t, max }: { task: BenchTask; t: number; max: number }) 
       {WITHDRAWN.includes(task) && (
         <p className="m-0 max-w-[68ch] text-sm text-muted-foreground">
           {tr(
-            "A Booki format hint revealed the answer for this task, so we withdrew the model results. The scripted run starts with the answer on each screen.",
-            "Et formathint i Booki røpet svaret på denne oppgaven, så vi trakk tilbake modellresultatene. Skriptet starter med svaret på hvert skjermbilde.",
+            "A Booki format hint revealed the answer for this task, so the model results are withdrawn. The scripted run starts with the answer on each screen.",
+            "Et formathint i Booki røpet svaret på denne oppgaven, så modellresultatene er trukket tilbake. Skriptet starter med svaret på hvert skjermbilde.",
           )}
         </p>
       )}

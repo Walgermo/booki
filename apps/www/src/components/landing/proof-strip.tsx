@@ -118,8 +118,8 @@ export function ProofStrip() {
         </p>
         <p>
           {t(
-            `We ran Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash five times per model, task and screen on ${f.runDate}. We withdrew the voucher and sales invoice results after we found that a control hint revealed the answers.`,
-            `Vi kjørte Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash fem ganger per modell, oppgave og skjermbilde den ${f.runDate}. Vi trakk tilbake resultatene for bilag og salgsfaktura fordi et hint i kontrollen røpet svarene. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
+            `Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash ran five times per model, task and screen on ${f.runDate}. The voucher and sales invoice results are withdrawn: a control hint revealed the answers.`,
+            `Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash kjørte fem ganger per modell, oppgave og skjermbilde den ${f.runDate}. Resultatene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen røpet svarene. Kostnad i NOK etter Norges Banks kurs ${String(USD_NOK.rate).replace(".", ",")}.`,
           )}
         </p>
         <p>
