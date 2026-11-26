@@ -17,7 +17,7 @@ public API still moves, so the steps shift down by one:
 | Fixes a bug, a message, a style | **patch** | patch |
 
 The UI packages are released together at one version: `@booki-aui/core`,
-`primitives`, `react`, `styles`, `web`, `vue`, `svelte` and `solid` (a
+`primitives`, `react`, `styles`, `icons`, `web`, `vue`, `svelte` and `solid` (a
 `fixed` group in `.changeset/config.json`). They are generated from the same
 definitions, so a fix in one is a release of all, and an app never mixes
 versions. `@booki-aui/readiness` is a separate tool with its own version. The docs
