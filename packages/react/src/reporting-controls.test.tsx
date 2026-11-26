@@ -330,6 +330,26 @@ describe("AgedBalances", () => {
   ];
   const ui = <AgedBalances items={items} defaultAsOf="2026-04-30" />;
 
+  it("keeps filtered and drilled minor-unit totals exact on the bridge", async () => {
+    const max = Number.MAX_SAFE_INTEGER;
+    const amounts = [max, 2, -max];
+    const balances = [
+      ...amounts.map((amount, i) => item(String(i), "acme", "2026-04-10", amount)),
+      ...amounts.map((amount, i) => item(String(i + 3), "group" + i, "2026-04-10", amount)),
+    ];
+    const { act, entry } = setup(
+      "aged-balances",
+      "Aged receivables",
+      <AgedBalances items={balances} defaultAsOf="2026-04-30" />,
+    );
+    expect(entry().totals.totalMinor).toBe(4);
+    expect((await act("setSearch", ["group"])).ok).toBe(true);
+    expect(entry().totals).toMatchObject({ totalMinor: 2, amountsMinor: [0, 2, 0, 0, 0] });
+    await act("setSearch", [""]);
+    expect((await act("openParty", ["acme"])).ok).toBe(true);
+    expect(entry().party).toMatchObject({ matchingMinor: 2, totalMinor: 2 });
+  });
+
   it("ages the receivables, drills into a party and answers who is overdue", async () => {
     const { entry, act } = setup("aged-balances", "Aged receivables", ui);
     expect(entry().actions).toEqual([

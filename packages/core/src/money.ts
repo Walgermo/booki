@@ -19,6 +19,24 @@ export function minorDigitsFor(currency: BookiCurrencyCode): number {
   return digits;
 }
 
+/** Convert an exact accumulated sum back to the public minor-unit representation. */
+export function safeMinorTotal(value: bigint): number {
+  const result = Number(value);
+  if (!Number.isSafeInteger(result)) throw moneyMessages.error("money.not-safe-integer", { value: String(value) });
+  return result;
+}
+
+/** Sum minor units exactly, even if offsetting entries take an intermediate sum outside the safe range. */
+export function sumMinorUnits<Row>(rows: readonly Row[], amountOf: (row: Row) => number): number {
+  let total = 0n;
+  for (const row of rows) {
+    const amount = amountOf(row);
+    if (!Number.isSafeInteger(amount)) throw moneyMessages.error("money.not-safe-integer", { value: String(amount) });
+    total += BigInt(amount);
+  }
+  return safeMinorTotal(total);
+}
+
 export function money(minor: number, currency: BookiCurrencyCode): Money {
   if (!Number.isSafeInteger(minor)) {
     throw moneyMessages.error("money.not-safe-integer", { value: String(minor) });

@@ -1,3 +1,4 @@
+import { sumMinorUnits } from "@booki-aui/core/money";
 import {
   DEFAULT_AGING_LIMITS,
   ageItems,
@@ -457,7 +458,7 @@ export const agedBalances = definePrimitive({
           kind,
           asOf,
           minDays: Number(minDays),
-          overdueMinor: parties.reduce((sum, party) => sum + party.overdueMinor, 0),
+          overdueMinor: sumMinorUnits(parties, (party) => party.overdueMinor),
           parties: parties.slice(0, cap),
           total: parties.length,
           truncated: parties.length > cap,

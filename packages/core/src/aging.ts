@@ -1,3 +1,4 @@
+import { safeMinorTotal } from "./money.js";
 import { BookiError, msg } from "./msg.js";
 
 export type OpenItemKind = "receivable" | "payable";
@@ -138,12 +139,6 @@ function checkItems(items: OpenItem[], kind: OpenItemKind | undefined): { kind: 
   return { kind, items: items.filter((item) => item.kind === kind) };
 }
 
-function safeTotal(value: bigint): number {
-  const result = Number(value);
-  if (!Number.isSafeInteger(result)) throw new BookiError("money.not-safe-integer", { value: String(value) });
-  return result;
-}
-
 const sumMinor = (amounts: bigint[]) => amounts.reduce((total, amount) => total + amount, 0n);
 
 /**
@@ -183,8 +178,8 @@ export function ageItems(
   const rows = [...byParty.values()]
     .map((row) => ({
       ...row,
-      amountsMinor: row.amountsMinor.map(safeTotal),
-      totalMinor: safeTotal(sumMinor(row.amountsMinor)),
+      amountsMinor: row.amountsMinor.map(safeMinorTotal),
+      totalMinor: safeMinorTotal(sumMinor(row.amountsMinor)),
     }))
     .sort(
       (a, b) =>
@@ -195,8 +190,8 @@ export function ageItems(
     asOf,
     buckets: columns,
     rows,
-    totalsMinor: totalsMinor.map(safeTotal),
-    grandTotalMinor: safeTotal(sumMinor(totalsMinor)),
+    totalsMinor: totalsMinor.map(safeMinorTotal),
+    grandTotalMinor: safeMinorTotal(sumMinor(totalsMinor)),
   };
 }
 
@@ -269,6 +264,6 @@ export function overdueParties(items: OpenItem[], asOf: string, minDays = 1, kin
   }
   return [...byParty.values()]
     .filter((party) => party.overdueMinor > 0n)
-    .map((party) => ({ ...party, overdueMinor: safeTotal(party.overdueMinor) }))
+    .map((party) => ({ ...party, overdueMinor: safeMinorTotal(party.overdueMinor) }))
     .sort((a, b) => b.overdueMinor - a.overdueMinor || (a.partyId < b.partyId ? -1 : 1));
 }

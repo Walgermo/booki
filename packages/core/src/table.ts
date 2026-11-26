@@ -1,3 +1,4 @@
+import { sumMinorUnits } from "./money.js";
 import { BookiError } from "./msg.js";
 
 /**
@@ -150,7 +151,9 @@ export function tableView<Row>(rows: Row[], columns: TableColumn<Row>[], query: 
   for (const column of columns) {
     const summed = column.total ?? column.kind === "money";
     if (!summed) continue;
-    totals[column.id] = out.reduce((sum, row) => sum + (Number(column.value(row)) || 0), 0);
+    const value = (row: Row) => Number(column.value(row)) || 0;
+    totals[column.id] =
+      column.kind === "money" ? sumMinorUnits(out, value) : out.reduce((sum, row) => sum + value(row), 0);
   }
 
   const pageCount = Math.max(1, Math.ceil(out.length / query.pageSize));
