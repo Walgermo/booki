@@ -874,6 +874,87 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     ),
     refused("button", "press", []),
   ],
+  "icon-button": () => [
+    read(undefined, (_e, all) =>
+      b(
+        `Reads ${all.length} buttons by name: ${all.map((entry) => String(entry.label)).join(", ")}.`,
+        `Leser ${all.length} knapper etter navn: ${all.map((entry) => String(entry.label)).join(", ")}.`,
+      ),
+    ),
+    act("button", "press", [], (e) => b(`Pressed "${String(e?.label)}".`, `Trykket på «${String(e?.label)}».`), {
+      nth: 1,
+    }),
+    refused("button", "press", [], { nth: 2 }),
+  ],
+  "text-link": readsNothing(
+    b(
+      "A link is navigation for the person, not an agent action, so it has no entry.",
+      "En lenke er navigasjon for personen, ikke en agenthandling, så den har ingen oppføring.",
+    ),
+  ),
+  card: () => [
+    read(undefined, (_e, all) =>
+      b(
+        `The card adds no entry of its own. snapshot() lists the ${all.length} buttons in its header, by name.`,
+        `Kortet gir ingen egen oppføring. snapshot() viser de ${all.length} knappene i toppen, etter navn.`,
+      ),
+    ),
+    act("button", "press", [], (e) => b(`Pressed "${String(e?.label)}".`, `Trykket på «${String(e?.label)}».`)),
+  ],
+  field: () => [
+    read("input", (e) =>
+      b(
+        `Reads an input named "${String(e?.label)}", value "${String(e?.value)}".`,
+        `Leser et felt med navnet «${String(e?.label)}», verdi «${String(e?.value)}».`,
+      ),
+    ),
+    act("input", "setValue", ["Brattli Entreprenør AS"], (e) =>
+      b(`Filled it with "${String(e?.value)}".`, `Fylte det ut med «${String(e?.value)}».`),
+    ),
+  ],
+  toolbar: () => [
+    read("toolbar", (e) =>
+      b(
+        `Reads the toolbar "${String(e?.label)}": ${list<string>(e?.buttons).join(", ")}.`,
+        `Leser verktøylinjen «${String(e?.label)}»: ${list<string>(e?.buttons).join(", ")}.`,
+      ),
+    ),
+    act(
+      "toolbar",
+      "press",
+      (e) => [list<string>(e.buttons)[1] ?? ""],
+      (e) =>
+        b(
+          `Pressed "${list<string>(e?.buttons)[1] ?? ""}" by its name.`,
+          `Trykket på «${list<string>(e?.buttons)[1] ?? ""}» etter navnet.`,
+        ),
+    ),
+    refused("toolbar", "press", (e) => [list<string>(e.buttons).at(-1) ?? ""]),
+  ],
+  "agent-cursor": ({ fmt }) => [
+    act("amount-field", "setMinor", [1_550_000], (e) =>
+      b(
+        `The pointer went to the amount first, then set it to ${fmt(num(e?.minor))}.`,
+        `Pekeren gikk til beløpet først, og satte det så til ${fmt(num(e?.minor))}.`,
+      ),
+    ),
+  ],
+  "agent-presence": ({ fmt }) => [
+    act("amount-field", "setMinor", [1_550_000], (e) =>
+      b(
+        `Set the amount to ${fmt(num(e?.minor))}; the marker named the field while it worked.`,
+        `Satte beløpet til ${fmt(num(e?.minor))}; merkelappen viste feltet mens den jobbet.`,
+      ),
+    ),
+  ],
+  "agent-proposal": ({ fmt }) => [
+    read("amount-field", (e) =>
+      b(
+        `Reads the amount: ${fmt(num(e?.minor))}. Keep and Revert are not among its controls, and both are marked for a person: only the person settles a proposal.`,
+        `Leser beløpet: ${fmt(num(e?.minor))}. Behold og Angre er ikke blant kontrollene den ser, og begge er merket for en person: bare personen avgjør et forslag.`,
+      ),
+    ),
+  ],
 };
 
 function nthItem(entry: Entry, index: number): string {

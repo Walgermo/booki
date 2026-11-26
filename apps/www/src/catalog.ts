@@ -486,6 +486,66 @@ export const catalog: CatalogItem[] = [
     group: "React",
     install: installCmd("@booki-aui/react"),
   },
+  {
+    name: "icon-button",
+    title: "IconButton",
+    description:
+      "A button that shows an icon and is named by what it does. The label is its name and tooltip, so the agent presses it by those words.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "text-link",
+    title: "TextLink",
+    description: "A link in Booki's look, with an optional icon. Navigation, not an agent action.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "card",
+    title: "Card",
+    description:
+      "A paper surface for one piece of work: a title that names it, actions beside the title, the body and a footer.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "field",
+    title: "Field",
+    description:
+      "A label, one control, a hint and an error, wired together. A plain text input inside becomes one the agent fills by its label.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "toolbar",
+    title: "Toolbar",
+    description:
+      "A row of actions with one tab stop and arrow keys between them. The agent reads it as one named list of buttons.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "agent-cursor",
+    title: "AgentCursor",
+    description: "The agent's visible pointer: before each step it glides to the control, rings it and presses.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "agent-presence",
+    title: "AgentPresence",
+    description: "A small marker on the control the agent is changing, announced to a screen reader.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
+    name: "agent-proposal",
+    title: "AgentProposal",
+    description: "The agent's suggestion shown on the real controls, with Keep and Revert for the person.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
 ];
 
 export function getCatalogItem(name: string): CatalogItem | undefined {

@@ -153,6 +153,18 @@
       "types": "./dist/agent-status.d.ts",
       "default": "./dist/agent-status.js"
     },
+    "./card": {
+      "types": "./dist/card.d.ts",
+      "default": "./dist/card.js"
+    },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "default": "./dist/field.js"
+    },
+    "./toolbar": {
+      "types": "./dist/toolbar.d.ts",
+      "default": "./dist/toolbar.js"
+    },
     "./audit-trail": {
       "types": "./dist/audit-trail.d.ts",
       "default": "./dist/audit-trail.js"

@@ -42,6 +42,7 @@ import { InstallBlock } from "../components/install-block";
 import { Preview } from "../components/preview";
 import { PREVIEW_RESERVE } from "./agent-demos";
 import { controlExample, usesBridge } from "./control-examples";
+import { BLOCK_PREVIEWS } from "./block-previews";
 import { GAP_PREVIEWS } from "./gap-previews";
 import {
   ApprovalChainPreview,
@@ -374,6 +375,8 @@ function renderPreview(
     default: {
       const Gap = GAP_PREVIEWS[name];
       if (Gap) return <Gap key={country} />;
+      const Block = BLOCK_PREVIEWS[name];
+      if (Block) return <Block />;
       return <p className="text-sm text-muted-foreground">{t("No preview.", "Ingen forhåndsvisning.")}</p>;
     }
   }
