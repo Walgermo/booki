@@ -58,8 +58,8 @@ export function MarketingShell() {
             </p>
             <p className="m-0">
               {t(
-                "Claude, ChatGPT, Gemini and Grok are trademarks of their owners. Booki is not affiliated with them.",
-                "Claude, ChatGPT, Gemini og Grok er varemerker som tilhører eierne sine. Booki er ikke tilknyttet dem.",
+                "Claude, ChatGPT, Gemini and Grok Bot are trademarks of their owners. Booki is not affiliated with them.",
+                "Claude, ChatGPT, Gemini og Grok Bot er varemerker som tilhører eierne sine. Booki er ikke tilknyttet dem.",
               )}
             </p>
             <p className="m-0">

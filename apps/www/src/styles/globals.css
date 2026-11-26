@@ -612,22 +612,51 @@
   }
 }
 
-/* A phone: the same story, one scene under the next; the points stay, the line goes. */
+/* A phone: the same timeline in miniature, three columns side by side, scenes scaled down. */
 @media (max-width: 720px) {
   .landing-hero__timeline {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 2.75rem;
-    max-width: 22rem;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
   }
 
   .landing-hero__timeline::before {
-    content: none;
+    left: calc((100% - 1rem) / 6);
+    right: calc((100% - 1rem) / 6);
   }
 
-  /* Between two eras, above the later one's point. */
+  .landing-hero__timeline li {
+    padding-top: 1.125rem;
+    font-size: 0.6875rem;
+    line-height: 1.3;
+  }
+
+  .landing-hero__era {
+    font-size: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .landing-hero__date {
+    font-size: 0.625rem;
+    margin-bottom: 0.125rem;
+  }
+
   .landing-hero__gap {
-    top: -1.5rem;
-    left: 50%;
+    display: none;
+  }
+
+  /* The scene is drawn at desktop size and shown at half, so it stays exact. */
+  .landing-hero__scene {
+    zoom: 0.5;
+    margin: 2.75rem 0 0.75rem;
+  }
+
+  .landing-hero__note {
+    margin-top: 0.5rem;
+  }
+
+  /* In miniature the agent's cursor alone says it; its label would run past the edge. */
+  .landing-hero__agent span {
+    display: none;
   }
 }
 

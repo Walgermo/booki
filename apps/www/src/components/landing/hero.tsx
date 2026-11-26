@@ -20,19 +20,18 @@ export function Hero({ agent }: { agent: LandingAgent }) {
       <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] justify-items-center text-center">
         <HeroTitle
           className="landing-hero__title m-0 w-full max-w-full min-w-0 text-balance"
-          text={t("Get agentic UI for your ERP", "Få agentisk UI til deres ERP-system")}
+          text={t("Get agentic UI for your app", "Få agentisk UI til appen deres")}
           mark={t("agentic", "agentisk")}
-          rotate={t(
-            "ERP|CRM|invoicing tool|payments app|help desk|HR system|project tool|audit software|expense app",
-            "ERP-system|CRM|fakturasystem|betalingsløsning|helpdesk|HR-system|prosjektverktøy|revisjonsverktøy|utleggssystem",
-          ).split("|")}
           markRef={markRef}
         />
         <p className="landing-hero__hook">
           {t("UI components that let ", "UI-komponenter som lar ")}
-          <AgentName id="claude" after="," /> <AgentName id="chatgpt" after="," /> <AgentName id="gemini" />{" "}
-          {t("or", "eller")} <AgentName id="grok" />{" "}
-          {t("work in your app, next to your people.", "jobbe i appen deres, side om side med folkene deres.")}
+          <AgentName id="claude" after="," /> <AgentName id="chatgpt" after="," /> <AgentName id="gemini" after="," />{" "}
+          <AgentName id="grok" />{" "}
+          {t(
+            "and others work in your app, next to your customers.",
+            "og andre jobbe i appen deres, side om side med kundene deres.",
+          )}
         </p>
         <ol
           className="landing-hero__timeline"
