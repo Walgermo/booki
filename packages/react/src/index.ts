@@ -277,6 +277,13 @@ export {
   type UseAgentLogOptions,
 } from "./agent-log.js";
 export { AgentSnapshot, type AgentSnapshotEntry, type AgentSnapshotProps } from "./agent-snapshot.js";
+export {
+  AgentStatus,
+  Spinner,
+  type AgentStatusProps,
+  type AgentStatusState,
+  type SpinnerProps,
+} from "./agent-status.js";
 export * from "./toasts.js";
 export * from "./client-requests.js";
 export * from "./deal-pipeline.js";

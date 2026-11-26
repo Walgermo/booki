@@ -353,6 +353,14 @@ export const catalog: CatalogItem[] = [
     install: installCmd("@booki-aui/react"),
   },
   {
+    name: "agent-status",
+    title: "AgentStatus",
+    description:
+      "One short line telling a person what the agent is doing: idle, working, waiting for a person, done or refused. Lime only for the agent's own work; the agent itself never reads it.",
+    group: "React",
+    install: installCmd("@booki-aui/react"),
+  },
+  {
     name: "document-signoff",
     title: "DocumentSignoff",
     description:

@@ -1,4 +1,5 @@
 import { AMOUNT_DRAFT_NB } from "./msg-amount.js";
+import { AGENT_STATUS_NB } from "./msg-agent-status.js";
 import type { MessageCode } from "./msg.js";
 
 /**
@@ -572,6 +573,7 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "field.unknown-account-more":
     'Ingen konto "{value}" i kontoplanen på {count}. Nærmest: {items}. query({ within, text }) finner en på nummer eller helt ord.',
   ...AMOUNT_DRAFT_NB,
+  ...AGENT_STATUS_NB,
   "amount.not-minor":
     "Beløpet må være et sikkert heltall i minste enhet (f.eks. 12500 = 125,00 {currency}), fikk {value}.",
   "amount.below-min": "Beløpet {minor} (minste enhet) er under minMinor {min}.",
@@ -790,8 +792,6 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "agent-log.empty": "Ingen kall fra agenten ennå. Hvert kall agenten gjør og svaret på det listes her.",
   "agent-log.refused-count": "{count} avvist",
   "agent-log.running": "kjører",
-  "agent-log.waiting": "venter på en person",
-  "agent-log.refused": "avvist",
   "agent-snapshot.heading": "Det agenten leser",
   "agent-snapshot.empty":
     "Ingenting her er i agentens øyeblikksbilde. Det bare viser, så en agent har ingenting å lese eller kalle på det.",

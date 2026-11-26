@@ -115,6 +115,12 @@ export const AGENT_DEMOS: Record<string, Demo> = {
       "Kvitteringer er for personen. useAgentToasts gir en for hver endring agenten gjør, med Angre.",
     ),
   ),
+  "agent-status": readsNothing(
+    b(
+      "The status line is for the person watching; the agent knows its own state, so it is kept out of the snapshot.",
+      "Statuslinjen er for personen som ser på; agenten vet selv hva den gjør, så den holdes utenfor øyeblikksbildet.",
+    ),
+  ),
   "country-toggle": readsNothing(
     b(
       "The country is the person's setting, so the toggle is not an agent target. The agent sees its effect in every other control: currency, VAT codes, bank format.",
@@ -921,6 +927,7 @@ export const PREVIEW_RESERVE: Record<string, readonly [number, number]> = {
   button: [184, 176],
   "confirm-dialog": [88, 96],
   toasts: [88, 96],
+  "agent-status": [136, 88],
   "document-signoff": [592, 336],
   "sheet-stack": [712, 736],
   "fixed-asset-register": [1152, 848],

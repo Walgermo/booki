@@ -58,6 +58,7 @@ export default defineConfig({
     "src/exception-banner.tsx",
     "src/button.tsx",
     "src/icon-button.tsx",
+    "src/agent-status.tsx",
     "src/audit-trail.tsx",
     "src/country-toggle.tsx",
     "src/access.tsx",

@@ -149,6 +149,10 @@
       "types": "./dist/icon-button.d.ts",
       "default": "./dist/icon-button.js"
     },
+    "./agent-status": {
+      "types": "./dist/agent-status.d.ts",
+      "default": "./dist/agent-status.js"
+    },
     "./audit-trail": {
       "types": "./dist/audit-trail.d.ts",
       "default": "./dist/audit-trail.js"

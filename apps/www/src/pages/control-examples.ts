@@ -71,6 +71,13 @@ export function AgentReceipts() {
     "Mount AgentReceipts once in the app shell. A bridge edit shows an agent-marked receipt, with Undo for eligible changes.",
     "Monter AgentReceipts én gang i applikasjonen. En endring via broen viser en agentmerket kvittering, med Angre der det er mulig.",
   ),
+  "agent-status": jsx(
+    `import { AgentStatus } from "@booki-aui/react"
+
+<AgentStatus state="waiting" />`,
+    'Shows "waiting for a person" in the person\'s language, with the icon hidden and the change announced politely. Pass the state your agent loop is in; label overrides the words.',
+    "Viser «venter på en person» på personens språk, med ikonet skjult og endringen lest opp høflig. Send tilstanden agentløkken er i; label overstyrer ordene.",
+  ),
   "country-toggle": jsx(
     `import { BookiLocaleProvider, CountryToggle } from "@booki-aui/react"
 

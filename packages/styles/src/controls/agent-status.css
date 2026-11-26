@@ -1,0 +1,163 @@
+/* ── Agent status: what the agent is doing, told to a person (AgentStatus) ── */
+
+/*
+ * Colour by meaning: signal only for what the agent did (working, done),
+ * warning while it waits for a person, danger when a step was refused, muted
+ * when idle. On ink ([data-bk-surface="ink"] on a wrapper) each takes its ink twin.
+ */
+[data-slot="agent-status"] {
+  --agent-status-idle: var(--bk-muted-fg);
+  --agent-status-agent: var(--bk-signal-ink);
+  --agent-status-waiting: var(--bk-warning);
+  --agent-status-refused: var(--bk-danger);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  vertical-align: middle;
+  color: var(--agent-status-idle);
+  font-family: var(--bk-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color 150ms ease-out;
+}
+
+:where([data-bk-surface="ink"]) [data-slot="agent-status"] {
+  --agent-status-idle: var(--bk-ink-muted);
+  --agent-status-agent: var(--bk-signal);
+  --agent-status-waiting: var(--bk-ink-warning);
+  --agent-status-refused: var(--bk-ink-danger);
+}
+
+[data-slot="agent-status"]:is([data-state="working"], [data-state="done"]) {
+  color: var(--agent-status-agent);
+}
+
+[data-slot="agent-status"][data-state="waiting"] {
+  color: var(--agent-status-waiting);
+}
+
+[data-slot="agent-status"][data-state="refused"] {
+  color: var(--agent-status-refused);
+}
+
+/*
+ * A stable box: the label reserves the longest default ("waiting for a person",
+ * 20 characters of mono), so switching state never moves what is beside it.
+ * Set --bk-agent-status-width for labels of your own.
+ */
+:where([data-slot="agent-status"]) [data-slot="agent-status-label"] {
+  display: inline-block;
+  min-inline-size: var(--bk-agent-status-width, 20ch);
+  text-align: start;
+}
+
+/* The outgoing and incoming icon share one 16px cell. */
+:where([data-slot="agent-status"]) [data-slot="agent-status-icons"] {
+  display: inline-grid;
+  flex: none;
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+:where([data-slot="agent-status"]) [data-slot="agent-status-icon"] {
+  grid-area: 1 / 1;
+  display: block;
+}
+
+:where([data-slot="agent-status"]) [data-slot="agent-status-icon"] > svg {
+  display: block;
+}
+
+/* ── Motion ── transform and opacity, plus the one check stroke. */
+
+/* A state change: the new icon settles in, the old one fades under it. Never on first render. */
+[data-slot="agent-status"][data-changed] [data-slot="agent-status-icon"]:not([data-leaving]) {
+  animation: bk-agent-status-in 150ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+[data-slot="agent-status"] [data-slot="agent-status-icon"][data-leaving] {
+  animation: bk-agent-status-out 150ms ease-out both;
+}
+
+/* Working: the badge's arc turns about its own centre, at a constant speed. */
+[data-slot="agent-status-icon"][data-state="working"] [data-slot="agent-status-badge"] {
+  transform-box: view-box;
+  transform-origin: 19px 19px;
+  animation: bk-agent-status-turn 0.9s linear infinite;
+}
+
+/* Waiting for a person: a slow breath. */
+[data-slot="agent-status-icon"][data-state="waiting"] > svg {
+  animation: bk-agent-status-breathe 1.6s ease-in-out infinite alternate;
+}
+
+/* Done: the check draws in once, only when the state changed to done. */
+[data-slot="agent-status"][data-changed]
+  [data-slot="agent-status-icon"][data-state="done"]:not([data-leaving])
+  [data-slot="agent-status-badge"]
+  path {
+  stroke-dasharray: 1;
+  animation: bk-agent-status-draw 250ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes bk-agent-status-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes bk-agent-status-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes bk-agent-status-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes bk-agent-status-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bk-agent-status-breathe {
+  to {
+    opacity: 0.5;
+  }
+}
+
+@keyframes bk-agent-status-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Reduced motion: a still icon. No turn, breath or draw; the change is a short fade and the colour. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="agent-status"] {
+    transition-duration: 120ms;
+  }
+
+  [data-slot="agent-status"][data-changed] [data-slot="agent-status-icon"]:not([data-leaving]) {
+    animation-name: bk-agent-status-fade;
+  }
+
+  [data-slot="agent-status-icon"][data-state="working"] [data-slot="agent-status-badge"],
+  [data-slot="agent-status-icon"][data-state="waiting"] > svg,
+  [data-slot="agent-status"][data-changed]
+    [data-slot="agent-status-icon"][data-state="done"]:not([data-leaving])
+    [data-slot="agent-status-badge"]
+    path {
+    animation: none;
+  }
+}

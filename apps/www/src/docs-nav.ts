@@ -104,7 +104,16 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "blocks",
     en: "Building blocks",
     nb: "Byggeklosser",
-    pages: ["button", "data-table", "confirm-dialog", "toasts", "sheet-stack", "exception-banner", "icons"],
+    pages: [
+      "button",
+      "data-table",
+      "confirm-dialog",
+      "toasts",
+      "agent-status",
+      "sheet-stack",
+      "exception-banner",
+      "icons",
+    ],
   },
 ];
 
@@ -164,6 +173,7 @@ const PLAIN: Record<string, { en: string; nb: string }> = {
   "data-table": { en: "Data table", nb: "Datatabell" },
   "confirm-dialog": { en: "Confirm dialog", nb: "Bekreftelsesdialog" },
   toasts: { en: "Notifications", nb: "Varsler" },
+  "agent-status": { en: "Agent status", nb: "Agentstatus" },
   "sheet-stack": { en: "Sheet stack", nb: "Arkstabel" },
   "exception-banner": { en: "Exception banner", nb: "Avviksbanner" },
   icons: { en: "Icons", nb: "Ikoner" },
@@ -242,6 +252,7 @@ export const PAGE_ICON: Record<string, IconName> = {
   "data-table": "table",
   "confirm-dialog": "dialog",
   toasts: "bell",
+  "agent-status": "agent-working",
   "sheet-stack": "layers",
   "exception-banner": "triangle-alert",
   icons: "shapes",

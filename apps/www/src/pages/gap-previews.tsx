@@ -6,6 +6,8 @@ import type { Deal, PipelineStage, StageStay } from "@booki-aui/core/pipeline";
 import type { RecurringAgreement } from "@booki-aui/core/recurring";
 import {
   AgedBalances,
+  AgentStatus,
+  type AgentStatusState,
   AgingChart,
   BarChart,
   CashflowWaterfall,
@@ -52,7 +54,9 @@ import {
 } from "@/lib/demo-data";
 import { CASHFLOW, COST_BY_ACCOUNT, COSTS, OPENING, REVENUE, series } from "@/components/erp-dashboard";
 import type { ClientRequest, Finding, SignableDocument, StackSheet } from "@booki-aui/react";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useLang } from "@/lib/lang";
+import { Button as SiteButton } from "@/components/ui/button";
 
 // Made-up engagement: no real company or person.
 const AUDIT_EVIDENCE = [
@@ -198,6 +202,37 @@ function ToastsPreview() {
         Vis agentens kvittering
       </Button>
       <BookiToasts toaster={toaster} />
+    </div>
+  );
+}
+
+const AGENT_STATES: AgentStatusState[] = ["idle", "working", "waiting", "working", "done", "refused"];
+
+/** One run of an agent, on paper and on ink, a state every two seconds. Pause holds it. */
+function AgentStatusPreview() {
+  const { t } = useLang();
+  const [step, setStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => setStep((n) => (n + 1) % AGENT_STATES.length), 2000);
+    return () => clearInterval(timer);
+  }, [paused]);
+  const state = AGENT_STATES[step]!;
+  return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <AgentStatus state={state} />
+        <div className="site-machine rounded-[var(--bk-radius)] px-3 py-2">
+          <AgentStatus state={state} />
+        </div>
+      </div>
+      {/* The demo's own control, for the reader: not part of what the agent sees. */}
+      <div data-agent-hidden="" className="justify-self-start">
+        <SiteButton variant="ghost" size="sm" onClick={() => setPaused((p) => !p)}>
+          {paused ? t("Play", "Spill av") : t("Pause", "Pause")}
+        </SiteButton>
+      </div>
     </div>
   );
 }
@@ -503,6 +538,7 @@ export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
   ),
   "document-signoff": () => <DocumentSignoff defaultDocument={WORKPAPER_DOCUMENT} actor="kari" actorName="Kari" />,
   "sheet-stack": () => <SheetStackPreview />,
+  "agent-status": () => <AgentStatusPreview />,
   "client-requests": () => <ClientRequests defaultRequests={CLIENT_REQUESTS} today="2026-11-15" actor="nina" />,
   "deal-pipeline": () => (
     <DealPipeline
