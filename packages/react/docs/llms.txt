@@ -195,6 +195,7 @@ Form props: AmountField, the selects, the bank / reference / organization / IBAN
 - Prefer `buildBalancedSalesVoucher` from `@booki-aui/core/voucher` for auto-compose
 - Never store floats as canonical amounts
 - Decimal text from a database (`"1234.50"`): `minorFromDecimal(text, currency)` and `decimalFromMinor(minor, currency)`, exact; extra decimals are refused, not rounded
+- A stored integer whose decimals may differ from today's ISO 4217 minor unit: store `toScaled(money)` (`{ amount, currency, scale }`) and read it with `moneyFromScaled`; `rescaleMinor(minor, fromScale, currency)` is exact and refuses a change that would drop digits; `legacyMinorDigitsFor(currency)` gives the decimals versions before 0.4.0 used
 - Prefer `actor: agent:…` in AuditTrail when `subscribe` reports `source: "agent"`
 
 ## In an existing app

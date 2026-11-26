@@ -230,6 +230,11 @@ export const NB: Readonly<Record<MessageCode, string>> = {
   "money.not-safe-integer": "Money.minor må være et trygt heltall, ikke {value}",
   "money.not-finite": "fromMajor forventer et endelig tall, ikke {value}",
   "money.currency-mismatch": "Valutaene er ulike: {a} og {b}",
+  "money.not-scale": "En skala er antall desimaler heltallet teller, et helt tall fra 0 til 18, ikke {value}.",
+  "money.rescale-lossy":
+    "{amount} med {from} desimaler er ikke et helt antall minste enheter i {currency} ({to} desimaler). Rund av først, med vilje.",
+  "money.scaled-format":
+    'Et skalert beløp er { amount, currency, scale }, for eksempel { amount: 1500000, currency: "CLP", scale: 2 }.',
   "fx.rate-format": "En valutakurs er et heltall i milliondeler over null (11,2345 er 11234500), ikke {value}.",
   "fx.amount-format": "Et beløp er et heltall i minste myntenhet, ikke {value}.",
   "fx.no-rate":
