@@ -55,6 +55,9 @@ export function BookiClosedPeriod() {
   const [lines, setLines] = useState<VoucherLine[]>([]);
   const [posted, setPosted] = useState(false);
   const [postedBy, setPostedBy] = useState("");
+  // What was posted, kept as it was at the click: an edit after posting changes the draft, not the posting.
+  const [postedDraft, setPostedDraft] = useState<{ date: string; text: string; lines: VoucherLine[] } | null>(null);
+  const voucherNow = postedDraft ?? { date, text, lines };
   const [events, setEvents] = useState<string[]>([]);
   const grantedBy = useRef<string | null>(null);
   const latest = useRef({ date, lines, periods });
@@ -106,7 +109,7 @@ export function BookiClosedPeriod() {
   // For the benchmark's end-state checks only.
   useEndState<BookiClosedPeriodState>("__accClosedPeriod", {
     periods,
-    voucher: { date, lines, posted, text, postedBy },
+    voucher: { date: voucherNow.date, lines: voucherNow.lines, posted, text: voucherNow.text, postedBy },
     events,
   });
 
@@ -149,6 +152,7 @@ export function BookiClosedPeriod() {
             setPostedBy(grantedBy.current ?? "person");
             grantedBy.current = null;
             setPosted(true);
+            setPostedDraft({ date: latest.current.date, text, lines: latest.current.lines });
             setEvents((all) => [...all, "posted"]);
           }}
         >

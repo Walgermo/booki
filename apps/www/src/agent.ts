@@ -99,7 +99,13 @@ const led = cursor.wrap(allow);
 const allowWithCursor: typeof led = (step, context) => (quiet > 0 ? allow(step) : led(step, context));
 
 const bridge = createBookiAgent({ agentId: "site", allow: allowWithCursor });
-const onPage = <Entry extends { offPage?: boolean }>(entries: Entry[]) => entries.filter((entry) => !entry.offPage);
+type Listed = { offPage?: boolean; actions: string[] };
+const onPage = <Entry extends Listed>(entries: Entry[]) => entries.filter((entry) => !entry.offPage);
+// A query with `closed: true` reads closed sections and returns what it found with
+// `offPage: true` too. Those can still act; a remembered component that left the
+// page has no actions, so that is what still drops out.
+const onPageOrBehind = <Entry extends Listed>(entries: Entry[]) =>
+  entries.filter((entry) => !entry.offPage || entry.actions.length > 0);
 
 // Site discovery describes the current screen. A docs preview can be replaced
 // on a country change or reset, and its previously visible fields are history
@@ -109,7 +115,8 @@ const agent: typeof bridge = {
   snapshot: () => onPage(bridge.snapshot()),
   query: async (input) => {
     const result = await bridge.query(input);
-    return Array.isArray(result) ? onPage(result) : result;
+    if (!Array.isArray(result)) return result;
+    return input?.closed ? onPageOrBehind(result) : onPage(result);
   },
 };
 

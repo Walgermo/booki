@@ -115,6 +115,8 @@ export function formatters(lang: Lang = "en") {
       day: "numeric",
       month: "short",
       year: "numeric",
+      // The build renders this date too: one time zone, so the browser's first render matches the HTML.
+      timeZone: "UTC",
     }),
   };
 }
@@ -251,8 +253,9 @@ export function proofKpis() {
   });
   const costRatios = pairs.filter(([a, r]) => a.costUsd && r.costUsd).map(([a, r]) => r.costUsd! / a.costUsd!);
   const sum = (list: RealSide[], pick: (side: RealSide) => number) => list.reduce((n, side) => n + pick(side), 0);
-  // Before and after are medians per run; each factor is their ratio, so the
-  // three numbers shown for a figure always agree.
+  // Before and after are each side's median per run, for the bars. The factors
+  // (cheaper, faster) are the median of each pair's ratio: another summary, so
+  // the proof strip names both rather than letting one stand for the other.
   const cost = {
     before: median(pairs.map(([, r]) => r.costUsd ?? 0)),
     after: median(pairs.map(([a]) => a.costUsd ?? 0)),

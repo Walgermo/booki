@@ -178,7 +178,7 @@ export const AGENT_DEMOS: Record<string, Demo> = {
           ),
         ]
       : [
-          act("bank-account", "setRouting", ["021000021"], b("Wrote the routing number.", "Skrev rutingnummeret.")),
+          act("bank-account", "setRouting", ["011000015"], b("Wrote the routing number.", "Skrev rutingnummeret.")),
           act("bank-account", "setAccount", ["987654321"], b("Wrote the account number.", "Skrev kontonummeret.")),
           read("bank-account", (e) =>
             b(
@@ -191,7 +191,7 @@ export const AGENT_DEMOS: Record<string, Demo> = {
     act(
       "payment-reference",
       "setReference",
-      [country === "NO" ? "10012342" : "INV-1044"],
+      [country === "NO" ? "10044048" : "INV-1044"],
       b("Wrote the payment reference.", "Skrev betalingsreferansen."),
     ),
     read("payment-reference", (e) =>

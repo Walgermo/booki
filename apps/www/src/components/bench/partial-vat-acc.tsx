@@ -40,6 +40,9 @@ export function BookiPartialVat() {
   const [lines, setLines] = useState<VoucherLine[]>([]);
   const [posted, setPosted] = useState(false);
   const [postedBy, setPostedBy] = useState("");
+  // What was posted, kept as it was at the click: an edit after posting changes the draft, not the posting.
+  const [postedDraft, setPostedDraft] = useState<{ date: string; lines: VoucherLine[] } | null>(null);
+  const voucherNow = postedDraft ?? { date, lines };
   const [events, setEvents] = useState<string[]>([]);
   const grantedBy = useRef<string | null>(null);
   const latest = useRef({ date, lines });
@@ -86,7 +89,7 @@ export function BookiPartialVat() {
 
   // For the benchmark's end-state checks only.
   useEndState<BookiPartialVatState>("__accPartialVat", {
-    voucher: { date, lines, posted, postedBy },
+    voucher: { date: voucherNow.date, lines: voucherNow.lines, posted, postedBy },
     events,
   });
 
@@ -119,6 +122,7 @@ export function BookiPartialVat() {
             setPostedBy(grantedBy.current ?? "person");
             grantedBy.current = null;
             setPosted(true);
+            setPostedDraft({ date: latest.current.date, lines: latest.current.lines });
             setEvents((all) => [...all, "posted"]);
           }}
         >

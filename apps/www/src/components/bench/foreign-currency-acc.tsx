@@ -70,6 +70,9 @@ export function BookiForeign() {
   const [lines, setLines] = useState<VoucherLine[]>([]);
   const [posted, setPosted] = useState(false);
   const [postedBy, setPostedBy] = useState("");
+  // What was posted, kept as it was at the click: an edit after posting changes the draft, not the posting.
+  const [postedDraft, setPostedDraft] = useState<{ date: string; lines: VoucherLine[] } | null>(null);
+  const voucherNow = postedDraft ?? { date, lines };
   const [events, setEvents] = useState<string[]>([]);
   const grantedBy = useRef<string | null>(null);
   const latest = useRef({ date, lines });
@@ -113,8 +116,8 @@ export function BookiForeign() {
   // amount, currency and VAT code as flat fields; the rate is the one a line records.
   useEndState<BookiForeignState>("__accForeign", {
     voucher: {
-      date,
-      lines: lines.map((line) => ({
+      date: voucherNow.date,
+      lines: voucherNow.lines.map((line) => ({
         account: line.account,
         debitMinor: line.debitMinor,
         creditMinor: line.creditMinor,
@@ -122,7 +125,7 @@ export function BookiForeign() {
         currency: line.foreign?.currency,
         vatCode: line.vatCode,
       })),
-      rateScaled: lines.find((line) => line.foreign)?.foreign?.rateScaled ?? null,
+      rateScaled: voucherNow.lines.find((line) => line.foreign)?.foreign?.rateScaled ?? null,
       posted,
       postedBy,
     },
@@ -172,6 +175,7 @@ export function BookiForeign() {
             setPostedBy(grantedBy.current ?? "person");
             grantedBy.current = null;
             setPosted(true);
+            setPostedDraft({ date: latest.current.date, lines: latest.current.lines });
             setEvents((all) => [...all, "posted"]);
           }}
         >

@@ -8,15 +8,18 @@
  *   pnpm --filter agent-benchmark h2h --task all
  *   node apps/www/scripts/bench-export.mjs [path/to/h2h.json]
  *
- * `--api` replaces only the API side (results/api-*.json, from
+ * `--api` updates only the API side (results/api-*.json, from
  * `proof --side api`) in the bench.json there is, and leaves every other
- * figure as it is.
+ * figure as it is. Either way, a real-model run found locally replaces the
+ * published one for the same task, model and side, and the rest stay.
  *
  *   node apps/www/scripts/bench-export.mjs --api
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { medianTotalTokens, mergeReal } from "./bench-real.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, "../../..");
@@ -67,11 +70,7 @@ function realFrom(pattern) {
         succeeded: page.succeeded,
         toolCalls: page.toolCalls.median,
         requests: page.requests.median,
-        tokens:
-          page.inputTokens.median +
-          page.cacheWriteTokens.median +
-          page.cacheReadTokens.median +
-          page.outputTokens.median,
+        tokens: medianTotalTokens(run, page),
         costUsd: page.costUsd?.median ?? null,
         wallMs: Math.round(page.wallMs.median),
       };
@@ -99,10 +98,7 @@ const write = (data, what) => {
 if (process.argv[2] === "--api") {
   const data = JSON.parse(readFileSync(out, "utf8"));
   const api = realFrom(/^api-.*\.json$/);
-  data.real = {
-    runs: [...data.real.runs.filter((run) => run.side !== "api"), ...api.runs],
-    sides: [...data.real.sides.filter((side) => side.key !== "api"), ...api.sides],
-  };
+  data.real = mergeReal(data.real, api);
   write(data, `${api.sides.length} API sides from ${api.runs.length} files, nothing else changed`);
   process.exit(0);
 }
@@ -152,7 +148,15 @@ const sides = [...newestFor]
     };
   });
 
-const real = realFrom(/^(bench|api)-.*\.json$/);
+// Runs found here replace the published ones for the same task, model and side; the rest stay.
+const published = (() => {
+  try {
+    return JSON.parse(readFileSync(out, "utf8")).real;
+  } catch {
+    return undefined;
+  }
+})();
+const real = mergeReal(published, realFrom(/^(bench|api)-.*\.json$/));
 
 const data = {
   sources: [...new Set([...newestFor.values()].map(({ file }) => path.relative(repo, file)))],

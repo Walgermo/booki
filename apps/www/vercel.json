@@ -4,11 +4,11 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm --dir ../.. --filter @booki-aui/core --filter @booki-aui/primitives --filter @booki-aui/react --filter @booki-aui/styles build && pnpm build",
   "outputDirectory": "dist",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../../packages ../../pnpm-lock.yaml ../../package.json",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../../packages ../../skills ../../pnpm-lock.yaml ../../package.json",
   "rewrites": [
     {
       "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ],
   "cleanUrls": true,

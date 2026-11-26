@@ -47,8 +47,8 @@ export function ProofStrip() {
       show: (v) => f.usd(v, 3),
       beforeText: f.usd(kpi.cost.before, 3),
       note: t(
-        `median ${times(kpi.cheaper.median)} cheaper, ${range(kpi.cheaper)} over ${kpi.pairs} pairs of model and screen`,
-        `median ${times(kpi.cheaper.median)} billigere, ${range(kpi.cheaper)} over ${kpi.pairs} par av modell og skjerm`,
+        `${times(kpi.cheaper.median)} cheaper per pair (median, ${range(kpi.cheaper)}) over ${kpi.pairs} pairs of model and screen; the bars show each side's median`,
+        `${times(kpi.cheaper.median)} billigere per par (median, ${range(kpi.cheaper)}) over ${kpi.pairs} par av modell og skjerm; stolpene viser medianen for hver side`,
       ),
     },
     {
@@ -60,8 +60,8 @@ export function ProofStrip() {
       show: (v) => f.seconds(v),
       beforeText: f.seconds(kpi.wallMs.before),
       note: t(
-        `median ${times(kpi.faster.median)} faster, ${range(kpi.faster)}, the model's own time included`,
-        `median ${times(kpi.faster.median)} raskere, ${range(kpi.faster)}, med modellens egen tid`,
+        `${times(kpi.faster.median)} faster per pair (median, ${range(kpi.faster)}), the model's own time included; the bars show each side's median`,
+        `${times(kpi.faster.median)} raskere per par (median, ${range(kpi.faster)}), med modellens egen tid; stolpene viser medianen for hver side`,
       ),
     },
   ];

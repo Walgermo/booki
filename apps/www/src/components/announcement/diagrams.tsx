@@ -67,7 +67,9 @@ export function BeforeAfter() {
   const colX = (i: number) => 120 + i * (BOX_W + GAP);
   return (
     <figure className="dia m-0">
-      <div className="dia__frame">
+      {/* On a narrow screen the frame scrolls: focusable, so a keyboard can pan it too. */}
+      {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrolling region must take focus */}
+      <div className="dia__frame" role="region" aria-labelledby="dia-before-after-title" tabIndex={0}>
         <svg
           viewBox={`0 0 ${ROW_W} 272`}
           role="img"
@@ -165,7 +167,8 @@ export function OneStep() {
   const bottom = 456;
   return (
     <figure className="dia m-0">
-      <div className="dia__frame">
+      {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrolling region must take focus */}
+      <div className="dia__frame" role="region" aria-labelledby="dia-one-step-title" tabIndex={0}>
         <svg
           viewBox={`0 0 ${W} ${bottom + 16}`}
           role="img"

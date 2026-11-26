@@ -113,6 +113,9 @@ export function ErpWindow({
     [],
   );
 
+  // The countdown for a screen reader: the cursor's label is decorative and hidden from it.
+  const [notice, setNotice] = useState("");
+
   // The desktop walkthrough starts from the hero title. Touch, narrow screens, and reduced
   // motion use the demo button, so reading the task or install guide never starts a scroll.
   useEffect(() => {
@@ -137,11 +140,13 @@ export function ErpWindow({
       for (const input of inputs) window.removeEventListener(input, stop);
       if (showCursorMessage) cursor.settle(true);
       showCursorMessage = false;
+      setNotice("");
     }
     for (const input of inputs) window.addEventListener(input, stop, { passive: true });
 
     async function play() {
       showCursorMessage = false;
+      setNotice("");
       const posted = await run();
       const firstMetric = to.current?.querySelector("dt");
       if (!stopped && posted && firstMetric) {
@@ -160,6 +165,15 @@ export function ErpWindow({
         return;
       }
       showCursorMessage = true;
+      // Said once, when the countdown opens: any key skips it, as any scroll or click does.
+      if (left === 3) {
+        setNotice(
+          t(
+            "The invoice demo starts in 3 seconds and scrolls the page. Press any key to skip it.",
+            "Fakturademoen starter om 3 sekunder og ruller siden. Trykk en tast for å hoppe over.",
+          ),
+        );
+      }
       cursor.rest(
         word,
         t(`Starts in ${left} · scroll or click to skip`, `Starter om ${left} · rull eller klikk for å hoppe over`),
@@ -183,6 +197,9 @@ export function ErpWindow({
 
   return (
     <section id="invoice-demo" aria-labelledby="invoice-demo-title" className="grid scroll-mt-6 gap-4">
+      <p className="sr-only" role="status">
+        {notice}
+      </p>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1">
           <h2 id="invoice-demo-title" className="m-0 text-lg font-semibold">

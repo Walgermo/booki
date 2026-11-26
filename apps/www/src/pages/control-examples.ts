@@ -193,6 +193,11 @@ const reads: Record<string, string> = {
   "kpi-stat": "valueMinor, previousMinor, deltaPct, favourable",
 };
 
+// The step to show when it is not the first act: the demo enters an invalid number first, then corrects it.
+const exampleAct: Record<string, number> = {
+  "organization-number-input": 1,
+};
+
 const confirmation: Record<string, string> = {
   "payment-confirm": "Confirm this payment with a person",
   "exception-banner": "Exception review needs a person",
@@ -208,7 +213,10 @@ export function controlExample(name: string, context: Omit<DemoContext, "fmt">):
   });
   const step = reads[name]
     ? steps?.find((step) => step.kind === "read")
-    : (steps?.find((step) => step.kind === "act" && !step.expectRefusal) ?? steps?.find((step) => step.kind === "act"));
+    : exampleAct[name] !== undefined
+      ? steps?.filter((step) => step.kind === "act")[exampleAct[name]]
+      : (steps?.find((step) => step.kind === "act" && !step.expectRefusal) ??
+        steps?.find((step) => step.kind === "act"));
   if (!step?.on) throw new Error(`Missing docs example for ${name}`);
 
   const confirm = confirmation[name];
