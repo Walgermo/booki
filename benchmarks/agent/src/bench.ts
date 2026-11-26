@@ -265,7 +265,7 @@ async function main(): Promise<number> {
       task.pages.map((page) => page.id),
       records,
     );
-    const versions = collectVersions(browser, { headed: values.headed, mcpServer });
+    const versions = collectVersions(browser, { headed: values.headed, mcpServer, origin });
     console.log(`\n${report(task.id, records, summary)}\n`);
     console.log(
       'Tokens are summed from the API\'s usage over every request of a run. "input" is uncached input.\n' +
