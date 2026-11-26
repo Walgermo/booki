@@ -1201,14 +1201,7 @@ html[data-kpi-still] {
   opacity: 1;
 }
 
-/* The icons page: a note, the search field and a grid of tiles that copy the import. */
-.site-callout {
-  padding: 0.75rem 1rem;
-  border-left: 2px solid var(--bk-border-strong);
-  background: var(--bk-muted);
-  border-radius: 0 var(--bk-radius-sm) var(--bk-radius-sm) 0;
-}
-
+/* The icons page: the search field and a grid of tiles that copy the import. */
 .site-icons-search {
   width: 100%;
   min-height: 2.75rem;

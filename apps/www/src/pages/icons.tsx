@@ -80,12 +80,7 @@ export function IconsPage() {
             `${iconNames.length} duotone-ikoner for regnskaps-UI, tegnet for 16 og 20 px på samme rutenett og strek. De tar fargen fra teksten ved siden av, i lyst og mørkt tema. Søk på navn eller på hva et ikon står for («voucher», «KID», «token»); trykk på et for å kopiere importen.`,
           )}
         </p>
-        <p className="site-callout m-0 max-w-prose text-sm">
-          {t(
-            "@booki-aui/icons is not on npm yet. It ships with the next release; until then it lives in the Booki repository.",
-            "@booki-aui/icons er ikke på npm ennå. Den kommer med neste versjon; til da ligger den i Booki-repoet.",
-          )}
-        </p>
+        <InstallBlock command="pnpm add @booki-aui/icons" className="my-0 max-w-prose" />
       </header>
 
       <section className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4" aria-labelledby="icons-browse">

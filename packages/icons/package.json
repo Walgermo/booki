@@ -1,7 +1,6 @@
 {
   "name": "@booki-aui/icons",
   "version": "0.4.2",
-  "private": true,
   "description": "Booki's duotone icons for accounting UI: SVG files, their markup as strings, and a small React component.",
   "type": "module",
   "license": "MIT",
@@ -10,7 +9,7 @@
     "url": "git+https://github.com/Walgermo/booki.git",
     "directory": "packages/icons"
   },
-  "homepage": "https://booki.dev/docs",
+  "homepage": "https://booki.dev/docs/icons",
   "bugs": {
     "url": "https://github.com/Walgermo/booki/issues"
   },

@@ -8,6 +8,7 @@
       "@booki-aui/primitives",
       "@booki-aui/react",
       "@booki-aui/styles",
+      "@booki-aui/icons",
       "@booki-aui/web",
       "@booki-aui/vue",
       "@booki-aui/svelte",
