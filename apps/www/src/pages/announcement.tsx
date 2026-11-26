@@ -39,6 +39,8 @@ export function AnnouncementPage() {
     day: "numeric",
     month: "long",
     year: "numeric",
+    // The build renders this date too: one time zone, so the browser's first render matches the HTML.
+    timeZone: "UTC",
   });
 
   return (
