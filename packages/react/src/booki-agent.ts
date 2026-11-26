@@ -11,7 +11,7 @@ import {
   type AgentPolicyOptions,
 } from "@booki-aui/primitives/agent-policy";
 import { isPersonOnly } from "@booki-aui/primitives/person-only";
-import { BookiError, type MessageLanguage } from "@booki-aui/core/msg";
+import { BookiError, msg, type MessageLanguage } from "@booki-aui/core/msg";
 import type { AuditEvent } from "./audit-trail.js";
 
 type AgentBridge = ReturnType<typeof createAgent>;
@@ -502,7 +502,7 @@ function createHistory(agent: AgentBridge, options: BookiHistoryOptions = {}) {
         if (index < 0) {
           throw new BookiError("history.no-entry", {
             id,
-            entries: entries.map((item) => item.id).join(", ") || "none",
+            entries: entries.map((item) => item.id).join(", ") || msg("word.none"),
           });
         }
         if (index !== history.position() - 1) throw new BookiError("history.later-changes", { id });

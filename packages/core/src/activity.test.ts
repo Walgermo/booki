@@ -76,7 +76,12 @@ describe("activity rules", () => {
         "kari",
         LATE,
       );
-      const email = logActivity({ id: "A-2", kind: "email", subject: "Mail", at: "2026-11-25" }, "kari", LATE, "2026-11-25");
+      const email = logActivity(
+        { id: "A-2", kind: "email", subject: "Mail", at: "2026-11-25" },
+        "kari",
+        LATE,
+        "2026-11-25",
+      );
       expect(lastTouch([call, email])?.id).toBe("A-2");
       expect(lastTouch([call, email], { dayStart: "local" })?.id).toBe("A-1");
       expect(timeline([email, call], { dayStart: "local" }).map((a) => a.id)).toEqual(["A-1", "A-2"]);

@@ -14,7 +14,12 @@ describe("activity timeline order", () => {
         "kari",
         now,
       );
-      const email = logActivity({ id: "A-2", kind: "email", subject: "Mail", at: "2026-11-25" }, "kari", now, "2026-11-25");
+      const email = logActivity(
+        { id: "A-2", kind: "email", subject: "Mail", at: "2026-11-25" },
+        "kari",
+        now,
+        "2026-11-25",
+      );
       const view = derive([email, call], "2026-11-25");
       expect(view.lastTouch?.id).toBe("A-1");
       expect(view.timeline.map((item) => item.id)).toEqual(["A-1", "A-2"]);
