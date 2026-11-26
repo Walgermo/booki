@@ -6,6 +6,7 @@ import { accountingPeriod } from "@booki-aui/primitives/accounting-period-select
 import { currencySelect } from "@booki-aui/primitives/currency-select";
 import { taxCodeSelect } from "@booki-aui/primitives/tax-code-select";
 import { AccountPicker } from "./account-picker.js";
+import { AccountingPeriodSelect } from "./accounting-period-select.js";
 import { createBookiAgent } from "./booki-agent.js";
 import { CurrencySelect } from "./currency-select.js";
 import { BookiLocaleProvider } from "./locale.js";
@@ -232,6 +233,41 @@ describe("On a touch screen", () => {
 
       fireEvent.change(native, { target: { value: "MVA15" } });
       expect(native.value).toBe("MVA15");
+      view.unmount();
+    } finally {
+      window.matchMedia = original;
+    }
+  });
+
+  it("the native <select> a finger uses carries the field's error and required state", async () => {
+    const original = window.matchMedia;
+    window.matchMedia = ((query: string) => ({
+      matches: /pointer:\s*coarse/.test(query) || /hover:\s*none/.test(query),
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+    })) as unknown as typeof window.matchMedia;
+    try {
+      const field = { "aria-invalid": true, "aria-describedby": "picker-error", required: true } as const;
+      const view = render(
+        <BookiLocaleProvider defaultCountry="NO">
+          <TaxCodeSelect {...field} />
+          <CurrencySelect {...field} />
+          <AccountingPeriodSelect {...field} />
+        </BookiLocaleProvider>,
+      );
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      for (const slot of ["tax-code-select-control", "currency-select-control", "accounting-period-control"]) {
+        const native = document.querySelector(`[data-slot="${slot}"]`) as HTMLSelectElement;
+        expect(native.hidden, slot).toBe(false);
+        expect(native.getAttribute("aria-invalid"), slot).toBe("true");
+        expect(native.getAttribute("aria-describedby"), slot).toBe("picker-error");
+        expect(native.getAttribute("aria-required"), slot).toBe("true");
+      }
       view.unmount();
     } finally {
       window.matchMedia = original;
