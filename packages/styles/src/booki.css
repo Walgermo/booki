@@ -46,6 +46,7 @@
   --bk-ink-muted: oklch(0.69 0.012 262);
   --bk-ink-border: oklch(0.3 0.014 262);
   --bk-ink-danger: oklch(0.75 0.15 25);
+  --bk-ink-warning: oklch(0.8 0.13 70);
 
   /* Series on ink. Validated as a set against --bk-ink: lightness band,
      chroma floor, colour-blind separation for every pair, contrast. */

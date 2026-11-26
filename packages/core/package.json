@@ -179,6 +179,10 @@
       "types": "./dist/msg-amount.d.ts",
       "default": "./dist/msg-amount.js"
     },
+    "./msg/agent-status": {
+      "types": "./dist/msg-agent-status.d.ts",
+      "default": "./dist/msg-agent-status.js"
+    },
     "./messages": {
       "types": "./dist/messages.d.ts",
       "default": "./dist/messages.js"

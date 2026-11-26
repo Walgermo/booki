@@ -39,7 +39,7 @@ The only literals allowed are inside the token file itself, written in OKLCH.
 | `--bk-signal` + `--bk-signal-fg` | `bg-signal` / `text-signal-foreground` | The agent. A fill, with `signal-fg` text on it. |
 | `--bk-signal-ink` | `text-signal-ink` | Agent text on paper (signal itself is too light to read there). |
 | `--bk-signal-tint` | — | The background of an agent proposal on paper. |
-| `--bk-ink`, `--bk-ink-raised`, `--bk-ink-fg`, `--bk-ink-muted`, `--bk-ink-border`, `--bk-ink-danger` | `bg-ink`, `text-ink-foreground`, `text-ink-muted` | Machine surfaces. |
+| `--bk-ink`, `--bk-ink-raised`, `--bk-ink-fg`, `--bk-ink-muted`, `--bk-ink-border`, `--bk-ink-danger`, `--bk-ink-warning` | `bg-ink`, `text-ink-foreground`, `text-ink-muted` | Machine surfaces. |
 | `--bk-success` / `--bk-danger` / `--bk-warning` | `text-success` / `text-destructive` / `text-warning` | Meaning only: balanced, refused, needs attention. |
 | `--bk-border` / `--bk-border-strong` | `border-border` / `border-input` | Dividers / input edges. |
 

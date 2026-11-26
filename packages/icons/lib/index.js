@@ -15,6 +15,16 @@ export const iconAttributes = {
 export const icons = {
   "agent-cursor":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/></g><path d="M10.75 10.75L14.689 14.689A1.5 1.5 0 0 1 13.629 17.25L9.371 17.25A1.5 1.5 0 0 0 8.311 17.689L6.811 19.189A1.5 1.5 0 0 1 4.25 18.129L4.25 7.871A1.5 1.5 0 0 1 6.811 6.811Z"/><path d="M18.25 2.75A3.932 3.932 0 0 0 21.25 5.75A3.932 3.932 0 0 0 18.25 8.75A3.932 3.932 0 0 0 15.25 5.75A3.932 3.932 0 0 0 18.25 2.75Z"/>',
+  "agent-done":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M15.75 19.25l2 2 4.5-4.5"/>',
+  "agent-idle":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/>',
+  "agent-refused":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><circle cx="19" cy="19" r="3.25"/><path d="M16.75 16.75l4.5 4.5"/>',
+  "agent-waiting":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M17.25 15.75v6.5"/><path d="M20.75 15.75v6.5"/>',
+  "agent-working":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/></g><path d="M9.75 8.25L13.689 12.189A1.5 1.5 0 0 1 12.629 14.75L8.371 14.75A1.5 1.5 0 0 0 7.311 15.189L5.811 16.689A1.5 1.5 0 0 1 3.25 15.629L3.25 5.371A1.5 1.5 0 0 1 5.811 4.311Z"/><path d="M19 15.75A3.25 3.25 0 1 1 15.75 19"/>',
   archive:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L20.25 3.75A1 1 0 0 1 21.25 4.75L21.25 7.25A1 1 0 0 1 20.25 8.25L3.75 8.25A1 1 0 0 1 2.75 7.25L2.75 4.75A1 1 0 0 1 3.75 3.75Z"/><path d="M4.25 8.25V18.75A1.5 1.5 0 0 0 5.75 20.25H18.25A1.5 1.5 0 0 0 19.75 18.75V8.25Z"/></g><path d="M12 3.75L20.25 3.75A1 1 0 0 1 21.25 4.75L21.25 7.25A1 1 0 0 1 20.25 8.25L3.75 8.25A1 1 0 0 1 2.75 7.25L2.75 4.75A1 1 0 0 1 3.75 3.75Z"/><path d="M4.25 8.25V18.75A1.5 1.5 0 0 0 5.75 20.25H18.25A1.5 1.5 0 0 0 19.75 18.75V8.25"/><path d="M9.75 12.25h4.5"/>',
   "arrow-right": '<path d="M4.75 12.75h14.5m-6-6 6 6-6 6"/>',
@@ -141,6 +151,8 @@ export const icons = {
     '<path d="m2.75 5.25 2 2 4-4"/><path d="m2.75 11.25 2 2 4-4"/><path d="m2.75 17.25 2 2 4-4"/><path d="M12.25 5.25h9"/><path d="M12.25 11.25h9"/><path d="M12.25 17.25h9"/>',
   "list-rows":
     '<path d="M3.75 6.25h1.5"/><path d="M3.75 12h1.5"/><path d="M3.75 17.75h1.5"/><path d="M8.75 6.25h11.5"/><path d="M8.75 12h11.5"/><path d="M8.75 17.75h11.5"/>',
+  "loader-dots":
+    '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.25"/><circle cx="19" cy="12" r="0.75"/></g><circle cx="5" cy="12" r="1.75"/><circle cx="12" cy="12" r="1.25"/><circle cx="19" cy="12" r="0.75"/>',
   lock: '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/></g><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/><path d="M7.75 10.75V7.75A4.25 4.25 0 0 1 16.25 7.75V10.75"/><path d="M12 15.25v1.5"/>',
   "lock-open":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/></g><path d="M12 10.75L17.75 10.75A1.5 1.5 0 0 1 19.25 12.25L19.25 19.75A1.5 1.5 0 0 1 17.75 21.25L6.25 21.25A1.5 1.5 0 0 1 4.75 19.75L4.75 12.25A1.5 1.5 0 0 1 6.25 10.75Z"/><path d="M7.75 10.75V7.75A4.25 4.25 0 0 1 15.852 5.954"/><path d="M12 15.25v1.5"/>',
@@ -200,12 +212,15 @@ export const icons = {
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M9.5 7.5A9.175 9.175 0 0 0 16.5 14.5A9.175 9.175 0 0 0 9.5 21.5A9.175 9.175 0 0 0 2.5 14.5A9.175 9.175 0 0 0 9.5 7.5Z"/><path d="M18 3A3.932 3.932 0 0 0 21 6A3.932 3.932 0 0 0 18 9A3.932 3.932 0 0 0 15 6A3.932 3.932 0 0 0 18 3Z"/><path d="M5 3A2.294 2.294 0 0 0 6.75 4.75A2.294 2.294 0 0 0 5 6.5A2.294 2.294 0 0 0 3.25 4.75A2.294 2.294 0 0 0 5 3Z"/></g><path d="M9.5 7.5A9.175 9.175 0 0 0 16.5 14.5A9.175 9.175 0 0 0 9.5 21.5A9.175 9.175 0 0 0 2.5 14.5A9.175 9.175 0 0 0 9.5 7.5Z"/><path d="M18 3A3.932 3.932 0 0 0 21 6A3.932 3.932 0 0 0 18 9A3.932 3.932 0 0 0 15 6A3.932 3.932 0 0 0 18 3Z"/><path d="M5 3A2.294 2.294 0 0 0 6.75 4.75A2.294 2.294 0 0 0 5 6.5A2.294 2.294 0 0 0 3.25 4.75A2.294 2.294 0 0 0 5 3Z"/>',
   "speech-bubble":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M15.875 3.75L19.75 3.75A1.5 1.5 0 0 1 21.25 5.25L21.25 15.25A1.5 1.5 0 0 1 19.75 16.75L11.871 16.75A1.5 1.5 0 0 0 10.811 17.189L9.25 18.75A1.172 1.172 0 0 1 7.25 17.922A1.172 1.172 0 0 0 6.078 16.75L4.25 16.75A1.5 1.5 0 0 1 2.75 15.25L2.75 5.25A1.5 1.5 0 0 1 4.25 3.75L12 3.75Z"/></g><path d="M15.875 3.75L19.75 3.75A1.5 1.5 0 0 1 21.25 5.25L21.25 15.25A1.5 1.5 0 0 1 19.75 16.75L11.871 16.75A1.5 1.5 0 0 0 10.811 17.189L9.25 18.75A1.172 1.172 0 0 1 7.25 17.922A1.172 1.172 0 0 0 6.078 16.75L4.25 16.75A1.5 1.5 0 0 1 2.75 15.25L2.75 5.25A1.5 1.5 0 0 1 4.25 3.75L12 3.75Z"/>',
+  spinner:
+    '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 2A10 10 0 1 1 12 22A10 10 0 1 1 12 2ZM12 3.5A8.5 8.5 0 1 0 12 20.5A8.5 8.5 0 1 0 12 3.5Z"/></g><path d="M12 2.75A9.25 9.25 0 0 1 21.25 12"/>',
   stack:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 9.75L19.75 9.75A1.5 1.5 0 0 1 21.25 11.25L21.25 19.25A1.5 1.5 0 0 1 19.75 20.75L4.25 20.75A1.5 1.5 0 0 1 2.75 19.25L2.75 11.25A1.5 1.5 0 0 1 4.25 9.75Z"/><path d="M4.25 9.75V7.75A1.5 1.5 0 0 1 5.75 6.25H18.25A1.5 1.5 0 0 1 19.75 7.75V9.75Z"/><path d="M5.75 6.25V4.25A1.5 1.5 0 0 1 7.25 2.75H16.75A1.5 1.5 0 0 1 18.25 4.25V6.25Z"/></g><path d="M12 9.75L19.75 9.75A1.5 1.5 0 0 1 21.25 11.25L21.25 19.25A1.5 1.5 0 0 1 19.75 20.75L4.25 20.75A1.5 1.5 0 0 1 2.75 19.25L2.75 11.25A1.5 1.5 0 0 1 4.25 9.75Z"/><path d="M4.25 9.75V7.75A1.5 1.5 0 0 1 5.75 6.25H18.25A1.5 1.5 0 0 1 19.75 7.75V9.75"/><path d="M5.75 6.25V4.25A1.5 1.5 0 0 1 7.25 2.75H16.75A1.5 1.5 0 0 1 18.25 4.25V6.25"/>',
   stamp:
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M10.25 12.75V9A2.75 2.75 0 1 1 13.75 9V12.75Z"/><path d="M12 12.75L18.25 12.75A1 1 0 0 1 19.25 13.75L19.25 15.75A1 1 0 0 1 18.25 16.75L5.75 16.75A1 1 0 0 1 4.75 15.75L4.75 13.75A1 1 0 0 1 5.75 12.75Z"/></g><path d="M10.25 12.75V9A2.75 2.75 0 1 1 13.75 9V12.75"/><path d="M12 12.75L18.25 12.75A1 1 0 0 1 19.25 13.75L19.25 15.75A1 1 0 0 1 18.25 16.75L5.75 16.75A1 1 0 0 1 4.75 15.75L4.75 13.75A1 1 0 0 1 5.75 12.75Z"/><path d="M4.75 20.25h14.5"/>',
   "sticky-note":
     '<g fill="currentColor" stroke="none" opacity="0.2"><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/></g><path d="M12 3.75L18.75 3.75A1.5 1.5 0 0 1 20.25 5.25L20.25 14.129A1.5 1.5 0 0 1 19.811 15.189L15.189 19.811A1.5 1.5 0 0 1 14.129 20.25L5.25 20.25A1.5 1.5 0 0 1 3.75 18.75L3.75 5.25A1.5 1.5 0 0 1 5.25 3.75Z"/><path d="M14.75 20.25v-4a1.5 1.5 0 0 1 1.5-1.5h4"/><path d="M8.25 8.25h7.5"/><path d="M8.25 12.25h4.5"/>',
+  stop: '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="12" r="9.25"/></g><circle cx="12" cy="12" r="9.25"/><path d="M9.75 8.75h4.5A1 1 0 0 1 15.25 9.75v4.5A1 1 0 0 1 14.25 15.25h-4.5A1 1 0 0 1 8.75 14.25v-4.5A1 1 0 0 1 9.75 8.75Z"/>',
   stopwatch:
     '<g fill="currentColor" stroke="none" opacity="0.2"><circle cx="12" cy="13.75" r="7.5"/></g><circle cx="12" cy="13.75" r="7.5"/><path d="M9.75 2.75h4.5"/><path d="M12 2.75v3.5"/><path d="M12 13.75l2.75-2.75"/>',
   store:
@@ -239,6 +254,11 @@ export const icons = {
 /** The words each icon stands for in Booki (its pages and controls), for search. */
 export const iconAliases = {
   "agent-cursor": ["agent", "agent-action", "automation"],
+  "agent-done": ["agent-status", "done", "finished", "complete"],
+  "agent-idle": ["agent-status", "idle", "agent-idle"],
+  "agent-refused": ["agent-status", "refused", "blocked", "denied"],
+  "agent-waiting": ["agent-status", "waiting", "needs-person", "paused", "hold"],
+  "agent-working": ["agent-status", "working", "running", "busy"],
   archive: ["archive", "retention", "archived"],
   "arrow-right": ["continue", "go-to", "forward"],
   "arrow-uturn": ["refund", "reversal", "reverse"],
@@ -312,6 +332,7 @@ export const iconAliases = {
   link: ["approval-chain", "chain"],
   "list-checks": ["close-checklist", "checklist"],
   "list-rows": ["voucher-lines"],
+  "loader-dots": ["loading", "typing", "thinking", "pending"],
   lock: ["period-lock", "lock", "locked"],
   "lock-open": ["unlock", "reopen", "unlocked"],
   magnifier: ["audit-findings", "findings", "search"],
@@ -344,9 +365,11 @@ export const iconAliases = {
   sliders: ["filter", "filters", "adjust"],
   sparkles: ["ai", "generated", "assistant"],
   "speech-bubble": ["client-requests", "requests", "message"],
+  spinner: ["loading", "busy", "progress", "working"],
   stack: ["payment-batch", "batch"],
   stamp: ["vat-return", "filing"],
   "sticky-note": ["review-note", "note", "comment"],
+  stop: ["stop", "cancel", "halt", "stop-run"],
   stopwatch: ["stage-duration", "duration"],
   store: ["customer", "shop", "point-of-sale"],
   table: ["data-table", "table"],
@@ -388,6 +411,21 @@ export const iconCategories = [
       "database",
       "key",
       "plug",
+    ],
+  },
+  {
+    id: "agent",
+    en: "Agent status",
+    nb: "Agentstatus",
+    icons: [
+      "agent-idle",
+      "agent-working",
+      "agent-waiting",
+      "agent-done",
+      "agent-refused",
+      "spinner",
+      "loader-dots",
+      "stop",
     ],
   },
   {

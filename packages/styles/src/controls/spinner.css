@@ -1,0 +1,22 @@
+/* ── Spinner: a ring that turns while something is under way (Spinner) ── */
+
+/* Constant motion, so linear. It reads as a whole ring when it stands still. */
+[data-slot="spinner"] {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  transform-origin: center;
+  animation: bk-spinner-turn 0.9s linear infinite;
+}
+
+@keyframes bk-spinner-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="spinner"] {
+    animation: none;
+  }
+}

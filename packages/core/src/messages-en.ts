@@ -1,6 +1,7 @@
 import { MONEY_EN } from "./msg-money.js";
 import { LOCALE_EN } from "./msg-locale.js";
 import { AMOUNT_EN } from "./msg-amount.js";
+import { AGENT_STATUS_EN } from "./msg-agent-status.js";
 
 /**
  * The English sentence for every code. Core renders these with `msg`.
@@ -537,6 +538,7 @@ export const EN = {
   "field.unknown-account-more":
     'No account "{value}" in the chart of {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
   ...AMOUNT_EN,
+  ...AGENT_STATUS_EN,
   "date.invalid": 'Invalid date "{value}". Use YYYY-MM-DD.',
   "date.days-only-due":
     'setDaysFromToday is only for due dates; this field is kind "{kind}". Use setDate with YYYY-MM-DD.',
@@ -748,8 +750,6 @@ export const EN = {
   "agent-log.empty": "No agent calls yet. Each call the agent makes and its answer will be listed here.",
   "agent-log.refused-count": "{count} refused",
   "agent-log.running": "running",
-  "agent-log.waiting": "waiting for a person",
-  "agent-log.refused": "refused",
   "agent-snapshot.heading": "What the agent reads",
   "agent-snapshot.empty":
     "Nothing here is in the agent's snapshot. It only displays, so an agent has nothing to read or call on it.",

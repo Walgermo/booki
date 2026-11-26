@@ -1429,6 +1429,14 @@ html[data-kpi-still] {
   box-shadow: 0 0 0 1px var(--bk-ink-border);
 }
 
+/* AgentStatus inside ink takes the ink colours, as under [data-bk-surface="ink"]. */
+.site-machine [data-slot="agent-status"] {
+  --agent-status-idle: var(--bk-ink-muted);
+  --agent-status-agent: var(--bk-signal);
+  --agent-status-waiting: var(--bk-ink-warning);
+  --agent-status-refused: var(--bk-ink-danger);
+}
+
 .site-machine .site-kicker,
 .site-machine .site-label {
   color: var(--bk-ink-muted);

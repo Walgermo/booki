@@ -148,6 +148,10 @@ const NB: Record<string, { title?: string; description: string }> = {
     description:
       "Kvitteringer for det som nettopp skjedde. Det en agent gjorde, merkes med agentens tegn og kan angres, gjennom useAgentToasts.",
   },
+  "agent-status": {
+    description:
+      "Én kort linje som forteller en person hva agenten gjør: ledig, arbeider, venter på en person, ferdig eller avvist. Limegrønt bare for agentens eget arbeid; agenten selv leser den aldri.",
+  },
   "document-signoff": {
     description:
       "Signeringslinjen som avslutter et arbeidspapir: utført, gjennomgått, godkjent, hver bundet til versjonen som ble signert. Åpne punkter følger signaturen som standard; et firma kan sette blockOpenPoints for å nekte signering til de er lukket. En senere endring markerer den, men trekker den aldri tilbake.",
