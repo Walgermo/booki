@@ -189,6 +189,7 @@
 [data-slot="document-editor-menu"] {
   margin-inline-start: 0.5rem;
   display: grid;
+  grid-auto-rows: max-content;
   width: min(20rem, calc(100% - 0.5rem));
   max-height: 18rem;
   overflow-y: auto;
