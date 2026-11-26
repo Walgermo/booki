@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -57,13 +56,7 @@ export default defineConfig(({ mode }) => {
     process.env.ANTHROPIC_API_KEY = env.ANTHROPIC_API_KEY;
   }
 
-  // The released version, for "Booki v0.1.6 lansert" in the header: the UI packages release together.
-  const version = JSON.parse(
-    readFileSync(path.resolve(__dirname, "../../packages/react/package.json"), "utf8"),
-  ).version;
-
   return {
-    define: { __BOOKI_VERSION__: JSON.stringify(version) },
     plugins: [react(), tailwindcss(), serverApi()],
     resolve: {
       alias: {

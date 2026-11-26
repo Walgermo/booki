@@ -29,10 +29,7 @@ export function MarketingShell() {
             <Link to={ANNOUNCEMENT_PATH} className="site-news">
               <span className="site-news__tag">{t("New", "Nyhet")}</span>
               <span className="site-news__text">
-                {t(
-                  `Booki v${__BOOKI_VERSION__} is out: UI for people and agents`,
-                  `Booki v${__BOOKI_VERSION__} lansert: UI for mennesker og agenter`,
-                )}
+                {t("Booki is out: UI for people and agents", "Booki er lansert: UI for mennesker og agenter")}
               </span>
               <span className="site-news__more">
                 {t("Read more", "Les mer")}
