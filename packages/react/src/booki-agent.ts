@@ -6,6 +6,7 @@ import {
   bookiAllow,
   bookiRegisterTools,
   markRefused,
+  noteUnrecorded,
   type AgentDecision,
   type AgentPolicyOptions,
 } from "@booki-aui/primitives/agent-policy";
@@ -30,6 +31,22 @@ const bridgeOf = (agent: AgentBridge): AgentBridge => bridges.get(agent) ?? agen
  */
 const restorers = new WeakMap<AgentBridge, string>();
 let restoringCount = 0;
+
+/**
+ * Each bridge's agent turns and history restores, one after another, in the
+ * order they were asked for: the bridge runs them in that order too. An undo
+ * asked for while an agent's turn runs is marked as the person's only when
+ * its own turn starts, so the agent's remaining steps stay the agent's.
+ */
+const turns = new WeakMap<AgentBridge, Promise<unknown>>();
+function inTurn<T>(bridge: AgentBridge, run: () => Promise<T>): Promise<T> {
+  const next = (turns.get(bridge) ?? Promise.resolve()).then(run);
+  turns.set(
+    bridge,
+    next.catch(() => undefined),
+  );
+  return next;
+}
 
 /**
  * True while a Booki history (`createBookiHistory`, `createHistory`) is putting
@@ -75,16 +92,17 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
   const language = options.language && options.language !== "en" ? options.language : undefined;
 
   /** Runs steps on the bridge, noting a lone step for `attachAudit`'s rows. */
-  const run = async (input: ActInput, actOptions?: ActOptions) => {
-    // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
-    const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
-    if (lone) currentStep.set(bridge, lone.action);
-    try {
-      return await bridge.act(input as never, actOptions);
-    } finally {
-      if (lone) currentStep.delete(bridge);
-    }
-  };
+  const run = (input: ActInput, actOptions?: ActOptions) =>
+    inTurn(bridge, async () => {
+      // A call without `steps` is ui-sdk's to refuse with a sentence: read it, never assume it.
+      const lone = Array.isArray(input?.steps) && input.steps.length === 1 ? input.steps[0] : undefined;
+      if (lone) currentStep.set(bridge, lone.action);
+      try {
+        return await bridge.act(input as never, actOptions);
+      } finally {
+        if (lone) currentStep.delete(bridge);
+      }
+    });
 
   const act = async (input: ActInput, actOptions?: ActOptions) => {
     let result = (await run(input, actOptions)) as ActResult;
@@ -95,24 +113,26 @@ function createBookiAgent(options: CreateBookiAgentOptions = {}): AgentBridge {
     const failed = result.ok ? undefined : result.error;
     const step = failed && Array.isArray(input?.steps) ? input.steps[failed.step] : undefined;
     const person = step ? personOnlyPress(bridge, step) : null;
-    if (failed && step && person) {
-      markRefused({ ref: step.ref, label: person.entry.label, action: step.action });
-      options.audit?.({
-        actor: `agent:${agentId}`,
-        action: "agent.person-only",
-        target: person.entry.label ?? person.entry.ref,
-        detail: `${person.entry.component}.press: ${person.confirm}`,
-        ...(ruleVersion ? { ruleVersion } : {}),
-      });
+    const refusal = failed && step && person ? personOnlyRow(person) : undefined;
+    if (failed && person && refusal) {
+      if (options.audit) {
+        // Written here, so `actAndRecord` does not write the same refusal again.
+        markRefused({ ref: step!.ref, label: person.entry.label, action: step!.action });
+        options.audit({ actor: `agent:${agentId}`, ...refusal, ...(ruleVersion ? { ruleVersion } : {}) });
+      }
       result = {
         ...result,
         error: { ...failed, message: new BookiError("agent.person-only", { confirm: person.confirm }).message },
       };
     }
-    if (!language) return result;
-    // Loaded only for an agent that asked for another language: the catalogue is not small.
-    const { localize } = await import("@booki-aui/core/messages");
-    return inLanguage(result, (text) => localize(text, language));
+    if (language) {
+      // Loaded only for an agent that asked for another language: the catalogue is not small.
+      const { localize } = await import("@booki-aui/core/messages");
+      result = inLanguage(result, (text) => localize(text, language));
+    }
+    // No audit of its own: `actAndRecord` (like `registerTools` with `audit`) writes the row instead.
+    if (refusal && !options.audit) noteUnrecorded(result, refusal);
+    return result;
   };
 
   const agent = { ...bridge, act } as AgentBridge;
@@ -165,28 +185,34 @@ function personOnlyPress(
   return null;
 }
 
+/** The audit row for a press on a person's decision. */
+function personOnlyRow(person: { confirm: string; entry: Entry }) {
+  return {
+    action: "agent.person-only",
+    target: person.entry.label ?? person.entry.ref,
+    detail: `${person.entry.component}.press: ${person.confirm}`,
+  };
+}
+
 /**
- * The same result with every refusal (`error.message`, at any depth) and every
- * step's own sentence (`result`, like `Pressed "Post".`) written in another language.
+ * The same result with its refusal (`error.message`) and each step's own
+ * sentence (`steps[].result`, like `Pressed "Post".`) written in another
+ * language. Nothing else is touched: a control's own data stays as it
+ * returned it, and the token `pending` (an action still running) stays a token.
  */
-function inLanguage<T>(value: T, say: (text: string) => string): T {
-  if (Array.isArray(value)) return value.map((item) => inLanguage(item, say)) as T;
-  if (value === null || typeof value !== "object") return value;
-  const out: Record<string, unknown> = {};
-  for (const [key, inner] of Object.entries(value as Record<string, unknown>)) {
-    if (
-      key === "error" &&
-      inner &&
-      typeof inner === "object" &&
-      typeof (inner as { message?: unknown }).message === "string"
-    ) {
-      out[key] = { ...(inner as object), message: say((inner as { message: string }).message) };
-    } else if (key === "result" && typeof inner === "string") {
-      // A control's own answer comes back as it is when the catalogue does not know it.
-      out[key] = say(inner);
-    } else out[key] = inLanguage(inner, say);
+function inLanguage(value: ActResult, say: (text: string) => string): ActResult {
+  const out: ActResult = { ...value };
+  if (value.error && typeof value.error.message === "string") {
+    out.error = { ...value.error, message: say(value.error.message) };
   }
-  return out as T;
+  if (Array.isArray(value.steps)) {
+    out.steps = value.steps.map((step) => {
+      const result = (step as { result?: unknown } | null)?.result;
+      // A control's own answer comes back as it is when the catalogue does not know it.
+      return typeof result === "string" && result !== "pending" ? { ...(step as object), result: say(result) } : step;
+    });
+  }
+  return out;
 }
 
 export type RegisterToolsOptions = Omit<AgentPolicyOptions, "allow"> & {
@@ -313,7 +339,7 @@ function rowChanges(next: Row[], before: Row[]): string[] {
   for (const row of next) {
     const old = before.find((item) => item.id === row.id);
     if (!old) {
-      out.push(`+${row.id}`);
+      out.push(`+${row.id}${rowSummary(row)}`);
       continue;
     }
     const fields = Object.keys({ ...old, ...row })
@@ -321,8 +347,21 @@ function rowChanges(next: Row[], before: Row[]): string[] {
       .map((key) => `${key}=${auditValue(row[key], 40)} (was ${auditValue(old[key], 40)})`);
     if (fields.length) out.push(`${row.id}: ${fields.join(", ")}`);
   }
-  for (const old of before) if (!next.some((row) => row.id === old.id)) out.push(`-${old.id}`);
+  for (const old of before) if (!next.some((row) => row.id === old.id)) out.push(`-${old.id}${rowSummary(old)}`);
   return out;
+}
+
+/**
+ * What a record added or removed held, short: its fields with a value, like
+ * ` (account=3000, creditMinor=12500)`. Empty fields and zeros are left out, so
+ * a voucher line's account and amount fit in the row.
+ */
+function rowSummary(row: Row): string {
+  const fields = Object.entries(row)
+    .filter(([key, value]) => key !== "id" && value !== undefined && value !== null && value !== "" && value !== 0)
+    .filter(([, value]) => !(isPlain(value) && Object.keys(value).length === 0))
+    .map(([key, value]) => `${key}=${auditValue(value, 40)}`);
+  return fields.length ? ` (${fields.join(", ")})` : "";
 }
 
 /**
@@ -426,18 +465,22 @@ function createHistory(agent: AgentBridge, options: BookiHistoryOptions = {}) {
   const { by, ...rest } = options;
   const bridge = bridgeOf(agent);
   const history = createBridgeHistory(bridge, rest);
-  const asPerson = async <T>(run: () => Promise<T>): Promise<T> => {
+  // Who it is for is read when the undo is asked for; it is marked when its turn starts,
+  // after any agent turn already running or waiting on the same bridge.
+  const asPerson = <T>(run: () => Promise<T>): Promise<T> => {
     const who = (typeof by === "function" ? by() : by) || "person";
-    const before = restorers.get(bridge);
-    restorers.set(bridge, who);
-    restoringCount++;
-    try {
-      return await run();
-    } finally {
-      restoringCount--;
-      if (before === undefined) restorers.delete(bridge);
-      else restorers.set(bridge, before);
-    }
+    return inTurn(bridge, async () => {
+      const before = restorers.get(bridge);
+      restorers.set(bridge, who);
+      restoringCount++;
+      try {
+        return await run();
+      } finally {
+        restoringCount--;
+        if (before === undefined) restorers.delete(bridge);
+        else restorers.set(bridge, before);
+      }
+    });
   };
   return {
     ...history,

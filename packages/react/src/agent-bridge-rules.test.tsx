@@ -1,5 +1,8 @@
 import type { Deal, PipelineStage } from "@booki-aui/core/pipeline";
 import { Button } from "@ui-sdk/react/button";
+import { definePrimitive } from "@ui-sdk/core";
+import { createParts } from "@ui-sdk/react/primitive";
+import { VoucherComposer } from "./voucher-composer.js";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { actAndRecord, type AgentDecisionRow } from "@booki-aui/primitives/agent-policy";
@@ -254,5 +257,140 @@ describe("expect, the bridge's check", () => {
     )) as Result;
     expect(refused.ok).toBe(false);
     expect(rows.map((row) => row.action)).toEqual(["agent.failed"]);
+  });
+});
+
+describe("one audit row per refusal, whichever side has the audit", () => {
+  const request = [
+    {
+      id: "R-1",
+      title: "Leases",
+      status: "draft" as const,
+      recipient: { name: "Ola", email: "ola@example.test" },
+      reminders: 0,
+      createdBy: "kari",
+    },
+  ];
+
+  it("a person-only press through registerTools with only the registration's audit writes one row", async () => {
+    const tools = webmcp();
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({ agentId: "assistant" });
+    registerTools(agent, { allow: "bridge", audit: (row) => rows.push(row), agentId: "browser" });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <ClientRequests actor="kari" defaultRequests={request} />
+      </BookiLocaleProvider>,
+    );
+    const result = (await tools
+      .find((tool) => tool.name === "act")!
+      .execute({ steps: [{ ref: "Client requests", action: "press", args: ["Send"] }] })) as Result;
+    expect(result.error?.message).toMatch(/person's decision/);
+    expect(rows).toEqual([
+      {
+        actor: "agent:browser",
+        action: "agent.person-only",
+        target: "Client requests",
+        detail: "client-requests.press: Sending to the client needs a person",
+      },
+    ]);
+  });
+
+  it("with both audits configured, the bridge's row is the only one", async () => {
+    const tools = webmcp();
+    const rows: AgentDecisionRow[] = [];
+    const audit = (row: AgentDecisionRow) => rows.push(row);
+    const agent = createBookiAgent({ agentId: "assistant", audit });
+    registerTools(agent, { allow: "bridge", audit, agentId: "browser" });
+    render(
+      <BookiLocaleProvider defaultCountry="US">
+        <ClientRequests actor="kari" defaultRequests={request} />
+      </BookiLocaleProvider>,
+    );
+    await tools
+      .find((tool) => tool.name === "act")!
+      .execute({ steps: [{ ref: "Client requests", action: "press", args: ["Send"] }] });
+    expect(rows.map((row) => [row.actor, row.action])).toEqual([["agent:assistant", "agent.person-only"]]);
+  });
+
+  it("a step allow refuses, on a bridge without audit, is written by actAndRecord", async () => {
+    const rows: AgentDecisionRow[] = [];
+    const agent = createBookiAgent({ allow: () => false });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    const result = (await actAndRecord(
+      agent,
+      { steps: [{ ref: "Beløp", action: "setMinor", args: [100] }] },
+      { audit: (row) => rows.push(row), agentId: "test" },
+    )) as Result;
+    expect(result.ok).toBe(false);
+    expect(rows.map((row) => row.action)).toEqual(["agent.failed"]);
+  });
+
+  it("a refusal for a control named by its label in another case is written once", async () => {
+    const rows: AgentDecisionRow[] = [];
+    const audit = (row: AgentDecisionRow) => rows.push(row);
+    const agent = createBookiAgent({ allow: () => false, audit, agentId: "test" });
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField aria-label="Beløp" />
+      </BookiLocaleProvider>,
+    );
+    await actAndRecord(agent, { steps: [{ ref: "beløp", action: "setMinor", args: [100] }] }, { audit, agentId: "test" });
+    await actAndRecord(agent, { steps: [{ ref: "BELOP", action: "setMinor", args: [100] }] }, { audit, agentId: "test" });
+    expect(rows.map((row) => row.action)).toEqual(["agent.refused", "agent.refused"]);
+  });
+});
+
+describe("an agent with language nb, on an action still running", () => {
+  it("keeps the token pending as it is", async () => {
+    const saver = definePrimitive({
+      name: "saver",
+      options: {},
+      state: () => ({ saved: 0 }),
+      api: (context) => ({
+        save: () =>
+          new Promise<void>((resolve) => {
+            context.store.set({ saved: context.store.get().saved + 1 });
+            setTimeout(resolve, 50);
+          }),
+      }),
+      slots: (slot) => ({ root: slot({}) }),
+      agent: { actions: ["save"] },
+    });
+    const parts = createParts(saver, { root: "div" } as const);
+    render(<parts.Root aria-label="Lagring" />);
+    const english = (await createBookiAgent().act({ steps: [{ ref: "Lagring", action: "save" }] })) as {
+      steps: { result?: unknown }[];
+    };
+    const norwegian = (await createBookiAgent({ language: "nb" }).act({
+      steps: [{ ref: "Lagring", action: "save" }],
+    })) as { steps: { result?: unknown }[] };
+    expect(english.steps[0]?.result).toBe("pending");
+    expect(norwegian.steps[0]?.result).toBe("pending");
+  });
+});
+
+describe("attachAudit on a record added or removed", () => {
+  it("names the voucher line's account and amount, both ways", async () => {
+    const agent = createBookiAgent({ agentId: "assistant" });
+    const rows: { action: string; detail?: string }[] = [];
+    attachAudit(agent, (row) => rows.push(row), "assistant");
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <VoucherComposer aria-label="Bilag" />
+      </BookiLocaleProvider>,
+    );
+    await agent.act({
+      steps: [{ ref: "Bilag", action: "addLine", args: [{ account: "3000", creditMinor: 12_500 }] }],
+    });
+    const added = rows.at(-1)?.detail ?? "";
+    expect(added).toMatch(/\+line-\S+ \(account=3000.*creditMinor=12500/);
+    const id = /\+(line-\S+)/.exec(added)![1]!;
+    await agent.act({ steps: [{ ref: "Bilag", action: "removeLine", args: [id] }] });
+    expect(rows.at(-1)?.detail).toMatch(new RegExp(`-${id} \\(account=3000.*creditMinor=12500`));
   });
 });

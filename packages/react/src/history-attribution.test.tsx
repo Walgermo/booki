@@ -87,4 +87,55 @@ describe("an undo is the person's, not the agent's", () => {
     stop();
     history.destroy();
   });
+
+  it("an undo asked for while the agent's turn runs leaves the rest of that turn the agent's", async () => {
+    let release: () => void = () => {};
+    const paused = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let reached: () => void = () => {};
+    const atSecond = new Promise<void>((resolve) => {
+      reached = resolve;
+    });
+    let calls = 0;
+    const agent = createBookiAgent({
+      allow: async () => {
+        calls += 1;
+        if (calls === 2) {
+          reached();
+          await paused;
+        }
+        return true;
+      },
+    });
+    const history = createBookiHistory(agent, { by: "person:kari" });
+    const rows: Row[] = [];
+    const stop = attachAudit(agent, (row) => rows.push(row), "assistant");
+    render(
+      <BookiLocaleProvider defaultCountry="NO">
+        <AmountField defaultValue={10_000} aria-label="First" />
+        <AmountField defaultValue={20_000} aria-label="Second" />
+      </BookiLocaleProvider>,
+    );
+    const turn = agent.act({
+      steps: [
+        { ref: "First", action: "setMinor", args: [11_000] },
+        { ref: "Second", action: "setMinor", args: [22_000] },
+      ],
+    });
+    await atSecond;
+    // The person clicks Undo on the first amount's receipt while the second step waits.
+    const undo = history.undoSource("agent");
+    release();
+    await turn;
+    await undo;
+    expect(rows.slice(0, 2).map((row) => [row.target, row.actor])).toEqual([
+      ["First", "agent:assistant"],
+      ["Second", "agent:assistant"],
+    ]);
+    expect(rows.slice(2).every((row) => row.actor === "person:kari" && /undo/.test(row.detail ?? ""))).toBe(true);
+    expect(rows.length).toBeGreaterThan(2);
+    stop();
+    history.destroy();
+  });
 });
