@@ -50,6 +50,7 @@ export function CodePanel({
         style={style}
         role="group"
         aria-labelledby={label ? labelId : undefined}
+        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- arrow keys scroll long code samples here
         tabIndex={0}
         aria-live={live ? "polite" : undefined}
       >
