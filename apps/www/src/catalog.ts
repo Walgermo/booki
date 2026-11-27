@@ -26,6 +26,13 @@ export const catalog: CatalogItem[] = [
     install: "",
   },
   {
+    name: "first-action",
+    title: "Your first agent action",
+    description: "Run a task button through the agent bridge, then add the same working example to your React app.",
+    group: "Getting started",
+    install: "",
+  },
+  {
     name: "examples",
     title: "Examples",
     description:

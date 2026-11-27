@@ -1,55 +1,15 @@
 import { BookiLogo } from "@/components/booki-logo";
-import { Icon } from "@booki-aui/icons/react";
 import { BookiLocaleProvider } from "@booki-aui/react";
 import type { CountryCode } from "@booki-aui/core/locale";
 import { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
+import { DocsNavigation } from "@/components/docs-navigation";
 import { LangToggle } from "@/components/lang-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLang } from "@/lib/lang";
 
-import { catalog } from "../catalog";
-import { catalogText } from "../catalog-nb";
-import { NAV_SECTIONS, PAGE_ICON, plainName } from "../docs-nav";
 const REPO_URL = "https://github.com/Walgermo/booki";
-
-// These three pages live outside /docs; the /docs/* paths remain only as redirects for old links.
-const REAL_PAGES: Record<string, string> = { demo: "/demo", "month-end": "/close", "erp-teams": "/erp-teams" };
-
-function docPath(name: string): string {
-  if (name === "introduction") return "/docs";
-  return REAL_PAGES[name] ?? `/docs/${name}`;
-}
-
-function NavGroups() {
-  const { lang } = useLang();
-  return (
-    <div className="site-docnav">
-      {NAV_SECTIONS.map((section) => (
-        <section key={section.id} className="site-docnav__section" aria-labelledby={`docnav-${section.id}`}>
-          <h2 id={`docnav-${section.id}`} className="site-kicker site-docnav__heading">
-            {lang === "nb" ? section.nb : section.en}
-          </h2>
-          <ul className="site-docnav__list">
-            {section.pages.map((name) => {
-              const item = catalog.find((entry) => entry.name === name);
-              if (!item) return null;
-              return (
-                <li key={name}>
-                  <NavLink to={docPath(name)} end={name === "introduction"} className="site-nav-link site-docnav-link">
-                    {PAGE_ICON[name] ? <Icon name={PAGE_ICON[name]} className="site-docnav-icon" /> : null}
-                    <span>{plainName(name, lang) ?? catalogText(item, lang).title}</span>
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
-    </div>
-  );
-}
 
 export function DocsShell() {
   const { lang, t } = useLang();
@@ -83,14 +43,14 @@ export function DocsShell() {
           <details className="landing-details border-b border-border lg:hidden">
             <summary>{t("Browse the docs", "Bla i dokumentasjonen")}</summary>
             <nav aria-label={t("Docs", "Dokumentasjon")} className="pb-4">
-              <NavGroups />
+              <DocsNavigation />
             </nav>
           </details>
           <nav
             aria-label={t("Docs", "Dokumentasjon")}
             className="docs-sidebar hidden lg:block lg:self-start lg:overflow-y-auto lg:py-10"
           >
-            <NavGroups />
+            <DocsNavigation />
           </nav>
           <main className="min-w-0 py-8 lg:py-10">
             <BookiLocaleProvider country={country} onCountryChange={(next) => setPicked({ lang, country: next })}>

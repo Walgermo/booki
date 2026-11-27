@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { OnThisPage } from "../components/on-this-page";
 import { InstallBlock } from "../components/install-block";
 import { PromptButton } from "../components/landing/prompt-button";
 import { AGENT_PROMPT } from "../components/landing/shared";
@@ -20,10 +21,6 @@ const NEEDS = [
       en: "Run these commands in a POSIX shell such as Bash or Zsh. They read the exact UI SDK version required by the published Booki release.",
       nb: "Kjør kommandoene i et POSIX-skall som Bash eller Zsh. De henter den eksakte UI SDK-versjonen som den publiserte Booki-utgaven krever.",
     },
-  ],
-  [
-    { en: "pnpm", nb: "pnpm" },
-    { en: "Used to pack the packages from the repo.", nb: "Brukes til å bygge pakkene fra repoet." },
   ],
 ] as const;
 
@@ -168,6 +165,24 @@ export function InstallationPage() {
         )}
       </p>
 
+      <p className="max-w-prose">
+        {t("To start with a single button, try ", "For å begynne med én knapp, prøv ")}
+        <Link className="site-link" to="/docs/first-action">
+          {t("your first agent action", "din første agenthandling")}
+        </Link>
+        .
+      </p>
+      <OnThisPage
+        links={[
+          ["install", t("Install", "Installer")],
+          ["provider", t("Provider", "Provider")],
+          ["amount", t("Amount input", "Beløpsfelt")],
+          ["voucher", t("Voucher table", "Bilagstabell")],
+          ["bridge", t("Agent bridge", "Agentbro")],
+          ["approval", t("Approval rules", "Godkjenningsregler")],
+          ["check", t("Verify", "Kontroller")],
+        ]}
+      />
       <Section
         id="install"
         title={t("Install", "Installer")}

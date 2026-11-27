@@ -39,6 +39,7 @@ import { AgentDemo } from "../components/agent-demo";
 import { AgentView } from "../components/agent-view";
 import { SiteAgentCursor } from "../components/site-agent-cursor";
 import { InstallBlock } from "../components/install-block";
+import { OnThisPage } from "../components/on-this-page";
 import { Preview } from "../components/preview";
 import { PREVIEW_RESERVE } from "./agent-demos";
 import { controlExample, usesBridge } from "./control-examples";
@@ -152,6 +153,16 @@ export function ComponentDocPage() {
         </p>
       ) : null}
       <p className="mt-3 mb-0 max-w-prose text-muted-foreground">{catalogText(item, lang).description}</p>
+      <OnThisPage
+        links={[
+          ["preview", t("Preview", "Forhåndsvisning")],
+          ...(name === "money" ? [] : [["agent", t("Agent actions", "Agenthandlinger")] as [string, string]]),
+          [
+            "example-title",
+            bridgeExample ? t("Try the bridge", "Prøv agentbroen") : t("Usage example", "Brukseksempel"),
+          ],
+        ]}
+      />
       {/* One grid for every page: the control, the agent's column, then install and the example.
           A wide control takes the full row with the agent beside the code; on a phone it all stacks. */}
       <div
@@ -159,7 +170,7 @@ export function ComponentDocPage() {
         data-wide={stacked ? "" : undefined}
         data-solo={name === "money" ? "" : undefined}
       >
-        <div className="doc-layout__preview min-w-0">
+        <div id="preview" className="doc-layout__preview min-w-0">
           <Preview sheetRef={sheet} reserve={PREVIEW_RESERVE[name]}>
             <Fragment key={`${name}-${country}-${run}`}>{renderPreview(name, country, profile, t)}</Fragment>
           </Preview>
@@ -167,7 +178,11 @@ export function ComponentDocPage() {
         {/* The agent's side, in its own column: run it, see its calls, see what it reads. On a phone
             it comes right after the control. */}
         {name !== "money" && (
-          <aside className="doc-agent grid min-w-0 content-start gap-6" aria-label={t("The agent", "Agenten")}>
+          <aside
+            id="agent"
+            className="doc-agent grid min-w-0 content-start gap-6"
+            aria-label={t("The agent", "Agenten")}
+          >
             <section className="grid min-w-0 content-start gap-2">
               <p className="site-kicker">{t("The agent acts", "Agenten handler")}</p>
               <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} />
