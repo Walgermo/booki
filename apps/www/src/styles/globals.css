@@ -5105,3 +5105,72 @@ html[lang="en"] .landing-quote p::after {
 .landing-quote figcaption span {
   color: var(--bk-muted-fg);
 }
+
+.docs-page-actions {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  margin: 0 0 1rem auto;
+}
+.docs-page-actions__split {
+  display: flex;
+  align-items: stretch;
+  background: var(--bk-card);
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-sm);
+}
+.docs-page-actions__split > [data-booki-button] {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.docs-page-actions svg {
+  width: 1rem;
+  height: 1rem;
+}
+.docs-page-actions__split > [data-slot="button"],
+.docs-page-actions__more {
+  min-height: max(var(--bk-control-h), 44px);
+}
+.docs-page-actions__more {
+  display: grid;
+  min-width: 44px;
+  place-items: center;
+  cursor: pointer;
+  background: transparent;
+  color: var(--bk-fg);
+  border: 0;
+  border-inline-start: 1px solid var(--bk-border);
+}
+.docs-page-actions__links {
+  color: var(--bk-fg);
+  width: max-content;
+  max-width: calc(100vw - 2.5rem);
+  padding: 0.25rem;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius-sm);
+  background: var(--bk-card);
+  box-shadow: var(--bk-shadow-md);
+}
+.docs-page-actions__links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  padding: 0.375rem 0.625rem;
+  font-size: 0.875rem;
+}
+.docs-page-actions__links a:is(:hover, :focus-visible),
+.docs-page-actions__more:is(:hover, :focus-visible),
+.docs-page-actions__split > button:hover {
+  background: var(--bk-muted);
+}
+.docs-page-actions__status:not(:empty) {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+}
+.docs-page-actions__status a {
+  text-decoration: underline;
+}
