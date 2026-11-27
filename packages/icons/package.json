@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/icons",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Booki's duotone icons for accounting UI: SVG files, their markup as strings, and a small React component.",
   "type": "module",
   "license": "MIT",
