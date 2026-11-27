@@ -234,7 +234,7 @@ function AgingChart({
                     <li key={bucket.id}>
                       <AgingChartBucket
                         value={bucket.id}
-                        aria-label={`${bucketName(bucket)}: ${fmt(bucket.amountMinor)}, ${formatPercent(bucket.sharePct, locale)} ${copy.ofTotal}`}
+                        aria-description={`${formatPercent(bucket.sharePct, locale)} ${copy.ofTotal}`}
                         onMouseEnter={() => setHover({ row: -1, bucket: index })}
                         onMouseLeave={() => setHover(null)}
                       >
@@ -243,7 +243,7 @@ function AgingChart({
                           aria-hidden="true"
                           style={{ background: seriesColor(index) }}
                         />
-                        <span data-slot="aging-chart-bucket-name">{bucketName(bucket)}</span>
+                        <span data-slot="aging-chart-bucket-name">{bucketName(bucket)}</span>{" "}
                         <span data-slot="aging-chart-figure">{fmt(bucket.amountMinor)}</span>
                       </AgingChartBucket>
                     </li>

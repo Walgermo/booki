@@ -112,3 +112,20 @@ export function minorInputText(
     useGrouping: grouping,
   }).format(exact as unknown as number);
 }
+
+/** Keep the native form gate in sync for both typed input and agent changes. */
+export function bindInputValidity<S extends { disabled: boolean; readOnly: boolean }>(message: (state: S) => string) {
+  return (el: Element, { store }: { store: { get(): S; subscribe(listener: () => void): () => void } }) => {
+    const input = el as HTMLInputElement;
+    const sync = () => {
+      const state = store.get();
+      input.setCustomValidity(state.disabled || state.readOnly ? "" : message(state));
+    };
+    sync();
+    const unsubscribe = store.subscribe(sync);
+    return () => {
+      unsubscribe();
+      input.setCustomValidity("");
+    };
+  };
+}

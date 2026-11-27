@@ -112,8 +112,8 @@ export function ProofStrip() {
         <summary>{t("About the measurements", "Om målingene")}</summary>
         <p>
           {t(
-            "We asked the models to read a dashboard or enter a supplier invoice. They used the same sample data in Booki and on screens rebuilt from Tripletex and DNB Regnskap.",
-            "Vi ba modellene lese et dashbord eller registrere en leverandørfaktura. De brukte de samme eksempeldataene i Booki og på gjenskapte skjermbilder fra Tripletex og DNB Regnskap.",
+            "We asked the models to read a dashboard or enter a supplier invoice. They used the same sample data in Booki and on rebuilt screens labeled ERP system 1 and ERP system 2.",
+            "Vi ba modellene lese et dashbord eller registrere en leverandørfaktura. De brukte de samme eksempeldataene i Booki og på de gjenskapte skjermbildene ERP-system 1 og ERP-system 2.",
           )}
         </p>
         <p>

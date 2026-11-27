@@ -1,4 +1,10 @@
+import { catalogMeta } from "@/lib/catalog-meta";
+import { usePageMeta } from "@/lib/lang";
+import { formatMoney, money } from "@booki-aui/core/money";
+import type { IconName } from "@booki-aui/icons";
+import { Icon } from "@booki-aui/icons/react";
 import { localize } from "@booki-aui/core/messages";
+import { periodStatusOn } from "@booki-aui/core/period-lock";
 import { approvalState } from "@booki-aui/core/approval";
 import { summarizeClose } from "@booki-aui/core/close";
 import { invoiceIssues } from "@booki-aui/core/invoice";
@@ -9,6 +15,7 @@ import { NO_VAT_SCHEMA_EXAMPLE, DRAFT_VAT_FILING } from "@booki-aui/core/vat-ret
 import { EMPTY_WORKPAPER } from "@booki-aui/core/audit";
 import {
   BookiAccessProvider,
+  personOnly,
   BookiLocaleProvider,
   AgedBalances,
   AgentPresence,
@@ -39,7 +46,7 @@ import {
   type PeriodState,
 } from "@booki-aui/react";
 import { Button as GateButton } from "@ui-sdk/react/button";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 import { agent } from "@/agent";
@@ -61,6 +68,7 @@ import {
   VAT_TRANSACTIONS,
 } from "@/lib/demo-data";
 import { Button } from "@/components/ui/button";
+import { entriesIn, type Entry } from "@/components/agent-view";
 import { ErpDashboard } from "@/components/erp-dashboard";
 
 type Tone = "good" | "bad" | "neutral";
@@ -89,7 +97,7 @@ const SCREENS: { id: ScreenId; group: Group; title: string; note: string }[] = [
     id: "overview",
     group: "Daily",
     title: "Oversikt",
-    note: "Tallene for oktober, og det som venter på en person, på tvers av regnskapet.",
+    note: "Nøkkeltall og oppgaver for oktober 2026.",
   },
   {
     id: "inbox",
@@ -171,6 +179,23 @@ const SCREENS: { id: ScreenId; group: Group; title: string; note: string }[] = [
     note: "Test av salget i oktober: vesentlighet, et utvalg og to signaturer.",
   },
 ];
+const SCREEN_ICON: Record<ScreenId, IconName> = {
+  overview: "gauge",
+  inbox: "inbox",
+  vouchers: "document-lines",
+  invoices: "receipt",
+  expenses: "wallet",
+  payments: "stack",
+  bank: "scale",
+  approvals: "circle-check",
+  close: "list-checks",
+  vat: "stamp",
+  ledger: "book",
+  journal: "list-rows",
+  receivables: "hourglass",
+  assets: "barcode",
+  audit: "clipboard",
+};
 const GROUP_LABEL: Record<Group, string> = { Daily: "Daglig", Control: "Kontroll", Reports: "Rapporter" };
 const GROUPS: Group[] = ["Daily", "Control", "Reports"];
 
@@ -345,7 +370,10 @@ const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(re
  * ERP has, one signed-in person, and an agent that works whichever screen is
  * open. The data is made up; every agent step is a real action on a real control.
  */
+const PAGE_META = catalogMeta("demo");
+
 export function ErpPage() {
+  usePageMeta(PAGE_META);
   return (
     <BookiLocaleProvider country="NO">
       <Erp />
@@ -356,6 +384,10 @@ export function ErpPage() {
 function Erp() {
   const { profile } = useBookiLocale();
   const [screen, setScreen] = useState<ScreenId>("overview");
+  const [navOpen, setNavOpen] = useState(false);
+  const content = useRef<HTMLElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const menuButton = useRef<HTMLButtonElement>(null);
   const [actor, setActor] = useState("kari");
   const [lines, setLines] = useState<VoucherLine[]>([]);
   const [postedCount, setPostedCount] = useState(0);
@@ -388,172 +420,211 @@ function Erp() {
   const postable = voucherProblems.length === 0;
   const syncMarks = () => setMarks(presence.current?.marked().length ?? 0);
 
+  function dismissNav(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === "Escape" && navOpen) {
+      setNavOpen(false);
+      menuButton.current?.focus();
+    }
+  }
+
+  function openScreen(id: ScreenId) {
+    setScreen(id);
+    setNavOpen(false);
+    requestAnimationFrame(() => heading.current?.focus());
+  }
+
   function say(text: string, tone: Tone, word: string) {
     seq.current += 1;
     const id = seq.current;
     setLog((rows) => [...rows, { id, text, tone, word }]);
   }
 
+  const find = <T = Entry>(label: string) => entriesIn(content.current).find((c) => c.label === label) as T | undefined;
+
   /** One agent step: send it, show the library's answer, give the eye a moment. */
-  async function step(text: string, ref: string, action: string, args: unknown[] = []) {
-    const r = (await agent.act({ steps: [{ ref, action, args }] } as never)) as ActResult;
-    say(r.ok ? text : (r.error?.message ?? "Refused"), r.ok ? "good" : "bad", r.ok ? "done" : "refused");
+  async function step(text: string, label: string, action: string, args: unknown[] = []) {
+    const target = find(label);
+    if (!target) {
+      say(`Fant ikke «${label}» på denne siden.`, "bad", "Avvist");
+      return false;
+    }
+    const r = (await agent.act({ steps: [{ ref: target.ref, action, args }] } as never)) as ActResult;
+    say(r.ok ? text : localize(r.error?.message ?? "Avvist", "nb"), r.ok ? "good" : "bad", r.ok ? "Utført" : "Avvist");
     syncMarks();
     await wait(480);
     return r.ok;
   }
 
-  const find = <T,>(label: string) => agent.snapshot().find((c) => c.label === label) as unknown as T | undefined;
-
-  const scripts: Record<Exclude<ScreenId, "overview">, () => Promise<void>> = {
+  const scripts: Record<ScreenId, () => Promise<void>> = {
+    overview: async () => {
+      for (const entry of entriesIn(content.current).filter((item) => item.component === "kpi-stat")) {
+        const { label, valueMinor, currency } = entry as unknown as {
+          label: string;
+          valueMinor: number | null;
+          currency: string;
+        };
+        if (valueMinor !== null)
+          say(
+            `${label}: ${formatMoney(money(valueMinor, currency), { locale: profile.locale, trimZeroFraction: true })}`,
+            "neutral",
+            "Lest",
+          );
+      }
+    },
     vouchers: async () => {
-      await step("Voucher: cleared the draft", REF.voucher, "clear");
-      await step("Voucher: debit 6800 Kontorrekvisita 12 400,00", REF.voucher, "addLine", [
+      await step("Tømte bilagsutkastet", REF.voucher, "clear");
+      await step("Debiterte 6800 Kontorrekvisita med 12 400,00", REF.voucher, "addLine", [
         "6800",
         undefined,
         1_240_000,
         0,
       ]);
-      await step("Voucher: debit 2711 Inngående mva 3 100,00", REF.voucher, "addLine", ["2711", undefined, 310_000, 0]);
-      await step("Voucher: credit 2400 Leverandørgjeld 15 500,00", REF.voucher, "addLine", [
+      await step("Debiterte 2711 Inngående mva med 3 100,00", REF.voucher, "addLine", ["2711", undefined, 310_000, 0]);
+      await step("Krediterte 2400 Leverandørgjeld med 15 500,00", REF.voucher, "addLine", [
         "2400",
         undefined,
         0,
         1_550_000,
       ]);
-      if (!(await step("Voucher: postable", REF.voucher, "assertPostable"))) {
+      if (!(await step("Kontrollerte om bilaget kan bokføres", REF.voucher, "assertPostable"))) {
         const expense = find<{ lines: VoucherLine[] }>(REF.voucher)?.lines.find((line) => line.account === "6800");
         if (expense) {
-          await step("Voucher: set department 10 Oslo on the 6800 line", REF.voucher, "setDepartment", [
+          await step("Valgte avdeling 10 Oslo på linjen for konto 6800", REF.voucher, "setDepartment", [
             expense.id,
             "10",
           ]);
-          await step("Voucher: checked again. Postable.", REF.voucher, "assertPostable");
+          await step("Kontrollerte bilaget på nytt. Klart til bokføring.", REF.voucher, "assertPostable");
         }
       }
-      await step("Posted the voucher", REF.post, "press");
+      await step("Bokførte bilaget", REF.post, "press");
     },
     invoices: async () => {
-      await step("Invoice: added travel, 2 380,00 at 25%", REF.invoice, "addLine", [
+      await step("La til reiseutlegg på 2 380,00 med 25 % mva", REF.invoice, "addLine", [
         "Reiseutlegg",
         1000,
         238_000,
         "S",
         2500,
       ]);
-      await step("Invoice: 1.5 hours is not a whole quantity", REF.invoice, "setLine", ["l1", { quantityMilli: 1.5 }]);
-      await step("Invoice: 5% discount on the consulting line", REF.invoice, "setLine", ["l1", { discountBp: 500 }]);
-      await step("Invoice: nothing stops it from being finalized", REF.invoice, "assertFinalizable");
-      await step("Finalized the invoice", REF.invoice, "finalize");
+      await step("Kontrollerte antallet på første fakturalinje", REF.invoice, "setLine", [
+        "l1",
+        { quantityMilli: 1.5 },
+      ]);
+      await step("La inn 5 % rabatt på konsulentlinjen", REF.invoice, "setLine", ["l1", { discountBp: 500 }]);
+      await step("Kontrollerte at fakturaen er klar for ferdigstilling", REF.invoice, "assertFinalizable");
+      await step("Ferdigstilte fakturaen", REF.invoice, "finalize");
     },
     payments: async () => {
       const issue = find<{ issues: string[] }>(REF.batch)?.issues[0];
       if (issue) {
-        say(issue, "neutral", "found");
+        say(localize(issue, "nb"), "neutral", "Til kontroll");
         await wait(480);
-        await step("Payments: removed the duplicate, p3", REF.batch, "removePayment", ["p3"]);
+        await step("Fjernet dobbeltbetalingen p3", REF.batch, "removePayment", ["p3"]);
       }
-      await step("Payments: ready to release", REF.batch, "assertReleasable");
-      await step("Approved the batch", REF.batch, "approve");
+      await step("Kontrollerte om betalingsoppdraget kan frigis", REF.batch, "assertReleasable");
+      await step("Godkjente betalingsoppdraget", REF.batch, "approve");
     },
     bank: async () => {
-      await step("Bank: matched the Brattli payment to invoices 1002 and 1003", REF.bank, "suggestMatch", [
+      await step("Foreslo å knytte innbetalingen fra Brattli til faktura 1002 og 1003", REF.bank, "suggestMatch", [
         "b2",
         ["p2", "p3"],
       ]);
-      say(
-        "Bank: left the two mobile payments. Same amount, no reference, nothing to tell them apart.",
-        "neutral",
-        "left",
-      );
+      say("Lot de to mobilbetalingene stå åpne. De har samme beløp og mangler referanse.", "neutral", "Til kontroll");
       await wait(480);
-      await step("Approved its own match", REF.bank, "approveMatch", ["m1"]);
+      await step("Godkjente eget avstemmingsforslag", REF.bank, "approveMatch", ["m1"]);
     },
     approvals: async () => {
-      await step("Approvals: invoice 2041 is approved", REF.approval, "assertApproved");
-      await step("Approved invoice 2041", REF.approval, "approve");
+      await step("Kontrollerte om faktura 2041 er godkjent", REF.approval, "assertApproved");
+      await step("Godkjente faktura 2041", REF.approval, "approve");
     },
     inbox: async () => {
-      await step("Inbox: the Brattli total is 4 380,00 on the PDF, not 4 381,00", REF.inbox, "correctField", [
+      await step("Rettet summen på fakturaen fra Brattli til 4 380,00 fra PDF-en", REF.inbox, "correctField", [
         "si-2",
         "grossMinor",
         438_000,
       ]);
-      await step("Inbox: confirmed Brattli's organisation number", REF.inbox, "confirmField", [
+      await step("Bekreftet organisasjonsnummeret til Brattli", REF.inbox, "confirmField", [
         "si-2",
         "supplierOrgNumber",
       ]);
-      await step("Inbox: coded Brattli to 6340", REF.inbox, "proposeCoding", ["si-2", "6340", "MVA25"]);
-      await step("Inbox: Brattli is ready for approval", REF.inbox, "assertApprovable", ["si-2"]);
-      await step("Inbox: Kontorrekvisita 8841 is ready for approval", REF.inbox, "assertApprovable", ["si-1"]);
-      await step("Approved the Brattli invoice", REF.inbox, "approve", ["si-2"]);
+      await step("Foreslo konto 6340 for Brattli", REF.inbox, "proposeCoding", ["si-2", "6340", "MVA25"]);
+      await step("Kontrollerte om fakturaen fra Brattli er klar til godkjenning", REF.inbox, "assertApprovable", [
+        "si-2",
+      ]);
+      await step("Kontrollerte om faktura 8841 er klar til godkjenning", REF.inbox, "assertApprovable", ["si-1"]);
+      await step("Godkjente fakturaen fra Brattli", REF.inbox, "approve", ["si-2"]);
     },
     expenses: async () => {
-      await step("Expenses: dinner corrected to the receipt, 790,00", REF.expenses, "setLine", [
+      await step("Rettet middagsutlegget til 790,00 fra kvitteringen", REF.expenses, "setLine", [
         "l2",
         { amountMinor: 79_000 },
       ]);
-      await step("Expenses: mileage amount set by hand", REF.expenses, "setLine", ["l3", { amountMinor: 1 }]);
-      await step("Expenses: checked against the policy", REF.expenses, "assertSubmittable");
-      await step("Submitted the claim", REF.expenses, "submit");
+      await step("Endret kjøregodtgjørelsen manuelt", REF.expenses, "setLine", ["l3", { amountMinor: 1 }]);
+      await step("Kontrollerte utleggene mot reglementet", REF.expenses, "assertSubmittable");
+      await step("Sendte inn reiseregningen", REF.expenses, "submit");
     },
     vat: async () => {
-      await step("VAT: opened outgoing VAT at the high rate", REF.vat, "openBox", ["sales-high-tax"]);
-      await step("VAT: back to the boxes", REF.vat, "back");
-      await step("VAT: the return is ready", REF.vat, "assertReady");
-      await step("Submitted the VAT return", REF.vat, "submit");
+      await step("Åpnet utgående mva med høy sats", REF.vat, "openBox", ["sales-high-tax"]);
+      await step("Gikk tilbake til mva-postene", REF.vat, "back");
+      await step("Kontrollerte om mva-meldingen er klar", REF.vat, "assertReady");
+      await step("Sendte inn mva-meldingen", REF.vat, "submit");
     },
     ledger: async () => {
-      await step("Ledger: opened 6800 Kontorrekvisita", REF.ledger, "openAccount", ["6800"]);
-      await step("Ledger: opened voucher 2004 and read every line", REF.ledger, "showVoucher", ["2004"]);
-      await step("Ledger: back to 6800", REF.ledger, "back");
-      await step("Ledger: compared September with October on 6800", REF.ledger, "explainVariance", [
+      await step("Åpnet konto 6800 Kontorrekvisita", REF.ledger, "openAccount", ["6800"]);
+      await step("Åpnet bilag 2004 og leste posteringene", REF.ledger, "showVoucher", ["2004"]);
+      await step("Gikk tilbake til konto 6800", REF.ledger, "back");
+      await step("Sammenlignet september og oktober på konto 6800", REF.ledger, "explainVariance", [
         "6800",
         "2026-09",
         "2026-10",
       ]);
-      await step("Ledger: back to the trial balance", REF.ledger, "back");
+      await step("Gikk tilbake til saldobalansen", REF.ledger, "back");
     },
     journal: async () => {
-      await step("Journal: searched for Kontorrekvisita", REF.journal, "setSearch", ["Kontorrekvisita"]);
-      await step("Journal: largest debit first", REF.journal, "setSort", ["debit", "desc"]);
-      await step("Journal: only October", REF.journal, "setFilter", ["date", "2026-10"]);
+      await step("Søkte etter Kontorrekvisita", REF.journal, "setSearch", ["Kontorrekvisita"]);
+      await step("Sorterte med høyeste debetbeløp først", REF.journal, "setSort", ["debit", "desc"]);
+      await step("Filtrerte på oktober", REF.journal, "setFilter", ["date", "2026-10"]);
     },
     receivables: async () => {
-      await step("Receivables: listed customers more than 60 days overdue", REF.receivables, "overdue", [60]);
-      await step("Receivables: opened Havblikk Hotell", REF.receivables, "openParty", ["c3"]);
+      await step("Hentet kunder med krav som er mer enn 60 dager over forfall", REF.receivables, "overdue", [60]);
+      await step("Åpnet Havblikk Hotell", REF.receivables, "openParty", ["c3"]);
     },
     assets: async () => {
-      await step("Assets: October can be depreciated", REF.assets, "assertRunnable", ["2026-10"]);
-      await step("Assets: proposed October's depreciation", REF.assets, "proposeRun", ["2026-10"]);
-      await step("Confirmed the depreciation run", REF.assets, "confirmRun");
+      await step("Kontrollerte om avskrivningene for oktober kan kjøres", REF.assets, "assertRunnable", ["2026-10"]);
+      await step("Foreslo avskrivninger for oktober", REF.assets, "proposeRun", ["2026-10"]);
+      await step("Bekreftet avskrivningskjøringen", REF.assets, "confirmRun");
     },
     audit: async () => {
-      await step("Audit: drew a monetary-unit sample of four, seed okt-2026", REF.audit, "drawSample", [
+      await step("Trakk fire poster med pengeenhetsutvalg og frøet okt-2026", REF.audit, "drawSample", [
         "monetary-unit",
         { size: 4, seed: "okt-2026" },
       ]);
       const first = find<{ workpaper: { items: { id: string }[] } }>(REF.audit)?.workpaper.items[0]?.id;
       if (first) {
-        await step(`Audit: ${first} agrees to the invoice`, REF.audit, "setResult", [first, "ok"]);
-        await step(`Audit: tick mark on ${first}`, REF.audit, "setTickMark", [first, "✓"]);
+        await step(`Kontrollerte ${first} mot fakturaen`, REF.audit, "setResult", [first, "ok"]);
+        await step(`La til kontrollmerke på ${first}`, REF.audit, "setTickMark", [first, "✓"]);
       }
-      await step("Audit: ready for sign-off", REF.audit, "assertReadyForSignOff");
-      await step("Signed as preparer", REF.audit, "signAsPreparer");
+      await step("Kontrollerte om arbeidspapiret kan signeres", REF.audit, "assertReadyForSignOff");
+      await step("Signerte som utarbeider", REF.audit, "signAsPreparer");
     },
     close: async () => {
-      await step("Period: 30 September can be posted to", REF.periods, "assertPostingAllowed", ["2026-09-30"]);
-      await step("Period: 31 October can be posted to", REF.periods, "assertPostingAllowed", [POSTING_DATE]);
-      await step("Close: accruals done", REF.close, "completeTask", ["accruals"]);
-      await step("Close: VAT return prepared", REF.close, "completeTask", ["vat"]);
-      await step("Close: ready to close", REF.close, "assertReadyToClose");
-      await step("Signed off its own work", REF.close, "signOff", ["accruals"]);
+      await step("Kontrollerte bokføringsadgangen for 30. september", REF.periods, "assertPostingAllowed", [
+        "2026-09-30",
+      ]);
+      await step("Kontrollerte bokføringsadgangen for 31. oktober", REF.periods, "assertPostingAllowed", [
+        POSTING_DATE,
+      ]);
+      await step("Fullførte periodiseringene", REF.close, "completeTask", ["accruals"]);
+      await step("Klargjorde mva-meldingen", REF.close, "completeTask", ["vat"]);
+      await step("Kontrollerte om perioden kan lukkes", REF.close, "assertReadyToClose");
+      await step("Signerte eget arbeid", REF.close, "signOff", ["accruals"]);
     },
   };
 
-  async function run(ids: Exclude<ScreenId, "overview">[]) {
+  async function run(ids: ScreenId[]) {
     if (running) return;
     setRunning(true);
+    setNavOpen(false);
     setLog([]);
     try {
       for (const id of ids) {
@@ -562,7 +633,8 @@ function Erp() {
         await wait(350);
         await scripts[id]();
       }
-      say("Done. Decisions that need you are queued on the overview.", "neutral", "queued");
+      if (ids.length > 1)
+        say("Du finner oppgavene som gjenstår i arbeidslisten på oversikten.", "neutral", "Til oppfølging");
     } finally {
       syncMarks();
       setRunning(false);
@@ -572,6 +644,7 @@ function Erp() {
   // What a person still has to do, read from the same state the screens show.
   const approval = approvalState(CHAIN, request);
   const close = summarizeClose(tasks);
+  const periodLocked = periodStatusOn(periods, POSTING_DATE).status === "hard-closed";
   const suggested = matches.filter((match) => match.status === "suggested").length;
   const queue: { id: ScreenId; text: string; detail: string; open: boolean }[] = [
     { id: "bank", text: "Bankavstemming", detail: `${suggested} forslag til attestering`, open: suggested > 0 },
@@ -641,10 +714,12 @@ function Erp() {
     {
       id: "close",
       text: "Avslutning oktober",
-      detail: close.readyToClose
-        ? "klar til lukking"
-        : `${close.open} åpne, ${close.awaitingSignOff.length} til signering`,
-      open: !close.readyToClose,
+      detail: periodLocked
+        ? "perioden er lukket"
+        : close.readyToClose
+          ? "klar til lukking"
+          : `${close.open} åpne, ${close.awaitingSignOff.length} til signering`,
+      open: !periodLocked,
     },
   ];
 
@@ -653,19 +728,19 @@ function Erp() {
 
   return (
     <BookiAccessProvider actor={ACTORS[actor]}>
-      <div lang="nb" className="min-h-svh bg-background text-foreground">
+      <div lang="nb" className="erp-shell min-h-svh bg-background text-foreground">
         <AgentPresence agent={agent} onController={(controller) => (presence.current = controller)} />
         <SiteAgentCursor />
 
-        <header
-          className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-2 md:px-8"
-          style={{ borderBottom: "var(--hairline) solid var(--bk-border-strong)" }}
-        >
-          <div className="flex flex-wrap items-baseline gap-x-4">
-            <span className="text-base font-semibold tracking-[-0.02em]">Nordlys Regnskap</span>
-            <span className="text-sm text-muted-foreground">Nordlys AS · oktober 2026</span>
+        <header className="erp-header">
+          <div className="erp-identity">
+            <Icon name="building" className="erp-identity__icon" />
+            <div>
+              <strong>Nordlys Regnskap</strong>
+              <span>Nordlys AS · oktober 2026</span>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="erp-header__controls flex flex-wrap items-center gap-x-6 gap-y-2">
             <label className="site-label flex items-center gap-2 whitespace-nowrap">
               Logget inn som
               {/* Who is signed in is the person's to choose: an agent never switches identity. */}
@@ -682,60 +757,94 @@ function Erp() {
                 ))}
               </select>
             </label>
-            <Link to="/" lang="en" className="site-nav-link">
-              A demo built with Booki
+            <Link to="/" className="site-nav-link">
+              Om Booki
             </Link>
           </div>
         </header>
 
-        <div className="grid gap-x-10 px-5 md:px-8 lg:grid-cols-[10rem_minmax(0,1fr)_19rem]">
+        <div className="erp-workspace">
           <nav aria-label="Skjermbilder" className="erp-nav">
-            {GROUPS.map((group) => (
-              <div key={group} className="erp-nav__group" role="group" aria-label={GROUP_LABEL[group]}>
-                <span className="erp-nav__label">{GROUP_LABEL[group]}</span>
-                {SCREENS.filter((item) => item.group === group).map((item) => (
-                  <GateButton
-                    key={item.id}
-                    type="button"
-                    className="site-nav-link site-text-button"
-                    aria-current={item.id === screen ? "page" : undefined}
-                    disabled={running}
-                    onClick={() => setScreen(item.id)}
-                  >
-                    {item.title}
-                  </GateButton>
-                ))}
-              </div>
-            ))}
+            <div className="erp-nav__toolbar">
+              <GateButton
+                ref={menuButton}
+                onKeyDown={dismissNav}
+                className="site-text-button"
+                aria-expanded={navOpen}
+                aria-controls="erp-screens"
+                aria-label={`Velg skjerm. Gjeldende side: ${current.title}`}
+                onClick={() => setNavOpen(!navOpen)}
+              >
+                <Icon name={SCREEN_ICON[screen]} /> {current.title} <Icon name="chevron-down" />
+              </GateButton>
+              <a href="#erp-agent" onKeyDown={dismissNav} className="site-nav-link">
+                Til agentpanelet
+              </a>
+            </div>
+            <div className="erp-nav__screens" id="erp-screens" data-open={navOpen}>
+              {GROUPS.map((group) => (
+                <div key={group} className="erp-nav__group" role="group" aria-label={GROUP_LABEL[group]}>
+                  <span className="erp-nav__label">{GROUP_LABEL[group]}</span>
+                  {SCREENS.filter((item) => item.group === group).map((item) => (
+                    <GateButton
+                      key={item.id}
+                      onKeyDown={dismissNav}
+                      type="button"
+                      className="site-nav-link site-text-button"
+                      aria-current={item.id === screen ? "page" : undefined}
+                      disabled={running}
+                      onClick={() => openScreen(item.id)}
+                    >
+                      <Icon name={SCREEN_ICON[item.id]} />
+                      {item.title}
+                    </GateButton>
+                  ))}
+                </div>
+              ))}
+            </div>
           </nav>
 
-          <main className="min-w-0 py-6">
-            <h1 className="m-0 text-[2rem] leading-none font-semibold tracking-[-0.04em]">{current.title}</h1>
+          <main ref={content} className="erp-content min-w-0">
+            <h1
+              tabIndex={-1}
+              ref={heading}
+              id="erp-screen-title"
+              className="m-0 text-[2rem] leading-none font-semibold tracking-[-0.04em]"
+            >
+              {current.title}
+            </h1>
             <p className="mt-2 mb-6 max-w-[60ch] text-muted-foreground">{current.note}</p>
 
-            {screen === "overview" ? <ErpDashboard /> : null}
-
             {screen === "overview" ? (
-              <ul className="erp-queue">
-                {[...queue]
-                  .sort((a, b) => Number(b.open) - Number(a.open))
-                  .map((item) => (
-                    <li key={item.id}>
-                      <GateButton
-                        className="erp-queue__row"
-                        data-open={item.open ? "" : undefined}
-                        disabled={running}
-                        onClick={() => setScreen(item.id)}
-                      >
-                        <span className="erp-queue__text">{item.text}</span>
-                        <span className="erp-queue__detail">{item.detail}</span>
-                        <span aria-hidden className="erp-queue__go">
-                          →
-                        </span>
-                      </GateButton>
-                    </li>
-                  ))}
-              </ul>
+              <ErpDashboard>
+                <details className="erp-inbox">
+                  <summary>
+                    <Icon name="list-checks" />
+                    Arbeidsliste <span>{queue.filter((item) => item.open).length} åpne</span>
+                    <Icon name="chevron-down" />
+                  </summary>
+                  <ul className="erp-queue">
+                    {[...queue]
+                      .sort((a, b) => Number(b.open) - Number(a.open))
+                      .map((item) => (
+                        <li key={item.id}>
+                          <GateButton
+                            className="erp-queue__row"
+                            data-open={item.open ? "" : undefined}
+                            disabled={running}
+                            onClick={() => openScreen(item.id)}
+                          >
+                            <span className="erp-queue__text">{item.text}</span>
+                            <span className="erp-queue__detail">{item.detail}</span>
+                            <span aria-hidden className="erp-queue__go">
+                              →
+                            </span>
+                          </GateButton>
+                        </li>
+                      ))}
+                  </ul>
+                </details>
+              </ErpDashboard>
             ) : null}
 
             {screen === "vouchers"
@@ -941,20 +1050,25 @@ function Erp() {
             ) : null}
           </main>
 
-          <aside lang="en" data-bk-surface="ink" aria-label="Agent" className="erp-agent site-machine min-w-0">
+          <aside
+            id="erp-agent"
+            tabIndex={-1}
+            data-bk-surface="ink"
+            aria-label="Agent"
+            className="erp-agent site-machine min-w-0"
+          >
             <div className="flex items-center justify-between gap-3">
               <h2 className="site-kicker">Agent</h2>
-              <AgentStatus state={running ? "working" : "idle"} label={running ? "working" : "idle"} />
+              <AgentStatus state={running ? "working" : log.length ? "done" : "idle"} />
             </div>
             <p className="mt-3 mb-0 text-sm text-ink-muted">
-              A fixed script sending real actions to the controls on screen. Every answer below is the library's own.
+              {screen === "overview"
+                ? "Les nøkkeltallene, eller la agenten forberede månedsavslutningen."
+                : current.title + " · Agenten viser hvert steg her."}
             </p>
             <div className="mt-4 grid gap-2">
-              <Button
-                disabled={running || screen === "overview"}
-                onClick={() => screen !== "overview" && void run([screen])}
-              >
-                {running ? "Agent working…" : "Work this screen"}
+              <Button disabled={running} onClick={() => void run([screen])}>
+                {running ? "Agenten arbeider…" : screen === "overview" ? "Les nøkkeltallene" : "Kjør på denne siden"}
               </Button>
               <Button
                 variant="outline"
@@ -974,22 +1088,22 @@ function Erp() {
                   ])
                 }
               >
-                Work the whole month-end
+                Forbered månedsavslutning
               </Button>
-              <Button
-                variant="ghost"
-                disabled={marks === 0}
-                onClick={() => {
-                  presence.current?.acknowledge();
-                  syncMarks();
-                }}
-              >
-                Mark {marks} agent {marks === 1 ? "value" : "values"} reviewed
-              </Button>
+              {marks > 0 && (
+                <Button
+                  variant="ghost"
+                  data-agent-confirm={personOnly("Gjennomgang av agentens endringer krever en person.")}
+                  onClick={() => {
+                    presence.current?.acknowledge();
+                    syncMarks();
+                  }}
+                >
+                  Kvitter for {marks} {marks === 1 ? "endring" : "endringer"}
+                </Button>
+              )}
             </div>
-            {log.length === 0 ? (
-              <p className="mt-6 mb-0 font-mono text-xs text-ink-muted">No actions yet.</p>
-            ) : (
+            {log.length > 0 && (
               <ol className="site-rows site-rows--ink mt-6 font-mono text-xs" aria-live="polite">
                 {log.map((row) => (
                   <li key={row.id} className="grid gap-1.5">
@@ -1001,6 +1115,9 @@ function Erp() {
                 ))}
               </ol>
             )}
+            <a href="#erp-screen-title" className="erp-agent__back site-nav-link">
+              Tilbake til {current.title.toLowerCase()}
+            </a>
           </aside>
         </div>
       </div>

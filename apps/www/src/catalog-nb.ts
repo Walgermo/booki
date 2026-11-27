@@ -21,7 +21,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   examples: {
     title: "Eksempler",
     description:
-      "Én faktura på et vanlig skjema og på Booki, kontrollene i ulike oppsett, og en kontroll dere lager selv.",
+      "Prøv én faktura og tre ruter fra norske nettsteder med og uten Booki. Utforsk kontrollene og lag deres egen.",
   },
   icons: {
     title: "Ikoner",
@@ -31,7 +31,7 @@ const NB: Record<string, { title?: string; description: string }> = {
   demo: {
     title: "Demo",
     description:
-      "Et fungerende skjermbilde for utgående faktura som en agent kan styre, med menneskelige kontrollpunkter på plass.",
+      "En regnskapsapp for fakturaer, betalinger og månedsavslutning, med agenthandlinger og godkjenning fra en person.",
   },
   "month-end": {
     title: "Månedsavslutning",

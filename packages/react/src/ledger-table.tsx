@@ -210,9 +210,23 @@ function SortHeader({
   as?: "th" | "span";
   children: ReactNode;
 }) {
+  const { profile } = useBookiLocaleOptional();
   const sorted = query.sort?.column === id ? query.sort.direction : undefined;
   const label = (
-    <LedgerTableSort value={id}>
+    <LedgerTableSort
+      value={id}
+      aria-description={
+        as === "span" && sorted
+          ? profile.locale.startsWith("nb")
+            ? sorted === "asc"
+              ? "Sortert stigende"
+              : "Sortert synkende"
+            : sorted === "asc"
+              ? "Sorted ascending"
+              : "Sorted descending"
+          : undefined
+      }
+    >
       {children}
       <span aria-hidden="true" data-slot="ledger-table-sort-mark">
         {sortMark(sorted)}
@@ -224,9 +238,7 @@ function SortHeader({
       {label}
     </th>
   ) : (
-    <span role="columnheader" data-align={align} aria-sort={ariaSort(query.sort, id)}>
-      {label}
-    </span>
+    <span data-align={align}>{label}</span>
   );
 }
 

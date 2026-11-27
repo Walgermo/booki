@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 /**
@@ -55,6 +56,7 @@ export const SITE_META: PageMeta = {
 const PageMetaContext = createContext<(meta: PageMeta | null) => void>(() => {});
 
 export function LangProvider({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
   const [lang, setLangState] = useState<Lang>(() => storedLang() ?? browserLang());
   // A page may set its own title and description (usePageMeta); the site's apply otherwise.
   const [pageMeta, setPageMeta] = useState<PageMeta | null>(null);
@@ -70,6 +72,16 @@ export function LangProvider({ children }: { children: ReactNode }) {
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
   }, [lang, pageMeta]);
+
+  useEffect(() => {
+    const route = pathname.replace(/\/+$/, "") || "/";
+    const url = `https://booki.dev${route}`;
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", url);
+    document
+      .querySelector('link[rel="alternate"][type="text/markdown"]')
+      ?.setAttribute("href", route === "/" ? "/index.md" : `${route}.md`);
+  }, [pathname]);
 
   // Follow the browser while the visitor has not picked one themselves.
   useEffect(() => {

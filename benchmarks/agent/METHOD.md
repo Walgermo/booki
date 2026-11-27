@@ -70,6 +70,114 @@ run that hits the cap is a failed run.
 The texts are in `src/tasks.ts`. The system prompt is one neutral sentence and
 names no tool or product.
 
+## Public browser checks
+
+The public-site runs follow three read-only visitor tasks from fresh desktop
+Chrome sessions with a Norwegian locale. The script starts at each published
+home page, activates visible controls by their accessible names, and checks
+the destination URL and visible heading. On Nav it also checks that the
+Dagpenger panel expands. The recorded actions include cookie choices and
+keyboard activations. The initial page load and verification reads are
+outside the action count. Each site was measured once after the exploratory
+visits that established its route.
+
+GPT-6.2 Sol explored the home pages in Chrome using role-based lists of
+links and buttons. It chose Nav’s processing-time link and scoped the
+repeated «Vis mer» button to the Dagpenger panel. At Posten, it chose
+«Se julens sendefrister» and identified the «Avvis alle» button in the
+cookie dialog when the home page links were inert. At Brønnøysundregistrene,
+the fixed header intercepted a pointer click on «Årsregnskap», so the
+script activates the focused link with Enter. The saved counts come from
+the deterministic Playwright replay of those choices.
+
+During exploration, Chrome reached the Brønnøysundregistrene annual-accounts
+hub (HTTP 200), but clicking its Forsinkelsesgebyr link returned HTTP 403
+with a block page. The recorded task ends at the hub and checks that the
+link is visible.
+
+The live checks also record the facts read at the destinations. The Nav
+script waits for the Dagpenger tables to finish loading. It reads the
+standard application and complaints-to-Nav-klageinstans rows. The Posten
+script distinguishes domestic small packages within the same region and
+across regions, with large and express entries available as context. The
+Brønnøysundregistrene script reads the July day and maximum fee from the
+annual-accounts guidance with the detailed fee link left unopened.
+
+- [Live source script](public-browser.mjs)
+- [Live source receipt](../../apps/www/src/data/public-browser.json)
+- [Nav processing times](https://www.nav.no/saksbehandlingstider)
+- [Posten’s posting deadlines](https://www.posten.no/kundeservice/sendefrister)
+- [Brønnøysundregistrene’s annual accounts guidance](https://www.brreg.no/innsending-av-arsregnskap/)
+
+From the repository root, run `node benchmarks/agent/public-browser.mjs` with
+workspace dependencies and Google Chrome installed. Live labels, content,
+URLs and consent prompts may change over time.
+
+### Full-document fixtures
+
+The same captured document supplies both arms of each route, with nine
+recorded scenes across the three tasks. The capture keeps the home and
+destination documents, visible context such as menus and footer links, the
+consent states, and the expanded Dagpenger section. Captured headings, lists,
+tables and form controls retain their order. External calls, source
+scripts, third-party embeds or media behavior are outside the local replay.
+Off-route navigation that changes the captured document is outside its
+recorded transitions. The [source corpus](../../apps/www/src/data/public-documents.json)
+records capture omissions per scene.
+
+The browser arm uses the official Playwright MCP server and native
+navigation/inputs. The Booki arm uses the same document with readable
+semantic sections in role-aware UI SDK primitives and Booki controls.
+Visible article and table content is sent through the bridge as section
+content. The Booki tool adapter relays native snapshot, query and act
+responses. Browser MCP relays the accessibility tree and normal click,
+keyboard, input, selection and wait tools. Page inspection for verification
+stays outside both adapters.
+
+The scripted protocol records each adapter input and result. It checks that
+each arm starts in the same state, reaches the intended location, and reads
+the two requested facts from the result. For each visited scene, an
+independent check compares the two rendered text/control surfaces. The
+Booki coverage audit matches rendered text to the snapshot and, when the
+snapshot reaches its entry cap, to read-only bridge queries. It checks that
+visible enabled controls are discoverable with an action. These extra audit
+queries are listed separately from task tool calls.
+
+With the Booki site running locally, run
+`pnpm --filter agent-benchmark exec tsx src/public-pairs.ts --url http://127.0.0.1:5183`.
+The [scripted receipt](../../apps/www/src/data/public-browser-pairs.json)
+records task calls, answers and surface coverage. The examples page also
+provides a local interactive replay of the recorded route.
+
+### Model-driven full-document tasks
+
+The same fixtures can run with GPT-6.2 Sol through authenticated Codex CLI
+in ephemeral sessions. Both arms receive the same task wording and JSON
+answer schema without the route, action sequence or expected values. The
+harness independently checks the rendered final state and both task answers:
+standard application weeks and complaint months for Nav, the two December
+days for Posten, and the July day and maximum late fee for
+Brønnøysundregistrene. Each answer must match the independently observed
+live value and be supported by an adapter reply. The verifier records the
+tool call index for that evidence and checks that the model used only the
+fixture adapter.
+
+The [model receipt](../../apps/www/src/data/public-browser-models.json) uses
+one fresh session per arm with low reasoning effort. It lists the tool
+calls, requested action steps and Codex CLI’s aggregate `turn.completed`
+usage. Input counts include Codex instructions, tool definitions and
+repeated context. Cached input is reported alongside total input. No API
+price is applied to ChatGPT-authenticated usage.
+
+Earlier navigation-only pilots tested the harness on smaller fixtures,
+with no answer check in those receipts. Those pilots exposed the
+noninteractive MCP approval default and shared dev-server hot reloads.
+The full-document comparison uses the first complete batch after preflight
+on a frozen local build, retaining the observed outcomes.
+
+From the root, with a preview of a fixed build and authenticated Codex CLI,
+run `pnpm --filter agent-benchmark exec tsx src/public-model-pairs.ts --url http://127.0.0.1:5183`.
+
 ## Hard tasks (written before Booki ran them)
 
 Five harder tasks were written before any run of them: `doc-error`,

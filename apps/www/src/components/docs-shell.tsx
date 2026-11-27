@@ -27,6 +27,9 @@ export function DocsShell() {
   return (
     <div className="min-h-svh bg-background text-foreground">
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
+        <a className="site-skip-link" href="#docs-main">
+          {t("Skip to content", "Hopp til innholdet")}
+        </a>
         <header className="docs-header flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3">
           <Link to="/" className="site-mark" aria-label={t("Booki, home", "Booki, forsiden")}>
             <BookiLogo />
@@ -54,7 +57,7 @@ export function DocsShell() {
           >
             <DocsNavigation />
           </nav>
-          <main className="min-w-0 py-8 lg:py-10">
+          <main id="docs-main" tabIndex={-1} className="min-w-0 py-8 lg:py-10">
             <BookiLocaleProvider country={country} onCountryChange={(next) => setPicked({ lang, country: next })}>
               <DocsPageActions key={pathname} pathname={pathname} />
               <Outlet />

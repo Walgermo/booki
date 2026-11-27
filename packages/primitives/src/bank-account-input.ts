@@ -6,7 +6,7 @@ import {
   isValidUsAccountNumber,
 } from "@booki-aui/core/routing-number";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
-import { asEvent, textOf } from "./fields.js";
+import { bindInputValidity, asEvent, textOf } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";
 
 export type BankAccountValue =
@@ -249,6 +249,9 @@ export const bankAccount = definePrimitive({
         "aria-label": state.label,
         ...inputLockAttrs(state),
       }),
+      bind: bindInputValidity<BankAccountState>((s) =>
+        s.digits && !isValidKontonummer(s.digits) ? "Ugyldig kontonummer (mod11)" : "",
+      ),
       on: {
         input: (event, { api, store }) => {
           if (isLocked(store.get())) return;
@@ -269,6 +272,9 @@ export const bankAccount = definePrimitive({
         "aria-label": "Routing number",
         ...inputLockAttrs(state),
       }),
+      bind: bindInputValidity<BankAccountState>((s) =>
+        s.routingNumber && !isValidRoutingNumber(s.routingNumber) ? "Invalid routing number" : "",
+      ),
       on: {
         input: (event, { api, store }) => {
           if (isLocked(store.get())) return;
@@ -289,6 +295,9 @@ export const bankAccount = definePrimitive({
         "aria-label": "Account number",
         ...inputLockAttrs(state),
       }),
+      bind: bindInputValidity<BankAccountState>((s) =>
+        s.accountNumber && !isValidUsAccountNumber(s.accountNumber) ? "Invalid account number" : "",
+      ),
       on: {
         input: (event, { api, store }) => {
           if (isLocked(store.get())) return;

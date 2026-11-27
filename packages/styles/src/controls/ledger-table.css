@@ -400,7 +400,7 @@
 }
 
 /* In the trial balance the headers are grid cells; end-aligned ones keep their figures' edge. */
-[data-slot="ledger-table-head"] [role="columnheader"][data-align="end"] {
+[data-slot="ledger-table-head"] > [data-align="end"] {
   justify-self: end;
 }
 
@@ -410,4 +410,13 @@
 
 [data-slot="ledger-table-export"] {
   margin-left: auto;
+}
+
+@media (pointer: coarse) {
+  [data-slot="ledger-table-search"] {
+    font-size: max(16px, 1rem);
+  }
+  [data-slot="ledger-table-sort"] {
+    min-height: 44px;
+  }
 }

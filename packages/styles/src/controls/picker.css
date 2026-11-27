@@ -321,7 +321,15 @@
     [data-slot="tax-code-select-list"],
     [data-slot="currency-select-list"],
     [data-slot="accounting-period-list"]
-  ) {
+  ):not([hidden]) {
     animation: none;
+  }
+  :is(
+    [data-slot="tax-code-select-trigger"],
+    [data-slot="currency-select-trigger"],
+    [data-slot="account-picker-trigger"],
+    [data-slot="accounting-period-trigger"]
+  )::after {
+    transition: none;
   }
 }

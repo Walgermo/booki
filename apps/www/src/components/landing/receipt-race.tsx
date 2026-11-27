@@ -1,7 +1,7 @@
 import { Button as SdkButton } from "@ui-sdk/react/button";
 import { useState } from "react";
 
-import { fairCost, formatters, sideName, sidesFor, type BenchSide, type BenchTask } from "@/lib/bench";
+import { fairCost, formatters, sideLabel, sidesFor, type BenchSide, type BenchTask } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
 
 import { BookiMark } from "../booki-logo";
@@ -61,7 +61,7 @@ export function ReceiptRace({ task }: { task: BenchTask }) {
   const others = sides
     .filter((side) => side.key !== "acc" && bookiCost > 0)
     .map((side) => ({
-      name: sideName(side.name, lang).split(" · ")[0],
+      name: sideLabel(side.key, lang),
       times: `${Math.round(fairCost(side) / bookiCost)}×`,
     }));
   // One multiple when the screens agree ("5× as much"); otherwise each named.
@@ -133,13 +133,13 @@ function Receipt({ side, open, bookiCost }: { side: BenchSide; open: boolean; bo
   const tools = (side as { tools?: string[] }).tools ?? [];
   const shown = open ? turns : turns.slice(0, FOLDED);
   const hidden = turns.length - shown.length;
-  const label = side.key === "acc" ? "Booki + ERP" : sideName(side.name, lang).split(" · ")[0];
+  const label = side.key === "acc" ? "Booki + ERP" : sideLabel(side.key, lang);
   // Each line prints after the one before it; what follows the lines waits for them all.
   const delay = shown.length * LINE;
   return (
     <section
       className="receipt"
-      // a slip is paper in either theme, and the vendors' logos are drawn for paper
+      // A slip is paper in either theme.
       data-bk-theme="light"
       data-ours={side.key === "acc" ? "" : undefined}
       aria-label={t(
@@ -205,9 +205,9 @@ function Receipt({ side, open, bookiCost }: { side: BenchSide; open: boolean; bo
   );
 }
 
-/** Each receipt's letterhead, in plain text: these are our rebuilds, not the vendors' products. */
+/** Each receipt identifies the rebuilt screen. */
 function Brand({ side }: { side: string }) {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   if (side === "acc") {
     return (
       <>
@@ -217,7 +217,9 @@ function Brand({ side }: { side: string }) {
       </>
     );
   }
-  if (side === "tripletex") return <span>{t("Tripletex (rebuilt)", "Tripletex (gjenskapt)")}</span>;
-  if (side === "dnb") return <span>{t("DNB Regnskap (rebuilt)", "DNB Regnskap (gjenskapt)")}</span>;
-  return <span>{side}</span>;
+  return (
+    <span>
+      {sideLabel(side, lang)} {t("(rebuilt)", "(gjenskapt)")}
+    </span>
+  );
 }

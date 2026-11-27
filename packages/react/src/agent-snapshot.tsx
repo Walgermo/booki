@@ -164,7 +164,8 @@ export function AgentSnapshot({
       aria-label={typeof title === "string" ? title : undefined}
     >
       {title !== null ? <p data-slot="agent-snapshot-heading">{title}</p> : null}
-      <div data-slot="agent-snapshot-scroll" style={style}>
+      {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the capped snapshot is independently scrollable. */}
+      <div data-slot="agent-snapshot-scroll" tabIndex={entries.length ? 0 : undefined} style={style}>
         {entries.length === 0 ? (
           <p data-slot="agent-snapshot-empty">{emptyLabel ?? say(msg("agent-snapshot.empty"))}</p>
         ) : (

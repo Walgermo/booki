@@ -258,3 +258,9 @@
   [data-slot="aged-balances-sort"] {
   justify-content: flex-end;
 }
+
+@media (pointer: coarse) {
+  [data-slot="aged-balances-search"] {
+    font-size: max(16px, 1rem);
+  }
+}

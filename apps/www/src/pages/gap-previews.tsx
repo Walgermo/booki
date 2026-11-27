@@ -1,3 +1,4 @@
+import type { GapName } from "./lazy-previews";
 import { AGENT_STATUS_STATES, agentStatusLabel } from "@booki-aui/core/msg/agent-status";
 import { Button } from "@ui-sdk/react/button";
 import { drawSample, startWorkpaper } from "@booki-aui/core/audit";
@@ -505,7 +506,7 @@ function ChartOfAccountsPreview() {
 }
 
 /** Live previews for the docs pages, on the shared demo books. */
-export const GAP_PREVIEWS: Record<string, () => React.JSX.Element> = {
+export const GAP_PREVIEWS: Record<GapName, () => React.JSX.Element> = {
   "kpi-stat": () => (
     <div className="grid max-w-xs">
       <KpiStat

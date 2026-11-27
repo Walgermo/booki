@@ -84,10 +84,8 @@
 
 :where([data-slot="agent-snapshot"]) [data-slot="agent-snapshot-state"] {
   margin: 0;
-  overflow-x: auto;
+  overflow-wrap: anywhere;
   color: var(--bk-ink-fg);
   font: inherit;
-  white-space: pre;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bk-ink-border) transparent;
+  white-space: pre-wrap;
 }

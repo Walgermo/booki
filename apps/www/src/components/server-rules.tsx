@@ -72,7 +72,7 @@ const CASES: { id: string; who: Text; token: string; what: Text; body: unknown }
   },
 ];
 
-type Answer = { status: number; body: string };
+type Answer = { status: number; body: string } | "sending" | "unavailable";
 
 /**
  * The rules the screens enforce, checked again by the server with
@@ -80,28 +80,32 @@ type Answer = { status: number; body: string };
  * the caller, as a sign-in would set it, never a field the client fills in.
  */
 export function ServerRules() {
+  const { lang } = useLang();
+  return <ServerRulesPanel key={lang} />;
+}
+
+function ServerRulesPanel() {
   const { lang, t } = useLang();
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
-  // An answer is in the language it was asked in; a new language starts the panel over.
-  const [askedIn, setAskedIn] = useState(lang);
-  if (askedIn !== lang) {
-    setAskedIn(lang);
-    setAnswers({});
-  }
 
   const send = async (item: (typeof CASES)[number]) => {
-    const response = await fetch("/api/books", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${item.token}`,
-        // The API answers in the caller's language: the page's own ("nb" for Norwegian).
-        "accept-language": lang,
-      },
-      body: JSON.stringify(item.body),
-    });
-    const body = await response.text();
-    setAnswers((prev) => ({ ...prev, [item.id]: { status: response.status, body } }));
+    setAnswers((prev) => ({ ...prev, [item.id]: "sending" }));
+    try {
+      const response = await fetch("/api/books", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${item.token}`,
+          // The API answers in the caller's language: the page's own ("nb" for Norwegian).
+          "accept-language": lang,
+        },
+        body: JSON.stringify(item.body),
+      });
+      const body = await response.text();
+      setAnswers((prev) => ({ ...prev, [item.id]: { status: response.status, body } }));
+    } catch {
+      setAnswers((prev) => ({ ...prev, [item.id]: "unavailable" }));
+    }
   };
 
   return (
@@ -110,7 +114,7 @@ export function ServerRules() {
         {CASES.map((item) => {
           const answer = answers[item.id];
           let line = "";
-          if (answer) {
+          if (typeof answer === "object") {
             try {
               const parsed = JSON.parse(answer.body) as { actor?: string; code?: string; message?: string };
               line =
@@ -127,13 +131,18 @@ export function ServerRules() {
                 <span>
                   <span className="font-medium">{item.who[lang]}</span> {item.what[lang]}
                 </span>
-                {answer ? (
-                  <span className="site-server-answer" data-ok={answer.status < 300 ? "" : undefined}>
-                    <span className="site-server-answer__status">{answer.status}</span> {line}
-                  </span>
-                ) : null}
+                <span role="status">
+                  {answer === "sending" && t("Sending…", "Sender…")}
+                  {answer === "unavailable" &&
+                    t("Couldn’t reach the API. Try again.", "Fikk ikke kontakt med API-et. Prøv igjen.")}
+                  {typeof answer === "object" ? (
+                    <span className="site-server-answer" data-ok={answer.status < 300 ? "" : undefined}>
+                      <span className="site-server-answer__status">{answer.status}</span> {line}
+                    </span>
+                  ) : null}
+                </span>
               </div>
-              <Button variant="outline" size="sm" onClick={() => send(item)}>
+              <Button variant="outline" size="sm" disabled={answer === "sending"} onClick={() => send(item)}>
                 {t("Send to the API", "Send til API-et")}
               </Button>
             </li>

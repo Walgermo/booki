@@ -1,6 +1,6 @@
 import { extractNorwegianKontonummer, formatIban, isValidIban, normalizeIban } from "@booki-aui/core/iban";
 import { createChange, definePrimitive } from "@ui-sdk/core";
-import { asEvent, textOf } from "./fields.js";
+import { bindInputValidity, asEvent, textOf } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";
 
 export type IbanOptions = {
@@ -112,6 +112,7 @@ export const ibanInput = definePrimitive({
         "aria-label": state.label,
         ...inputLockAttrs(state),
       }),
+      bind: bindInputValidity<IbanState>((s) => (s.value && !s.isValid ? "Invalid IBAN" : "")),
       on: {
         input: (event, { api, store }) => {
           if (isLocked(store.get())) return;

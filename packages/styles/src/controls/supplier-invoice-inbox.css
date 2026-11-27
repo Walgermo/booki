@@ -314,3 +314,12 @@
   text-align: center;
   color: var(--bk-muted-fg);
 }
+
+@media (pointer: coarse) {
+  [data-slot="supplier-invoice-inbox-search"] {
+    font-size: max(16px, 1rem);
+  }
+  [data-slot="supplier-invoice-inbox-sort"] {
+    min-height: 44px;
+  }
+}

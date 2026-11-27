@@ -1,0 +1,72 @@
+{
+  "observedOn": "2026-11-27",
+  "browser": "Google Chrome 158.0.8127.89",
+  "runs": [
+    {
+      "id": "nav",
+      "home": "https://www.nav.no/",
+      "steps": [
+        {
+          "input": "click",
+          "label": "Nei"
+        },
+        {
+          "input": "click",
+          "label": "Saksbehandlingstider"
+        },
+        {
+          "input": "click",
+          "label": "Dagpenger · Vis mer"
+        }
+      ],
+      "url": "https://www.nav.no/saksbehandlingstider",
+      "heading": "Saksbehandlingstider",
+      "expanded": "Dagpenger",
+      "facts": {
+        "applicationWeeks": 6,
+        "internationalLayoffApplicationWeeks": 7,
+        "complaintAppealBodyMonths": 4
+      }
+    },
+    {
+      "id": "posten",
+      "home": "https://www.posten.no/",
+      "steps": [
+        {
+          "input": "click",
+          "label": "Avvis alle"
+        },
+        {
+          "input": "click",
+          "label": "Se julens sendefrister"
+        }
+      ],
+      "url": "https://www.posten.no/kundeservice/sendefrister",
+      "heading": "Sendefrister for julepost 2026",
+      "facts": {
+        "domesticSmallSameRegionDecemberDay": 18,
+        "domesticSmallAcrossRegionsDecemberDay": 16,
+        "domesticLargeDecemberDay": 16,
+        "domesticExpressDecemberDay": 22
+      }
+    },
+    {
+      "id": "brreg",
+      "home": "https://www.brreg.no/",
+      "steps": [
+        {
+          "input": "enter",
+          "label": "Årsregnskap"
+        }
+      ],
+      "url": "https://www.brreg.no/innsending-av-arsregnskap/",
+      "heading": "Innsending av årsregnskap",
+      "visibleLink": "Forsinkelsesgebyr",
+      "facts": {
+        "filingJulyDay": 31,
+        "maxLateFeeNok": 69940,
+        "correctionWeeksForTimelyFiling": 2
+      }
+    }
+  ]
+}

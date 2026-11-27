@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { AgingChart, BarChart, CashflowWaterfall, KpiStat, TrendChart } from "@booki-aui/react";
 
 import { RECEIVABLES } from "@/lib/demo-data";
@@ -53,9 +54,12 @@ const CLOSING = OPENING + CASHFLOW.reduce((sum, step) => sum + step.amountMinor,
  * rest of the demo: an agent reads each number, trend and bucket in the
  * snapshot instead of looking at pixels.
  */
-export function ErpDashboard() {
+export function ErpDashboard({ children }: { children: ReactNode }) {
   return (
-    <div className="erp-dashboard">
+    <section className="erp-dashboard" aria-labelledby="erp-dashboard-title">
+      <h2 className="sr-only" id="erp-dashboard-title">
+        Nøkkeltall og rapporter
+      </h2>
       <div className="erp-dashboard__kpis">
         <KpiStat
           label="Inntekt oktober"
@@ -81,6 +85,7 @@ export function ErpDashboard() {
           good="up"
         />
       </div>
+      {children}
       <div className="site-sheet min-w-0">
         <TrendChart
           title="Inntekt og kostnader"
@@ -117,6 +122,6 @@ export function ErpDashboard() {
           steps={CASHFLOW}
         />
       </div>
-    </div>
+    </section>
   );
 }

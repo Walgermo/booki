@@ -1,3 +1,4 @@
+import type { BlockName } from "./lazy-previews";
 import { formatMoney, money } from "@booki-aui/core/money";
 import { DownloadIcon, EnvelopeIcon, PencilIcon, PrinterIcon, RefreshIcon, TrashIcon } from "@booki-aui/icons/react";
 import {
@@ -69,14 +70,14 @@ function TextLinkPreview() {
     <div className="grid gap-3">
       <p className="m-0">
         {t("Read the ", "Les ")}
-        <TextLink href="#close">{t("month-end guide", "veiledningen for månedsavslutning")}</TextLink>
+        <TextLink href="/close">{t("month-end guide", "veiledningen for månedsavslutning")}</TextLink>
         {t(" before you lock the period.", " før du låser perioden.")}
       </p>
       <div className="flex flex-wrap gap-x-5 gap-y-2">
-        <TextLink href="#docs" icon="docs">
+        <TextLink href="/docs" icon="docs">
           {t("Documentation", "Dokumentasjon")}
         </TextLink>
-        <TextLink href="#source" icon="github">
+        <TextLink href="https://github.com/Walgermo/booki" icon="github">
           {t("Source code", "Kildekode")}
         </TextLink>
       </div>
@@ -262,7 +263,7 @@ function AgentProposalPreview() {
   );
 }
 
-export const BLOCK_PREVIEWS: Record<string, () => ReactNode> = {
+export const BLOCK_PREVIEWS: Record<BlockName, () => ReactNode> = {
   "icon-button": () => <IconButtonPreview />,
   "text-link": () => <TextLinkPreview />,
   card: () => <CardPreview />,

@@ -1,4 +1,4 @@
-import { formatters, modelName, type BenchTask, realOf } from "@/lib/bench";
+import { formatters, modelName, type BenchTask, realOf, sideLabel } from "@/lib/bench";
 import { useLang } from "@/lib/lang";
 
 const ORDER = ["tripletex", "dnb", "acc"];
@@ -18,8 +18,6 @@ export function RealRuns({ task }: { task: BenchTask }) {
   const models = [...new Set(sides.map((side) => side.model))].sort((a, b) => rank(a) - rank(b));
   if (models.length === 0) return null;
   const screens = ORDER.filter((key) => sides.some((side) => side.key === key));
-  const nameOf = (key: string) =>
-    key === "acc" ? "Booki" : sides.find((side) => side.key === key)!.name.split(" · ")[0];
   return (
     <div className="grid gap-3">
       <div className="grid gap-1">
@@ -38,7 +36,7 @@ export function RealRuns({ task }: { task: BenchTask }) {
               <th scope="col">{t("Model", "Modell")}</th>
               {screens.map((key) => (
                 <th key={key} scope="col" data-ours={key === "acc" ? "" : undefined}>
-                  {nameOf(key)}
+                  {sideLabel(key, lang)}
                 </th>
               ))}
             </tr>

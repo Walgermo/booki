@@ -1,3 +1,5 @@
+import { catalogMeta } from "@/lib/catalog-meta";
+import { usePageMeta } from "@/lib/lang";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -75,7 +77,10 @@ const PACKAGES: [string, Text][] = [
 ];
 
 /** Docs overview: what the library guarantees, then where to go. */
+const PAGE_META = catalogMeta("introduction");
+
 export function IntroductionPage() {
+  usePageMeta(PAGE_META);
   const { lang, t } = useLang();
   return (
     <article>

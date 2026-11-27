@@ -9,9 +9,9 @@ agents to run the books, so no outcome is framed that way. One moment in the
 head-to-head chart shows the company's own rule posting the voucher on its
 own, as a detail that shows what becomes possible.
 
-The landing page and the ERP teams page name Tripletex and DNB Regnskap for
-the head-to-head, always as DOM snapshots of their voucher screens, rebuilt
-with invented data: we measured the snapshots, not the products.
+The landing page and the ERP teams page label the benchmark screens ERP
+system 1 and ERP system 2 (ERP-system 1 and ERP-system 2 in Norwegian).
+The comparison uses screens rebuilt from DOM snapshots with invented data.
 
 ## Visual base — Paper and Ink, decided 21 Nov 2026 (later the same day)
 

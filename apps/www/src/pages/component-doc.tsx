@@ -29,7 +29,7 @@ import {
   VoucherLines,
 } from "@booki-aui/react";
 import { Navigate, useParams } from "react-router-dom";
-import { Fragment, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, useMemo, useRef, useState } from "react";
 
 import { getCatalogItem } from "../catalog";
 import { catalogText, groupName } from "../catalog-nb";
@@ -43,8 +43,7 @@ import { OnThisPage } from "../components/on-this-page";
 import { Preview } from "../components/preview";
 import { PREVIEW_RESERVE } from "./agent-demos";
 import { controlExample, usesBridge } from "./control-examples";
-import { BLOCK_PREVIEWS } from "./block-previews";
-import { GAP_PREVIEWS } from "./gap-previews";
+import { blockPreviews, gapPreviews } from "./lazy-previews";
 import {
   ApprovalChainPreview,
   CloseChecklistPreview,
@@ -105,7 +104,7 @@ export function ComponentDocPage() {
     "close-checklist",
     "invoice-editor",
     "payment-batch",
-    ...Object.keys(GAP_PREVIEWS),
+    ...Object.keys(gapPreviews),
   ].includes(name ?? "");
 
   // Install, a usage example and the import note: under the preview, beside the agent's column.
@@ -388,10 +387,13 @@ function renderPreview(
     case "button":
       return <ButtonPreview t={t} />;
     default: {
-      const Gap = GAP_PREVIEWS[name];
-      if (Gap) return <Gap key={country} />;
-      const Block = BLOCK_PREVIEWS[name];
-      if (Block) return <Block />;
+      const Example = gapPreviews[name] ?? blockPreviews[name];
+      if (Example)
+        return (
+          <Suspense fallback={<p role="status">{t("Loading preview…", "Laster forhåndsvisning…")}</p>}>
+            <Example key={country} />
+          </Suspense>
+        );
       return <p className="text-sm text-muted-foreground">{t("No preview.", "Ingen forhåndsvisning.")}</p>;
     }
   }
