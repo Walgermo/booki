@@ -2,8 +2,9 @@ import { BookiLogo } from "@/components/booki-logo";
 import { BookiLocaleProvider } from "@booki-aui/react";
 import type { CountryCode } from "@booki-aui/core/locale";
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
+import { DocsPageActions } from "@/components/docs-page-actions";
 import { DocsNavigation } from "@/components/docs-navigation";
 import { LangToggle } from "@/components/lang-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -12,6 +13,7 @@ import { useLang } from "@/lib/lang";
 const REPO_URL = "https://github.com/Walgermo/booki";
 
 export function DocsShell() {
+  const { pathname } = useLocation();
   const { lang, t } = useLang();
   // One switch, not two: the language picks the country profile the component
   // pages show (Norwegian: NO, kontonummer and MVA; English: US, ABA and sales tax).
@@ -54,6 +56,7 @@ export function DocsShell() {
           </nav>
           <main className="min-w-0 py-8 lg:py-10">
             <BookiLocaleProvider country={country} onCountryChange={(next) => setPicked({ lang, country: next })}>
+              <DocsPageActions key={pathname} pathname={pathname} />
               <Outlet />
             </BookiLocaleProvider>
           </main>

@@ -1,3 +1,4 @@
+import { readFile } from "node:fs";
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -49,6 +50,33 @@ function serverApi(): Plugin {
   };
 }
 
+/** In development Vite otherwise returns the SPA HTML for these generated documents. */
+function docsArtifacts(): Plugin {
+  return {
+    name: "booki-docs-artifacts",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const pathname = req.url?.split("?")[0];
+        if (!pathname || !/^\/(?:docs(?:\/[a-z0-9-]+)?\.md|llms\.txt)$/.test(pathname)) return next();
+        readFile(path.join(server.config.root, "dist", pathname), (error, body) => {
+          if (error && error.code !== "ENOENT") return next(error);
+          if (error) {
+            res.statusCode = 404;
+            res.setHeader("Content-Type", "text/plain; charset=utf-8");
+            res.end("Run pnpm --filter @booki-aui/www build to generate the local documentation.");
+            return;
+          }
+          res.setHeader(
+            "Content-Type",
+            pathname.endsWith(".md") ? "text/markdown; charset=utf-8" : "text/plain; charset=utf-8",
+          );
+          res.end(body);
+        });
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => {
   // Lets a key in apps/www/.env.local reach the dev server. Never bundled.
   const env = loadEnv(mode, __dirname, "ANTHROPIC_");
@@ -57,7 +85,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react(), tailwindcss(), serverApi()],
+    plugins: [react(), tailwindcss(), serverApi(), docsArtifacts()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
