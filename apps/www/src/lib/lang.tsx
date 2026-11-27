@@ -44,12 +44,12 @@ export type PageMeta = { title: { en: string; nb: string }; description: { en: s
 
 export const SITE_META: PageMeta = {
   title: {
-    en: "Booki: UI for people and agents",
-    nb: "Booki: UI for mennesker og agenter",
+    en: "Booki: Agent-first UI for your app",
+    nb: "Booki: Agentisk UI for appen din",
   },
   description: {
-    en: "Build agent-first web apps: controls a person uses like any form and an agent operates by name, under your rules, with a visible agent cursor and every step in the audit trail.",
-    nb: "Bygg agent-first webapper: kontroller en person bruker som et vanlig skjema og en agent styrer ved navn, under reglene deres, med synlig agentpeker og hvert steg i revisjonssporet.",
+    en: "Open-source UI components for people and AI agents. Build forms, tables and workflows with named actions and human approvals.",
+    nb: "Åpne UI-komponenter for mennesker og AI-agenter. Bygg skjemaer, tabeller og arbeidsflyter med navngitte handlinger og menneskelig godkjenning.",
   },
 };
 
@@ -69,6 +69,8 @@ export function LangProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang === "nb" ? "nb" : "en";
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
   }, [lang, pageMeta]);

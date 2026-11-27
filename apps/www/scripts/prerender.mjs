@@ -188,6 +188,8 @@ function withMeta(template, { url, title, description, markdownPath }) {
   html = set(html, /(<meta property="og:title" content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
   html = set(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
   html = set(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${site}${url}$2`);
+  html = set(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
+  html = set(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
   return html.replace(
     "</head>",
     `    <link rel="canonical" href="${site}${url}" />\n    <link rel="alternate" type="text/markdown" href="${markdownPath}" />\n  </head>`,
@@ -285,7 +287,7 @@ function llmsTxt(pages) {
   return [
     "# Booki",
     "",
-    "> Agent-first UI for accounting and auditing: controls an AI agent operates by name, under the company's rules, with a person deciding what is theirs. Before 1.0, on npm as @booki-aui/*.",
+    "> Open-source UI components for people and AI agents working in the same app. Agents operate named controls under the app's rules, with human approval where required. Before 1.0, on npm as @booki-aui/*.",
     "",
     "Every page here is also Markdown: add .md to its address. The agent bridge on each page (window.agent, and WebMCP where the browser has it) gives snapshot, query and act.",
     "",
