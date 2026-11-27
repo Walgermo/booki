@@ -6,7 +6,6 @@ import { agent } from "@/agent";
 import { Extend } from "@/components/landing/extend";
 import { Flex } from "@/components/landing/flex";
 import { TokenStory } from "@/components/landing/tokens";
-import { PublicBrowserExamples } from "@/components/public-browser-examples";
 import { SiteAgentCursor } from "@/components/site-agent-cursor";
 import { useLang } from "@/lib/lang";
 
@@ -34,7 +33,6 @@ export function ExamplesPage() {
         </p>
       </div>
       <TokenStory agent={agent} />
-      <PublicBrowserExamples />
       <Flex agent={agent} />
       <Extend agent={agent} />
     </BookiLocaleProvider>

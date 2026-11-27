@@ -121,15 +121,6 @@ export function AnnouncementPage() {
             "Vi gjenskapte skjermbilder fra to regnskapssystemer, fylte dem med eksempeldata og kjørte de samme oppgavene der og i Booki. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash kjørte hver oppgave fem ganger per skjermbilde. Vi kontrollerte resultatet etter hver kjøring og beregnet kostnaden med leverandørenes listepriser.",
           )}
         </p>
-        <p>
-          {t(
-            "You can also try three routes captured from Nav, Posten and Brønnøysundregistrene. In the Nav example, GPT-6.2 Sol has to open the unemployment benefits panel and read two processing times from its tables. Both versions returned the right answers on all three routes. In one run per version, the Booki bridge took 3 tool calls on each route. The browser took 11 on Nav, 6 on Posten and 3 on Brønnøysundregistrene. You can inspect every call.",
-            "Du kan også prøve tre ruter vi tok opp hos Nav, Posten og Brønnøysundregistrene. I Nav-eksemplet skal GPT-6.2 Sol åpne dagpengepanelet og finne to behandlingstider i tabellene. Modellen svarte riktig på alle tre rutene med begge verktøysettene. I én kjøring per utgave brukte Booki-agentbroen tre verktøykall på hver rute. Nettleserverktøyet brukte elleve hos Nav, seks hos Posten og tre hos Brønnøysundregistrene. Du kan se hvert kall i eksemplene.",
-          )}{" "}
-          <a href="/docs/examples#public-browser" className="site-link">
-            {t("See the routes and results", "Se rutene og resultatene")}
-          </a>
-        </p>
       </section>
 
       <section className="site-article__section" aria-labelledby="start">
