@@ -1,7 +1,7 @@
 {
   "name": "@booki-aui/react",
   "version": "0.5.2",
-  "description": "Booki React — agent-first UI for accounting and auditing: controls an agent operates by name, under your rules. Unstyled by default. Supported: React 19 with the NO and US profiles.",
+  "description": "Open-source UI components for React apps where people and AI agents work in the same screens. Includes forms, tables, documents, sales, accounting and auditing.",
   "type": "module",
   "license": "MIT",
   "repository": {

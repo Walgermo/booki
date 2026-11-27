@@ -1,7 +1,7 @@
 {
   "name": "@booki-aui/readiness",
   "version": "0.3.0",
-  "description": "Agent readiness check for accounting screens: what stops an AI agent on a page, scored 0-100 against the Agent Contract, with fixes.",
+  "description": "Check how well AI agents can operate your app's screens. Score them against the Booki Agent Contract and get actionable fixes.",
   "type": "module",
   "license": "MIT",
   "repository": {
