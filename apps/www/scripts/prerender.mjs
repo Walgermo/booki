@@ -10,7 +10,7 @@
  * The components were written for a browser, so the render runs with a
  * browser-like global (jsdom): English, light, no stored choices.
  */
-import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import Beasties from "beasties";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -113,7 +113,7 @@ function snippet(text) {
  * library on the front page, with its questions; an article and its place
  * in the docs elsewhere. Only what the page shows.
  */
-function structuredData(url, { title, description, body }) {
+function structuredData(url, { title, description, body, image }) {
   const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
   const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
   const publisher = { "@type": "Organization", name: "Booki", url: `${site}/` };
@@ -156,7 +156,7 @@ function structuredData(url, { title, description, body }) {
       url: `${site}${url}`,
       ...(published ? { datePublished: published } : {}),
       inLanguage: "en",
-      image: `${site}/og.png`,
+      image,
       author: publisher,
       publisher,
     });
@@ -177,7 +177,7 @@ function structuredData(url, { title, description, body }) {
 const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 /** The page's own title, description, address and Markdown copy in the head. */
-function withMeta(template, { url, title, description, markdownPath }) {
+function withMeta(template, { url, title, description, markdownPath, image, customImage }) {
   const set = (html, pattern, value) => {
     if (!pattern.test(html)) throw new Error(`index.html has no ${pattern}`);
     return html.replace(pattern, value);
@@ -190,6 +190,25 @@ function withMeta(template, { url, title, description, markdownPath }) {
   html = set(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${site}${url}$2`);
   html = set(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
   html = set(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
+  if (customImage) {
+    html = set(html, /(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`);
+    html = set(html, /(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`);
+    html = set(
+      html,
+      /<meta property="og:image:width" content="[^"]*"\s*\/>/,
+      '<meta property="og:image:width" content="1200" />',
+    );
+    html = set(
+      html,
+      /<meta property="og:image:height" content="[^"]*"\s*\/>/,
+      '<meta property="og:image:height" content="630" />',
+    );
+    html = set(
+      html,
+      /(<meta\s+property="og:image:alt"\s+content=")[^"]*(")/,
+      `$1Booki · ${escapeAttr(title.replace(/ · Booki$/, ""))}$2`,
+    );
+  }
   return html.replace(
     "</head>",
     `    <link rel="canonical" href="${site}${url}" />\n    <link rel="alternate" type="text/markdown" href="${markdownPath}" />\n  </head>`,
@@ -361,8 +380,14 @@ for (const url of urls) {
   const title = own ? meta.title.en : fallback?.title ? `${fallback.title} · Booki` : "Booki";
   const description = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
   const markdownPath = url === "/" ? "/index.md" : `${url}.md`;
-  const html = withMeta(template, { url, title, description: snippet(description), markdownPath })
-    .replace("</head>", `    ${structuredData(url, { title, description: snippet(description), body })}\n  </head>`)
+  const card = `/og${url}.jpg`;
+  const customImage = url !== "/" && existsSync(join(dist, card));
+  const image = site + (customImage ? card : "/og.png");
+  const html = withMeta(template, { url, title, description: snippet(description), markdownPath, image, customImage })
+    .replace(
+      "</head>",
+      `    ${structuredData(url, { title, description: snippet(description), body, image })}\n  </head>`,
+    )
     .replace('<div id="root"></div>', `<div id="root">${body}</div>`);
   const file = url === "/" ? "index.html" : `${url.slice(1)}.html`;
   mkdirSync(dirname(join(dist, file)), { recursive: true });
