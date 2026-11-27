@@ -4,7 +4,7 @@
 
 # Booki
 
-### Agent-first UI for accounting and auditing.
+### Agent-first UI for your app.
 
 <a href="https://github.com/Walgermo/booki/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Walgermo/booki/ci.yml?branch=main&label=CI&labelColor=0d1117" alt="CI"></a>
 <a href="https://github.com/Walgermo/booki/actions/workflows/ci.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FWalgermo%2Fbooki%2Fcoverage-badge%2Fcoverage.json&labelColor=0d1117" alt="Test coverage"></a>
@@ -18,6 +18,15 @@
 
 </div>
 
+**Booki is an open-source UI library that lets people and AI agents work in the same screens.**
+
+Agents can read the state of a screen and use named actions to fill in a form,
+update a sales pipeline, or propose an edit in a document. Your app decides
+which actions are available and when a person needs to approve a change.
+
+Use Booki's general-purpose controls for forms, tables, and documents, or build
+on its specialized components for sales, accounting, and auditing.
+
 <br>
 
 <picture>
@@ -26,15 +35,6 @@
 </picture>
 
 <br>
-
-**Booki is a set of accounting controls an agent can operate and cannot misuse: amounts, vouchers, invoices, payments, bank reconciliation, approvals and audit work.**
-
-Agents already work in accounting software by reading the screen and typing
-into text boxes. They guess which field is which, type `1.250,00` where the
-system wanted øre, and press buttons meant for a person. Booki gives an agent
-typed state and named accounting actions instead, enforces the bookkeeping
-rules whatever it sends, and stops where a person has to decide. Your server
-checks the same rules again.
 
 ## Get started
 
@@ -69,9 +69,9 @@ next is in [`ROADMAP.md`](ROADMAP.md).
 
 ## How it works
 
-An agent never types into a field. It reads a snapshot of the screen and calls
-named actions; the control enforces the rules, the page decides what needs a
-person, and the server checks everything again.
+Through the Booki bridge, an agent reads a snapshot of the screen and calls
+named actions. The control validates inputs, the app decides what needs a
+person, and the server checks writes against your rules.
 
 ```tsx
 import { createBookiAgent } from "@booki-aui/react"
