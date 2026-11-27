@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/web",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Experimental Booki custom elements for apps where people and AI agents work in the same screens. Works with any framework or plain HTML.",
   "type": "module",
   "license": "MIT",

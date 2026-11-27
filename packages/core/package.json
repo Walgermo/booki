@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/core",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Framework-free Booki utilities for application state and validation, including tables, documents, money, localization, and accounting rules.",
   "type": "module",
   "license": "MIT",

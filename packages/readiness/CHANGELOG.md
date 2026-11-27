@@ -1,5 +1,11 @@
 # @booki/readiness
 
+## 0.3.1
+
+### Patch Changes
+
+- [#203](https://github.com/Walgermo/booki/pull/203) [`7e16c16`](https://github.com/Walgermo/booki/commit/7e16c168f82cfdb1f57a919e4172331ca46bdec2) Thanks [@Walgermo](https://github.com/Walgermo)! - Describe Booki on npm as UI for entire apps where people and AI agents work together, and clarify what each package provides.
+
 ## 0.3.0
 
 ### Minor Changes

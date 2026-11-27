@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/solid",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Booki for Solid (experimental) — agent-first UI for your app, with Solid components for people and AI agents: the same rules, state and agent actions as @booki-aui/react.",
   "type": "module",
   "license": "MIT",

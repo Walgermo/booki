@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/icons",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Duotone icons for apps built for people and AI agents, including files, workflows, charts and finance. Available as SVG files, markup strings and a React component.",
   "type": "module",
   "license": "MIT",
