@@ -20,6 +20,7 @@ const ExamplesPage = page(() => import("./pages/examples"), "ExamplesPage");
 const IconsPage = page(() => import("./pages/icons"), "IconsPage");
 const ComponentDocPage = page(() => import("./pages/component-doc"), "ComponentDocPage");
 const ErpPage = page(() => import("./pages/erp"), "ErpPage");
+const FirstActionPage = page(() => import("./pages/first-action"), "FirstActionPage");
 const InstallationPage = page(() => import("./pages/installation"), "InstallationPage");
 const IntroductionPage = page(() => import("./pages/introduction"), "IntroductionPage");
 const DocsShell = page(() => import("./components/docs-shell"), "DocsShell");
@@ -94,6 +95,7 @@ export function App() {
         <Route path="bench/duplicate-acc" element={<BenchDuplicateAccPage />} />
         <Route path="docs" element={<DocsShell />}>
           <Route index element={<IntroductionPage />} />
+          <Route path="first-action" element={<FirstActionPage />} />
           <Route path="installation" element={<InstallationPage />} />
           <Route path="examples" element={<ExamplesPage />} />
           <Route path="icons" element={<IconsPage />} />

@@ -6,8 +6,17 @@ export type CatalogItem = {
   install: string;
 };
 
+export function reactInstallCommand(add: "npm install" | "pnpm add") {
+  return [
+    "booki_version=$(npm view @booki-aui/react@latest version) &&",
+    'ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&',
+    `${add} --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \\`,
+    '  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"',
+  ].join("\n");
+}
+
 export function installCmd(pkg: string): string {
-  return `pnpm add ${pkg}`;
+  return pkg === "@booki-aui/react" ? reactInstallCommand("pnpm add") : `pnpm add ${pkg}`;
 }
 
 export const catalog: CatalogItem[] = [
@@ -22,6 +31,13 @@ export const catalog: CatalogItem[] = [
     name: "installation",
     title: "Installation",
     description: "Install @booki-aui/core, @booki-aui/react, and optional styles.",
+    group: "Getting started",
+    install: "",
+  },
+  {
+    name: "first-action",
+    title: "Your first agent action",
+    description: "Run a task button through the agent bridge, then add the same working example to your React app.",
     group: "Getting started",
     install: "",
   },

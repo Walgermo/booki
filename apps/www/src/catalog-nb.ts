@@ -14,6 +14,10 @@ const NB: Record<string, { title?: string; description: string }> = {
     title: "Installasjon",
     description: "Installer @booki-aui/core, @booki-aui/react og valgfrie stiler.",
   },
+  "first-action": {
+    title: "Din første agenthandling",
+    description: "Styr en oppgaveknapp gjennom agentbroen, og bruk samme eksempel i din egen React-app.",
+  },
   examples: {
     title: "Eksempler",
     description:

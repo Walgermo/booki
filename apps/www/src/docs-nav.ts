@@ -14,7 +14,7 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "start",
     en: "Getting started",
     nb: "Kom i gang",
-    pages: ["introduction", "installation", "examples", "demo", "month-end", "erp-teams"],
+    pages: ["introduction", "first-action", "installation", "examples", "demo", "month-end", "erp-teams"],
   },
   {
     id: "money",
@@ -215,6 +215,7 @@ export function sectionOf(name: string): NavSection | undefined {
 export const PAGE_ICON: Record<string, IconName> = {
   introduction: "map",
   installation: "package",
+  "first-action": "bolt",
   examples: "code",
   demo: "play-window",
   "month-end": "calendar-check",

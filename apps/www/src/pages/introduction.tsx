@@ -30,8 +30,8 @@ const CONTRACT: { rule: Text; how: Text }[] = [
   {
     rule: { en: "People approve what leaves the account", nb: "Mennesker godkjenner det som forlater kontoen" },
     how: {
-      en: "Posting, paying and attesting are marked for a person. An agent’s press fails unless your app says yes.",
-      nb: "Bokføring, betaling og attestering er merket for en person. Et trykk fra en agent feiler med mindre appen deres sier ja.",
+      en: "Use personOnly for decisions such as payment release or sign-off. The bridge refuses actions marked this way even when the app allows other confirmed steps.",
+      nb: "Bruk personOnly for avgjørelser som frigivelse av betaling eller attestering. Agentbroen avviser handlinger med denne merkingen selv når appen tillater andre steg som krever bekreftelse.",
     },
   },
   {
@@ -79,18 +79,19 @@ export function IntroductionPage() {
   const { lang, t } = useLang();
   return (
     <article>
-      <h1 className="site-page-title mt-0 mb-0">
-        {t("A posting contract for accounting agents", "En bokføringskontrakt for regnskapsagenter")}
-      </h1>
+      <h1 className="site-page-title mt-0 mb-0">{t("Build with Booki", "Bygg med Booki")}</h1>
       <p className="mt-4 mb-0 max-w-prose text-lg leading-relaxed text-muted-foreground text-pretty">
         {t(
-          "Booki is a set of React controls for money, vouchers, bank details and approvals. Agents operate them through typed actions, and the controls hold six rules whatever the agent sends.",
-          "Booki er et sett React-kontroller for penger, bilag, bankopplysninger og godkjenninger. Agenter styrer dem gjennom typede handlinger, og kontrollene holder seks regler uansett hva agenten sender.",
+          "Booki gives people and agents the same controls. Start with a button in a React app, then use the catalog for workflows such as editing documents, managing a sales pipeline or preparing a voucher.",
+          "Med Booki bruker mennesker og agenter de samme kontrollene. Start med en knapp i en React-app. I katalogen finner du kontroller for blant annet dokumentredigering, oppfølging av salg og klargjøring av bilag.",
         )}
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
         <Button asChild>
+          <Link to="/docs/first-action">{t("Try your first agent action", "Prøv din første agenthandling")}</Link>
+        </Button>
+        <Button asChild variant="secondary">
           <Link to="/docs/installation">{t("Install", "Installer")}</Link>
         </Button>
         <Button asChild variant="secondary">
@@ -98,7 +99,9 @@ export function IntroductionPage() {
         </Button>
       </div>
 
-      <h2 className="mt-16 mb-0 text-2xl font-semibold tracking-[-0.03em]">{t("The contract", "Kontrakten")}</h2>
+      <h2 className="mt-16 mb-0 text-2xl font-semibold tracking-[-0.03em]">
+        {t("Accounting and approval rules", "Regler for regnskap og godkjenning")}
+      </h2>
       <dl className="site-rows mt-4 mb-0">
         {CONTRACT.map((row) => (
           <div key={row.rule.en} className="grid gap-1 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-8">
