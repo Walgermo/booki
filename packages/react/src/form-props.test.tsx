@@ -350,3 +350,36 @@ describe("BankAccountInput in the US", () => {
     expect(el('[data-slot="bank-account-account"]').id).toBe("bank-account");
   });
 });
+
+describe("native form validation", () => {
+  it.each([
+    ["BankAccountInput (NO)", "86011117948", "86011117947"],
+    ["BankAccountInput (US)", "021000022", "021000021"],
+    ["OrganizationNumberInput", "974760674", "974760673"],
+    ["PaymentReferenceInput", "12345", "2345676"],
+    ["IbanInput", "NO9386011117948", "NO9386011117947"],
+  ])("blocks an invalid %s until the value is corrected", (name, invalid, valid) => {
+    const spec = specs.find((item) => item.name === name)!;
+    setup(spec);
+    const form = el<HTMLFormElement>("form");
+    const submit = vi.fn((event: Event) => event.preventDefault());
+    form.addEventListener("submit", submit);
+    typeInto(spec.visible, invalid);
+    expect(form.checkValidity()).toBe(false);
+    form.requestSubmit();
+    expect(submit).not.toHaveBeenCalled();
+    typeInto(spec.visible, valid);
+    expect(form.checkValidity()).toBe(true);
+    form.requestSubmit();
+    expect(submit).toHaveBeenCalledOnce();
+  });
+
+  it("clears a stale IBAN validation error after the agent corrects it", async () => {
+    const spec = specs.find((item) => item.name === "IbanInput")!;
+    const { actAsAgent } = setup(spec);
+    typeInto(spec.visible, "NO93");
+    expect(el<HTMLFormElement>("form").checkValidity()).toBe(false);
+    expect((await actAsAgent()).ok).toBe(true);
+    expect(el<HTMLFormElement>("form").checkValidity()).toBe(true);
+  });
+});

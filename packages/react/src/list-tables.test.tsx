@@ -164,10 +164,10 @@ describe("LedgerTable as a table", () => {
       b.textContent?.startsWith("Utgående"),
     ) as HTMLButtonElement;
     fireEvent.click(header);
-    expect(header.closest('[role="columnheader"]')?.getAttribute("aria-sort")).toBe("ascending");
+    expect(header.getAttribute("aria-description")).toBe("Sortert stigende");
     expect(entry().query.sort).toEqual({ column: "closingMinor", direction: "asc" });
     fireEvent.click(header);
-    expect(header.closest('[role="columnheader"]')?.getAttribute("aria-sort")).toBe("descending");
+    expect(header.getAttribute("aria-description")).toBe("Sortert synkende");
 
     fireEvent.change(document.querySelector('[data-slot="ledger-table-search"]')!, { target: { value: "bank" } });
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);

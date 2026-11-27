@@ -35,7 +35,10 @@ export function TwoReaders({
       </div>
       <div className="site-machine grid min-w-0 content-start gap-4">
         <p className="site-kicker">{machineLabel ?? t("The agent reads", "Agenten leser")}</p>
-        <pre className="site-readers__json">{machine}</pre>
+        {/* oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- long code scrolls on both axes. */}
+        <pre className="site-readers__json" tabIndex={0}>
+          {machine}
+        </pre>
         {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
         {status !== undefined ? (
           <p className="m-0 min-h-5 font-mono text-xs text-ink-muted" role="status">

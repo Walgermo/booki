@@ -20,13 +20,13 @@ const META: PageMeta = {
   },
 };
 
+const PUBLICATION_DATE = "2026-11-27";
 const DROP_IN_URL = `${REPO_URL}/blob/main/docs/drop-in.md`;
-const PILOT_URL = `${REPO_URL}/blob/main/docs/pilot.md`;
 const CONTRACT_URL = `${REPO_URL}/blob/main/spec/agent-contract.md`;
 
 /**
- * The launch post, as an article: why, one step end to end, the layers, what
- * is not ready, and how to start. Three diagrams carry what prose would take a
+ * The launch post, as an article: why, one step end to end, the layers,
+ * the measurements and how to start. Three diagrams carry what prose would take a
  * page for; the details live in the docs. Every figure is read from the
  * benchmark's own data (src/data/bench.json).
  */
@@ -35,7 +35,7 @@ export function AnnouncementPage() {
   usePageMeta(META);
   const f = formatters(lang);
   const kpi = proofKpis();
-  const published = new Date("2026-11-25").toLocaleDateString(lang === "nb" ? "nb-NO" : "en-GB", {
+  const published = new Date(PUBLICATION_DATE).toLocaleDateString(lang === "nb" ? "nb-NO" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -47,7 +47,7 @@ export function AnnouncementPage() {
     <main className="site-article">
       <header className="site-article__head">
         <p className="site-kicker">
-          {t("Announcement", "Lansering")} · <time dateTime="2026-11-25">{published}</time>
+          {t("Announcement", "Lansering")} · <time dateTime={PUBLICATION_DATE}>{published}</time>
         </p>
         <h1 className="site-article__title">
           {/* A no-break hyphen, so "agent-first" never splits over two lines. */}
@@ -117,34 +117,19 @@ export function AnnouncementPage() {
         <h2 id="measured">{t("How it was measured", "Slik ble det målt")}</h2>
         <p>
           {t(
-            `The same tasks on screens rebuilt from two accounting systems, and on Booki: Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash, five runs per screen and model, the result checked after every run. Cost at list price. The screens use invented data and were never run against the real systems, so your own will differ; the pilot measures them. Every page, script and call is in the repository: pnpm proof.`,
-            `De samme oppgavene på skjermbilder gjenskapt fra to regnskapssystemer, og på Booki: Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash, fem kjøringer per skjermbilde og modell, resultatet kontrollert etter hver kjøring. Kostnad til listepris. Skjermbildene har oppdiktede data og ble aldri kjørt mot de ekte systemene, så deres egne vil gi andre tall; piloten måler dem. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof.`,
+            "We recreated screens from two accounting systems, populated them with sample data and ran the same tasks on those screens and on Booki. Claude Opus, Sonnet and Haiku 5.5 and DeepSeek V4.1 Flash each ran every task five times per screen. We checked the result after each run and calculated cost at list prices.",
+            "Vi gjenskapte skjermbilder fra to regnskapssystemer, fylte dem med eksempeldata og kjørte de samme oppgavene der og i Booki. Claude Opus, Sonnet og Haiku 5.5 og DeepSeek V4.1 Flash kjørte hver oppgave fem ganger per skjermbilde. Vi kontrollerte resultatet etter hver kjøring og beregnet kostnaden med leverandørenes listepriser.",
           )}
         </p>
-      </section>
-
-      <section className="site-article__section" aria-labelledby="not-ready">
-        <h2 id="not-ready">{t("What is not ready", "Hva som ikke er klart")}</h2>
-        <ul>
-          <li>
-            {t(
-              "The packages are before 1.0: the agent bridge may still change between releases.",
-              "Pakkene er før 1.0: agentbroen kan fortsatt endre seg mellom versjoner.",
-            )}
-          </li>
-          <li>
-            {t(
-              "No production users yet, and one maintainer. Everything is MIT and runs in your app; nothing depends on a service.",
-              "Ingen brukere i produksjon ennå, og én vedlikeholder. Alt er MIT og kjører i appen deres; ingenting avhenger av en tjeneste.",
-            )}
-          </li>
-          <li>
-            {t(
-              "Ready-made server guards cover approvals, payments, invoices and more; other writes need a rule of your own.",
-              "Ferdige serverkontroller dekker godkjenning, betalinger, fakturaer og mer; andre skriveoperasjoner trenger en egen regel.",
-            )}
-          </li>
-        </ul>
+        <p>
+          {t(
+            "You can also try three routes captured from Nav, Posten and Brønnøysundregistrene. In the Nav example, GPT-6.2 Sol has to open the unemployment benefits panel and read two processing times from its tables. Both versions returned the right answers on all three routes. In one run per version, the Booki bridge took 3 tool calls on each route. The browser took 11 on Nav, 6 on Posten and 3 on Brønnøysundregistrene. You can inspect every call.",
+            "Du kan også prøve tre ruter vi tok opp hos Nav, Posten og Brønnøysundregistrene. I Nav-eksemplet skal GPT-6.2 Sol åpne dagpengepanelet og finne to behandlingstider i tabellene. Modellen svarte riktig på alle tre rutene med begge verktøysettene. I én kjøring per utgave brukte Booki-agentbroen tre verktøykall på hver rute. Nettleserverktøyet brukte elleve hos Nav, seks hos Posten og tre hos Brønnøysundregistrene. Du kan se hvert kall i eksemplene.",
+          )}{" "}
+          <a href="/docs/examples#public-browser" className="site-link">
+            {t("See the routes and results", "Se rutene og resultatene")}
+          </a>
+        </p>
       </section>
 
       <section className="site-article__section" aria-labelledby="start">
@@ -164,11 +149,6 @@ export function AnnouncementPage() {
               {t("Drop-in guide", "Guide for eksisterende apper")}
             </a>
           </Button>
-          <Button asChild variant="secondary" size="lg">
-            <a href={PILOT_URL} target="_blank" rel="noreferrer">
-              {t("Two-week pilot", "Pilot på to uker")}
-            </a>
-          </Button>
         </div>
         <p className="site-article__note">
           {t(
@@ -185,8 +165,8 @@ export function AnnouncementPage() {
         kicker={t("Open source, MIT", "Åpen kildekode, MIT")}
         title={t("Put one screen in front of an agent.", "Sett ett skjermbilde foran en agent.")}
         text={t(
-          "Read the docs, try the demo, or open an issue to say which screen you would pilot.",
-          "Les dokumentasjonen, prøv demoen, eller opprett en issue og si hvilket skjermbilde dere ville pilotert.",
+          "Copy the setup prompt to try Booki on a screen in your app.",
+          "Kopier oppsettprompten for å prøve Booki på et skjermbilde i appen deres.",
         )}
         link={{ to: "/docs", label: t("Read the docs", "Les dokumentasjonen") }}
       />

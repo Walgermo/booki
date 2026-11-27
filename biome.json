@@ -11,6 +11,7 @@
       "!packages/svelte",
       "!packages/solid",
       "!apps/www/public",
+      "!apps/www/src/data/public-documents.json",
       "!benchmarks/agent/results",
       "!**/*.md"
     ]

@@ -46,6 +46,14 @@ releases without notice.
 Rule for the agent: when the app is not React, or the country is not NO or US, tell
 the person that the setup is experimental before you wire it.
 
+## Report bugs and feedback
+
+Report Booki bugs, documentation gaps and feature requests in [GitHub Issues](https://github.com/Walgermo/booki/issues).
+Search existing issues first. Add relevant new evidence to a matching issue, or open a new one.
+For bugs, include the affected package and version, a minimal reproduction using sample data, and the expected and actual behavior.
+For feedback, describe the workflow and the improvement you need. Return the issue link to the user.
+Keep customer data and credentials out of reports. For vulnerabilities, follow the [private security reporting policy](https://github.com/Walgermo/booki/security/policy).
+
 ## 1. Install
 
 **A minimum release age.** Booki and its exactly pinned `@ui-sdk` packages are new when they

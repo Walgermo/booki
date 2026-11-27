@@ -40,9 +40,21 @@ export const TASKS: { id: BenchTask; label: Text; short: Text; plural: Text }[] 
   },
 ];
 
-/** A side's name in the site's language: "DOM snapshot" reads "DOM-øyeblikksbilde" in Norwegian. */
-export const sideName = (name: string, lang: Lang = "en") =>
-  lang === "nb" ? name.replace("DOM snapshot", "DOM-øyeblikksbilde").replace("DOM map", "DOM-kart") : name;
+/** Public display names are independent of the keys used in recorded runs. */
+export function sideLabel(key: string, lang: Lang) {
+  if (key === "acc") return "Booki";
+  const number = key === "tripletex" ? 1 : key === "dnb" ? 2 : null;
+  if (number === null) return key;
+  return lang === "nb" ? `ERP-system ${number}` : `ERP system ${number}`;
+}
+
+export function sideName(side: BenchSide, lang: Lang) {
+  const [, detail] = side.name.split(" · ");
+  const localized =
+    lang === "nb" ? detail?.replace("DOM snapshot", "DOM-øyeblikksbilde").replace("DOM map", "DOM-kart") : detail;
+  const label = sideLabel(side.key, lang);
+  return localized ? `${label} · ${localized}` : label;
+}
 
 const ORDER = ["tripletex", "dnb", "acc"];
 
@@ -62,7 +74,7 @@ export function screenshotsFor(task: BenchTask): BenchSide[] {
 
 export const billed = (side: BenchSide) => side.billedInput.at(-1) ?? 0;
 
-/** The snapshot side we compare against: Tripletex where it ran, else the first one. */
+/** Use ERP system 1 as the baseline where it ran. */
 export function versus(task: BenchTask): { raw: BenchSide; acc: BenchSide } {
   const sides = sidesFor(task);
   const acc = sides.find((side) => side.key === "acc")!;

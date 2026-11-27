@@ -1,3 +1,5 @@
+import { catalogMeta } from "@/lib/catalog-meta";
+import { usePageMeta } from "@/lib/lang";
 import { Link } from "react-router-dom";
 
 import { reactInstallCommand } from "../catalog";
@@ -135,7 +137,10 @@ await window.agent.act({
 })`;
 
 /** Five-minute integration guide for a team with an existing product. The agent prompt comes first. */
+const PAGE_META = catalogMeta("installation");
+
 export function InstallationPage() {
+  usePageMeta(PAGE_META);
   const { lang, t } = useLang();
   const p = "m-0 max-w-prose text-sm text-muted-foreground";
   return (

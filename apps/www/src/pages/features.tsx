@@ -16,6 +16,7 @@ import { Section } from "@/components/section";
 import { usePageMeta, useLang, type PageMeta } from "@/lib/lang";
 
 import { GAP_PREVIEWS } from "./gap-previews";
+import type { GapName } from "./lazy-previews";
 
 const META: PageMeta = {
   title: { en: "Features · Booki", nb: "Funksjoner · Booki" },
@@ -64,7 +65,7 @@ function Example({ docs, children }: { docs: string; children: ReactNode }) {
   );
 }
 
-function Preview({ name }: { name: string }) {
+function Preview({ name }: { name: GapName }) {
   const Live = GAP_PREVIEWS[name];
   return Live ? <Live /> : null;
 }

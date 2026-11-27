@@ -1,3 +1,5 @@
+import { catalogMeta } from "@/lib/catalog-meta";
+import { usePageMeta } from "@/lib/lang";
 import { Link } from "react-router-dom";
 
 import { Closing } from "@/components/landing/closing";
@@ -190,8 +192,8 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
           "billigere å registrere én leverandørfaktura, målt",
         ),
         source: t(
-          `Claude Opus 5.5 on a rebuild of Tripletex's supplier-invoice screen against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} an invoice, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
-          `Claude Opus 5.5 på en gjenskaping av leverandørfakturaskjermen i Tripletex mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per faktura, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 on a rebuild of the supplier-invoice screen from ERP system 1 against Booki: ${usd(REAL_RAW.costUsd, 3)} against ${usd(REAL_ACC.costUsd, 3)} an invoice, ${REAL_RAW.toolCalls} tool calls against ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} against ${seconds(REAL_ACC.wallMs)}. Right ${REAL_RAW.succeeded}/${REAL_RAW.runs} and ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
+          `Claude Opus 5.5 på en gjenskaping av leverandørfakturaskjermen i ERP-system 1 mot Booki: ${usd(REAL_RAW.costUsd, 3)} mot ${usd(REAL_ACC.costUsd, 3)} per faktura, ${REAL_RAW.toolCalls} verktøykall mot ${REAL_ACC.toolCalls}, ${seconds(REAL_RAW.wallMs)} mot ${seconds(REAL_ACC.wallMs)}. Riktig ${REAL_RAW.succeeded}/${REAL_RAW.runs} og ${REAL_ACC.succeeded}/${REAL_ACC.runs}.`,
         ),
       },
       ...(CHEAP_ACC && CHEAP_RAW
@@ -200,8 +202,8 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
               figure: `${CHEAP_ACC.succeeded}/${CHEAP_ACC.runs}`,
               text: t("invoices right with a far cheaper model", "fakturaer riktig med en langt billigere modell"),
               source: t(
-                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on the Tripletex rebuild, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} an invoice. On agent-first screens a cheaper model does the job.`,
-                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på Tripletex-gjenskapingen, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per faktura. På agent-first-skjermer gjør en billigere modell jobben.`,
+                `${modelName(CHEAP!)} got ${CHEAP_ACC.succeeded} of ${CHEAP_ACC.runs} right on Booki and ${CHEAP_RAW.succeeded} of ${CHEAP_RAW.runs} on the rebuilt ERP system 1 screen, at ${usd(CHEAP_ACC.costUsd ?? 0, 4)} an invoice. On agent-first screens a cheaper model does the job.`,
+                `${modelName(CHEAP!)} fikk ${CHEAP_ACC.succeeded} av ${CHEAP_ACC.runs} riktig på Booki og ${CHEAP_RAW.succeeded} av ${CHEAP_RAW.runs} på det gjenskapte skjermbildet fra ERP-system 1, til ${usd(CHEAP_ACC.costUsd ?? 0, 4)} per faktura. På agent-first-skjermer gjør en billigere modell jobben.`,
               ),
             },
           ]
@@ -217,8 +219,8 @@ const FIGURES = (t: T, lang: Lang): { figure: string; text: string; source: stri
         "mindre fakturert input for å bokføre ett bilag (anslag)",
       ),
       source: t(
-        `Scripted best case against a DOM snapshot of Tripletex's voucher screen: ${int(billed(VOUCHER.acc))} tokens against ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} tool calls against ${VOUCHER.raw.calls}.`,
-        `Skriptet beste tilfelle mot et DOM-øyeblikksbilde av bilagsskjermbildet i Tripletex: ${int(billed(VOUCHER.acc))} tokens mot ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} verktøykall mot ${VOUCHER.raw.calls}.`,
+        `Scripted best case against a DOM snapshot of the ERP system 1 voucher screen: ${int(billed(VOUCHER.acc))} tokens against ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} tool calls against ${VOUCHER.raw.calls}.`,
+        `Skriptet beste tilfelle mot et DOM-øyeblikksbilde av bilagsskjermbildet i ERP-system 1: ${int(billed(VOUCHER.acc))} tokens mot ${int(billed(VOUCHER.raw))}, ${VOUCHER.acc.calls} verktøykall mot ${VOUCHER.raw.calls}.`,
       ),
     },
     {
@@ -454,7 +456,10 @@ export function InvoiceApproval({ user, invoices }) {
  * product today, what one Booki screen changes, what a pilot takes, and
  * what is not ready yet.
  */
+const PAGE_META = catalogMeta("erp-teams");
+
 export function ErpTeamsPage() {
+  usePageMeta(PAGE_META);
   const { lang, t } = useLang();
   return (
     <main>
@@ -548,7 +553,7 @@ export function ErpTeamsPage() {
 
       <Section
         id="found-title"
-        title={t("Why the Tripletex screen was hard", "Hvorfor skjermbildet i Tripletex var vanskelig")}
+        title={t("Why the ERP system 1 screen was hard", "Hvorfor skjermbildet i ERP-system 1 var vanskelig")}
         note={t(
           "What mapping its voucher screen showed, read only. Each one costs an agent calls, or lets it do what it should not.",
           "Det kartleggingen av bilagsskjermbildet viste, bare med lesetilgang. Hvert punkt koster en agent kall, eller lar den gjøre noe den ikke skal.",

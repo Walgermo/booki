@@ -19,8 +19,9 @@
         var first = (navigator.languages && navigator.languages[0]) || navigator.language || "";
         document.documentElement.lang = l || (/^(nb|nn|no)\b/i.test(first) ? "nb" : "en");
       } catch (e) {}
-      try {
-        var t = localStorage.getItem("booki-theme");
+      var t;
+      try { t = localStorage.getItem("booki-theme"); } catch (e) {}
+      {
         var dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
         if (dark) document.documentElement.setAttribute("data-bk-theme", "dark");
         // A stored choice may differ from the system: the browser's bar follows the choice.
@@ -29,7 +30,7 @@
           var pick = document.querySelector('meta[name="theme-color"][data-scheme="' + (dark ? "dark" : "light") + '"]');
           for (var i = 0; pick && i < bars.length; i++) bars[i].setAttribute("content", pick.getAttribute("data-color"));
         }
-      } catch (e) {}
+      }
       // The hero figures' marks draw themselves once per visit, not on every page view in it.
       try {
         if (sessionStorage.getItem("booki-kpi-seen")) document.documentElement.setAttribute("data-kpi-still", "");

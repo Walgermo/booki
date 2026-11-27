@@ -1,5 +1,9 @@
 import type { createBookiAgent } from "@booki-aui/react";
 
+export const REPO_URL = "https://github.com/Walgermo/booki";
+
+const REPORT_FEEDBACK = `Report Booki bugs, documentation gaps and product feedback at ${REPO_URL}/issues. Search for an existing issue first. For a new bug, include the Booki version, steps to reproduce with sample data, and the expected and actual result. Share the issue link with me. Use private GitHub security reporting for vulnerabilities.`;
+
 /**
  * The hero's one-click prompt. It must work pasted into any coding agent:
  * install the skill if it can, read it if it cannot, do the whole setup,
@@ -16,7 +20,9 @@ export const AGENT_PROMPT = `Try Booki on one screen of this app, and keep me in
 1. Read the Booki skill. Install it with \`npx skills add Walgermo/booki --skill booki\`, or read https://raw.githubusercontent.com/Walgermo/booki/main/skills/booki/SKILL.md and follow its catalog link.
 2. On that one screen, replace the controls that fit with Booki's, using the integration for this app's framework and keeping its look, keyboard behaviour and validation. Connect the agent bridge, the visible cursor and the audit trail as the skill shows. Leave approvals and other decisions to people.
 3. Show it working in the running app with test data: have an agent fill in the screen by name, and check that it stops where a person has to decide. Run \`npx @booki-aui/readiness <url>\` on the screen.
-4. After each step, tell me in a line what you did and what comes next. Aim to finish in about 30 minutes; if it will take longer, stop and ask. At the end, tell me what changed, what you checked, and which screens would fit next.`;
+4. After each step, tell me in a line what you did and what comes next. Aim to finish in about 30 minutes; if it will take longer, stop and ask. At the end, tell me what changed, what you checked, and which screens would fit next.
+
+${REPORT_FEEDBACK}`;
 
 /** The whole-app prompt, offered beside the trial: it adapts every workflow and takes hours. */
 export const AGENT_PROMPT_FULL = `Use Booki to make this app’s existing workflows usable by agents wherever its component library fits. Keep the experience familiar for people and respect the app’s permissions.
@@ -27,9 +33,9 @@ export const AGENT_PROMPT_FULL = `Use Booki to make this app’s existing workfl
 4. Follow the skill to connect the agent bridge, visible cursor and audit trail. Use the app’s access rules, redact secrets, and enforce write permissions on the server with a separate agent identity. Route confirmations through the bridge once (registerTools with allow: "bridge"). Leave approvals, sign-offs, finalization and release to people.
 5. Verify each adapted workflow in the running app with test data. Use snapshot and query to discover controls, exercise a representative permitted task with act, and check the result. Check refusals, confirmations and audit events where applicable. Run \`npx @booki-aui/readiness <url> --timeout 120000\` on the relevant screens, using --storage-state for signed-in routes. Report which workflows you verified and any gaps or limits you found.
 
-This takes hours. Tell me in a line what you did and what is next after each step, and ask before starting on the next workflow.`;
+This takes hours. Tell me in a line what you did and what is next after each step, and ask before starting on the next workflow.
 
-export const REPO_URL = "https://github.com/Walgermo/booki";
+${REPORT_FEEDBACK}`;
 
 export const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 

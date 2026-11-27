@@ -248,3 +248,9 @@
   opacity: 0.4;
   cursor: default;
 }
+
+@media (pointer: coarse) {
+  [data-slot="data-table-search"] {
+    font-size: max(16px, 1rem);
+  }
+}

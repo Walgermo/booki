@@ -45,7 +45,7 @@ export const catalog: CatalogItem[] = [
     name: "examples",
     title: "Examples",
     description:
-      "One invoice on a plain form and on Booki, the controls in different setups, and a control of your own.",
+      "Try an invoice and three Norwegian website routes with and without Booki, then explore the controls and build your own.",
     group: "Getting started",
     install: "",
   },
@@ -59,7 +59,7 @@ export const catalog: CatalogItem[] = [
   {
     name: "demo",
     title: "Demo",
-    description: "A working sales-invoice screen an agent can operate, with the human gates in place.",
+    description: "An accounting app for invoices, payments and month-end, with agent actions and human approvals.",
     group: "Getting started",
     install: "",
   },

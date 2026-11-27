@@ -1,0 +1,250 @@
+{
+  "observedOn": "2026-11-27",
+  "scripts": [
+    {
+      "id": "nav",
+      "pages": [
+        {
+          "state": "homeConsent",
+          "url": "https://www.nav.no/",
+          "elements": 371,
+          "sourceElements": 459,
+          "visibleText": 63,
+          "controls": 45
+        },
+        {
+          "state": "home",
+          "url": "https://www.nav.no/",
+          "elements": 371,
+          "sourceElements": 459,
+          "visibleText": 56,
+          "controls": 42
+        },
+        {
+          "state": "guidance",
+          "url": "https://www.nav.no/saksbehandlingstider",
+          "elements": 3327,
+          "sourceElements": 4361,
+          "visibleText": 326,
+          "controls": 175
+        },
+        {
+          "state": "guidanceExpanded",
+          "url": "https://www.nav.no/saksbehandlingstider",
+          "elements": 3406,
+          "sourceElements": 4804,
+          "visibleText": 354,
+          "controls": 178
+        }
+      ],
+      "arms": [
+        {
+          "side": "browser",
+          "path": "/bench/public/nav/browser",
+          "toolCalls": 7,
+          "actions": 3,
+          "passed": true,
+          "replyBytes": 169889,
+          "scenes": 4
+        },
+        {
+          "side": "booki",
+          "path": "/bench/public/nav/booki",
+          "toolCalls": 7,
+          "actions": 3,
+          "passed": true,
+          "replyBytes": 117102,
+          "scenes": 4
+        }
+      ]
+    },
+    {
+      "id": "posten",
+      "pages": [
+        {
+          "state": "homeConsent",
+          "url": "https://www.posten.no/",
+          "elements": 916,
+          "sourceElements": 1029,
+          "visibleText": 96,
+          "controls": 66
+        },
+        {
+          "state": "home",
+          "url": "https://www.posten.no/",
+          "elements": 916,
+          "sourceElements": 1029,
+          "visibleText": 81,
+          "controls": 57
+        },
+        {
+          "state": "guidance",
+          "url": "https://www.posten.no/kundeservice/sendefrister",
+          "elements": 859,
+          "sourceElements": 966,
+          "visibleText": 87,
+          "controls": 48
+        }
+      ],
+      "arms": [
+        {
+          "side": "browser",
+          "path": "/bench/public/posten/browser",
+          "toolCalls": 5,
+          "actions": 2,
+          "passed": true,
+          "replyBytes": 38897,
+          "scenes": 3
+        },
+        {
+          "side": "booki",
+          "path": "/bench/public/posten/booki",
+          "toolCalls": 5,
+          "actions": 2,
+          "passed": true,
+          "replyBytes": 33824,
+          "scenes": 3
+        }
+      ]
+    },
+    {
+      "id": "brreg",
+      "pages": [
+        {
+          "state": "home",
+          "url": "https://www.brreg.no/",
+          "elements": 257,
+          "sourceElements": 298,
+          "visibleText": 65,
+          "controls": 51
+        },
+        {
+          "state": "guidance",
+          "url": "https://www.brreg.no/innsending-av-arsregnskap/",
+          "elements": 319,
+          "sourceElements": 359,
+          "visibleText": 66,
+          "controls": 46
+        }
+      ],
+      "arms": [
+        {
+          "side": "browser",
+          "path": "/bench/public/brreg/browser",
+          "toolCalls": 3,
+          "actions": 1,
+          "passed": true,
+          "replyBytes": 19880,
+          "scenes": 2
+        },
+        {
+          "side": "booki",
+          "path": "/bench/public/brreg/booki",
+          "toolCalls": 3,
+          "actions": 1,
+          "passed": true,
+          "replyBytes": 18620,
+          "scenes": 2
+        }
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": "nav",
+      "prompt": "From the home screen, find the published processing times for Dagpenger. Open the details and report the expected processing time for a standard initial application (in weeks) and for a complaint to Nav klageinstans (in months). Decline optional cookies if prompted.",
+      "arms": [
+        {
+          "side": "browser",
+          "toolCalls": 11,
+          "usage": {
+            "input_tokens": 227127,
+            "cached_input_tokens": 202368,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 669,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"applicationWeeks\":6,\"appealBodyMonths\":4}",
+          "passed": true
+        },
+        {
+          "side": "booki",
+          "toolCalls": 3,
+          "usage": {
+            "input_tokens": 100495,
+            "cached_input_tokens": 76672,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 295,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"applicationWeeks\":6,\"appealBodyMonths\":4}",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "posten",
+      "prompt": "From the home screen, find the 2026 Christmas posting deadlines for a domestic Norgespakke liten (excluding Svalbard). Report the last day of December for delivery within the same North or South Norway region and for delivery between North and South Norway. Decline optional cookies if prompted.",
+      "arms": [
+        {
+          "side": "browser",
+          "toolCalls": 6,
+          "usage": {
+            "input_tokens": 123957,
+            "cached_input_tokens": 103936,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 395,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"sameRegionDecemberDay\":18,\"acrossRegionsDecemberDay\":16}",
+          "passed": true
+        },
+        {
+          "side": "booki",
+          "toolCalls": 3,
+          "usage": {
+            "input_tokens": 86985,
+            "cached_input_tokens": 66560,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 242,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"sameRegionDecemberDay\":18,\"acrossRegionsDecemberDay\":16}",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "brreg",
+      "prompt": "From the home screen, find the guidance on submitting annual accounts. Report the last day in July for submitting complete annual accounts and the maximum late fee in NOK stated in that guidance. Leave the detailed late-fee link unopened.",
+      "arms": [
+        {
+          "side": "browser",
+          "toolCalls": 3,
+          "usage": {
+            "input_tokens": 83645,
+            "cached_input_tokens": 64768,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 256,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"filingJulyDay\":31,\"maxLateFeeNok\":69940}",
+          "passed": true
+        },
+        {
+          "side": "booki",
+          "toolCalls": 3,
+          "usage": {
+            "input_tokens": 64711,
+            "cached_input_tokens": 46208,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 184,
+            "reasoning_output_tokens": 0
+          },
+          "answer": "{\"filingJulyDay\":31,\"maxLateFeeNok\":69940}",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

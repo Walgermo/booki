@@ -1,3 +1,5 @@
+import { catalogMeta } from "@/lib/catalog-meta";
+import { usePageMeta } from "@/lib/lang";
 import type { BankLine, OpenPost, ReconciliationMatch } from "@booki-aui/core/reconciliation";
 import { suggestMatches } from "@booki-aui/core/reconciliation";
 import { voucherIssues, type AccountOption, type VoucherLine } from "@booki-aui/core/voucher";
@@ -103,7 +105,10 @@ const wait = (ms: number) => new Promise<void>((resolve) => window.setTimeout(re
  * Month-end for one small company, on real Booki controls. An agent does the
  * routine part in the open; a person is left a short list of decisions.
  */
+const PAGE_META = catalogMeta("month-end");
+
 export function ClosePage() {
+  usePageMeta(PAGE_META);
   return (
     <BookiLocaleProvider country="NO">
       <Close />

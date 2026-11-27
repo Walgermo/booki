@@ -1,6 +1,6 @@
 import type { OpenItem } from "@booki-aui/core/aging";
 import { mount } from "@ui-sdk/core/testing";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBookiAgent } from "./booki-agent.js";
@@ -294,9 +294,11 @@ describe("TrendChart", () => {
     );
     fireEvent.click(button("Mar 2026: Revenue $90.00, Costs $60.00"));
     expect(entry().drill).toBe("2026-03");
-    fireEvent.click(button("Last 12 months"));
+    const twelveMonths = screen.getByRole("button", { name: "12M" });
+    expect(twelveMonths.getAttribute("aria-description")).toBe("Last 12 months");
+    fireEvent.click(twelveMonths);
     expect(entry().range).toBe("12m");
-    expect(button("Last 12 months").getAttribute("aria-pressed")).toBe("true");
+    expect(twelveMonths.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("follows a controlled range and speaks Norwegian", () => {
@@ -591,7 +593,9 @@ describe("AgingChart", () => {
     expect(document.querySelector('[data-slot="aging-chart-svg"] desc')?.textContent).toMatch(
       /^Total \$395\.00; Overdue \$295\.00 \(74\.7%\)\. Not due \$100\.00 \(25\.3%\)/,
     );
-    fireEvent.click(button("31–60 days: $300.00, 75.9% of the total"));
+    const bucket = screen.getByRole("button", { name: "31–60 days $300.00" });
+    expect(bucket.getAttribute("aria-description")).toBe("75.9% of the total");
+    fireEvent.click(bucket);
     expect(entry().drill).toBe("31-60");
     expect(document.querySelector('[data-slot="aging-chart-parties"]')?.textContent).toBe("Party birch$300.00");
     fireEvent.click(button("Show all buckets"));

@@ -240,7 +240,7 @@ function TrendChart({
               {title ? <h3 data-slot="trend-chart-title">{title}</h3> : null}
               <div role="group" aria-label={copy.rangeGroup} data-slot="trend-chart-ranges">
                 {CHART_RANGES.map((item) => (
-                  <TrendChartRange key={item} value={item} aria-label={copy.rangesLong[item]}>
+                  <TrendChartRange key={item} value={item} aria-description={copy.rangesLong[item]}>
                     {copy.ranges[item]}
                   </TrendChartRange>
                 ))}

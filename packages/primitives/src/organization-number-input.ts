@@ -5,7 +5,7 @@ import {
   type OrganizationNumberKind,
 } from "@booki-aui/core/organization-number";
 import { createChange, definePrimitive, dispatch } from "@ui-sdk/core";
-import { asEvent } from "./fields.js";
+import { bindInputValidity, asEvent } from "./fields.js";
 import { inputLockAttrs, isLocked, lockOptions, lockState } from "./lock.js";
 
 export type OrganizationNumberOptions = {
@@ -130,6 +130,9 @@ export const organizationNumber = definePrimitive({
         "aria-label": state.label,
         ...inputLockAttrs(state),
       }),
+      bind: bindInputValidity<OrganizationNumberState>((s) =>
+        s.digits && !s.isValid ? (s.kind === "ein" ? "Invalid EIN" : "Ugyldig organisasjonsnummer") : "",
+      ),
       on: {
         input: (event, { api, store }) => {
           if (isLocked(store.get())) return;

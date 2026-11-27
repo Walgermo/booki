@@ -509,3 +509,9 @@
     width: 100%;
   }
 }
+
+@media (pointer: coarse) {
+  [data-slot="chart-of-accounts-order"] {
+    font-size: max(16px, 1rem);
+  }
+}

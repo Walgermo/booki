@@ -149,3 +149,10 @@
     transition: none;
   }
 }
+
+@media (pointer: coarse) {
+  :where([data-slot="sheet-stack-trail"]) button:is([data-slot="sheet-stack-crumb"], [data-slot="sheet-stack-close"]) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}

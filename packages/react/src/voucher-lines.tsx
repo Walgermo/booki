@@ -24,7 +24,8 @@ function VoucherLines({ lines, className }: VoucherLinesProps) {
   }
 
   return (
-    <div data-slot="voucher-lines" className={className}>
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- keyboard users scroll the read-only table.
+    <div data-slot="voucher-lines" tabIndex={0} className={className}>
       <table data-slot="voucher-lines-table">
         <thead>
           <tr>

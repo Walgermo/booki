@@ -52,8 +52,8 @@ const ITEMS: Item[] = [
   {
     q: ["Where do the numbers come from?", "Hvor kommer tallene fra?"],
     a: [
-      "From real runs through Vercel AI Gateway: the same task, five runs per screen and model, the result checked after every run, cost at list price. The screens were rebuilt from DOM snapshots with invented data, never run against Tripletex or DNB themselves. Every page, script and call is in the repository: pnpm proof. The voucher and sales invoice runs are withdrawn: a control's hint held their answer. They come back when remeasured.",
-      "Fra ekte kjøringer gjennom Vercel AI Gateway: samme oppgave, fem kjøringer per skjermbilde og modell, resultatet kontrollert etter hver kjøring, kostnad til listepris. Skjermbildene er gjenskapt fra DOM-øyeblikksbilder med oppdiktede data, aldri kjørt mot Tripletex eller DNB selv. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen inneholdt svaret. De kommer tilbake når de er målt på nytt.",
+      "From real runs through Vercel AI Gateway: the same task, five runs per screen and model, the result checked after every run, cost at list price. ERP system 1 and ERP system 2 are screens rebuilt from DOM snapshots with invented data. Every page, script and call is in the repository: pnpm proof. The voucher and sales invoice runs are withdrawn: a control's hint held their answer. They come back when remeasured.",
+      "Fra ekte kjøringer gjennom Vercel AI Gateway: samme oppgave, fem kjøringer per skjermbilde og modell, resultatet kontrollert etter hver kjøring, kostnad til listepris. ERP-system 1 og ERP-system 2 er skjermbilder gjenskapt fra DOM-øyeblikksbilder med oppdiktede data. Hver side, hvert skript og hvert kall ligger i repoet: pnpm proof. Kjøringene for bilag og salgsfaktura er trukket tilbake: et hint i kontrollen inneholdt svaret. De kommer tilbake når de er målt på nytt.",
     ],
   },
   {

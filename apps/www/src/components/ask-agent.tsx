@@ -25,7 +25,8 @@ const EXAMPLES = {
  */
 export function AskAgent() {
   const { lang, t } = useLang();
-  const [status, setStatus] = useState<"checking" | "on" | "off">("checking");
+  const [status, setStatus] = useState<"checking" | "on" | "off" | "unavailable">("checking");
+
   const [prompt, setPrompt] = useState("");
   const [busy, setBusy] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
@@ -33,13 +34,18 @@ export function AskAgent() {
   const abort = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    if (status !== "checking") return;
     let live = true;
-    void liveAgentStatus().then((result) => live && setStatus(result.enabled ? "on" : "off"));
+    void liveAgentStatus().then(
+      (result) => live && setStatus(result.enabled ? "on" : "off"),
+      () => live && setStatus("unavailable"),
+    );
     return () => {
       live = false;
-      abort.current?.abort();
     };
-  }, []);
+  }, [status]);
+
+  useEffect(() => () => abort.current?.abort(), []);
 
   const add = (row: Omit<Row, "id">) => {
     seq.current += 1;
@@ -63,6 +69,7 @@ export function AskAgent() {
       await askLiveAgent(question, onEvent, { signal: abort.current.signal });
     } catch (error) {
       if (!abort.current.signal.aborted) {
+        setPrompt((draft) => draft || question);
         add({ who: "note", text: error instanceof Error ? error.message : String(error) });
       }
     } finally {
@@ -73,6 +80,22 @@ export function AskAgent() {
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     void ask(prompt);
+  }
+
+  if (status === "unavailable") {
+    return (
+      <div>
+        <p role="status">{t("Couldn’t reach the agent.", "Fikk ikke kontakt med agenten.")}</p>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            setStatus("checking");
+          }}
+        >
+          {t("Try again", "Prøv igjen")}
+        </Button>
+      </div>
+    );
   }
 
   if (status === "off") {

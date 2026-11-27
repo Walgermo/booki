@@ -22,6 +22,7 @@ import {
   formatters,
   priceLine,
   screenshotsFor,
+  sideLabel,
   sideName,
   sidesFor,
   versus,
@@ -35,7 +36,7 @@ import { REPO_URL } from "./shared";
 /**
  * The head-to-head from benchmarks/agent (`pnpm --filter agent-benchmark h2h`):
  * the same task done by a scripted agent that never errs, through Playwright
- * MCP on screens rebuilt from Tripletex and DNB Regnskap, and over the bridge
+ * MCP on rebuilt ERP screens, and over the bridge
  * on Booki. Every figure comes from src/data/bench.json.
  */
 const COLOR: Record<string, string> = {
@@ -166,7 +167,7 @@ function Figures({ task, t, max }: { task: BenchTask; t: number; max: number }) 
 function RealFigures({ task, raw, acc }: { task: BenchTask; raw: RealSide; acc: RealSide }) {
   const { lang, t: tr } = useLang();
   const { usd, seconds } = formatters(lang);
-  const rawName = raw.name.split(" · ")[0];
+  const rawName = sideLabel(raw.key, lang);
   const cheap = cheapModel(task);
   const cheapRaw = cheap ? realSides(task, cheap).filter((side) => side.key !== "acc") : [];
   const cheapAcc = cheap ? realFor(task, cheap, "acc") : undefined;
@@ -253,7 +254,7 @@ function EstimateFigures({ task, t, max }: { task: BenchTask; t: number; max: nu
   const perRun = (side: BenchSide) => fairCost(side) * RUNS;
   const saved = perRun(raw) - perRun(acc);
   const what = TASKS.find((item) => item.id === task)!.plural[lang];
-  const rawName = raw.name.split(" · ")[0];
+  const rawName = sideLabel(raw.key, lang);
   return (
     <dl className="site-figures site-figures--tight site-figures--four">
       <div>
@@ -330,7 +331,7 @@ function EstimateFigures({ task, t, max }: { task: BenchTask; t: number; max: nu
 export function ErpRace() {
   const { lang, t: tr } = useLang();
   const { int, usd, seconds, calls, runDate } = formatters(lang);
-  const name = (side: BenchSide) => sideName(side.name, lang);
+  const name = (side: BenchSide) => sideName(side, lang);
   const [task, setTask] = useState<BenchTask>(TASKS[0].id);
 
   const sides = sidesFor(task);
@@ -341,12 +342,12 @@ export function ErpRace() {
     <Section
       id="race-title"
       title={tr(
-        "Tested on screens rebuilt from two Norwegian accounting systems",
-        "Testet på skjermbilder gjenskapt fra to norske regnskapssystemer",
+        "Benchmarks on Norwegian websites and accounting apps",
+        "Tester på norske nettsteder og i regnskapsapper",
       )}
       note={tr(
-        "Each comparison uses the same task and sample data in Booki and on screens rebuilt from Tripletex or DNB Regnskap.",
-        "Hver sammenligning bruker samme oppgave og eksempeldata i Booki og på skjermbilder gjenskapt fra Tripletex eller DNB Regnskap.",
+        "Compare the same task with and without Booki. Choose an accounting task here, or try a public website below.",
+        "Sammenlign samme oppgave med og uten Booki. Velg en regnskapsoppgave her, eller prøv et norsk nettsted nedenfor.",
       )}
     >
       <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
@@ -425,8 +426,8 @@ export function ErpRace() {
                     {screenshotsFor(task).map((shot) => (
                       <li key={shot.key}>
                         {tr(
-                          `${shot.name.split(" · ")[0]}: ${calls(shot.calls)}, ${int(billed(shot))} tokens billed (${int(shot.imageTokens)} of them image), ${usd(fairCost(shot), 3)}. Cheaper than hovering, but bar heights only give round numbers: it could not answer exactly, so it does not count as done.`,
-                          `${shot.name.split(" · ")[0]}: ${calls(shot.calls)}, ${int(billed(shot))} fakturerte tokens (${int(shot.imageTokens)} av dem bilde), ${usd(fairCost(shot), 3)}. Billigere enn å holde pekeren over hver søyle, men søylehøyder gir bare runde tall: den kunne ikke svare eksakt, så den teller ikke som ferdig.`,
+                          `${sideLabel(shot.key, lang)}: ${calls(shot.calls)}, ${int(billed(shot))} tokens billed (${int(shot.imageTokens)} of them image), ${usd(fairCost(shot), 3)}. Cheaper than hovering, but bar heights only give round numbers: it could not answer exactly, so it does not count as done.`,
+                          `${sideLabel(shot.key, lang)}: ${calls(shot.calls)}, ${int(billed(shot))} fakturerte tokens (${int(shot.imageTokens)} av dem bilde), ${usd(fairCost(shot), 3)}. Billigere enn å holde pekeren over hver søyle, men søylehøyder gir bare runde tall: den kunne ikke svare eksakt, så den teller ikke som ferdig.`,
                         )}
                       </li>
                     ))}
@@ -443,7 +444,7 @@ export function ErpRace() {
                       <th scope="col">{tr("Per run", "Per kjøring")}</th>
                       {sides.map((side) => (
                         <th key={side.key} scope="col">
-                          {side.name.split(" · ")[0]}
+                          {sideLabel(side.key, lang)}
                         </th>
                       ))}
                     </tr>

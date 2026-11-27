@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useBookiLocaleOptional } from "./locale.js";
 
 type Localize = typeof import("@booki-aui/core/messages").localize;
@@ -19,6 +19,21 @@ export function preloadNorwegian(): Promise<unknown> {
   return loadLocalize();
 }
 
+const readLocalize = () => loaded;
+const serverLocalize = () => null;
+const subscribeEnglish = () => () => {};
+
+function subscribeNorwegian(notify: () => void) {
+  let subscribed = true;
+  if (!loaded)
+    void loadLocalize().then(() => {
+      if (subscribed) notify();
+    });
+  return () => {
+    subscribed = false;
+  };
+}
+
 /**
  * Turns a refusal or an issue from `@booki-aui/core` into the person's language.
  * State keeps the English sentence, which is what an agent reads; only what
@@ -29,16 +44,10 @@ export function preloadNorwegian(): Promise<unknown> {
 export function useSay(): (text: string) => string {
   const { country } = useBookiLocaleOptional();
   const norwegian = country === "NO";
-  const [localize, setLocalize] = useState<Localize | null>(() => loaded);
-  useEffect(() => {
-    if (!norwegian || localize) return;
-    let live = true;
-    void loadLocalize().then((next) => {
-      if (live) setLocalize(() => next);
-    });
-    return () => {
-      live = false;
-    };
-  }, [norwegian, localize]);
+  const localize = useSyncExternalStore(
+    norwegian ? subscribeNorwegian : subscribeEnglish,
+    readLocalize,
+    serverLocalize,
+  );
   return (text: string) => (norwegian && localize ? localize(text, "nb") : text);
 }

@@ -1,4 +1,4 @@
-import { digitsOnly, isValidKontonummer } from "@booki-aui/core/kontonummer";
+import { isValidKontonummer } from "@booki-aui/core/kontonummer";
 import { isValidRoutingNumber, isValidUsAccountNumber } from "@booki-aui/core/routing-number";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@ui-sdk/react/field";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
@@ -82,11 +82,6 @@ function BankAccountInput({
   }
 
   if (kind === "routing-account") {
-    const routing = digitsOnly(routingNumber ?? "");
-    const account = digitsOnly(accountNumber ?? "");
-    const routingInvalid = routing.length > 0 && !isValidRoutingNumber(routing);
-    const accountInvalid = account.length > 0 && !isValidUsAccountNumber(account);
-
     return (
       <BankAccountRoot
         kind="routing-account"
@@ -101,43 +96,44 @@ function BankAccountInput({
         aria-label={profile.bankAccount.label}
         {...rest}
       >
-        {(state: BankDigits) => (
-          <>
-            <Field invalid={routingInvalid}>
-              <FieldLabel>Routing number</FieldLabel>
-              <FieldDescription>9-digit ABA routing number</FieldDescription>
-              <BankAccountRouting id={id} required={required} placeholder="021000021" {...field} />
-              {routingInvalid ? <FieldError>Invalid routing number</FieldError> : null}
-            </Field>
-            <Field invalid={accountInvalid}>
-              <FieldLabel>Account number</FieldLabel>
-              <FieldDescription>4–17 digits</FieldDescription>
-              <BankAccountAccount
-                id={id ? `${id}-account` : undefined}
-                required={required}
-                placeholder="123456789"
-                aria-invalid={accountInvalid || undefined}
+        {(state: BankDigits) => {
+          const routingInvalid = state.routingNumber.length > 0 && !isValidRoutingNumber(state.routingNumber);
+          const accountInvalid = state.accountNumber.length > 0 && !isValidUsAccountNumber(state.accountNumber);
+          return (
+            <>
+              <Field invalid={routingInvalid}>
+                <FieldLabel>Routing number</FieldLabel>
+                <FieldDescription>9-digit ABA routing number</FieldDescription>
+                <BankAccountRouting id={id} required={required} placeholder="021000021" {...field} />
+                {routingInvalid ? <FieldError>Invalid routing number</FieldError> : null}
+              </Field>
+              <Field invalid={accountInvalid}>
+                <FieldLabel>Account number</FieldLabel>
+                <FieldDescription>4–17 digits</FieldDescription>
+                <BankAccountAccount
+                  id={id ? `${id}-account` : undefined}
+                  required={required}
+                  placeholder="123456789"
+                  aria-invalid={accountInvalid || undefined}
+                />
+                {accountInvalid ? <FieldError>Invalid account number</FieldError> : null}
+              </Field>
+              <FormValue
+                name={name ? `${name}.routingNumber` : undefined}
+                value={state.routingNumber}
+                disabled={disabled}
               />
-              {accountInvalid ? <FieldError>Invalid account number</FieldError> : null}
-            </Field>
-            <FormValue
-              name={name ? `${name}.routingNumber` : undefined}
-              value={state.routingNumber}
-              disabled={disabled}
-            />
-            <FormValue
-              name={name ? `${name}.accountNumber` : undefined}
-              value={state.accountNumber}
-              disabled={disabled}
-            />
-          </>
-        )}
+              <FormValue
+                name={name ? `${name}.accountNumber` : undefined}
+                value={state.accountNumber}
+                disabled={disabled}
+              />
+            </>
+          );
+        }}
       </BankAccountRoot>
     );
   }
-
-  const digits = digitsOnly(kontonummer ?? "");
-  const invalid = digits.length > 0 && !isValidKontonummer(digits);
 
   return (
     <BankAccountRoot
@@ -152,15 +148,18 @@ function BankAccountInput({
       aria-label={profile.bankAccount.label}
       {...rest}
     >
-      {(state: BankDigits) => (
-        <Field invalid={invalid}>
-          <FieldLabel>{profile.bankAccount.label}</FieldLabel>
-          <FieldDescription>{profile.bankAccount.description}</FieldDescription>
-          <BankAccountKontonummer id={id} required={required} placeholder="1234 56 78903" {...field} />
-          {invalid ? <FieldError>Ugyldig kontonummer (mod11)</FieldError> : null}
-          <FormValue name={name} value={state.digits} disabled={disabled} />
-        </Field>
-      )}
+      {(state: BankDigits) => {
+        const invalid = state.digits.length > 0 && !isValidKontonummer(state.digits);
+        return (
+          <Field invalid={invalid}>
+            <FieldLabel>{profile.bankAccount.label}</FieldLabel>
+            <FieldDescription>{profile.bankAccount.description}</FieldDescription>
+            <BankAccountKontonummer id={id} required={required} placeholder="1234 56 78903" {...field} />
+            {invalid ? <FieldError>Ugyldig kontonummer (mod11)</FieldError> : null}
+            <FormValue name={name} value={state.digits} disabled={disabled} />
+          </Field>
+        );
+      }}
     </BankAccountRoot>
   );
 }

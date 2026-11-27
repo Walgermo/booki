@@ -19,13 +19,9 @@ export type LiveEvent =
 
 /** Is the server configured with a key? */
 export async function liveAgentStatus(): Promise<{ enabled: boolean; model?: string }> {
-  try {
-    const response = await fetch("/api/agent");
-    if (!response.ok) return { enabled: false };
-    return (await response.json()) as { enabled: boolean; model?: string };
-  } catch {
-    return { enabled: false };
-  }
+  const response = await fetch("/api/agent");
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
 }
 
 /** Run one tool call from the model against the page's agent bridge. */

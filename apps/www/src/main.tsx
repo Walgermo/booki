@@ -28,7 +28,10 @@ const app = (
 // script runs. In Norwegian (or another stored choice) the text differs from the HTML: React then
 // renders the page afresh, as before. That one mismatch is expected and not reported.
 // The dev server's page is empty: there is nothing to hydrate.
-if (root.hasChildNodes()) {
+// A client-only route can receive the prerendered home page from the SPA fallback.
+const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+const requestedPath = location.pathname.replace(/\/+$/, "") || "/";
+if (root.hasChildNodes() && canonical && new URL(canonical.href).pathname === requestedPath) {
   hydrateRoot(root, app, {
     onRecoverableError: (error) => {
       if (document.documentElement.lang !== "en") return;
