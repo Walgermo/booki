@@ -1,5 +1,23 @@
 # @booki/react
 
+## 0.5.2
+
+### Patch Changes
+
+- [#200](https://github.com/Walgermo/booki/pull/200) [`274092a`](https://github.com/Walgermo/booki/commit/274092a6e5ae1b50ed5f5bc1e4ec99d77ebcbc0e) Thanks [@Walgermo](https://github.com/Walgermo)! - Improve keyboard access to scrollable reports, announce sorting in the trial-balance list, respect reduced motion in pickers, and make report controls easier to read and tap on phones.
+  
+  Keep native form validity in sync for bank details, payment references, organization numbers and IBAN. Preserve the initial locale during hydration.
+
+- [#196](https://github.com/Walgermo/booki/pull/196) [`a25ee00`](https://github.com/Walgermo/booki/commit/a25ee00bc2e5b0b6c8bdab52da707c6a5b8c82aa) Thanks [@Walgermo](https://github.com/Walgermo)! - Preview block formatting in the slash menu and highlight tagged sources inline while editing a document.
+
+- [#200](https://github.com/Walgermo/booki/pull/200) [`274092a`](https://github.com/Walgermo/booki/commit/274092a6e5ae1b50ed5f5bc1e4ec99d77ebcbc0e) Thanks [@Walgermo](https://github.com/Walgermo)! - Give KPI values a full-width row so sparklines cannot obscure amounts in narrow cards.
+  
+  Use the visible labels as the accessible names for trend ranges and aging buckets, with expanded descriptions for screen readers.
+- Updated dependencies [[`274092a`](https://github.com/Walgermo/booki/commit/274092a6e5ae1b50ed5f5bc1e4ec99d77ebcbc0e), [`a25ee00`](https://github.com/Walgermo/booki/commit/a25ee00bc2e5b0b6c8bdab52da707c6a5b8c82aa)]:
+  - @booki-aui/primitives@0.5.2
+  - @booki-aui/core@0.5.2
+  - @booki-aui/icons@0.5.2
+
 ## 0.5.1
 
 ### Patch Changes
