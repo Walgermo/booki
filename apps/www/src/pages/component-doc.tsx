@@ -156,7 +156,7 @@ export function ComponentDocPage() {
       <OnThisPage
         links={[
           ["preview", t("Preview", "Forhåndsvisning")],
-          ...(name === "money" ? [] : [["agent", t("Agent actions", "Agenthandlinger")] as [string, string]]),
+          ...(name === "money" ? [] : [["agent", t("Agent view", "Agentvisning")] as [string, string]]),
           [
             "example-title",
             bridgeExample ? t("Try the bridge", "Prøv agentbroen") : t("Usage example", "Brukseksempel"),
@@ -184,7 +184,7 @@ export function ComponentDocPage() {
             aria-label={t("The agent", "Agenten")}
           >
             <section className="grid min-w-0 content-start gap-2">
-              <p className="site-kicker">{t("The agent acts", "Agenten handler")}</p>
+              <p className="site-kicker">{t("Bridge demo", "Demo av agentbroen")}</p>
               <AgentDemo name={name} scope={sheet} onReset={() => setRun((n) => n + 1)} />
             </section>
             <AgentView key={`${name}-${country}-${run}`} scope={sheet} />

@@ -30,8 +30,8 @@ const CONTRACT: { rule: Text; how: Text }[] = [
   {
     rule: { en: "People approve what leaves the account", nb: "Mennesker godkjenner det som forlater kontoen" },
     how: {
-      en: "A person posts the voucher, releases a payment or signs off. The bridge refuses these decisions even when a policy allows other steps.",
-      nb: "En person bokfører bilaget, frigir betalingen eller attesterer. Agentbroen avviser disse handlingene også når reglene tillater andre steg.",
+      en: "Use personOnly for decisions such as payment release or sign-off. The bridge refuses actions marked this way even when the app allows other confirmed steps.",
+      nb: "Bruk personOnly for avgjørelser som frigivelse av betaling eller attestering. Agentbroen avviser handlinger med denne merkingen selv når appen tillater andre steg som krever bekreftelse.",
     },
   },
   {

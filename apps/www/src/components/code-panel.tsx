@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode, Ref } from "react";
+import { useId, type CSSProperties, type ReactNode, type Ref } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -32,16 +32,27 @@ export function CodePanel({
   /** Prose (a prompt) wraps; code keeps its lines. */
   wrap?: boolean;
 }) {
+  const labelId = useId();
   const style: CSSProperties = { maxHeight, minHeight };
   return (
     <div className={cn("code-panel", className)} data-wrap={wrap ? "" : undefined}>
       {label || action ? (
         <div className="code-panel__bar">
-          <span className="code-panel__label">{label}</span>
+          <span id={labelId} className="code-panel__label">
+            {label}
+          </span>
           {action ? <span className="code-panel__action">{action}</span> : null}
         </div>
       ) : null}
-      <div ref={bodyRef} className="code-panel__body" style={style} aria-live={live ? "polite" : undefined}>
+      <div
+        ref={bodyRef}
+        className="code-panel__body"
+        style={style}
+        role="group"
+        aria-labelledby={label ? labelId : undefined}
+        tabIndex={0}
+        aria-live={live ? "polite" : undefined}
+      >
         {children}
       </div>
     </div>

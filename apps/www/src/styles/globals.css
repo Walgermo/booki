@@ -2528,6 +2528,11 @@ html[data-kpi-still] {
   scrollbar-color: var(--scrollbar-thumb-ink) transparent;
 }
 
+.code-panel__body:focus-visible {
+  outline: 2px solid var(--bk-ink-fg);
+  outline-offset: -2px;
+}
+
 /* Code keeps its lines: it scrolls sideways rather than breaking mid-expression. */
 .code-panel__body pre {
   margin: 0;
