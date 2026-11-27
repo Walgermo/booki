@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/react",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Open-source UI components for React apps where people and AI agents work in the same screens. Includes forms, tables, documents, sales, accounting and auditing.",
   "type": "module",
   "license": "MIT",

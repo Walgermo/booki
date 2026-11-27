@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/readiness",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Check how well AI agents can operate your app's screens. Score them against the Booki Agent Contract and get actionable fixes.",
   "type": "module",
   "license": "MIT",

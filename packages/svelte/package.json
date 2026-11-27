@@ -1,6 +1,6 @@
 {
   "name": "@booki-aui/svelte",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Booki for Svelte (experimental) — agent-first UI for your app, with Svelte components for people and AI agents: the same rules, state and agent actions as @booki-aui/react.",
   "type": "module",
   "license": "MIT",
