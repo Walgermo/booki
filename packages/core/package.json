@@ -1,7 +1,7 @@
 {
   "name": "@booki-aui/core",
   "version": "0.5.2",
-  "description": "Booki core — the accounting rules behind agent-first apps: integer money, locale profiles, validators, ledger and table logic. Framework-agnostic. Norway and US profiles are supported; SE, DK, GB and DE are experimental starters.",
+  "description": "Framework-free Booki utilities for application state and validation, including tables, documents, money, localization, and accounting rules.",
   "type": "module",
   "license": "MIT",
   "repository": {

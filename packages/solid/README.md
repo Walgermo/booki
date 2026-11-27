@@ -4,7 +4,7 @@ Experimental. This adapter is less tested than `@booki-aui/react`, and its API m
 change between releases. See the
 [Support section](https://github.com/Walgermo/booki#support) of the README.
 
-Agent-first accounting controls for Solid. The same rules, state and agent
+Agent-first UI components for Solid. The same rules, state and agent
 actions as `@booki-aui/react`, generated from the same framework-free definitions
 in `@booki-aui/primitives`.
 

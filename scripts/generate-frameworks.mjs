@@ -140,7 +140,7 @@ export * from "./agent.js";
   const pkg = {
     name: `@booki-aui/${fw.id}`,
     version: existing.version ?? "0.1.0",
-    description: `Booki for ${fw.name} (experimental) — agent-first accounting controls as ${fw.about}: the same rules, state and agent actions as @booki-aui/react.`,
+    description: `Booki for ${fw.name} (experimental) — agent-first UI for your app, with ${fw.about} for people and AI agents: the same rules, state and agent actions as @booki-aui/react.`,
     type: "module",
     license: "MIT",
     repository: {
@@ -221,7 +221,7 @@ Experimental. This adapter is less tested than \`@booki-aui/react\`, and its API
 change between releases. See the
 [Support section](https://github.com/Walgermo/booki#support) of the README.
 
-Agent-first accounting controls for ${fw.name}. The same rules, state and agent
+Agent-first UI components for ${fw.name}. The same rules, state and agent
 actions as \`@booki-aui/react\`, generated from the same framework-free definitions
 in \`@booki-aui/primitives\`.
 

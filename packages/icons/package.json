@@ -1,7 +1,7 @@
 {
   "name": "@booki-aui/icons",
   "version": "0.5.2",
-  "description": "Booki's duotone icons for accounting UI: SVG files, their markup as strings, and a small React component.",
+  "description": "Duotone icons for apps built for people and AI agents, including files, workflows, charts and finance. Available as SVG files, markup strings and a React component.",
   "type": "module",
   "license": "MIT",
   "repository": {
