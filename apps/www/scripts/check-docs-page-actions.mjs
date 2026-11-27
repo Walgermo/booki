@@ -25,13 +25,13 @@ try {
   }
   await verify("/docs");
   await page.getByRole("link", { name: "Try your first agent action" }).click();
+  await page.getByRole("heading", { name: "Your first agent action" }).waitFor();
   assert.match(await verify("/docs/first-action"), /```[\s\S]+?```/);
 
-  const more = page.getByLabel("More page actions", { exact: true });
+  const more = page.getByRole("button", { name: "More page actions", exact: true });
   await more.focus();
   await page.keyboard.press("Enter");
   const raw = page.getByRole("link", { name: "View as Markdown" });
-  await page.keyboard.press("Tab");
   assert.equal(await raw.evaluate((el) => el === document.activeElement), true);
   assert.equal(await raw.getAttribute("href"), "/docs/first-action.md");
   const chat = await page.getByRole("link", { name: "Ask ChatGPT about this page" }).getAttribute("href");
@@ -39,11 +39,26 @@ try {
   await page.keyboard.press("Escape");
   assert.equal(await more.evaluate((el) => el === document.activeElement), true);
   assert.equal(await raw.isVisible(), false);
+  const opened = await page.evaluate(() => {
+    const popover = window.agent.snapshot().find((entry) => entry.label === "More page actions");
+    return window.agent.act({ steps: [{ ref: popover.ref, action: "setOpen", args: [true] }] });
+  });
+  assert.equal(opened.ok, true);
+  await raw.waitFor();
+  for (const target of [more, raw, page.getByRole("button", { name: "Copy for LLM" })]) {
+    const box = await target.boundingBox();
+    assert.ok(box.width >= 44 && box.height >= 44);
+  }
+  await page.keyboard.press("Escape");
 
   await page.route("**/docs/first-action.md", (route) =>
     route.fulfill({ contentType: "text/html", body: "<html>Fallback</html>" }),
   );
-  await page.getByRole("button", { name: "Copy for LLM" }).click();
+  const result = await page.evaluate(async () => {
+    const control = window.agent.snapshot().find((entry) => entry.label === "Copy for LLM");
+    return window.agent.act({ steps: [{ ref: control.ref, action: "press", args: [] }] });
+  });
+  assert.equal(result.ok, false);
   await page.getByText("Couldn’t copy.", { exact: false }).waitFor();
   assert.ok((await page.evaluate(() => navigator.clipboard.readText())).startsWith("# Your first agent action"));
   await page.unroute("**/docs/first-action.md");

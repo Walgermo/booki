@@ -1,5 +1,6 @@
 import { Icon } from "@booki-aui/icons/react";
-import { useEffect, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@ui-sdk/react/popover";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/lib/lang";
@@ -11,30 +12,8 @@ export function DocsPageActions({ pathname }: { pathname: string }) {
     `Read https://booki.dev${markdown} and help me apply this documentation in my app.`,
     `Les https://booki.dev${markdown} og hjelp meg å bruke dokumentasjonen i appen min.`,
   );
-  const disclosure = useRef<HTMLDetailsElement>(null);
+  const more = t("More page actions", "Flere sidehandlinger");
   const [state, setState] = useState<"ready" | "copying" | "copied" | "failed">("ready");
-
-  useEffect(() => {
-    const details = disclosure.current;
-    if (!details) return;
-    const closeOutside = (event: Event) => {
-      if (details.open && !details.contains(event.target as Node)) details.open = false;
-    };
-    const escape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || !details.open) return;
-      details.open = false;
-      details.querySelector("summary")?.focus();
-      event.stopPropagation();
-    };
-    details.addEventListener("keydown", escape);
-    document.addEventListener("focusin", closeOutside);
-    document.addEventListener("pointerdown", closeOutside);
-    return () => {
-      details.removeEventListener("keydown", escape);
-      document.removeEventListener("focusin", closeOutside);
-      document.removeEventListener("pointerdown", closeOutside);
-    };
-  }, []);
 
   useEffect(() => {
     if (state !== "copied") return;
@@ -61,8 +40,9 @@ export function DocsPageActions({ pathname }: { pathname: string }) {
         await navigator.clipboard.writeText(await readMarkdown());
       }
       setState("copied");
-    } catch {
+    } catch (error) {
       setState("failed");
+      throw error;
     }
   }
 
@@ -80,18 +60,18 @@ export function DocsPageActions({ pathname }: { pathname: string }) {
           <Icon name={state === "copied" ? "copy-check" : "copy"} />
           {t("Copy for LLM", "Kopier for LLM")}
         </Button>
-        <details ref={disclosure}>
-          <summary aria-label={t("More page actions", "Flere sidehandlinger")}>
+        <Popover data-agent-label={more}>
+          <PopoverTrigger aria-label={more} className="docs-page-actions__more">
             <Icon name="chevron-down" />
-          </summary>
-          <div className="docs-page-actions__links">
+          </PopoverTrigger>
+          <PopoverContent aria-label={more} align="end" className="docs-page-actions__links" data-markdown-hidden="">
             <a href={markdown}>{view}</a>
             <a href={`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`} target="_blank" rel="noreferrer">
               {t("Ask ChatGPT about this page", "Spør ChatGPT om siden")} <Icon name="external-link" />
             </a>
             <a href="/llms.txt">{t("Documentation index for LLMs", "Dokumentasjonsindeks for LLM-er")}</a>
-          </div>
-        </details>
+          </PopoverContent>
+        </Popover>
       </div>
       <span role="status" className="docs-page-actions__status">
         {state === "copied" && t("Markdown copied", "Engelsk Markdown kopiert")}
