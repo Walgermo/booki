@@ -1,4 +1,5 @@
 import { Icon } from "@booki-aui/icons/react";
+import { Input } from "@ui-sdk/react/input";
 import { useId, useState } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -44,13 +45,13 @@ export function DocsNavigation() {
   const searchLabel = t("Find a docs page", "Finn en dokumentside");
   return (
     <>
-      <input
+      <Input
         type="search"
         className="site-icons-search mb-4"
         aria-label={searchLabel}
         placeholder={searchLabel}
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onValueChange={setQuery}
       />
       <p role="status" className={terms.length && !count ? "text-sm text-muted-foreground" : "sr-only"}>
         {terms.length > 0 &&

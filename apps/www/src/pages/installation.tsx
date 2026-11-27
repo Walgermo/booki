@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { reactInstallCommand } from "../catalog";
 import { OnThisPage } from "../components/on-this-page";
 import { InstallBlock } from "../components/install-block";
 import { PromptButton } from "../components/landing/prompt-button";
@@ -23,15 +24,6 @@ const NEEDS = [
     },
   ],
 ] as const;
-
-function installCommand(add: string) {
-  return [
-    "booki_version=$(npm view @booki-aui/react@latest version) &&",
-    'ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&',
-    `${add} --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \\`,
-    '  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"',
-  ].join("\n");
-}
 
 const PROVIDER = `import { BookiLocaleProvider } from "@booki-aui/react"
 import "@booki-aui/styles"
@@ -199,8 +191,8 @@ export function InstallationPage() {
             </li>
           ))}
         </ul>
-        <InstallBlock label="npm" command={installCommand("npm install")} />
-        <InstallBlock label="pnpm" command={installCommand("pnpm add")} />
+        <InstallBlock label="npm" command={reactInstallCommand("npm install")} />
+        <InstallBlock label="pnpm" command={reactInstallCommand("pnpm add")} />
         <p className={p}>
           {t(
             "The optional @booki-aui/styles package provides the default look.",
