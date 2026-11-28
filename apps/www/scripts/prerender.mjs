@@ -177,6 +177,14 @@ function structuredData(url, { title, description, body, image }) {
 
 const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
+/**
+ * The title a share preview shows: a component page's tab title without the
+ * code name in brackets, which helps a search but runs long in a preview.
+ * "Organisation number (OrganizationNumberInput) · Booki" → "Organisation number · Booki".
+ * src/lib/lang.tsx does the same in the browser.
+ */
+const shareTitle = (title) => title.replace(/ \([A-Z][A-Za-z0-9]*\)(?= · Booki$)/, "");
+
 /** The page's own title, description, address and Markdown copy in the head. */
 function withMeta(template, { url, title, description, markdownPath, image, card }) {
   const set = (html, pattern, value) => {
@@ -186,10 +194,10 @@ function withMeta(template, { url, title, description, markdownPath, image, card
   let html = template;
   html = set(html, /<title>[^<]*<\/title>/, `<title>${escapeAttr(title)}</title>`);
   html = set(html, /(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
-  html = set(html, /(<meta property="og:title" content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
+  html = set(html, /(<meta property="og:title" content=")[^"]*(")/, `$1${escapeAttr(shareTitle(title))}$2`);
   html = set(html, /(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
   html = set(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${site}${url}$2`);
-  html = set(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
+  html = set(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${escapeAttr(shareTitle(title))}$2`);
   html = set(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
   html = set(html, /(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`);
   html = set(html, /(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`);
