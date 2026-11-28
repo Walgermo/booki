@@ -1,0 +1,179 @@
+{
+  "source": "https://skattekalkulator.formueinntekt.skatt.skatteetaten.no/",
+  "capturedAt": "2026-11-28T19:54:04.585Z",
+  "person": {
+    "year": 2026,
+    "status": "ugift",
+    "birthYear": 1990,
+    "only": "salary"
+  },
+  "samples": [
+    {
+      "salary": 100000,
+      "estimate": 88,
+      "minstefradrag": 46000,
+      "alminneligInntekt": 54000,
+      "fellesskatt": null,
+      "kommuneOgFylke": null,
+      "trinnskatt": null,
+      "trygdeavgift": {
+        "basis": 100000,
+        "amount": 88
+      }
+    },
+    {
+      "salary": 250000,
+      "estimate": 28153,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 154300,
+      "fellesskatt": {
+        "basis": 154300,
+        "amount": 3280
+      },
+      "kommuneOgFylke": {
+        "basis": 154300,
+        "amount": 5467
+      },
+      "trinnskatt": {
+        "basis": 250000,
+        "amount": 406
+      },
+      "trygdeavgift": {
+        "basis": 250000,
+        "amount": 19000
+      }
+    },
+    {
+      "salary": 400000,
+      "estimate": 76982,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 304300,
+      "fellesskatt": {
+        "basis": 304300,
+        "amount": 15655
+      },
+      "kommuneOgFylke": {
+        "basis": 304300,
+        "amount": 26092
+      },
+      "trinnskatt": {
+        "basis": 400000,
+        "amount": 4835
+      },
+      "trygdeavgift": {
+        "basis": 400000,
+        "amount": 30400
+      }
+    },
+    {
+      "salary": 650000,
+      "estimate": 160982,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 554300,
+      "fellesskatt": {
+        "basis": 554300,
+        "amount": 36280
+      },
+      "kommuneOgFylke": {
+        "basis": 554300,
+        "amount": 60467
+      },
+      "trinnskatt": {
+        "basis": 650000,
+        "amount": 14835
+      },
+      "trygdeavgift": {
+        "basis": 650000,
+        "amount": 49400
+      }
+    },
+    {
+      "salary": 800000,
+      "estimate": 218653,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 704300,
+      "fellesskatt": {
+        "basis": 704300,
+        "amount": 48655
+      },
+      "kommuneOgFylke": {
+        "basis": 704300,
+        "amount": 81092
+      },
+      "trinnskatt": {
+        "basis": 800000,
+        "amount": 28106
+      },
+      "trygdeavgift": {
+        "basis": 800000,
+        "amount": 60800
+      }
+    },
+    {
+      "salary": 1100000,
+      "estimate": 352269,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 1004300,
+      "fellesskatt": {
+        "basis": 1004300,
+        "amount": 73405
+      },
+      "kommuneOgFylke": {
+        "basis": 1004300,
+        "amount": 122342
+      },
+      "trinnskatt": {
+        "basis": 1100000,
+        "amount": 72922
+      },
+      "trygdeavgift": {
+        "basis": 1100000,
+        "amount": 83600
+      }
+    },
+    {
+      "salary": 1500000,
+      "estimate": 538197,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 1404300,
+      "fellesskatt": {
+        "basis": 1404300,
+        "amount": 106405
+      },
+      "kommuneOgFylke": {
+        "basis": 1404300,
+        "amount": 177342
+      },
+      "trinnskatt": {
+        "basis": 1500000,
+        "amount": 140450
+      },
+      "trygdeavgift": {
+        "basis": 1500000,
+        "amount": 114000
+      }
+    },
+    {
+      "salary": 2500000,
+      "estimate": 1012197,
+      "minstefradrag": 95700,
+      "alminneligInntekt": 2404300,
+      "fellesskatt": {
+        "basis": 2404300,
+        "amount": 188905
+      },
+      "kommuneOgFylke": {
+        "basis": 2404300,
+        "amount": 314842
+      },
+      "trinnskatt": {
+        "basis": 2500000,
+        "amount": 318450
+      },
+      "trygdeavgift": {
+        "basis": 2500000,
+        "amount": 190000
+      }
+    }
+  ]
+}

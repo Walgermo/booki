@@ -44,6 +44,8 @@ const BenchInboxRawPage = page(() => import("./pages/bench"), "BenchInboxRawPage
 const BenchReconcileAccPage = page(() => import("./pages/bench"), "BenchReconcileAccPage");
 const BenchReconcileRawPage = page(() => import("./pages/bench"), "BenchReconcileRawPage");
 const BenchDashboardAccPage = page(() => import("./pages/bench"), "BenchDashboardAccPage");
+const BenchTaxAccPage = page(() => import("./pages/bench"), "BenchTaxAccPage");
+const BenchPriceAccPage = page(() => import("./pages/bench"), "BenchPriceAccPage");
 const BenchDashboardGridPage = page(() => import("./pages/bench"), "BenchDashboardGridPage");
 const BenchDashboardRawPage = page(() => import("./pages/bench"), "BenchDashboardRawPage");
 const BenchSalesInvoiceAccPage = page(() => import("./pages/bench"), "BenchSalesInvoiceAccPage");
@@ -108,6 +110,8 @@ export function App() {
           <Route path="bench/dashboard-raw" element={<BenchDashboardRawPage />} />
           <Route path="bench/dashboard-grid" element={<BenchDashboardGridPage />} />
           <Route path="bench/dashboard-acc" element={<BenchDashboardAccPage />} />
+          <Route path="bench/tax-acc" element={<BenchTaxAccPage />} />
+          <Route path="bench/price-acc" element={<BenchPriceAccPage />} />
           <Route path="bench/inbox-raw" element={<BenchInboxRawPage />} />
           <Route path="bench/inbox-acc" element={<BenchInboxAccPage />} />
           <Route path="bench/reconcile-raw" element={<BenchReconcileRawPage />} />

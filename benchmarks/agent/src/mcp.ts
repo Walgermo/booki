@@ -28,6 +28,8 @@ export type McpOptions = {
   caps?: string[];
   /** The one origin the browser may request: the benchmark site. Everything else is blocked. */
   origin?: string;
+  /** Instead of `origin`: every origin a live public page needs (the comparison in compare.ts). */
+  origins?: string[];
 };
 
 /**
@@ -45,9 +47,18 @@ export const WITHHELD_TOOLS = new Set(["browser_run_code_unsafe", "browser_file_
  * the bridge pages. Everything else is the server's default, so the tool list
  * is the default tool list.
  */
-export const mcpArgs = ({ headed, caps, origin }: Pick<McpOptions, "headed" | "caps" | "origin">) => [
+export const mcpArgs = ({
+  headed,
+  caps,
+  origin,
+  origins,
+}: Pick<McpOptions, "headed" | "caps" | "origin" | "origins">) => [
   ...(caps && caps.length ? ["--caps", caps.join(",")] : []),
-  ...(origin ? ["--allowed-origins", new URL(origin).origin] : []),
+  ...(origins?.length
+    ? ["--allowed-origins", origins.map((o) => new URL(o).origin).join(";")]
+    : origin
+      ? ["--allowed-origins", new URL(origin).origin]
+      : []),
   "--browser",
   "chrome",
   "--isolated",

@@ -43,6 +43,7 @@ function apiSession(api: BookkeepingApi): Session {
       throw new Error("The API side has no page.");
     },
     close: async () => {},
+    screenshot: async () => null,
   };
 }
 
