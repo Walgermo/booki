@@ -204,7 +204,8 @@ export function subMoney(a: Money, b: Money): Money {
 }
 
 export function assertSameCurrency(a: Money, b: Money): void {
-  if (a.currency !== b.currency) {
+  // A Money written by hand can carry "nok": the code is the same currency in either case.
+  if (String(a.currency).toUpperCase() !== String(b.currency).toUpperCase()) {
     throw moneyMessages.error("money.currency-mismatch", { a: String(a.currency), b: String(b.currency) });
   }
 }
@@ -261,9 +262,23 @@ export type ParsedAmount = {
   frac: string;
 };
 
+/**
+ * Arabic-Indic and Persian digits as ASCII, the Arabic decimal and group marks
+ * as "." and ",", and no bidirectional marks: ar-KW writes "‏١٬٢٣٤٫٥٠٠ د.ك.‏".
+ */
+function westernDigits(text: string): string {
+  return text
+    .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[\u06f0-\u06f9]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/\u066b/g, ".")
+    .replace(/\u066c/g, ",")
+    .replace(/[\u200e\u200f\u061c]/g, "");
+}
+
 function localeDecimalSeparator(locale: string): string {
   try {
-    return new Intl.NumberFormat(locale).formatToParts(1.1).find((part) => part.type === "decimal")?.value ?? ".";
+    const value = new Intl.NumberFormat(locale).formatToParts(1.1).find((part) => part.type === "decimal")?.value;
+    return value ? westernDigits(value) : ".";
   } catch {
     return ".";
   }
@@ -281,7 +296,7 @@ function currencyMarks(locale: string, currency: string): string[] {
         })
           .formatToParts(1)
           .find((part) => part.type === "currency")?.value;
-        if (symbol) marks.add(symbol.replace(/\s/g, "").toUpperCase());
+        if (symbol) marks.add(westernDigits(symbol.replace(/\s/g, "")).toUpperCase());
       } catch {
         // Unknown currency code: the code itself is still stripped.
       }
@@ -316,9 +331,20 @@ function count(text: string, char: string): number {
   return text.split(char).length - 1;
 }
 
-function isGrouped(text: string, group: string): boolean {
+function isGrouped(text: string, group: string, indian = false): boolean {
   const escaped = group === "." ? "\\." : group;
-  return new RegExp(`^\\d{1,3}(${escaped}\\d{3})+$`).test(text);
+  if (new RegExp(`^\\d{1,3}(${escaped}\\d{3})+$`).test(text)) return true;
+  // Lakh and crore grouping, as en-IN writes it: 12,34,567.
+  return indian && new RegExp(`^\\d{1,2}(${escaped}\\d{2})*${escaped}\\d{3}$`).test(text);
+}
+
+/** Whether the locale groups digits in twos above the thousands (en-IN: 12,34,567). */
+function groupsIndian(locale: string): boolean {
+  try {
+    return /\d{2}\D\d{2}\D\d{3}/.test(new Intl.NumberFormat(locale).format(1234567));
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -342,11 +368,14 @@ export function parseAmountText(
   const currency = options?.currency ?? "USD";
   const marks = currencyMarks(locale, currency);
 
-  // Spaces only as thousands groups ("1 234 567"): "12 34" is a typo, not 1234.
-  for (const match of String(input).matchAll(/\d[\s\u00a0\u202f]+(\d+)/g)) {
+  const raw = westernDigits(String(input));
+  // Spaces and apostrophes (de-CH: 1'234) only as thousands groups ("1 234 567"):
+  // "12 34" is a typo, not 1234. The lookahead leaves the digits to the next match,
+  // so every group is checked, the last one too ("1 234 5" is refused).
+  for (const match of raw.matchAll(/\d(?:[\s\u00a0\u202f]+|['\u2019])(?=(\d+))/g)) {
     if (match[1]!.length !== 3) return null;
   }
-  let text = String(input).replace(/\s/g, "");
+  let text = raw.replace(/[\s'\u2019]/g, "");
   text = stripCurrencyEdges(text, marks);
   let negative = false;
   if (text.startsWith("(") && text.endsWith(")")) {
@@ -360,6 +389,7 @@ export function parseAmountText(
   }
   if (!/^[\d.,]+$/.test(text) || !/\d/.test(text)) return null;
 
+  const indian = groupsIndian(locale);
   const dots = count(text, ".");
   const commas = count(text, ",");
   let decimal: string | null = null;
@@ -374,7 +404,7 @@ export function parseAmountText(
     const occurrences = dots + commas;
     if (sep === localeDecimalSeparator(locale) && occurrences === 1) {
       decimal = sep;
-    } else if (isGrouped(text, sep)) {
+    } else if (isGrouped(text, sep, indian)) {
       group = sep;
     } else if (occurrences === 1) {
       decimal = sep;
@@ -393,7 +423,7 @@ export function parseAmountText(
     if (intText === "" && frac === "") return null;
   }
   if (group !== null && intText.includes(group)) {
-    if (!isGrouped(intText, group)) return null;
+    if (!isGrouped(intText, group, indian)) return null;
     intText = intText.split(group).join("");
   }
   if (!/^\d*$/.test(intText)) return null;

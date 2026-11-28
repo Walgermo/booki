@@ -33,6 +33,10 @@ export function periodStatusOn(states: PeriodState[], date: string): { status: P
   for (const state of states) {
     const bounds = periodBounds(state.code);
     if (!bounds) throw new BookiError("period.not-a-code", { code: String(state.code) });
+    // Fail closed: a status Booki does not know ("closed", from a store) is refused, never read as open.
+    if (!Object.hasOwn(RANK, state.status)) {
+      throw new BookiError("period.not-a-status", { status: String(state.status) });
+    }
     if (day < bounds.from || day > bounds.to) continue;
     if (RANK[state.status] > RANK[found.status]) found = { status: state.status, code: state.code };
   }
@@ -61,7 +65,8 @@ export function assertPostingAllowed(
 export function setPeriodStatus(states: PeriodState[], code: string, status: PeriodStatus): PeriodState[] {
   const period = parsePeriodCode(String(code ?? ""));
   if (!period) throw new BookiError("period.not-a-code", { code: String(code) });
-  if (!(status in RANK)) {
+  // Own keys only: "toString" is in every object.
+  if (!Object.hasOwn(RANK, status)) {
     throw new BookiError("period.not-a-status", { status: String(status) });
   }
   const current = states.find((state) => state.code === period.code)?.status ?? "open";
