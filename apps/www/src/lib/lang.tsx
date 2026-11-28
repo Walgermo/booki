@@ -69,9 +69,11 @@ export function LangProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = lang === "nb" ? "nb" : "en";
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+    // Share previews drop a component's code name, as the build's HTML does (scripts/prerender.mjs).
+    const share = title.replace(/ \([A-Z][A-Za-z0-9]*\)(?= · Booki$)/, "");
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", share);
     document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
-    document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", share);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
   }, [lang, pageMeta]);
 
