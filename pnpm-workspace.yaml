@@ -7,9 +7,9 @@ allowBuilds:
   esbuild: true
 # Only the exact UI SDK release selected for this workspace bypasses the release-age window.
 minimumReleaseAgeExclude:
-  - "@ui-sdk/core@0.1.0-beta.18"
-  - "@ui-sdk/react@0.1.0-beta.18"
-  - "@ui-sdk/solid@0.1.0-beta.18"
-  - "@ui-sdk/svelte@0.1.0-beta.18"
-  - "@ui-sdk/vue@0.1.0-beta.18"
-  - "@ui-sdk/web@0.1.0-beta.18"
+  - "@ui-sdk/core@0.1.0-beta.19"
+  - "@ui-sdk/react@0.1.0-beta.19"
+  - "@ui-sdk/solid@0.1.0-beta.19"
+  - "@ui-sdk/svelte@0.1.0-beta.19"
+  - "@ui-sdk/vue@0.1.0-beta.19"
+  - "@ui-sdk/web@0.1.0-beta.19"

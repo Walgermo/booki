@@ -1,5 +1,5 @@
 import { decimalFromMinor, minorDigitsFor } from "@booki-aui/core/money";
-import { BookiError } from "@booki-aui/core/msg";
+import { agentInputMessages } from "@booki-aui/core/msg/agent-input";
 import { dispatch } from "@ui-sdk/core";
 
 /**
@@ -14,11 +14,11 @@ export function checkFields(
   example: string,
 ): Record<string, unknown> {
   if (typeof input !== "object" || input === null || Array.isArray(input)) {
-    throw new BookiError("agent.not-an-object", { action, example });
+    throw agentInputMessages.error("agent.not-an-object", { action, example });
   }
   for (const key of Object.keys(input)) {
     if (!fields.includes(key)) {
-      throw new BookiError("agent.unknown-field", { action, field: key, fields: fields.join(", ") });
+      throw agentInputMessages.error("agent.unknown-field", { action, field: key, fields: fields.join(", ") });
     }
   }
   return input as Record<string, unknown>;
@@ -42,7 +42,7 @@ export { asEvent } from "./as-event.js";
 export function textOf(raw: unknown, action: string): string {
   if (raw === undefined || raw === null) return "";
   if (typeof raw !== "string" && typeof raw !== "number") {
-    throw new BookiError("agent.not-text", { action, got: Array.isArray(raw) ? "a list" : typeof raw });
+    throw agentInputMessages.error("agent.not-text", { action, got: Array.isArray(raw) ? "a list" : typeof raw });
   }
   return String(raw);
 }

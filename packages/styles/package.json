@@ -24,7 +24,6 @@
   ],
   "files": [
     "dist",
-    "src",
     "CHANGELOG.md"
   ],
   "exports": {

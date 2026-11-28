@@ -1,4 +1,4 @@
-import { BookiError } from "@booki-aui/core/msg";
+import { tableMessages } from "@booki-aui/core/msg/table";
 import {
   MAX_PAGE_SIZE,
   defaultQuery,
@@ -43,7 +43,10 @@ export function freshQuery<Row>(
 export function columnOf<Row>(columns: TableColumn<Row>[], id: unknown): TableColumn<Row> {
   const found = columns.find((column) => column.id === String(id));
   if (!found) {
-    throw new BookiError("table.unknown-column", { column: String(id), columns: columns.map((c) => c.id).join(", ") });
+    throw tableMessages.error("table.unknown-column", {
+      column: String(id),
+      columns: columns.map((c) => c.id).join(", "),
+    });
   }
   return found;
 }
@@ -82,8 +85,8 @@ export function queryMethods(host: QueryHost) {
   const sort = (columnId: unknown, direction: SortDirection, event?: Event) => {
     const found = column(columnId);
     if (direction !== "asc" && direction !== "desc")
-      throw new BookiError("table.bad-direction", { direction: String(direction) });
-    if (found.sortable === false) throw new BookiError("table.not-sortable", { column: found.id });
+      throw tableMessages.error("table.bad-direction", { direction: String(direction) });
+    if (found.sortable === false) throw tableMessages.error("table.not-sortable", { column: found.id });
     return patch({ sort: { column: found.id, direction }, page: 1 }, "set-sort", event);
   };
   const filter = (columnId: unknown, text: unknown, event?: Event) => {
@@ -97,13 +100,13 @@ export function queryMethods(host: QueryHost) {
   const page = (to: unknown, event?: Event) => {
     const pages = host.pageCount();
     if (!Number.isInteger(to) || (to as number) < 1 || (to as number) > pages) {
-      throw new BookiError("table.bad-page", { page: String(to), pages });
+      throw tableMessages.error("table.bad-page", { page: String(to), pages });
     }
     return patch({ page: to as number }, "set-page", event);
   };
   const size = (value: unknown, event?: Event) => {
     if (!Number.isInteger(value) || (value as number) < 1 || (value as number) > MAX_PAGE_SIZE) {
-      throw new BookiError("table.bad-page-size", { size: String(value), max: MAX_PAGE_SIZE });
+      throw tableMessages.error("table.bad-page-size", { size: String(value), max: MAX_PAGE_SIZE });
     }
     return patch({ pageSize: value as number, page: 1 }, "set-page-size", event);
   };

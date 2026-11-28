@@ -1,4 +1,4 @@
-import { BookiError } from "@booki-aui/core/msg";
+import { tableMessages } from "@booki-aui/core/msg/table";
 import {
   defaultQuery as baseQuery,
   MAX_PAGE_SIZE,
@@ -14,7 +14,9 @@ import { QUERY_FORMAT } from "./fields.js";
 function idList(ids: unknown): string[] {
   if (ids === undefined || ids === null) return [];
   if (!Array.isArray(ids) || ids.some((id) => typeof id !== "string" && typeof id !== "number")) {
-    throw new BookiError("table.ids-not-list", { got: Array.isArray(ids) ? "a list with other values" : typeof ids });
+    throw tableMessages.error("table.ids-not-list", {
+      got: Array.isArray(ids) ? "a list with other values" : typeof ids,
+    });
   }
   return ids.map(String);
 }
@@ -163,7 +165,7 @@ export const dataTable = definePrimitive({
     const column = (id: string) => {
       const found = columns().find((item) => item.id === String(id));
       if (!found) {
-        throw new BookiError("table.unknown-column", {
+        throw tableMessages.error("table.unknown-column", {
           column: String(id),
           columns: columns()
             .map((c) => c.id)
@@ -179,7 +181,7 @@ export const dataTable = definePrimitive({
       setSort: (columnId: string, direction: SortDirection = "asc") => {
         const id = column(columnId).id;
         if (direction !== "asc" && direction !== "desc") {
-          throw new BookiError("table.bad-direction", { direction: String(direction) });
+          throw tableMessages.error("table.bad-direction", { direction: String(direction) });
         }
         return query({ sort: { column: id, direction }, page: 1 }, "set-sort");
       },
@@ -198,13 +200,13 @@ export const dataTable = definePrimitive({
       setPage: (page: number) => {
         const { pageCount } = context.store.get().view;
         if (!Number.isInteger(page) || page < 1 || page > pageCount) {
-          throw new BookiError("table.bad-page", { page: String(page), pages: pageCount });
+          throw tableMessages.error("table.bad-page", { page: String(page), pages: pageCount });
         }
         return query({ page }, "set-page");
       },
       setPageSize: (size: number) => {
         if (!Number.isInteger(size) || size < 1 || size > MAX_PAGE_SIZE) {
-          throw new BookiError("table.bad-page-size", { size: String(size), max: MAX_PAGE_SIZE });
+          throw tableMessages.error("table.bad-page-size", { size: String(size), max: MAX_PAGE_SIZE });
         }
         return query({ pageSize: size, page: 1 }, "set-page-size");
       },
@@ -223,7 +225,7 @@ export const dataTable = definePrimitive({
         const unknown = list.find((id) => !known.has(id));
         if (unknown !== undefined) {
           const page = context.store.get().rows.map((row) => String(row.id));
-          throw new BookiError("table.unknown-row-listed", { id: unknown, rows: page.join(", ") || "none" });
+          throw tableMessages.error("table.unknown-row-listed", { id: unknown, rows: page.join(", ") || "none" });
         }
         return change("selected", [...new Set(list)], { reason: "select-rows", event });
       },

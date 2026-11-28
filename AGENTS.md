@@ -5,7 +5,7 @@
 **Booki** (Accounting UI-SDK) is an **agent-first** design system for **accounting and auditing**:
 
 - Distribution = **npm packages** (`@booki-aui/core`, `@booki-aui/react`, `@booki-aui/styles`)
-- Behavior = **UI SDK** primitives/behaviors (`@ui-sdk/core` / `@ui-sdk/react` `0.1.0-beta.18`)
+- Behavior = **UI SDK** primitives/behaviors (`@ui-sdk/core` / `@ui-sdk/react` `0.1.0-beta.19`)
 - Scope = **global** with **country profiles** (Norway `NO`, United States `US`)
 - Domain = money, vouchers, bank/payment refs, attestation, audit trail
 

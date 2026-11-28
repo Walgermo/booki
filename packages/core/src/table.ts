@@ -1,5 +1,8 @@
 import { sumMinorUnits } from "./money.js";
-import { BookiError, isBookiError } from "./msg.js";
+import { BookiMessageError } from "./message-render.js";
+import { tableMessages } from "./msg-table.js";
+
+const tableError = tableMessages.error;
 
 /**
  * The view logic every Booki table shares: sort, search, filter per column,
@@ -75,7 +78,7 @@ const fold = (value: string) => value.toLocaleLowerCase("nb-NO").normalize("NFKD
 function columnOf<Row>(columns: TableColumn<Row>[], id: string): TableColumn<Row> {
   const found = columns.find((column) => column.id === id);
   if (!found) {
-    throw new BookiError("table.unknown-column", { column: String(id), columns: columns.map((c) => c.id).join(", ") });
+    throw tableError("table.unknown-column", { column: String(id), columns: columns.map((c) => c.id).join(", ") });
   }
   return found;
 }
@@ -92,15 +95,15 @@ function compare(kind: ColumnKind | undefined, a: unknown, b: unknown): number {
 export function normalizeQuery<Row>(columns: TableColumn<Row>[], query: TableQuery): TableQuery {
   if (query.sort) {
     const column = columnOf(columns, query.sort.column);
-    if (column.sortable === false) throw new BookiError("table.not-sortable", { column: column.id });
+    if (column.sortable === false) throw tableError("table.not-sortable", { column: column.id });
     if (query.sort.direction !== "asc" && query.sort.direction !== "desc") {
-      throw new BookiError("table.bad-direction", { direction: String(query.sort.direction) });
+      throw tableError("table.bad-direction", { direction: String(query.sort.direction) });
     }
   }
   for (const id of Object.keys(query.filters)) columnOf(columns, id);
   for (const id of query.hidden) columnOf(columns, id);
   if (!Number.isInteger(query.pageSize) || query.pageSize < 1 || query.pageSize > MAX_PAGE_SIZE) {
-    throw new BookiError("table.bad-page-size", { size: String(query.pageSize), max: MAX_PAGE_SIZE });
+    throw tableError("table.bad-page-size", { size: String(query.pageSize), max: MAX_PAGE_SIZE });
   }
   return query;
 }
@@ -165,7 +168,7 @@ export function tableView<Row>(
       if (
         requireHiddenTotals ||
         !query.hidden.includes(column.id) ||
-        !isBookiError(error) ||
+        !(error instanceof BookiMessageError) ||
         error.code !== "money.not-safe-integer"
       )
         throw error;
@@ -189,7 +192,7 @@ export function tableView<Row>(
 /** A page number a table can move to, or the reason it cannot. */
 export function assertPage(page: number, pageCount: number): number {
   if (!Number.isInteger(page) || page < 1 || page > pageCount) {
-    throw new BookiError("table.bad-page", { page: String(page), pages: pageCount });
+    throw tableError("table.bad-page", { page: String(page), pages: pageCount });
   }
   return page;
 }
