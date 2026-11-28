@@ -10,9 +10,10 @@
  * The components were written for a browser, so the render runs with a
  * browser-like global (jsdom): English, light, no stored choices.
  */
-import { copyFileSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import Beasties from "beasties";
 import { dirname, join } from "node:path";
+import { createHash } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
 
@@ -113,7 +114,7 @@ function snippet(text) {
  * library on the front page, with its questions; an article and its place
  * in the docs elsewhere. Only what the page shows.
  */
-function structuredData(url, { title, description, body }) {
+function structuredData(url, { title, description, body, image }) {
   const doc = new JSDOM(`<!doctype html><body>${body}</body>`).window.document;
   const clean = (text) => (text ?? "").replace(/\s+/g, " ").trim();
   const publisher = { "@type": "Organization", name: "Booki", url: `${site}/` };
@@ -156,7 +157,7 @@ function structuredData(url, { title, description, body }) {
       url: `${site}${url}`,
       ...(published ? { datePublished: published } : {}),
       inLanguage: "en",
-      image: `${site}/og.png`,
+      image,
       author: publisher,
       publisher,
     });
@@ -177,7 +178,7 @@ function structuredData(url, { title, description, body }) {
 const escapeAttr = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 /** The page's own title, description, address and Markdown copy in the head. */
-function withMeta(template, { url, title, description, markdownPath }) {
+function withMeta(template, { url, title, description, markdownPath, image, card }) {
   const set = (html, pattern, value) => {
     if (!pattern.test(html)) throw new Error(`index.html has no ${pattern}`);
     return html.replace(pattern, value);
@@ -190,6 +191,15 @@ function withMeta(template, { url, title, description, markdownPath }) {
   html = set(html, /(<meta property="og:url" content=")[^"]*(")/, `$1${site}${url}$2`);
   html = set(html, /(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${escapeAttr(title)}$2`);
   html = set(html, /(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${escapeAttr(description)}$2`);
+  html = set(html, /(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`);
+  html = set(html, /(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`);
+  if (card) {
+    html = set(html, /(<meta property="og:image:type" content=")[^"]*(")/, "$1image/jpeg$2");
+    html = set(html, /(<meta property="og:image:width" content=")[^"]*(")/, "$11200$2");
+    html = set(html, /(<meta property="og:image:height" content=")[^"]*(")/, "$1630$2");
+    html = set(html, /(<meta\s+property="og:image:alt"\s+content=")[^"]*(")/, `$1${escapeAttr(card.alt)}$2`);
+    html = set(html, /(<meta\s+name="twitter:image:alt"\s+content=")[^"]*(")/, `$1${escapeAttr(card.alt)}$2`);
+  }
   return html.replace(
     "</head>",
     `    <link rel="canonical" href="${site}${url}" />\n    <link rel="alternate" type="text/markdown" href="${markdownPath}" />\n  </head>`,
@@ -319,6 +329,7 @@ const urls = [...readFileSync(join(here, "../public/sitemap.xml"), "utf8").match
 );
 
 const failures = [];
+const cards = JSON.parse(readFileSync(join(here, "og/cards.json"), "utf8"));
 const pages = [];
 for (const url of urls) {
   const errors = [];
@@ -361,8 +372,30 @@ for (const url of urls) {
   const title = own ? meta.title.en : fallback?.title ? `${fallback.title} · Booki` : "Booki";
   const description = own ? meta.description.en : (fallback?.description ?? meta?.description.en ?? "");
   const markdownPath = url === "/" ? "/index.md" : `${url}.md`;
-  const html = withMeta(template, { url, title, description: snippet(description), markdownPath })
-    .replace("</head>", `    ${structuredData(url, { title, description: snippet(description), body })}\n  </head>`)
+  // Every page but the front page shares its own card (scripts/og/cards.mjs).
+  // The address carries a hash of the image, so a changed card is fetched
+  // again rather than served from a share preview's cache.
+  const cardPath = `/og${url}.jpg`;
+  const card = url === "/" ? null : cards[url];
+  if (url !== "/") {
+    if (!card || !existsSync(join(dist, cardPath))) {
+      failures.push(`${url}: no share card. Run: node apps/www/scripts/og/cards.mjs ${url.slice(1)}`);
+    } else if (card.page !== title) {
+      failures.push(
+        `${url}: the share card was made for "${card.page}", the page is now "${title}". Run: node apps/www/scripts/og/cards.mjs ${url.slice(1)}`,
+      );
+    }
+  }
+  const imageFile = join(dist, card ? cardPath : "og.png");
+  const version = existsSync(imageFile)
+    ? createHash("sha256").update(readFileSync(imageFile)).digest("hex").slice(0, 8)
+    : "0";
+  const image = `${site}${card ? cardPath : "/og.png"}?v=${version}`;
+  const html = withMeta(template, { url, title, description: snippet(description), markdownPath, image, card })
+    .replace(
+      "</head>",
+      `    ${structuredData(url, { title, description: snippet(description), body, image })}\n  </head>`,
+    )
     .replace('<div id="root"></div>', `<div id="root">${body}</div>`);
   const file = url === "/" ? "index.html" : `${url.slice(1)}.html`;
   mkdirSync(dirname(join(dist, file)), { recursive: true });

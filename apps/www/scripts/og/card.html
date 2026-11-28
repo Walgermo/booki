@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Booki page card</title>
+    <style>
+      /* A page's share card, 1200 x 630: its title beside a picture of the
+         page. Filled and rendered by cards.mjs; the same Paper and Ink values
+         as og.html. Text stays 72px in from every edge, so a crop to a
+         narrower frame keeps the logo and the title. */
+      @font-face {
+        font-family: "Geist";
+        src: url("../../public/fonts/Geist-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        src: url("../../public/fonts/GeistMono-Variable.woff2") format("woff2");
+        font-weight: 100 900;
+      }
+      :root {
+        --bg: oklch(0.973 0.003 100);
+        --card: oklch(0.996 0.001 100);
+        --accent: oklch(0.948 0.008 262);
+        --fg: oklch(0.19 0.012 262);
+        --muted-fg: oklch(0.47 0.01 262);
+        --border: oklch(0.895 0.004 262);
+        --brand: oklch(0.44 0.1 262);
+        --signal: oklch(0.9 0.19 118);
+        --mono: "Geist Mono", ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; margin: 0; }
+      html, body { width: 1200px; height: 630px; }
+      body {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        padding: 64px 72px;
+        background:
+          repeating-linear-gradient(to bottom, transparent 0 31px, color-mix(in oklch, var(--border) 55%, transparent) 31px 32px),
+          var(--bg);
+        color: var(--fg);
+        font-family: "Geist", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body[data-layout="figure"] { grid-template-columns: 440px 1fr; gap: 48px; padding-right: 0; }
+
+      .copy { display: grid; grid-template-rows: auto 1fr auto; min-width: 0; }
+      .logo { display: flex; align-items: center; gap: 12px; font-size: 30px; font-weight: 650; letter-spacing: -0.03em; }
+      .title { align-self: center; }
+      .kicker { font-family: var(--mono); font-size: 18px; color: var(--muted-fg); margin-bottom: 14px; }
+      h1 { font-size: 64px; line-height: 1.02; font-weight: 650; letter-spacing: -0.04em; text-wrap: balance; overflow-wrap: anywhere; }
+      body[data-layout="text"] h1 { font-size: 80px; max-width: 20ch; }
+      .rule { width: 68px; height: 5px; margin-top: 26px; background: var(--signal); border-radius: 3px; }
+      .site { font-family: var(--mono); font-size: 20px; color: var(--muted-fg); }
+
+      /* The stage, as on og.html: the page's own picture on a card that
+         runs off the right edge and fades out at the bottom. */
+      .stage {
+        position: relative;
+        margin: -24px 0;
+        border-radius: 32px 0 0 32px;
+        background:
+          radial-gradient(70% 80% at 20% 10%, color-mix(in oklch, var(--brand) 22%, transparent), color-mix(in oklch, var(--brand) 6%, transparent) 55%, transparent 80%),
+          radial-gradient(60% 70% at 95% 95%, color-mix(in oklch, var(--signal) 40%, transparent), color-mix(in oklch, var(--signal) 8%, transparent) 55%, transparent 80%),
+          var(--accent);
+        overflow: hidden;
+      }
+      body[data-layout="text"] .stage { display: none; }
+      .frame {
+        position: absolute;
+        top: 56px;
+        left: 44px;
+        padding: 20px;
+        border-radius: 16px 0 0 16px;
+        background: var(--card);
+        box-shadow: 0 0 0 1px var(--border), 0 2px 4px rgb(0 0 0 / 0.06), 0 40px 70px -30px rgb(0 0 0 / 0.35);
+        overflow: hidden;
+      }
+      .frame[data-cropped] { -webkit-mask-image: linear-gradient(to bottom, black 78%, transparent); }
+      .frame img { display: block; }
+    </style>
+  </head>
+  <body data-layout="{{layout}}" data-fit="{{fit}}">
+    <div class="copy">
+      <div class="logo">
+        <svg width="44" height="44" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="1.5" width="16.5" height="20" rx="3" fill="var(--fg)" />
+          <path d="M6 6.75h8.5M6 14.75h5" stroke="var(--bg)" stroke-width="1.5" stroke-linecap="round" />
+          <path d="M5.75 10.75h9" stroke="var(--signal)" stroke-width="2.4" stroke-linecap="round" />
+          <path d="M13.4 11.6 L13.4 22.2 L16.2 19.6 L18.1 23.4 L19.9 22.6 L18.1 18.8 L21.9 18.5 Z" fill="var(--signal)" stroke="var(--fg)" stroke-width="1.1" stroke-linejoin="round" />
+        </svg>
+        Booki
+      </div>
+      <div class="title">
+        <p class="kicker">{{kicker}}</p>
+        <h1>{{title}}</h1>
+        <div class="rule"></div>
+      </div>
+      <p class="site">booki.dev</p>
+    </div>
+    <div class="stage"><div class="frame">{{figure}}</div></div>
+    <script>
+      // Fit the picture: its own size (taken at 2x), a little larger for a
+      // small control, a little smaller for a wide one, which then runs off
+      // the right edge; a tall one is cut and faded at the bottom. A wide
+      // diagram ("crop") keeps its size and shows its left part.
+      const img = document.querySelector(".frame img");
+      if (img) {
+        const place = () => {
+          const frame = img.parentElement;
+          const stage = frame.parentElement.getBoundingClientRect();
+          const room = { w: stage.width - 44 - 40, h: stage.height - 56 - 40 };
+          const w = img.naturalWidth / 2;
+          const h = img.naturalHeight / 2;
+          const scale = document.body.dataset.fit === "crop" ? 1 : w < room.w ? Math.min(1.25, room.w / w) : Math.max(0.72, room.w / w);
+          img.style.width = `${w * scale}px`;
+          if (h * scale > room.h + 24) {
+            frame.style.height = `${room.h + 60}px`;
+            frame.dataset.cropped = "";
+          }
+          // A narrow picture sits nearer the copy, a small one in the middle of the stage.
+          if (w * scale < room.w - 40) frame.style.left = `${44 + (room.w - w * scale) / 2}px`;
+          if (h * scale < room.h - 40) frame.style.top = `${56 + (room.h - h * scale) / 2 - 20}px`;
+        };
+        img.complete ? place() : img.addEventListener("load", place);
+      }
+    </script>
+  </body>
+</html>
