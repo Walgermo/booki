@@ -39,6 +39,11 @@ export type Session = {
   close: () => Promise<void>;
   /** "mcp" only: the server's name and version from the MCP handshake. */
   server?: string;
+  /**
+   * For the harness only (the side-by-side replay in compare.ts): a JPEG of
+   * the page as it is now, base64. Never shown to the model, never counted.
+   */
+  screenshot: () => Promise<string | null>;
 };
 
 export type OpenOptions = {
@@ -51,6 +56,8 @@ export type OpenOptions = {
   headed: boolean;
   /** "mcp" only: extra server capabilities, e.g. ["vision"]. */
   caps?: string[];
+  /** "mcp" only: every origin the page may request, for a live public page. Default: the url's origin. */
+  origins?: string[];
 };
 
 const READY_TIMEOUT_MS = 20_000;
@@ -83,12 +90,12 @@ const pageEvaluate = async <T>(page: Page, expression: string): Promise<T> =>
   JSON.parse((await page.evaluate(`JSON.stringify(${expression})`)) as string) as T;
 
 export async function openSession(options: OpenOptions): Promise<Session> {
-  const { kind, url, ready, browser, headed, caps } = options;
+  const { kind, url, ready, browser, headed, caps, origins } = options;
 
   if (kind === "mcp") {
     // Its own working directory: the server writes snapshot and console files there.
     const workspace = mkdtempSync(path.join(os.tmpdir(), "agent-bench-mcp-"));
-    const mcp = await startPlaywrightMcp({ headed, cwd: workspace, caps, origin: url });
+    const mcp = await startPlaywrightMcp({ headed, cwd: workspace, caps, origin: url, origins });
     const close = async () => {
       await mcp.close();
       rmSync(workspace, { recursive: true, force: true });
@@ -114,6 +121,11 @@ export async function openSession(options: OpenOptions): Promise<Session> {
       evaluate: (expression) => mcp.evaluate(expression),
       close,
       server: mcp.serverInfo ? `${mcp.serverInfo.name} ${mcp.serverInfo.version}` : undefined,
+      screenshot: async () => {
+        const shot = await mcp.call("browser_take_screenshot", { type: "jpeg" }).catch(() => null);
+        const image = shot?.blocks.find((block) => block.type === "image");
+        return image && image.type === "image" && image.source.type === "base64" ? image.source.data : null;
+      },
     };
   }
 
@@ -125,5 +137,7 @@ export async function openSession(options: OpenOptions): Promise<Session> {
     run: (name, input) => toolSet.run(page, name, input),
     evaluate: (expression) => pageEvaluate(page, expression),
     close: () => page.context().close(),
+    screenshot: async () =>
+      (await page.screenshot({ type: "jpeg", quality: 70 }).catch(() => null))?.toString("base64") ?? null,
   };
 }

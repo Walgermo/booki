@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Side om side</title>
+    <style>
+      /* Internal replay of a compare.ts run. Paper and Ink values from DESIGN.md. */
+      :root {
+        --bg: oklch(0.973 0.003 100);
+        --card: oklch(0.996 0.001 100);
+        --muted: oklch(0.948 0.004 100);
+        --fg: oklch(0.19 0.012 262);
+        --muted-fg: oklch(0.47 0.01 262);
+        --border: oklch(0.895 0.004 262);
+        --signal: oklch(0.9 0.19 118);
+        --signal-fg: oklch(0.22 0.04 125);
+        --signal-tint: oklch(0.965 0.05 118);
+        /* Text on lime is always ink, in both themes. */
+        --on-signal: oklch(0.22 0.04 125);
+        --bad: oklch(0.55 0.17 27);
+        --mono: ui-monospace, "SF Mono", Menlo, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: oklch(0.17 0.008 262);
+          --card: oklch(0.21 0.008 262);
+          --muted: oklch(0.25 0.008 262);
+          --fg: oklch(0.95 0.004 100);
+          --muted-fg: oklch(0.7 0.008 262);
+          --border: oklch(0.32 0.008 262);
+          --signal-tint: oklch(0.3 0.06 118);
+          --signal-fg: oklch(0.93 0.1 118);
+        }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.45 system-ui, sans-serif; }
+      main { max-width: 1440px; margin: 0 auto; padding: 24px 16px 48px; display: grid; gap: 20px; }
+      h1 { margin: 0; font-size: 22px; letter-spacing: -0.01em; }
+      .task { margin: 4px 0 0; color: var(--muted-fg); max-width: 90ch; }
+      .meta { font-family: var(--mono); font-size: 12px; color: var(--muted-fg); }
+      .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      button, select { font: inherit; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--fg); cursor: pointer; }
+      button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+      input[type="range"] { flex: 1 1 240px; accent-color: var(--fg); }
+      .clock { font-family: var(--mono); font-variant-numeric: tabular-nums; min-width: 8ch; text-align: right; }
+      .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 900px) { .sides { grid-template-columns: 1fr; } }
+      .side { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+      .side header { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+      .side h2 { margin: 0; font-size: 16px; }
+      .badge { font-family: var(--mono); font-size: 12px; padding: 2px 8px; border-radius: 6px; background: var(--muted); white-space: nowrap; }
+      .badge.done { background: var(--signal); color: var(--on-signal); }
+      .badge.wrong { background: var(--bad); color: white; }
+      .screen { aspect-ratio: 1280 / 900; background: var(--muted); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+      .screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+      .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; }
+      .stats div { background: var(--muted); border-radius: 8px; padding: 6px 8px; min-width: 0; }
+      .stats dt { font-size: 11px; color: var(--muted-fg); }
+      .stats dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      ol.log { margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 12px; max-height: 220px; overflow: auto; display: grid; gap: 2px; }
+      ol.log li { display: grid; grid-template-columns: 6ch 1fr; gap: 8px; padding: 2px 6px; border-radius: 4px; }
+      ol.log li[hidden] { display: none; }
+      ol.log li.error { color: var(--bad); }
+      ol.log li.now { background: var(--signal-tint); }
+      ol.log .t { color: var(--muted-fg); text-align: right; }
+      ol.log .what { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .answer { margin: 0; padding: 10px 12px; border-radius: 8px; background: var(--muted); min-height: 2.9em; }
+      .summary { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: none; gap: 6px; }
+      .summary.show { display: grid; }
+      .summary p { margin: 0; }
+      .summary strong { box-shadow: inset 0 -0.3em 0 var(--signal); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="title"></h1>
+        <p class="task" id="task"></p>
+        <p class="meta" id="meta"></p>
+      </header>
+      <div class="controls">
+        <button class="primary" id="play">Spill av</button>
+        <button id="restart">Fra start</button>
+        <label>Fart
+          <select id="speed">
+            <option value="1">1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+            <option value="8">8×</option>
+          </select>
+        </label>
+        <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Tid" />
+        <span class="clock" id="clock">0,0 s</span>
+      </div>
+      <div class="sides" id="sides"></div>
+      <section class="summary" id="summary" aria-live="polite"></section>
+    </main>
+    <script id="data" type="application/json">/*COMPARE_DATA*/null</script>
+    <script>
+      const data = JSON.parse(document.getElementById("data").textContent);
+      const nb = (n, d = 0) => new Intl.NumberFormat("nb-NO", { minimumFractionDigits: d, maximumFractionDigits: d }).format(n);
+      const seconds = (ms) => `${nb(ms / 1000, 1)} s`;
+      const usd = (v) => (v === null || v === undefined ? "–" : `$${v < 0.01 ? v.toFixed(4) : v.toFixed(3)}`);
+      const short = (value) => {
+        const text = typeof value === "string" ? value : JSON.stringify(value ?? "");
+        return text.length > 90 ? `${text.slice(0, 89)}…` : text;
+      };
+
+      document.getElementById("title").textContent = `${data.task.title}: med og uten Booki`;
+      document.getElementById("task").textContent = data.task.text;
+      document.getElementById("meta").textContent =
+        `${data.mode === "scripted" ? "skriptet agent, ingen modell" : `${data.model}, effort ${data.effort ?? "–"}`} · ${new Date(data.at).toLocaleString("nb-NO")} · samme oppgave, startet samtidig`;
+
+      const sides = [
+        { key: "live", name: "Uten Booki", run: data.live },
+        { key: "booki", name: "Med Booki", run: data.booki },
+      ];
+      const end = Math.max(data.live.wallMs, data.booki.wallMs);
+      const container = document.getElementById("sides");
+
+      for (const side of sides) {
+        const el = document.createElement("section");
+        el.className = "side";
+        el.setAttribute("aria-label", side.name);
+        el.innerHTML = `
+          <header><h2>${side.name}</h2><span class="badge" data-status>venter</span></header>
+          <p class="meta">${side.run.label}</p>
+          <div class="screen"><img alt="Siden slik den så ut" data-shot /></div>
+          <dl class="stats">
+            <div><dt>Tid</dt><dd data-stat="time">0,0 s</dd></div>
+            <div><dt>Verktøykall</dt><dd data-stat="tools">0</dd></div>
+            <div><dt>Forespørsler</dt><dd data-stat="requests">0</dd></div>
+            <div><dt>Tokens</dt><dd data-stat="tokens">0</dd></div>
+            <div><dt>Kostnad</dt><dd data-stat="cost">–</dd></div>
+          </dl>
+          <ol class="log" data-log></ol>
+          <p class="answer" data-answer></p>`;
+        container.append(el);
+        side.el = el;
+        const log = el.querySelector("[data-log]");
+        side.items = side.run.frames
+          .filter((f) => f.kind === "tool")
+          .map((f) => {
+            const li = document.createElement("li");
+            li.hidden = true;
+            if (f.isError) li.className = "error";
+            li.innerHTML = `<span class="t">${nb(f.t / 1000, 1)}</span><span class="what"></span>`;
+            li.querySelector(".what").textContent = `${f.tool} ${short(f.input)}`;
+            log.append(li);
+            return { frame: f, li };
+          });
+        // Screenshots carry over until the next frame that has one.
+        let shot = null;
+        side.shots = side.run.frames.map((f) => (shot = f.shot ?? shot));
+      }
+
+      function render(t) {
+        document.getElementById("clock").textContent = seconds(t);
+        document.getElementById("scrub").value = String(Math.round((t / end) * 1000));
+        for (const side of sides) {
+          const { run, el } = side;
+          let index = 0;
+          run.frames.forEach((f, i) => { if (f.t <= t) index = i; });
+          const f = run.frames[index];
+          const finished = t >= run.wallMs;
+          const img = el.querySelector("[data-shot]");
+          const src = side.shots[index] ? `data:image/jpeg;base64,${side.shots[index]}` : "";
+          if (img.getAttribute("src") !== src) img.setAttribute("src", src);
+          el.querySelector('[data-stat="time"]').textContent = seconds(Math.min(t, run.wallMs));
+          el.querySelector('[data-stat="tools"]').textContent = nb(f.tools);
+          el.querySelector('[data-stat="requests"]').textContent = nb(f.requests);
+          el.querySelector('[data-stat="tokens"]').textContent = nb(f.inputTokens + f.outputTokens);
+          el.querySelector('[data-stat="cost"]').textContent = usd(f.costUsd);
+          let last = null;
+          for (const item of side.items) {
+            item.li.hidden = item.frame.t > t;
+            item.li.classList.remove("now");
+            if (!item.li.hidden) last = item.li;
+          }
+          if (last && !finished) {
+            last.classList.add("now");
+            last.scrollIntoView({ block: "nearest" });
+          }
+          const status = el.querySelector("[data-status]");
+          status.className = `badge${finished ? (run.ok ? " done" : " wrong") : ""}`;
+          status.textContent = finished ? `${run.ok ? "riktig" : "feil"} · ${seconds(run.wallMs)}` : t > 0 ? "arbeider" : "venter";
+          el.querySelector("[data-answer]").textContent = finished ? run.answer || run.error || "(intet svar)" : "";
+        }
+        const summary = document.getElementById("summary");
+        if (t >= end) {
+          const { live, booki } = data;
+          const ratio = (a, b) => (b > 0 ? `${nb(a / b, 1)}×` : "–");
+          const tokens = (r) => r.inputTokens + r.outputTokens;
+          // A scripted run has no model: its clock is tool time only, so only the calls are compared.
+          const headline =
+            data.mode === "scripted"
+              ? `Med Booki: ${live.toolCalls} verktøykall ble ${booki.toolCalls} (${ratio(live.toolCalls, booki.toolCalls)} færre).`
+              : `Med Booki: ${ratio(live.wallMs, booki.wallMs)} raskere, ${ratio(live.toolCalls, booki.toolCalls)} færre verktøykall, ${ratio(tokens(live), tokens(booki))} færre tokens, ${ratio(live.costUsd ?? 0, booki.costUsd ?? 0)} billigere.`;
+          const line = (name, r) =>
+            `${name}: ${r.ok ? "riktig" : "feil"} · ${seconds(r.wallMs)} · ${r.toolCalls} kall${data.mode === "scripted" ? "" : ` · ${nb(tokens(r))} tokens · ${usd(r.costUsd)}`}`;
+          summary.innerHTML = "";
+          const strong = document.createElement("p");
+          strong.innerHTML = "<strong></strong>";
+          strong.firstChild.textContent = headline;
+          summary.append(strong);
+          for (const text of [
+            line("Uten Booki", live),
+            line("Med Booki", booki),
+            ...(data.mode === "scripted"
+              ? ["Skriptet agent: sidene og verktøyene er ekte, men det er ingen modell, så tiden er bare verktøytid. Tid, tokens og kostnad med en modell krever en kjøring med ANTHROPIC_API_KEY."]
+              : []),
+          ]) {
+            const p = document.createElement("p");
+            p.className = "meta";
+            p.textContent = text;
+            summary.append(p);
+          }
+          summary.classList.add("show");
+        } else {
+          summary.classList.remove("show");
+        }
+      }
+
+      let t = 0;
+      let playing = false;
+      let lastTick = 0;
+      const play = document.getElementById("play");
+      const speed = document.getElementById("speed");
+      function tick(now) {
+        if (!playing) return;
+        t = Math.min(end, t + (now - lastTick) * Number(speed.value));
+        lastTick = now;
+        render(t);
+        if (t >= end) {
+          playing = false;
+          play.textContent = "Spill av";
+          return;
+        }
+        requestAnimationFrame(tick);
+      }
+      play.addEventListener("click", () => {
+        if (playing) {
+          playing = false;
+          play.textContent = "Spill av";
+          return;
+        }
+        if (t >= end) t = 0;
+        playing = true;
+        play.textContent = "Pause";
+        lastTick = performance.now();
+        requestAnimationFrame(tick);
+      });
+      document.getElementById("restart").addEventListener("click", () => {
+        t = 0;
+        render(t);
+      });
+      document.getElementById("scrub").addEventListener("input", (event) => {
+        t = (Number(event.target.value) / 1000) * end;
+        render(t);
+      });
+      render(0);
+    </script>
+  </body>
+</html>

@@ -2,6 +2,8 @@ import { BookiLocaleProvider } from "@booki-aui/react";
 import { useEffect, useRef } from "react";
 
 import { BookiClose } from "@/components/bench/acc-close";
+import { BookiPriceCalculator } from "@/components/bench/compare/price-calculator";
+import { BookiTaxCalculator } from "@/components/bench/compare/tax-calculator";
 import { BookiClosedPeriod } from "@/components/bench/closed-period-acc";
 import { ClosedPeriodRaw } from "@/components/bench/closed-period-raw";
 import { BookiPartialVat } from "@/components/bench/partial-vat-acc";
@@ -339,6 +341,33 @@ export function BenchForeignAccPage() {
     <main lang="nb" className="landing-form mx-auto max-w-4xl p-6">
       <BookiLocaleProvider country="NO">
         <BookiForeign />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+/**
+ * The side-by-side comparison (benchmarks/agent/compare): two public Norwegian
+ * calculators rebuilt on Booki, the same questions and the same answers as the
+ * live pages. Internal; not linked from the site.
+ */
+export function BenchTaxAccPage() {
+  useBenchTitle("Skattekalkulator");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-3xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiTaxCalculator />
+      </BookiLocaleProvider>
+    </main>
+  );
+}
+
+export function BenchPriceAccPage() {
+  useBenchTitle("Priskalkulator");
+  return (
+    <main lang="nb" className="landing-form mx-auto max-w-3xl p-6">
+      <BookiLocaleProvider country="NO">
+        <BookiPriceCalculator />
       </BookiLocaleProvider>
     </main>
   );
