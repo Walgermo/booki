@@ -54,6 +54,8 @@ export function formatOrganizationNumber(value: string, kind: OrganizationNumber
 
 /** Swedish organisationsnummer: 10 digits, Luhn check digit. */
 export function isValidSeOrgnr(value: string): boolean {
+  // Every digit counts: an eleventh digit is a typo, not something to cut off.
+  if (digitsOnly(value).length !== 10) return false;
   const d = normalizeOrganizationNumber(value, "se-orgnr");
   if (d.length !== 10 || /^0+$/.test(d)) return false;
   let sum = 0;
@@ -67,6 +69,7 @@ export function isValidSeOrgnr(value: string): boolean {
 
 /** Danish CVR number: 8 digits, mod 11 with weights 2,7,6,5,4,3,2,1. */
 export function isValidDkCvr(value: string): boolean {
+  if (digitsOnly(value).length !== 8) return false;
   const d = normalizeOrganizationNumber(value, "dk-cvr");
   if (d.length !== 8 || /^0+$/.test(d)) return false;
   const weights = [2, 7, 6, 5, 4, 3, 2, 1] as const;
@@ -79,6 +82,8 @@ export function isValidDkCvr(value: string): boolean {
  * Weights [3,2,7,6,5,4,3,2] over the first 8 digits.
  */
 export function isValidOrgnr(value: string): boolean {
+  // "NO 974 760 673 MVA" has nine digits; "9747606731" has ten and is not valid.
+  if (digitsOnly(value).length !== 9) return false;
   const d = normalizeOrganizationNumber(value, "orgnr");
   if (d.length !== 9 || /^0+$/.test(d)) return false;
   const weights = [3, 2, 7, 6, 5, 4, 3, 2] as const;
@@ -94,6 +99,7 @@ export function isValidOrgnr(value: string): boolean {
 
 /** US EIN: 9 digits, not all zeros (no public checksum). */
 export function isValidEin(value: string): boolean {
+  if (digitsOnly(value).length !== 9) return false;
   const d = normalizeOrganizationNumber(value, "ein");
   return d.length === 9 && !/^0+$/.test(d);
 }

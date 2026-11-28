@@ -2,6 +2,7 @@ import { taxBasisPoints, taxMinorAtBasisPoints, validateTaxBasisPoints } from ".
 import { closest, LISTED_WHOLE } from "./closest.js";
 import { assertForeignAmount, convertMinor, type ForeignAmount } from "./fx.js";
 import { BookiError, msg } from "./msg.js";
+import { sumMinorUnits } from "./money.js";
 import { assertPostingAllowed, type PeriodState } from "./period-lock.js";
 
 export type VoucherLine = {
@@ -32,9 +33,14 @@ export type VoucherBalance = {
   differenceMinor: number;
 };
 
+/** An amount as `parseLineAmount` reads it: digits-only text counts as its number. */
+const amountOf = (value: unknown): number =>
+  typeof value === "string" && /^\d+$/.test(value.trim()) ? Number(value.trim()) : (value as number);
+
 export function sumVoucher(lines: VoucherLine[]): VoucherBalance {
-  const debitMinor = lines.reduce((sum, line) => sum + line.debitMinor, 0);
-  const creditMinor = lines.reduce((sum, line) => sum + line.creditMinor, 0);
+  // Summed exactly: a float sum past the safe range is rounded, and two different totals could compare equal.
+  const debitMinor = sumMinorUnits(lines, (line) => amountOf(line.debitMinor));
+  const creditMinor = sumMinorUnits(lines, (line) => amountOf(line.creditMinor));
   // Past the safe range a sum is rounded and two different totals can compare equal.
   if (!Number.isSafeInteger(debitMinor)) throw new BookiError("money.not-safe-integer", { value: String(debitMinor) });
   if (!Number.isSafeInteger(creditMinor))
@@ -434,9 +440,11 @@ export function voucherIssues(lines: VoucherLine[], rules: VoucherRules = {}, po
   }
   if (lines.length === 0) issues.push(msg("voucher.no-lines"));
   // Each line on its own: whole, non-negative øre, an account, one side only.
+  let valid = 0;
   for (const line of lines) {
     try {
       validateVoucherLine(line);
+      valid += 1;
     } catch (error) {
       issues.push((error as Error).message);
     }
@@ -466,9 +474,17 @@ export function voucherIssues(lines: VoucherLine[], rules: VoucherRules = {}, po
       );
     }
   }
-  const balance = sumVoucher(lines);
-  if (!balance.balanced) {
-    issues.push(msg("voucher.out-of-balance", { difference: balance.differenceMinor }));
+  // A line that is not whole øre was named above, and its sum would only throw.
+  // The rest are summed exactly: a total past the safe range is an issue too.
+  if (valid === lines.length) {
+    try {
+      const balance = sumVoucher(lines);
+      if (!balance.balanced) {
+        issues.push(msg("voucher.out-of-balance", { difference: balance.differenceMinor }));
+      }
+    } catch (error) {
+      issues.push((error as Error).message);
+    }
   }
   for (const line of lines) {
     if (line.foreign && rules.baseCurrency) {

@@ -25,5 +25,10 @@ export function personOnly(sentence: string): string {
 export function isPersonOnly(sentence: unknown): boolean {
   if (typeof sentence !== "string") return false;
   // A step that touches parts under several confirm marks gets them joined with "; ".
-  return sentences.has(sentence) || sentence.split("; ").some((part) => sentences.has(part));
+  // Look for each sentence whole between those joins, rather than splitting: a
+  // registered sentence may hold "; " itself, and its halves match nothing.
+  if (sentences.has(sentence)) return true;
+  const joined = `; ${sentence}; `;
+  for (const known of sentences) if (joined.includes(`; ${known}; `)) return true;
+  return false;
 }
