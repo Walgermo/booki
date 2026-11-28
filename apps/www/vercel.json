@@ -7,7 +7,7 @@
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../../packages ../../skills ../../pnpm-lock.yaml ../../package.json",
   "rewrites": [
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/)(?!.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/"
     }
   ],
