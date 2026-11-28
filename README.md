@@ -46,16 +46,7 @@ the skill:
 npx skills add Walgermo/booki --skill booki
 ```
 
-**By hand**, run this in a POSIX shell in your React 19 app. It reads the UI SDK pin from the same published Booki release it installs.
-
-```bash
-booki_version=$(npm view @booki-aui/react@latest version) &&
-ui_sdk_version=$(npm view "@booki-aui/react@$booki_version" peerDependencies.@ui-sdk/core) &&
-pnpm add --save-exact "@booki-aui/core@$booki_version" "@booki-aui/react@$booki_version" "@booki-aui/styles@$booki_version" \
-  "@ui-sdk/core@$ui_sdk_version" "@ui-sdk/react@$ui_sdk_version"
-```
-
-Then follow the [installation guide](https://booki.dev/docs/installation), or
+**By hand**, follow the [installation guide](https://booki.dev/docs/installation), or
 [docs/drop-in.md](docs/drop-in.md) for an existing Next.js and shadcn/ui
 product. If your app refuses the install (a minimum release age, a trust policy
 or an `engines` entry), [the skill's install section](skills/booki/SKILL.md#1-install)
