@@ -1,3 +1,4 @@
+import { dateTimeFormat } from "./intl.js";
 export type FinancialDateKind = "invoice" | "due" | "posting";
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -14,7 +15,7 @@ export function toIsoDate(year: number, month: number, day: number): string {
 /** Whether a locale writes the day before the month in numeric dates (en-GB, nb-NO) or after it (en-US). */
 function dayFirst(locale: string): boolean {
   try {
-    const parts = new Intl.DateTimeFormat(locale, { day: "numeric", month: "numeric", year: "numeric" }).formatToParts(
+    const parts = dateTimeFormat(locale, { day: "numeric", month: "numeric", year: "numeric" }).formatToParts(
       new Date(2026, 3, 3),
     );
     return parts.findIndex((part) => part.type === "day") < parts.findIndex((part) => part.type === "month");
@@ -98,7 +99,7 @@ export function formatFinancialDate(value: string, locale: string): string {
   const parsed = parseIsoDate(value);
   if (!parsed) return value.trim();
   const date = new Date(Date.UTC(parsed.year, parsed.month - 1, parsed.day));
-  return new Intl.DateTimeFormat(locale, {
+  return dateTimeFormat(locale, {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",

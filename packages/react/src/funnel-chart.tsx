@@ -1,3 +1,4 @@
+import { numberFormat } from "@booki-aui/core/intl";
 import { formatMoney } from "@booki-aui/core/money";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import { formatPercent } from "./chart-math.js";
@@ -78,7 +79,7 @@ function FunnelChart({
   const copy = COPY[country === "NO" ? "NO" : "EN"];
   const code = currency ?? profile.currency;
   const locale = profile.locale;
-  const count = (n: number) => new Intl.NumberFormat(locale).format(n);
+  const count = (n: number) => numberFormat(locale).format(n);
   const pct = (value: number | null) => formatPercent(value, locale);
   const fmt = (minor: number) => formatMoney({ minor, currency: code }, { locale, trimZeroFraction: true });
   return (

@@ -1,0 +1,19 @@
+{
+  "name": "ui-benchmark",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Render and interaction timings for the heavy Booki controls in Chrome: mount, a person's search and sort, an agent's step, a parent re-render.",
+  "scripts": {
+    "bench": "node run.mjs"
+  },
+  "dependencies": {
+    "@booki-aui/react": "workspace:*",
+    "@ui-sdk/core": "0.1.0-beta.19",
+    "@ui-sdk/react": "0.1.0-beta.19",
+    "esbuild": "0.27.7",
+    "playwright-core": "^1.65.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}

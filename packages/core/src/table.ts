@@ -1,3 +1,4 @@
+import { collator } from "./intl.js";
 import { sumMinorUnits } from "./money.js";
 import { BookiError, isBookiError } from "./msg.js";
 
@@ -70,7 +71,28 @@ export type TableView<Row> = {
 };
 
 const text = (value: unknown) => (value === null || value === undefined ? "" : String(value));
-const fold = (value: string) => value.toLocaleLowerCase("nb-NO").normalize("NFKD").replace(/[̀-ͯ]/g, "");
+
+// Search folds case and accents: "CAFÉ" finds "café" and "cafe".
+// Plain ASCII folds to its lower case, the same as the full fold gives, and
+// other text is folded once and kept, so a search over thousands of rows does
+// not normalise every cell again on every keystroke.
+// Printable ASCII; anything else (tabs too) takes the full fold, which gives the same.
+const ASCII = /^[ -~]*$/;
+const folded = new Map<string, string>();
+const fold = (value: string): string => {
+  if (ASCII.test(value)) return value.toLowerCase();
+  let out = folded.get(value);
+  if (out === undefined) {
+    if (folded.size >= 50_000) folded.clear();
+    out = value.toLocaleLowerCase("nb-NO").normalize("NFKD").replace(/[̀-ͯ]/g, "");
+    folded.set(value, out);
+  }
+  return out;
+};
+
+// One collator, the same one `localeCompare(b, "nb-NO", { numeric, sensitivity })` makes on every call.
+let textOrder: Intl.Collator | undefined;
+const order = () => (textOrder ??= collator("nb-NO", { numeric: true, sensitivity: "base" }));
 
 function columnOf<Row>(columns: TableColumn<Row>[], id: string): TableColumn<Row> {
   const found = columns.find((column) => column.id === id);
@@ -85,7 +107,7 @@ function compare(kind: ColumnKind | undefined, a: unknown, b: unknown): number {
   const emptyB = b === null || b === undefined || b === "";
   if (emptyA || emptyB) return emptyA === emptyB ? 0 : emptyA ? 1 : -1; // empty last, both ways
   if (kind === "money" || kind === "number") return Number(a) - Number(b);
-  return String(a).localeCompare(String(b), "nb-NO", { numeric: true, sensitivity: "base" });
+  return order().compare(String(a), String(b));
 }
 
 /** Check a query against the columns and clamp what can be clamped. Throws on what cannot. */
@@ -127,11 +149,12 @@ export function matchingRows<Row>(rows: Row[], columns: TableColumn<Row>[], quer
     const column = columnOf(columns, query.sort.column);
     const sign = query.sort.direction === "asc" ? 1 : -1;
     // Stable: equal values keep their original order.
+    // Each row's value is read once, not twice per comparison.
     out = out
-      .map((row, index) => ({ row, index }))
+      .map((row, index) => ({ row, index, value: column.value(row) }))
       .sort((a, b) => {
-        const va = column.value(a.row);
-        const vb = column.value(b.row);
+        const va = a.value;
+        const vb = b.value;
         const emptyA = va === null || va === undefined || va === "";
         const emptyB = vb === null || vb === undefined || vb === "";
         if (emptyA !== emptyB) return emptyA ? 1 : -1;

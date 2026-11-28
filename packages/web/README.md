@@ -84,4 +84,4 @@ Every control is `booki-<control>` with one tag per part, such as
 `<input>`, `<select>` or `<button>` you write inside them. `entries.json` lists
 the controls; each has its own entry, so a page loads only what it uses.
 
-Peer dependencies: `@ui-sdk/core` and `@ui-sdk/web` 0.1.0-beta.18.
+Peer dependencies: `@ui-sdk/core` and `@ui-sdk/web` 0.1.0-beta.19.

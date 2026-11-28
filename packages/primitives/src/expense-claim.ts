@@ -1,3 +1,4 @@
+import { numberFormat } from "@booki-aui/core/intl";
 import { localToday } from "@booki-aui/core/financial-date";
 import {
   acceptException,
@@ -365,12 +366,12 @@ export const expenseClaim = definePrimitive({
       if (field === "rate") return line.kind === "per-diem" ? line.rate : "";
       if (field === "receiptId") return (line.kind === "expense" && line.receiptId) || "";
       if (line.kind === "mileage")
-        return new Intl.NumberFormat(state.locale, { maximumFractionDigits: 3, useGrouping: false }).format(
+        return numberFormat(state.locale, { maximumFractionDigits: 3, useGrouping: false }).format(
           line.distanceMeters / 1000,
         );
       if (line.kind === "per-diem") return String(line.days);
       const digits = minorDigitsFor(state.claim.currency);
-      return new Intl.NumberFormat(state.locale, {
+      return numberFormat(state.locale, {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,
       }).format(line.amountMinor / 10 ** digits);

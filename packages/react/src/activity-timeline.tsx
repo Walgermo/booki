@@ -1,3 +1,4 @@
+import { dateTimeFormat } from "@booki-aui/core/intl";
 import type { Activity, ActivityKind } from "@booki-aui/core/activity";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
 import type { ReactNode } from "react";
@@ -106,13 +107,13 @@ function ActivityTimeline({
   const agentId = agentActor ?? "agent";
   const when = (value: string) =>
     value.length === 10
-      ? new Intl.DateTimeFormat(profile.locale, {
+      ? dateTimeFormat(profile.locale, {
           day: "numeric",
           month: "short",
           year: "numeric",
           timeZone: "UTC",
         }).format(new Date(`${value}T00:00:00Z`))
-      : new Intl.DateTimeFormat(profile.locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+      : dateTimeFormat(profile.locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
   return (
     <ActivityTimelineRoot
       activities={activities}

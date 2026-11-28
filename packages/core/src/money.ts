@@ -1,5 +1,6 @@
 import { plainDecimal } from "./decimal-digits.js";
 import { isoMinorUnits } from "./currency-minor-units.js";
+import { numberFormat } from "./intl.js";
 import { moneyMessages } from "./msg-money.js";
 
 /** Integer minor-unit money. Never use floats as source of truth. */
@@ -232,7 +233,7 @@ export function formatMoney(
   const digits = options?.trimZeroFraction && m.minor % 10 ** minorDigits === 0 ? 0 : minorDigits;
 
   if (options?.withCurrency === false) {
-    const text = new Intl.NumberFormat(locale, {
+    const text = numberFormat(locale, {
       minimumFractionDigits: digits,
       maximumFractionDigits: digits,
     }).format(exact(Math.abs(m.minor), m.currency));
@@ -241,7 +242,7 @@ export function formatMoney(
     return accounting ? `(${text})` : `-${text}`;
   }
 
-  const formatted = new Intl.NumberFormat(locale, {
+  const formatted = numberFormat(locale, {
     style: "currency",
     currency: m.currency,
     currencySign: accounting ? "accounting" : "standard",

@@ -46,6 +46,7 @@ export default defineConfig({
     "src/msg-amount.ts",
     "src/msg-agent-status.ts",
     "src/table.ts",
+    "src/intl.ts",
   ],
   format: ["esm"],
   dts: true,

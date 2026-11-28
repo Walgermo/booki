@@ -1,3 +1,4 @@
+import { numberFormat } from "@booki-aui/core/intl";
 import { decimalFromMinor, minorDigitsFor } from "@booki-aui/core/money";
 import { BookiError } from "@booki-aui/core/msg";
 import { dispatch } from "@ui-sdk/core";
@@ -106,7 +107,7 @@ export function minorInputText(
   } catch {
     // An unknown code: keep the two-decimal reading.
   }
-  return new Intl.NumberFormat(locale, {
+  return numberFormat(locale, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
     useGrouping: grouping,

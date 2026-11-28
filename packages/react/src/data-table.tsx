@@ -1,3 +1,4 @@
+import { numberFormat, dateTimeFormat } from "@booki-aui/core/intl";
 import { formatMoney, minorDigitsFor, money } from "@booki-aui/core/money";
 import {
   MAX_PAGE_SIZE,
@@ -148,9 +149,9 @@ function DataTable<Row extends AnyRow>({
   const format = (kind: ColumnKind | undefined, value: unknown) => {
     if (value === null || value === undefined || value === "") return "";
     if (kind === "money") return formatMoney(money(Number(value), unit), { locale: profile.locale });
-    if (kind === "number") return new Intl.NumberFormat(profile.locale).format(Number(value));
+    if (kind === "number") return numberFormat(profile.locale).format(Number(value));
     if (kind === "date" && /^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
-      return new Intl.DateTimeFormat(profile.locale, { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+      return dateTimeFormat(profile.locale, { timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
     }
     return String(value);
   };

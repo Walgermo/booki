@@ -195,6 +195,10 @@
       "types": "./dist/messages.d.ts",
       "default": "./dist/messages.js"
     },
+    "./intl": {
+      "types": "./dist/intl.d.ts",
+      "default": "./dist/intl.js"
+    },
     "./table": {
       "types": "./dist/table.d.ts",
       "default": "./dist/table.js"
