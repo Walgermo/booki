@@ -1,3 +1,4 @@
+import { numberFormat } from "@booki-aui/core/intl";
 import { minorDigitsFor, parseToMinor } from "@booki-aui/core/money";
 import { BookiError } from "@booki-aui/core/msg";
 import {
@@ -460,7 +461,7 @@ export const supplierInvoiceInbox = definePrimitive({
       if (!entry) return "";
       if (!AMOUNTS.includes(field)) return String(entry.value);
       const digits = minorDigitsFor(invoice.fields.currency.value);
-      return new Intl.NumberFormat(state.locale, {
+      return numberFormat(state.locale, {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits,
       }).format(Number(entry.value) / 10 ** digits);

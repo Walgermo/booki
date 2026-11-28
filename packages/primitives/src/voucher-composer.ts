@@ -116,8 +116,19 @@ export class InvalidAmountError extends Error {}
 
 export const draftKey = (lineId: string, field: LineField) => `${lineId}:${field}`;
 
+// Lines by id, per lines array: every cell of every row looks its line up, so a
+// scan per lookup made one update of 200 lines cost 200 × 200. A new array
+// (every change makes one) gets a new index. The first line with an id wins, as with find.
+const indexes = new WeakMap<readonly VoucherLine[], Map<string, VoucherLine>>();
+
 export function lineOf(state: { lines: VoucherLine[] }, lineId: string) {
-  return state.lines.find((line) => line.id === lineId);
+  let index = indexes.get(state.lines);
+  if (!index) {
+    index = new Map();
+    for (const line of state.lines) if (!index.has(line.id)) index.set(line.id, line);
+    indexes.set(state.lines, index);
+  }
+  return index.get(lineId);
 }
 
 /** An amount as a person types it: major units, no currency, empty for zero. */

@@ -1,3 +1,4 @@
+import { dateTimeFormat } from "@booki-aui/core/intl";
 import { formatMoney } from "@booki-aui/core/money";
 import type {
   CurrencyTotals,
@@ -124,7 +125,7 @@ function DealPipeline({
   const money = (minor: number, currency: string) =>
     formatMoney({ minor, currency }, { locale: profile.locale, trimZeroFraction: true });
   const date = (value: string) =>
-    new Intl.DateTimeFormat(profile.locale, {
+    dateTimeFormat(profile.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",

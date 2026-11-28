@@ -1,3 +1,4 @@
+import { numberFormat } from "@booki-aui/core/intl";
 import {
   ATTACHMENT_KINDS,
   type Attachment,
@@ -98,7 +99,7 @@ function size(bytes: number, locale: string): string {
     value /= 1000;
     unit += 1;
   }
-  return `${new Intl.NumberFormat(locale, { maximumFractionDigits: unit === 0 ? 0 : 1 }).format(value)} ${units[unit]}`;
+  return `${numberFormat(locale, { maximumFractionDigits: unit === 0 ? 0 : 1 }).format(value)} ${units[unit]}`;
 }
 
 /** Composed list: what is linked, what is missing, and the files that can be linked. */

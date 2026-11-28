@@ -1,3 +1,4 @@
+import { numberFormat, dateTimeFormat } from "@booki-aui/core/intl";
 /**
  * Pure helpers shared by the chart controls: periods, scales, ticks and the
  * summaries an agent reads. No React, no DOM (apart from `observeWidth`,
@@ -300,7 +301,7 @@ export function observeWidth(el: Element | null, onWidth: (width: number) => voi
 export function periodName(period: string, locale: string, short = false): string {
   if (!isPeriod(period)) return period;
   const date = new Date(Date.UTC(Number(period.slice(0, 4)), Number(period.slice(5, 7)) - 1, 1));
-  return new Intl.DateTimeFormat(
+  return dateTimeFormat(
     locale,
     short ? { month: "short", timeZone: "UTC" } : { month: "short", year: "numeric", timeZone: "UTC" },
   ).format(date);
@@ -310,21 +311,21 @@ export function periodName(period: string, locale: string, short = false): strin
 export function compactMoney(minor: number, currency: string, locale: string, digits = 2): string {
   const major = minor / 10 ** digits;
   try {
-    return new Intl.NumberFormat(locale, {
+    return numberFormat(locale, {
       style: "currency",
       currency,
       notation: "compact",
       maximumFractionDigits: 1,
     }).format(major);
   } catch {
-    return new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(major);
+    return numberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(major);
   }
 }
 
 /** A signed percent for people: `+4.2 %` style per locale. */
 export function formatPercent(value: number | null, locale: string, signed = false): string {
   if (value === null) return "–";
-  return new Intl.NumberFormat(locale, {
+  return numberFormat(locale, {
     style: "percent",
     maximumFractionDigits: 1,
     minimumFractionDigits: 0,

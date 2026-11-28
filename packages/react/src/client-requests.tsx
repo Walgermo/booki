@@ -1,3 +1,4 @@
+import { dateTimeFormat } from "@booki-aui/core/intl";
 import type { ClientRecipient, ClientRequest, ClientRequestStatus } from "@booki-aui/core/client-request";
 import type { BookiChangeDetails } from "./change-details.js";
 import { createParts, type Parts } from "@ui-sdk/react/primitive";
@@ -118,7 +119,7 @@ function ClientRequests({
     actor,
   );
   const date = (value: string) =>
-    new Intl.DateTimeFormat(profile.locale, {
+    dateTimeFormat(profile.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
