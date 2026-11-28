@@ -61,7 +61,8 @@ export default defineConfig({
   dts: true,
   splitting: true,
   clean: true,
-  sourcemap: true,
+  // No source maps in the package: they doubled its size, and dist is plain, readable ES2022 already.
+  sourcemap: false,
   target: "es2022",
   external: [/^@booki-aui\/core(\/.*)?$/, /^@ui-sdk\/core(\/.*)?$/],
 });

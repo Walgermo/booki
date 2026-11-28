@@ -1,6 +1,8 @@
 import { MONEY_EN } from "./msg-money.js";
 import { LOCALE_EN } from "./msg-locale.js";
 import { AMOUNT_EN } from "./msg-amount.js";
+import { TABLE_EN } from "./msg-table.js";
+import { AGENT_INPUT_EN } from "./msg-agent-input.js";
 import { AGENT_STATUS_EN } from "./msg-agent-status.js";
 
 /**
@@ -146,7 +148,6 @@ export const EN = {
   "voucher.line-twice": 'Voucher line id "{id}" appears twice.',
   "reconciliation.match-decided": 'Match "{id}" is already {status}.',
   "reconciliation.match-not-suggested": 'Match "{id}" is {status}. Only a suggestion can be withdrawn.',
-  "agent.not-text": '{action} takes text, like "12345678903"; got {got}.',
   "agent.needs-person": 'Needs a person: "{confirm}". Ask them to do it themselves.',
   "history.later-changes": 'Later changes came after history entry "{id}"; undo those first.',
   "history.no-entry": 'No history entry "{id}". Entries: {entries}.',
@@ -504,16 +505,6 @@ export const EN = {
   "vat.still-draft": "The VAT return for {period} is a draft. A person must mark it ready before it is submitted.",
   "vat.second-person":
     '"{who}" marked this VAT return ready and cannot also submit it. A second person must submit it.',
-  "table.unknown-column": 'No column "{column}". Columns: {columns}.',
-  "table.not-sortable": 'Column "{column}" cannot be sorted.',
-  "table.bad-direction": 'A sort direction is "asc" or "desc", got "{direction}".',
-  "table.bad-page": "Page {page} does not exist. There are {pages} pages.",
-  "table.ids-not-list": 'Ids are a list of strings, like ["r1", "r2"]; got {got}.',
-  "table.bad-page-size": "A page size is a whole number from 1 to {max}, got {size}.",
-  "table.unknown-row": 'No row "{id}" in this table.',
-  "table.unknown-row-listed": 'No row "{id}" in this table. Rows on this page: {rows}.',
-  "agent.unknown-field": '{action}: no field "{field}". Fields: {fields}.',
-  "agent.not-an-object": "{action} takes one object, such as {example}.",
   "select.unknown-account": 'No account "{value}". Its items: {items}.',
   "select.unknown-account-more":
     'No account "{value}" among the {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
@@ -540,6 +531,8 @@ export const EN = {
   "field.unknown-account-more":
     'No account "{value}" in the chart of {count}. Closest: {items}. query({ within, text }) finds one by number or whole word.',
   ...AMOUNT_EN,
+  ...TABLE_EN,
+  ...AGENT_INPUT_EN,
   ...AGENT_STATUS_EN,
   "date.invalid": 'Invalid date "{value}". Use YYYY-MM-DD.',
   "date.days-only-due":

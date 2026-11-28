@@ -187,6 +187,14 @@
       "types": "./dist/msg-amount.d.ts",
       "default": "./dist/msg-amount.js"
     },
+    "./msg/table": {
+      "types": "./dist/msg-table.d.ts",
+      "default": "./dist/msg-table.js"
+    },
+    "./msg/agent-input": {
+      "types": "./dist/msg-agent-input.d.ts",
+      "default": "./dist/msg-agent-input.js"
+    },
     "./msg/agent-status": {
       "types": "./dist/msg-agent-status.d.ts",
       "default": "./dist/msg-agent-status.js"
