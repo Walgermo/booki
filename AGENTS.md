@@ -65,6 +65,8 @@ Starter profiles also exist for `SE`, `DK`, `GB` and `DE` (English labels, IBAN,
 
 The look is "Paper and Ink" in `DESIGN.md`: paper for people, ink for machine output, and lime signal only for what an agent did. Use `--bk-*` tokens only; never a literal colour. The Night (dark) theme is `data-bk-theme="dark"` on a wrapper.
 
+Every public page has a share card, 1200 × 630, its title beside a picture of the page: `node apps/www/scripts/og/cards.mjs <route>` after a build. The build fails for a page with no card, or whose title changed since its card was made. The front page keeps `og.png` from `scripts/og/og.html` (`render.mjs`).
+
 ## Source layout
 
 - `packages/core` — Money, locale, validators, voucher helpers

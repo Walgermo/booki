@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(path.resolve(here, "../../../../benchmarks/agent/package.json"));
+const require = createRequire(path.resolve(here, "../../../../package.json"));
 const { chromium } = require("playwright-core");
 
 const browser = await chromium.launch({ channel: "chrome" });

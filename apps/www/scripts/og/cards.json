@@ -1,0 +1,310 @@
+{
+  "/announcing-agent-first-ui-with-booki": {
+    "page": "Agent-first UI with Booki is here",
+    "alt": "Booki · Launch: Agent-first UI with Booki is here, beside a picture of the page"
+  },
+  "/close": {
+    "page": "Month-end · Booki",
+    "alt": "Booki · Walkthrough: Month-end, with an agent in the room., beside a picture of the page"
+  },
+  "/demo": {
+    "page": "Demo · Booki",
+    "alt": "Booki · Live demo: An app where agents and people share the screen, beside a picture of the page"
+  },
+  "/docs": {
+    "page": "Overview · Booki",
+    "alt": "Booki · Documentation: Build with Booki, beside a picture of the page"
+  },
+  "/docs/account-picker": {
+    "page": "Account (AccountPicker) · Booki",
+    "alt": "Booki · Vouchers and ledger: Account, beside a picture of the page"
+  },
+  "/docs/accounting-period-select": {
+    "page": "Accounting period (AccountingPeriodSelect) · Booki",
+    "alt": "Booki · Companies and dates: Accounting period, beside a picture of the page"
+  },
+  "/docs/activity-timeline": {
+    "page": "Activity timeline (ActivityTimeline) · Booki",
+    "alt": "Booki · Sales: Activity timeline, beside a picture of the page"
+  },
+  "/docs/aged-balances": {
+    "page": "Aged balances (AgedBalances) · Booki",
+    "alt": "Booki · Invoices and expenses: Aged balances, beside a picture of the page"
+  },
+  "/docs/agent-cursor": {
+    "page": "Agent cursor (AgentCursor) · Booki",
+    "alt": "Booki · Building blocks: Agent cursor, beside a picture of the page"
+  },
+  "/docs/agent-presence": {
+    "page": "Agent presence (AgentPresence) · Booki",
+    "alt": "Booki · Building blocks: Agent presence, beside a picture of the page"
+  },
+  "/docs/agent-proposal": {
+    "page": "Agent proposal (AgentProposal) · Booki",
+    "alt": "Booki · Building blocks: Agent proposal, beside a picture of the page"
+  },
+  "/docs/agent-status": {
+    "page": "Agent status (AgentStatus) · Booki",
+    "alt": "Booki · Building blocks: Agent status, beside a picture of the page"
+  },
+  "/docs/aging-chart": {
+    "page": "Aging chart (AgingChart) · Booki",
+    "alt": "Booki · Reports and charts: Aging chart, beside a picture of the page"
+  },
+  "/docs/amount-field": {
+    "page": "Amount field (AmountField) · Booki",
+    "alt": "Booki · Money: Amount field, beside a picture of the page"
+  },
+  "/docs/amount-input": {
+    "page": "Amount input (legacy) (AmountInput) · Booki",
+    "alt": "Booki · Money: Amount input (legacy), beside a picture of the page"
+  },
+  "/docs/approval-chain": {
+    "page": "Approval chain (ApprovalChain) · Booki",
+    "alt": "Booki · Approvals and close: Approval chain, beside a picture of the page"
+  },
+  "/docs/approval-gate": {
+    "page": "Approval gate (ApprovalGate) · Booki",
+    "alt": "Booki · Approvals and close: Approval gate, beside a picture of the page"
+  },
+  "/docs/attestation-status": {
+    "page": "Attestation status (AttestationStatus) · Booki",
+    "alt": "Booki · Approvals and close: Attestation status, beside a picture of the page"
+  },
+  "/docs/audit-findings": {
+    "page": "Audit findings (AuditFindings) · Booki",
+    "alt": "Booki · Audit: Audit findings, beside a picture of the page"
+  },
+  "/docs/audit-trail": {
+    "page": "Audit trail (AuditTrail) · Booki",
+    "alt": "Booki · Audit: Audit trail, beside a picture of the page"
+  },
+  "/docs/audit-workpaper": {
+    "page": "Audit workpaper (AuditWorkpaper) · Booki",
+    "alt": "Booki · Audit: Audit workpaper, beside a picture of the page"
+  },
+  "/docs/bank-account-input": {
+    "page": "Bank account (BankAccountInput) · Booki",
+    "alt": "Booki · Bank and payments: Bank account, beside a picture of the page"
+  },
+  "/docs/bank-reconciliation": {
+    "page": "Bank reconciliation (BankReconciliation) · Booki",
+    "alt": "Booki · Bank and payments: Bank reconciliation, beside a picture of the page"
+  },
+  "/docs/bar-chart": {
+    "page": "Bar chart (BarChart) · Booki",
+    "alt": "Booki · Reports and charts: Bar chart, beside a picture of the page"
+  },
+  "/docs/button": {
+    "page": "Button · Booki",
+    "alt": "Booki · Building blocks: Button, beside a picture of the page"
+  },
+  "/docs/card": {
+    "page": "Card · Booki",
+    "alt": "Booki · Building blocks: Card, beside a picture of the page"
+  },
+  "/docs/cashflow-waterfall": {
+    "page": "Cash-flow waterfall (CashflowWaterfall) · Booki",
+    "alt": "Booki · Reports and charts: Cash-flow waterfall, beside a picture of the page"
+  },
+  "/docs/chart-of-accounts": {
+    "page": "Chart of accounts (ChartOfAccounts) · Booki",
+    "alt": "Booki · Vouchers and ledger: Chart of accounts, beside a picture of the page"
+  },
+  "/docs/client-requests": {
+    "page": "Client requests (ClientRequests) · Booki",
+    "alt": "Booki · Audit: Client requests, beside a picture of the page"
+  },
+  "/docs/close-checklist": {
+    "page": "Close checklist (CloseChecklist) · Booki",
+    "alt": "Booki · Approvals and close: Close checklist, beside a picture of the page"
+  },
+  "/docs/confirm-dialog": {
+    "page": "Confirm dialog (ConfirmDialog) · Booki",
+    "alt": "Booki · Building blocks: Confirm dialog, beside a picture of the page"
+  },
+  "/docs/country-toggle": {
+    "page": "Country (CountryToggle) · Booki",
+    "alt": "Booki · Companies and dates: Country, beside a picture of the page"
+  },
+  "/docs/currency-select": {
+    "page": "Currency (CurrencySelect) · Booki",
+    "alt": "Booki · Money: Currency, beside a picture of the page"
+  },
+  "/docs/data-table": {
+    "page": "Data table (DataTable) · Booki",
+    "alt": "Booki · Building blocks: Data table, beside a picture of the page"
+  },
+  "/docs/deal-pipeline": {
+    "page": "Deal pipeline (DealPipeline) · Booki",
+    "alt": "Booki · Sales: Deal pipeline, beside a picture of the page"
+  },
+  "/docs/document-editor": {
+    "page": "Document editor (DocumentEditor) · Booki",
+    "alt": "Booki · Building blocks: Document editor, beside a picture of the page"
+  },
+  "/docs/document-signoff": {
+    "page": "Document sign-off (DocumentSignoff) · Booki",
+    "alt": "Booki · Approvals and close: Document sign-off, beside a picture of the page"
+  },
+  "/docs/evidence-list": {
+    "page": "Evidence (EvidenceList) · Booki",
+    "alt": "Booki · Vouchers and ledger: Evidence, beside a picture of the page"
+  },
+  "/docs/examples": {
+    "page": "Examples · Booki",
+    "alt": "Booki · Documentation: Examples, beside a picture of the page"
+  },
+  "/docs/exception-banner": {
+    "page": "Exception banner (ExceptionBanner) · Booki",
+    "alt": "Booki · Building blocks: Exception banner, beside a picture of the page"
+  },
+  "/docs/expense-claim": {
+    "page": "Expense claim (ExpenseClaim) · Booki",
+    "alt": "Booki · Invoices and expenses: Expense claim, beside a picture of the page"
+  },
+  "/docs/field": {
+    "page": "Form field (Field) · Booki",
+    "alt": "Booki · Building blocks: Form field, beside a picture of the page"
+  },
+  "/docs/financial-date-field": {
+    "page": "Accounting date (FinancialDateField) · Booki",
+    "alt": "Booki · Companies and dates: Accounting date, beside a picture of the page"
+  },
+  "/docs/first-action": {
+    "page": "Your first agent action · Booki",
+    "alt": "Booki · Documentation: Your first agent action, beside a picture of the page"
+  },
+  "/docs/fixed-asset-register": {
+    "page": "Fixed assets (FixedAssetRegister) · Booki",
+    "alt": "Booki · Vouchers and ledger: Fixed assets, beside a picture of the page"
+  },
+  "/docs/forecast-chart": {
+    "page": "Forecast (ForecastChart) · Booki",
+    "alt": "Booki · Sales: Forecast, beside a picture of the page"
+  },
+  "/docs/funnel-chart": {
+    "page": "Sales funnel (FunnelChart) · Booki",
+    "alt": "Booki · Sales: Sales funnel, beside a picture of the page"
+  },
+  "/docs/iban-input": {
+    "page": "IBAN (IbanInput) · Booki",
+    "alt": "Booki · Bank and payments: IBAN, beside a picture of the page"
+  },
+  "/docs/icon-button": {
+    "page": "Icon button (IconButton) · Booki",
+    "alt": "Booki · Building blocks: Icon button, beside a picture of the page"
+  },
+  "/docs/icons": {
+    "page": "Icons · Booki",
+    "alt": "Booki · Documentation: Icons, beside a picture of the page"
+  },
+  "/docs/installation": {
+    "page": "Installation · Booki",
+    "alt": "Booki · Documentation: Add Booki to your app, beside a picture of the page"
+  },
+  "/docs/invoice-editor": {
+    "page": "Invoice (InvoiceEditor) · Booki",
+    "alt": "Booki · Invoices and expenses: Invoice, beside a picture of the page"
+  },
+  "/docs/invoice-number-input": {
+    "page": "Invoice number (InvoiceNumberInput) · Booki",
+    "alt": "Booki · Invoices and expenses: Invoice number, beside a picture of the page"
+  },
+  "/docs/kpi-stat": {
+    "page": "Key figure (KpiStat) · Booki",
+    "alt": "Booki · Reports and charts: Key figure, beside a picture of the page"
+  },
+  "/docs/ledger-table": {
+    "page": "Ledger (LedgerTable) · Booki",
+    "alt": "Booki · Vouchers and ledger: Ledger, beside a picture of the page"
+  },
+  "/docs/money": {
+    "page": "Money helpers (Money) · Booki",
+    "alt": "Booki · Money: Money helpers, beside a picture of the page"
+  },
+  "/docs/money-amount": {
+    "page": "Money amount (MoneyAmount) · Booki",
+    "alt": "Booki · Money: Money amount, beside a picture of the page"
+  },
+  "/docs/organization-number-input": {
+    "page": "Organisation number (OrganizationNumberInput) · Booki",
+    "alt": "Booki · Companies and dates: Organisation number, beside a picture of the page"
+  },
+  "/docs/payment-batch": {
+    "page": "Payment batch (PaymentBatch) · Booki",
+    "alt": "Booki · Bank and payments: Payment batch, beside a picture of the page"
+  },
+  "/docs/payment-confirm": {
+    "page": "Payment confirmation (PaymentConfirm) · Booki",
+    "alt": "Booki · Bank and payments: Payment confirmation, beside a picture of the page"
+  },
+  "/docs/payment-reference-input": {
+    "page": "Payment reference (PaymentReferenceInput) · Booki",
+    "alt": "Booki · Bank and payments: Payment reference, beside a picture of the page"
+  },
+  "/docs/period-lock": {
+    "page": "Period lock (PeriodLock) · Booki",
+    "alt": "Booki · Approvals and close: Period lock, beside a picture of the page"
+  },
+  "/docs/recurring-revenue": {
+    "page": "Recurring revenue (RecurringRevenue) · Booki",
+    "alt": "Booki · Sales: Recurring revenue, beside a picture of the page"
+  },
+  "/docs/sca-prompt": {
+    "page": "Strong authentication (ScaPrompt) · Booki",
+    "alt": "Booki · Bank and payments: Strong authentication, beside a picture of the page"
+  },
+  "/docs/sheet-stack": {
+    "page": "Sheet stack (SheetStack) · Booki",
+    "alt": "Booki · Building blocks: Sheet stack, beside a picture of the page"
+  },
+  "/docs/stage-duration": {
+    "page": "Time in stage (StageDurationChart) · Booki",
+    "alt": "Booki · Sales: Time in stage, beside a picture of the page"
+  },
+  "/docs/supplier-invoice-inbox": {
+    "page": "Supplier invoices (SupplierInvoiceInbox) · Booki",
+    "alt": "Booki · Invoices and expenses: Supplier invoices, beside a picture of the page"
+  },
+  "/docs/tax-code-select": {
+    "page": "Tax code (TaxCodeSelect) · Booki",
+    "alt": "Booki · Money: Tax code, beside a picture of the page"
+  },
+  "/docs/text-link": {
+    "page": "Text link (TextLink) · Booki",
+    "alt": "Booki · Building blocks: Text link, beside a picture of the page"
+  },
+  "/docs/toasts": {
+    "page": "Notifications (BookiToasts) · Booki",
+    "alt": "Booki · Building blocks: Notifications, beside a picture of the page"
+  },
+  "/docs/toolbar": {
+    "page": "Toolbar · Booki",
+    "alt": "Booki · Building blocks: Toolbar, beside a picture of the page"
+  },
+  "/docs/trend-chart": {
+    "page": "Trend chart (TrendChart) · Booki",
+    "alt": "Booki · Reports and charts: Trend chart, beside a picture of the page"
+  },
+  "/docs/vat-return": {
+    "page": "VAT return (VatReturn) · Booki",
+    "alt": "Booki · Vouchers and ledger: VAT return, beside a picture of the page"
+  },
+  "/docs/voucher-composer": {
+    "page": "Voucher editor (VoucherComposer) · Booki",
+    "alt": "Booki · Vouchers and ledger: Voucher editor, beside a picture of the page"
+  },
+  "/docs/voucher-lines": {
+    "page": "Voucher lines (VoucherLines) · Booki",
+    "alt": "Booki · Vouchers and ledger: Voucher lines, beside a picture of the page"
+  },
+  "/erp-teams": {
+    "page": "For ERP teams · Booki",
+    "alt": "Booki · For ERP teams: Agents already use your product., beside a picture of the page"
+  },
+  "/features": {
+    "page": "Features · Booki",
+    "alt": "Booki · Features: Features, beside a picture of the page"
+  }
+}
