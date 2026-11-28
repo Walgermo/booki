@@ -17,6 +17,6 @@ pnpm add --save-exact "@booki-aui/svelte@$booki_version" "@booki-aui/styles@$boo
 
 Each control is a namespace of parts, like `AmountField.Root` and
 `AmountField.Input`. Create the agent bridge once with `createBookiAgent`.
-Peer dependencies: `@ui-sdk/core` and `@ui-sdk/svelte` 0.1.0-beta.18.
+Peer dependencies: `@ui-sdk/core` and `@ui-sdk/svelte` 0.1.0-beta.19.
 
 Load it through Vite with the Svelte plugin (SvelteKit has it), as with any Svelte component library.
