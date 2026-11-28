@@ -45,6 +45,13 @@ ANTHROPIC_API_KEY=… pnpm --filter agent-benchmark compare --task all --model c
 pnpm --filter agent-benchmark compare --task all --scripted --url http://localhost:5183   # no model, no key
 ```
 
+The key is found as `pnpm proof` finds it: `ANTHROPIC_API_KEY` in the shell, or
+`ANTHROPIC_API_KEY` / `AI_GATEWAY_API_KEY` in `apps/www/.env.local` here or in the
+main checkout (git-ignored). A gateway key runs `anthropic/claude-opus-5.5` through
+Vercel AI Gateway, at the gateway's list price. `vercel env pull` in `apps/www`
+writes a short-lived `VERCEL_OIDC_TOKEN` there; put it in as `AI_GATEWAY_API_KEY`
+if you have no gateway key of your own.
+
 Each run writes `results/compare-<task>-<time>.json` and a self-contained
 `.html` next to it (results/ is not committed). Open the HTML in a browser and
 press play.

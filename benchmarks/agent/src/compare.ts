@@ -22,6 +22,7 @@ import { parseArgs } from "node:util";
 import { chromium, type Browser } from "playwright-core";
 
 import { COMPARE_TASKS, type CompareSide, type CompareTask } from "./compare-tasks.js";
+import { GATEWAY, gatewayPrices, readVar } from "./gateway.js";
 import { runLoop, type Effort } from "./loop.js";
 import { costUsd, priceFor } from "./pricing.js";
 import { recorder } from "./scripted.js";
@@ -35,7 +36,7 @@ const { values } = parseArgs({
   args: process.argv.slice(2).filter((arg) => arg !== "--"),
   options: {
     task: { type: "string", default: "tax" },
-    model: { type: "string", default: "claude-opus-5-5" },
+    model: { type: "string" },
     effort: { type: "string", default: "medium" },
     "max-steps": { type: "string", default: "30" },
     url: { type: "string" },
@@ -49,13 +50,44 @@ const taskIds = values.task === "all" ? (Object.keys(COMPARE_TASKS) as CompareTa
 for (const id of taskIds) {
   if (!(id in COMPARE_TASKS)) throw new Error(`No task "${id}". Use ${Object.keys(COMPARE_TASKS).join(", ")} or all.`);
 }
-if (!values.scripted && !process.env.ANTHROPIC_API_KEY) {
-  console.error("Set ANTHROPIC_API_KEY to run a model, or pass --scripted for a run without one.");
+// The key as `proof` finds it: the shell, then apps/www/.env.local here or in the
+// main checkout. A Vercel AI Gateway key routes through the gateway's
+// Anthropic-compatible endpoint, at the gateway's list price. Never printed.
+const root = path.resolve(here, "..");
+const anthropicKey = process.env.ANTHROPIC_API_KEY || readVar(root, "ANTHROPIC_API_KEY");
+const gatewayKey =
+  process.env.AI_GATEWAY_API_KEY ||
+  process.env.API_AI_GATEWAY ||
+  readVar(root, "AI_GATEWAY_API_KEY") ||
+  readVar(root, "API_AI_GATEWAY");
+const viaGateway = !anthropicKey && !!gatewayKey;
+if (!values.scripted && !anthropicKey && !gatewayKey) {
+  console.error(
+    "No API key. Put ANTHROPIC_API_KEY=… or AI_GATEWAY_API_KEY=… in apps/www/.env.local (git-ignored) or the shell, " +
+      "or pass --scripted for a run without a model.",
+  );
   process.exit(2);
 }
-const model = values.model;
+const model = values.model ?? (viaGateway ? "anthropic/claude-opus-5.5" : "claude-opus-5-5");
 const effort = values.effort === "none" ? null : (values.effort as Effort);
-const prices = priceFor(model) ?? null;
+const gatewayPrice = viaGateway && !values.scripted ? await gatewayPrices(model) : undefined;
+const prices = gatewayPrice
+  ? (() => {
+      const [input, output, cacheWrite, cacheRead] = gatewayPrice.split(",").map(Number) as [
+        number,
+        number,
+        number,
+        number,
+      ];
+      return { input, output, cacheWrite, cacheRead };
+    })()
+  : (priceFor(model) ?? null);
+/** One client for both sides; the base URL is set so a proxy in the shell cannot redirect it. */
+const makeClient = () =>
+  new Anthropic({
+    apiKey: (anthropicKey || gatewayKey)!,
+    baseURL: viaGateway ? GATEWAY : "https://api.anthropic.com",
+  });
 
 /** One moment of a run: a model request or a tool call, with the page after it. */
 type Frame = {
@@ -173,7 +205,7 @@ async function runSide(task: CompareTask, side: CompareSide, origin: string, bro
     if (values.scripted) {
       answer = await side.script(recorder(watched));
     } else {
-      const real = new Anthropic();
+      const real = makeClient();
       // The same client, with each request's usage counted as it comes back.
       const client = {
         messages: {
@@ -241,7 +273,9 @@ try {
 
   for (const id of taskIds) {
     const task = COMPARE_TASKS[id as CompareTask["id"]];
-    console.log(`${task.title}: ${values.scripted ? "scripted agent" : `${model}, effort ${effort ?? "(not sent)"}`}`);
+    console.log(
+      `${task.title}: ${values.scripted ? "scripted agent" : `${model}${viaGateway ? " via AI Gateway" : ""}, effort ${effort ?? "(not sent)"}`}`,
+    );
     // Both at once, as the replay shows them.
     const [live, booki] = await Promise.all([
       runSide(task, task.live, origin, browser),
